@@ -196,6 +196,17 @@ public class WarCommands implements CommandExecutor {
 				} else {
 					p.sendMessage(Helper.Chatlabel() + "Invalid Arguments. /war info [player]");
 				}
+
+			} else if(args[0].equalsIgnoreCase("help")) {
+				if (p.hasPermission("!AlatrhaWar.admin")) {
+					p.sendMessage(Helper.Chatlabel() + "/war create [name] [side1] [side2]");
+					p.sendMessage(Helper.Chatlabel() + "/war delete [name]");
+				}
+				p.sendMessage(Helper.Chatlabel() + "/war join [name] [side]");
+				p.sendMessage(Helper.Chatlabel() + "/war leave [name]");
+				p.sendMessage(Helper.Chatlabel() + "/war info [player]");
+
+
 			} else {
 				p.sendMessage(Helper.Chatlabel() + "Invalid Arguments. /war help");
 			}
