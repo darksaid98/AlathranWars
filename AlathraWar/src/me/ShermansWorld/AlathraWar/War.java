@@ -2,8 +2,6 @@ package me.ShermansWorld.AlathraWar;
 
 import java.util.ArrayList;
 
-import org.bukkit.Bukkit;
-
 public class War {
 	
 	private String name;
@@ -17,14 +15,6 @@ public class War {
 		this.name = name;
 		this.side1 = side1;
 		this.side2 = side2;
-		
-		for (String playerName : getSide1Players()) {
-			Bukkit.getServer().getPlayer(playerName).setPlayerListName(Helper.color("&c[" + getSide1() + "]&r") + playerName);
-		}
-		
-		for (String playerName : getSide2Players()) {
-			Bukkit.getServer().getPlayer(playerName).setPlayerListName(Helper.color("&9[" + getSide2() + "]&r") + playerName);
-		}
 	}
 	
 	public void addPlayerSide1(String playerName) {

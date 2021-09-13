@@ -35,7 +35,7 @@ public class WarCommands implements CommandExecutor {
 			p.sendMessage(Helper.Chatlabel() + "Invalid Arguments. /war help");
 		} else if (args.length >= 1) {
 			if (args[0].equalsIgnoreCase("create")) {
-				if (!p.hasPermission("!AlatrhaWar.admin")) {
+				if (!p.hasPermission("AlatrhaWar.admin")) {
 					p.sendMessage(Helper.Chatlabel() + Helper.color("&cYou do not have permission to do this"));
 					return false;
 				}
@@ -43,9 +43,18 @@ public class WarCommands implements CommandExecutor {
 					if (wars.isEmpty()) {
 						War war = new War(args[1], args[2], args[3]);
 						wars.add(war); // create a war and add it to the list
-						Main.data.getConfig().set("Wars." +  args[1] + ".side1", args[2]);
-						Main.data.getConfig().set("Wars." +  args[1] + ".side2", args[3]);
+						ArrayList<String> side1Players = new ArrayList<String>();
+						ArrayList<String> side2Players = new ArrayList<String>();
+						side1Players.add("Notch1");
+						side2Players.add("Notch2");
+						war.setSide1Players(side1Players);
+						war.setSide2Players(side2Players);
+						Main.data.getConfig().set("Wars." +  args[1].toLowerCase() + ".side1", args[2]);
+						Main.data.getConfig().set("Wars." +  args[1].toLowerCase() + ".side2", args[3]);
+						Main.data.getConfig().set("Wars." +  args[1].toLowerCase() + ".side1players", side1Players);
+						Main.data.getConfig().set("Wars." +  args[1].toLowerCase() + ".side2players", side2Players);
 						Main.data.saveConfig();
+						
 						p.sendMessage(Helper.Chatlabel() + "War created with the name " + args[1] + ", " + args[2] + " vs. " + args[3]);
 					} else {
 						for (int i = 0; i < wars.size(); i++) {
@@ -53,8 +62,20 @@ public class WarCommands implements CommandExecutor {
 								p.sendMessage(Helper.Chatlabel() + "A war already exists with that name! To view wars type /war list");
 								break;
 							} else {
-								wars.add(new War(args[1], args[2], args[3])); // create a war and add it to the list
 								i++;
+								War war = new War(args[1], args[2], args[3]);
+								wars.add(war); // create a war and add it to the list
+								ArrayList<String> side1Players = new ArrayList<String>();
+								ArrayList<String> side2Players = new ArrayList<String>();
+								side1Players.add("Notch1");
+								side2Players.add("Notch2");
+								war.setSide1Players(side1Players);
+								war.setSide2Players(side2Players);
+								Main.data.getConfig().set("Wars." +  args[1].toLowerCase() + ".side1", args[2]);
+								Main.data.getConfig().set("Wars." +  args[1].toLowerCase() + ".side2", args[3]);
+								Main.data.getConfig().set("Wars." +  args[1].toLowerCase() + ".side1players", side1Players);
+								Main.data.getConfig().set("Wars." +  args[1].toLowerCase() + ".side2players", side2Players);
+								Main.data.saveConfig();
 								p.sendMessage(Helper.Chatlabel() + "War created with the name " + args[1] + ", " + args[2] + " vs. " + args[3]);
 							}
 						}
@@ -63,7 +84,7 @@ public class WarCommands implements CommandExecutor {
 					p.sendMessage(Helper.Chatlabel() + "Invalid Arguments. /war create [name] [side1] [side2]");
 				}
 			} else if (args[0].equalsIgnoreCase("delete")) {
-				if (!p.hasPermission("!AlatrhaWar.admin")) {
+				if (!p.hasPermission("AlatrhaWar.admin")) {
 					p.sendMessage(Helper.Chatlabel() + Helper.color("&cYou do not have permission to do this"));
 					return false;
 				}
@@ -73,7 +94,7 @@ public class WarCommands implements CommandExecutor {
 						if (wars.get(i).getName().equalsIgnoreCase(args[1])) {
 							p.sendMessage(Helper.Chatlabel() + "The war named " + args[1] + " has been deleted");
 							wars.remove(i);
-							Main.data.getConfig().set("Wars." +  args[1], null);
+							Main.data.getConfig().set("Wars." +  args[1].toLowerCase(), null);
 							Main.data.saveConfig();
 							found = true;
 							break;
@@ -89,7 +110,7 @@ public class WarCommands implements CommandExecutor {
 				if (wars.isEmpty()) {
 					p.sendMessage(Helper.Chatlabel() + "There are currently no wars");
 				} else {
-					p.sendMessage(Helper.Chatlabel() + "CurrentWars:");
+					p.sendMessage(Helper.Chatlabel() + "Current Wars:");
 					for (War war : wars) {
 						p.sendMessage(war.getName() + " - " + war.getSide1() + " vs. " + war.getSide2());;
 					}
@@ -99,8 +120,8 @@ public class WarCommands implements CommandExecutor {
 				boolean found = false;
 				if (args.length == 3) {
 					for (War war : wars) {
-						if (war.getName().equalsIgnoreCase(args[1])) {
-							if (war.getSide1().equalsIgnoreCase(args[2])) {
+						if (war.getName().equalsIgnoreCase(args[1].toLowerCase())) {
+							if (war.getSide1().equalsIgnoreCase(args[2].toLowerCase())) {
 								if (war.getSide1Players().contains(p.getName())) {
 									p.sendMessage(Helper.Chatlabel() + "You have already joined this war! Type /war leave [war] to leave the war");
 									return false;
@@ -108,11 +129,11 @@ public class WarCommands implements CommandExecutor {
 								war.addPlayerSide1(p.getName());
 								p.sendMessage(Helper.Chatlabel() + "You have joined the war on the side of " + war.getSide1());
 								p.setPlayerListName(Helper.color("&c[" + war.getSide1() + "]&r") + p.getName());
-								Main.data.getConfig().set("Wars." +  args[1] + ".side1players", war.getSide1Players());
+								Main.data.getConfig().set("Wars." + args[1].toLowerCase() + ".side1players", war.getSide1Players());
 								Main.data.saveConfig();
 								Bukkit.getServer().broadcastMessage(Helper.Chatlabel() + p.getName() + " has joined " + war.getName() + " on the side of " + war.getSide1() + "!");
 								found = true;
-							} else if (war.getSide2().equalsIgnoreCase(args[2])) {
+							} else if (war.getSide2().equalsIgnoreCase(args[2].toLowerCase())) {
 								if (war.getSide2Players().contains(p.getName())) {
 									p.sendMessage(Helper.Chatlabel() + "You have already joined this war! Type /war leave [war] to leave the war");
 									return false;
@@ -120,7 +141,7 @@ public class WarCommands implements CommandExecutor {
 								war.addPlayerSide2(p.getName());
 								p.sendMessage(Helper.Chatlabel() + "You have joined the war on the side of " + war.getSide2());
 								p.setPlayerListName(Helper.color("&9[" + war.getSide2() + "]&r") + p.getName());
-								Main.data.getConfig().set("Wars." +  args[1] + ".side2players", war.getSide2Players());
+								Main.data.getConfig().set("Wars." +  args[1].toLowerCase() + ".side2players", war.getSide2Players());
 								Main.data.saveConfig();
 								Bukkit.getServer().broadcastMessage(Helper.Chatlabel() + p.getName() + " has joined " + war.getName() + " on the side of " + war.getSide2() + "!");
 								found = true;
@@ -196,17 +217,6 @@ public class WarCommands implements CommandExecutor {
 				} else {
 					p.sendMessage(Helper.Chatlabel() + "Invalid Arguments. /war info [player]");
 				}
-
-			} else if(args[0].equalsIgnoreCase("help")) {
-				if (p.hasPermission("!AlatrhaWar.admin")) {
-					p.sendMessage(Helper.Chatlabel() + "/war create [name] [side1] [side2]");
-					p.sendMessage(Helper.Chatlabel() + "/war delete [name]");
-				}
-				p.sendMessage(Helper.Chatlabel() + "/war join [name] [side]");
-				p.sendMessage(Helper.Chatlabel() + "/war leave [name]");
-				p.sendMessage(Helper.Chatlabel() + "/war info [player]");
-
-
 			} else {
 				p.sendMessage(Helper.Chatlabel() + "Invalid Arguments. /war help");
 			}

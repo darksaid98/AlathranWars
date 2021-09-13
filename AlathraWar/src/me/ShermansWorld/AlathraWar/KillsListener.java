@@ -23,7 +23,6 @@ public final class KillsListener implements Listener {
 	@EventHandler
 	public void onPlayerKilled(PlayerDeathEvent event) {
 		
-		
 		if (event.getEntity().getPlayer() == null || !(event.getEntity().getKiller() instanceof Player)) {
 			return;
 		}
@@ -53,10 +52,18 @@ public final class KillsListener implements Listener {
 					if ((town != null && town.equals(siege.getTown())) || playerCloseToHomeBlock) {
 						siege.addPointsToAttackers(20);
 						for (String playerName : siege.getAttackerPlayers()) {
-							Bukkit.getPlayer(playerName).sendMessage(Helper.Chatlabel() + "Defender killed! + 20 Attacker Points");
+							try {
+								Bukkit.getPlayer(playerName).sendMessage(Helper.Chatlabel() + "Defender killed! + 20 Attacker Points");
+							} catch (NullPointerException e) {
+								// offline player or template
+							}
 						}
 						for (String playerName : siege.getDefenderPlayers()) {
-							Bukkit.getPlayer(playerName).sendMessage(Helper.Chatlabel() + "Defender killed! + 20 Attacker Points");
+							try {
+								Bukkit.getPlayer(playerName).sendMessage(Helper.Chatlabel() + "Defender killed! + 20 Attacker Points");
+							} catch (NullPointerException e) {
+								// offline player or template
+							}
 						}
 						siegeKill(killed, event);
 						return;
@@ -67,10 +74,18 @@ public final class KillsListener implements Listener {
 					if ((town != null && town.equals(siege.getTown())) || playerCloseToHomeBlock) {
 						siege.addPointsToDefenders(20);
 						for (String playerName : siege.getAttackerPlayers()) {
-							Bukkit.getPlayer(playerName).sendMessage(Helper.Chatlabel() + "Attacker killed! + 20 Defender Points");
+							try {
+								Bukkit.getPlayer(playerName).sendMessage(Helper.Chatlabel() + "Attacker killed! + 20 Defender Points");
+							} catch (NullPointerException e) {
+								// offline player or template
+							}
 						}
 						for (String playerName : siege.getDefenderPlayers()) {
-							Bukkit.getPlayer(playerName).sendMessage(Helper.Chatlabel() + "Attacker killed! + 20 Defender Points");
+							try {
+								Bukkit.getPlayer(playerName).sendMessage(Helper.Chatlabel() + "Attacker killed! + 20 Defender Points");
+							} catch (NullPointerException e) {
+								// offline player or template
+							}
 						}
 						siegeKill(killed, event);
 						return;
