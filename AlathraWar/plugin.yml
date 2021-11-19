@@ -1,0 +1,13 @@
+name: AlathraWar
+version: 1.0.2
+api-version: 1.16
+author: ShermansWorld
+main: me.ShermansWorld.AlathraWar.Main
+
+commands:
+  war:
+    description: used to create, delete, join and leave wars
+    softdepend: [Vault, Towny]
+  siege:
+    description: used to start, end, and view sieges
+    softdepend: [Vault, Towny]
