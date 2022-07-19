@@ -4,8 +4,8 @@
 ### Dependencies: Vault, Towny, SiegeWar, TAB
 
 ### Commands
-+/war - war commands
-+/siege - siege commands
++ /war - war commands
++ /siege - siege commands
 
 ## Siege Point system
 +1 point for every second the homeblock is controlled. Defenders retain control if no one is occupying the homeblock. A contested homeblock yeilds no points. The timer fires every 10 seconds so it's really +10 points every 10 seconds. Kills are worth 20 points each.
