@@ -6,7 +6,6 @@ package me.ShermansWorld.AlathraWar;
 
 import org.bukkit.OfflinePlayer;
 import com.palmergames.bukkit.towny.object.TownyWorld;
-import java.util.Iterator;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.WorldCoord;
@@ -58,7 +57,7 @@ public class SiegeCommands implements CommandExecutor
                     p.sendMessage("-=-=-=-=-=-=-=-=-=-=-=-");
                 }
             } else if (args[0].equalsIgnoreCase("help")) {
-                if (p.hasPermission("!AlatrhaWar.admin")) {
+                if (p.hasPermission("!AlathraWar.admin")) {
 					p.sendMessage(Helper.Chatlabel() + "/siege stop [id]");
 				}
 				p.sendMessage(Helper.Chatlabel() + "/siege start [war] [town]");
@@ -107,6 +106,7 @@ public class SiegeCommands implements CommandExecutor
                         if (String.valueOf(SiegeCommands.sieges.get(j).getID()).equalsIgnoreCase(args[1])) {
                             found2 = true;
                             Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The siege at " + SiegeCommands.sieges.get(j).getTown().getName() + " has been abandoned by " + SiegeCommands.sieges.get(j).getAttackers());
+                            Main.warLogger.log(p.getName() + " abandoned the siege they started at " + SiegeCommands.sieges.get(j).getTown().getName());
                             SiegeCommands.sieges.get(j).defendersWin();
                             break;
                         }
@@ -130,13 +130,7 @@ public class SiegeCommands implements CommandExecutor
                             p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You are not in this war! Type /war join [war] [side]");
                         }
                         TownyWorld townyWorld;
-                        try {
-                            townyWorld = WorldCoord.parseWorldCoord(p.getLocation()).getTownyWorld();
-                        }
-                        catch (NotRegisteredException e) {
-                            Bukkit.getLogger().info("TownyWorld not found");
-                            return false;
-                        }
+                        townyWorld = WorldCoord.parseWorldCoord(p.getLocation()).getTownyWorld();
                         if (!SiegeCommands.towns.isEmpty()) {
                             SiegeCommands.towns.clear();
                         }
@@ -228,7 +222,7 @@ public class SiegeCommands implements CommandExecutor
                                         return false;
                                     }
                                 }
-                                final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(p.getName());
+                                final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(p.getUniqueId());
                                 if (Main.econ.getBalance(offlinePlayer) <= 20000.0) {
                                     p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must have at least $20,000 to put up to start a siege");
                                     Main.data2.getConfig().set("Sieges." + String.valueOf(SiegeCommands.maxID), (Object)null);
@@ -240,6 +234,8 @@ public class SiegeCommands implements CommandExecutor
                                 siege2.start();
                                 siege2.createBeacon();
                                 Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "As part of " + war.getName() + ", forces from " + siege2.getAttackers() + " are laying siege to the town of " + town.getName() + "!");
+                                Main.warLogger.log(p.getName() + " started a siege.");
+                                Main.warLogger.log("As part of " + war.getName() + ", forces from " + siege2.getAttackers() + " are laying siege to the town of " + town.getName() + "!");
                             }
                         }
                     }

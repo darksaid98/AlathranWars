@@ -13,6 +13,9 @@ import java.util.Set;
 import com.palmergames.bukkit.towny.object.Town;
 
 import com.palmergames.bukkit.towny.TownyUniverse;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import org.bukkit.Bukkit;
 import net.milkbowl.vault.economy.Economy;
@@ -24,6 +27,7 @@ public class Main extends JavaPlugin
     public static SiegeData data2;
     public static Main instance;
     public static Economy econ;
+    public static AlathraWarLogger warLogger;
     
     static {
         Main.instance = null;
@@ -32,7 +36,8 @@ public class Main extends JavaPlugin
     
     private static void initData() {
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask((Plugin)getInstance(), (Runnable)new Runnable() {
-            @Override
+            @SuppressWarnings("unchecked")
+			@Override
             public void run() {
                 try {
                     final Set<String> warsSet = (Set<String>)Main.data.getConfig().getConfigurationSection("Wars").getKeys(false);
@@ -101,11 +106,13 @@ public class Main extends JavaPlugin
         }, 0L);
     }
     
+	@SuppressWarnings("rawtypes")
 	private boolean setupEconomy() {
         if (this.getServer().getPluginManager().getPlugin("Vault") == null) {
             return false;
         }
-        final RegisteredServiceProvider<Economy> rsp = (RegisteredServiceProvider<Economy>)this.getServer().getServicesManager().getRegistration((Class)Economy.class);
+        @SuppressWarnings("unchecked")
+		final RegisteredServiceProvider<Economy> rsp = (RegisteredServiceProvider<Economy>)this.getServer().getServicesManager().getRegistration((Class)Economy.class);
         if (rsp == null) {
             return false;
         }
@@ -117,19 +124,36 @@ public class Main extends JavaPlugin
         return Main.instance;
     }
     
+    public static void initLogs() {
+    	File logsFolder = new File("plugins" + File.separator + "AlathraWar" + File.separator + "logs");
+	    if (!logsFolder.exists()) {
+	    	logsFolder.mkdirs();
+	    }
+	    File log = new File("plugins" + File.separator + "AlathraWar" + File.separator + "logs" + File.separator + "log.txt");
+	    if (!log.exists()) {
+	    	try {
+				log.createNewFile();
+			} catch (IOException e) {
+				Bukkit.getLogger().warning("[AlathraWar] Encountered error when creating log file!");
+			}
+	    }
+	    warLogger = new AlathraWarLogger();
+    }
+    
     public void onEnable() {
         Main.instance = this;
         Main.data = new WarData(this);
         Main.data2 = new SiegeData(this);
         new WarCommands(this);
         new SiegeCommands(this);
-        this.getCommand("war").setTabCompleter(new WarTabCompletion());
-        this.getCommand("siege").setTabCompleter(new SiegeTabCompletion());
-        this.getServer().getPluginManager().registerEvents((Listener)new KillsListener(), (Plugin)this);
-        this.getServer().getPluginManager().registerEvents((Listener)new JoinListener(), (Plugin)this);
-        this.getServer().getPluginManager().registerEvents((Listener)new BlockBreakListener(), (Plugin)this);
+        getCommand("war").setTabCompleter(new WarTabCompletion());
+        getCommand("siege").setTabCompleter(new SiegeTabCompletion());
+        getServer().getPluginManager().registerEvents((Listener)new KillsListener(), (Plugin)this);
+        getServer().getPluginManager().registerEvents((Listener)new JoinListener(), (Plugin)this);
+        getServer().getPluginManager().registerEvents((Listener)new BlockBreakListener(), (Plugin)this);
         initData();
-        this.setupEconomy();
+        setupEconomy();
+        initLogs();
     }
     
     public void onDisable() {

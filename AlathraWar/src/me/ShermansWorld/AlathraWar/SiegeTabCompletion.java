@@ -9,7 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import com.palmergames.bukkit.towny.TownyUniverse;
+import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Town;
 
 public class SiegeTabCompletion implements TabCompleter {
@@ -45,8 +45,8 @@ public class SiegeTabCompletion implements TabCompleter {
 			}
 		} else if (args.length == 3) {
 			if (args[0].equalsIgnoreCase("start")) {
-				if (!TownyUniverse.getInstance().getDataSource().getTowns().isEmpty()) {
-					for (Town town : TownyUniverse.getInstance().getDataSource().getTowns()) {
+				if (!TownyAPI.getInstance().getTowns().isEmpty()) {
+					for (Town town : TownyAPI.getInstance().getTowns()) {
 						completions.add(town.getName());
 					}
 					return completions;

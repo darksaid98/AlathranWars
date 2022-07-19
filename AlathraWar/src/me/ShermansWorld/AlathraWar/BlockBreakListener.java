@@ -18,7 +18,7 @@ public class BlockBreakListener implements Listener
             return;
         }
         for (final Siege siege : SiegeCommands.sieges) {
-            if (siege.beaconLocs.contains(event.getBlock().getLocation())) {
+            if (siege.beaconLocs.contains(block.getLocation())) {
                 event.setCancelled(true);
                 return;
             }

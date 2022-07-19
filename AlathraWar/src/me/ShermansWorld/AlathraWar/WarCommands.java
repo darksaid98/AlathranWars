@@ -6,6 +6,10 @@ package me.ShermansWorld.AlathraWar;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+
+import me.neznamy.tab.api.TabAPI;
+import me.neznamy.tab.api.TabPlayer;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import java.util.ArrayList;
@@ -30,7 +34,7 @@ public class WarCommands implements CommandExecutor
         }
         else if (args.length >= 1) {
             if (args[0].equalsIgnoreCase("create")) {
-                if (!p.hasPermission("AlatrhaWar.admin")) {
+                if (!p.hasPermission("AlathraWar.admin")) {
                     p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&cYou do not have permission to do this"));
                     return false;
                 }
@@ -50,6 +54,7 @@ public class WarCommands implements CommandExecutor
                         Main.data.getConfig().set("Wars." + args[1].toLowerCase() + ".side2players", (Object)side2Players);
                         Main.data.saveConfig();
                         p.sendMessage(String.valueOf(Helper.Chatlabel()) + "War created with the name " + args[1].toLowerCase() + ", " + args[2] + " vs. " + args[3]);
+                        Main.warLogger.log(p.getName() + " created a new war with the name " + args[1].toLowerCase() + ", " + args[2] + " vs. " + args[3]);
                     }
                     else {
                         for (int i = 0; i < WarCommands.wars.size(); ++i) {
@@ -71,7 +76,8 @@ public class WarCommands implements CommandExecutor
                             Main.data.getConfig().set("Wars." + args[1].toLowerCase() + ".side1players", (Object)side1Players2);
                             Main.data.getConfig().set("Wars." + args[1].toLowerCase() + ".side2players", (Object)side2Players2);
                             Main.data.saveConfig();
-                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "War created with the name " + args[1] + ", " + args[2] + " vs. " + args[3]);
+                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "War created with the name " + args[1].toLowerCase() + ", " + args[2] + " vs. " + args[3]);
+                            Main.warLogger.log(p.getName() + " created a new war with the name " + args[1].toLowerCase() + ", " + args[2] + " vs. " + args[3]);
                         }
                     }
                 }
@@ -80,7 +86,7 @@ public class WarCommands implements CommandExecutor
                 }
             }
             else if (args[0].equalsIgnoreCase("delete")) {
-                if (!p.hasPermission("AlatrhaWar.admin")) {
+                if (!p.hasPermission("AlathraWar.admin")) {
                     p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&cYou do not have permission to do this"));
                     return false;
                 }
@@ -89,6 +95,7 @@ public class WarCommands implements CommandExecutor
                     for (int j = 0; j < WarCommands.wars.size(); ++j) {
                         if (WarCommands.wars.get(j).getName().equalsIgnoreCase(args[1])) {
                             p.sendMessage(String.valueOf(Helper.Chatlabel()) + "The war named " + args[1] + " has been deleted");
+                            Main.warLogger.log(p.getName() + " deleted a war named " + args[1]);
                             WarCommands.wars.remove(j);
                             Main.data.getConfig().set("Wars." + args[1].toLowerCase(), (Object)null);
                             Main.data.saveConfig();
@@ -127,10 +134,13 @@ public class WarCommands implements CommandExecutor
                                 }
                                 war2.addPlayerSide1(p.getName());
                                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You have joined the war on the side of " + war2.getSide1());
-                                p.setPlayerListName(String.valueOf(Helper.color(new StringBuilder("&c[").append(war2.getSide1()).append("]&r").toString())) + p.getName());
+                                TabPlayer tabPlayer = TabAPI.getInstance().getPlayer(p.getUniqueId());
+                            	TabAPI.getInstance().getTablistFormatManager().setSuffix(tabPlayer, Helper.color(new StringBuilder("&c[").append(war2.getSide1()).append("]&r").toString()));
                                 Main.data.getConfig().set("Wars." + args[1].toLowerCase() + ".side1players", (Object)war2.getSide1Players());
                                 Main.data.saveConfig();
                                 Bukkit.getServer().broadcastMessage(String.valueOf(Helper.Chatlabel()) + p.getName() + " has joined " + war2.getName() + " on the side of " + war2.getSide1() + "!");
+                                Bukkit.getLogger().info("[AlathraWar] Player " + p.getName() + " has entered " + war2.getName() + " on the side of " + war2.getSide1());
+                                Main.warLogger.log(p.getName() + " has entered " + war2.getName() + " on the side of " + war2.getSide1());
                                 found = true;
                             }
                             else {
@@ -143,10 +153,13 @@ public class WarCommands implements CommandExecutor
                                 }
                                 war2.addPlayerSide2(p.getName());
                                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You have joined the war on the side of " + war2.getSide2());
-                                p.setPlayerListName(String.valueOf(Helper.color(new StringBuilder("&9[").append(war2.getSide2()).append("]&r").toString())) + p.getName());
+                                TabPlayer tabPlayer = TabAPI.getInstance().getPlayer(p.getUniqueId());
+                            	TabAPI.getInstance().getTablistFormatManager().setSuffix(tabPlayer, Helper.color(new StringBuilder("&9[").append(war2.getSide2()).append("]&r").toString()));
                                 Main.data.getConfig().set("Wars." + args[1].toLowerCase() + ".side2players", (Object)war2.getSide2Players());
                                 Main.data.saveConfig();
                                 Bukkit.getServer().broadcastMessage(String.valueOf(Helper.Chatlabel()) + p.getName() + " has joined " + war2.getName() + " on the side of " + war2.getSide2() + "!");
+                                Bukkit.getLogger().info("[AlathraWar] Player " + p.getName() + " has entered " + war2.getName() + " on the side of " + war2.getSide2());
+                                Main.warLogger.log(p.getName() + " has entered " + war2.getName() + " on the side of " + war2.getSide2());
                                 found = true;
                             }
                         }
@@ -172,8 +185,10 @@ public class WarCommands implements CommandExecutor
                                 Main.data.getConfig().set("Wars." + args[1] + ".side1players", (Object)war3.getSide1Players());
                                 Main.data.saveConfig();
                                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You have left the war");
-                                p.setPlayerListName(p.getName());
+                                TabPlayer tabPlayer = TabAPI.getInstance().getPlayer(p.getUniqueId());
+                                TabAPI.getInstance().getTablistFormatManager().resetSuffix(tabPlayer);
                                 Bukkit.getServer().broadcastMessage(String.valueOf(Helper.Chatlabel()) + p.getName() + " has left " + war3.getName() + ", they were on the side of " + war3.getSide1());
+                                Main.warLogger.log(p.getName() + " has left " + war3.getName() + ", they were on the side of " + war3.getSide1());
                             }
                             if (!war3.getSide2Players().contains(p.getName())) {
                                 continue;
@@ -183,8 +198,10 @@ public class WarCommands implements CommandExecutor
                             Main.data.getConfig().set("Wars." + args[1] + ".side2players", (Object)war3.getSide2Players());
                             Main.data.saveConfig();
                             p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You have left the war");
-                            p.setPlayerListName(p.getName());
+                            TabPlayer tabPlayer = TabAPI.getInstance().getPlayer(p.getUniqueId());
+                            TabAPI.getInstance().getTablistFormatManager().resetSuffix(tabPlayer);
                             Bukkit.getServer().broadcastMessage(String.valueOf(Helper.Chatlabel()) + p.getName() + " has left " + war3.getName() + ", they were on the side of " + war3.getSide2());
+                            Main.warLogger.log(p.getName() + " has left " + war3.getName() + ", they were on the side of " + war3.getSide2());
                         }
                     }
                     if (!found) {
@@ -231,7 +248,7 @@ public class WarCommands implements CommandExecutor
                 }
             } else if (args[0].equalsIgnoreCase("help")) {
             	
-				if (p.hasPermission("!AlatrhaWar.admin")) {
+				if (p.hasPermission("!AlathraWar.admin")) {
 					p.sendMessage(Helper.Chatlabel() + "/war create [name] [side1] [side2]");
 					p.sendMessage(Helper.Chatlabel() + "/war delete [name]");
 				}

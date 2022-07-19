@@ -11,7 +11,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
-import java.util.Iterator;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import org.bukkit.Bukkit;
@@ -88,7 +87,6 @@ public final class KillsListener implements Listener
             }
         }
         catch (NullPointerException | TownyException ex7) {
-            final Exception ex;
 
         }
     }
