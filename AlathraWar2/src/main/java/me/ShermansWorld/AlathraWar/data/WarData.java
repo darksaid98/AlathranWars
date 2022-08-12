@@ -1,7 +1,3 @@
-// 
-// Decompiled by Procyon v0.5.36
-// 
-
 package me.ShermansWorld.AlathraWar.data;
 
 import java.io.IOException;
