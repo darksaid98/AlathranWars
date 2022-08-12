@@ -30,7 +30,6 @@ public class WarCommands implements CommandExecutor
         final Player p = (Player)sender;
         if (args.length == 0) {
             p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /war help");
-            Bukkit.broadcastMessage(LuckPermsHook.prefixMap.get(p.getName()));
         }
         else if (args.length >= 1) {
             if (args[0].equalsIgnoreCase("create")) {

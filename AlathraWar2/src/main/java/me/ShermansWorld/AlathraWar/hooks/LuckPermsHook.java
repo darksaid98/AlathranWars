@@ -71,6 +71,9 @@ public class LuckPermsHook {
 			User user = um.getUser(playername);
 			for (Group group : user.getInheritedGroups(user.getQueryOptions())) {
 				String groupPrefix = group.getCachedData().getMetaData().getPrefix();
+				if (groupPrefix == null) {
+					groupPrefix = "";
+				}
 				if (groupPrefix.equals(prefix)) {
 					isGroupPrefix = true;
 				}
