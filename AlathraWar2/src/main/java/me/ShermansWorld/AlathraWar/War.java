@@ -1,13 +1,8 @@
-// 
-// Decompiled by Procyon v0.5.36
-// 
-
 package me.ShermansWorld.AlathraWar;
 
 import java.util.ArrayList;
 
-public class War
-{
+public class War {
     private String name;
     private String side1;
     private String side2;
