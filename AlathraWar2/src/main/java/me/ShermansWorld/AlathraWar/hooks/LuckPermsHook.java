@@ -2,7 +2,6 @@ package me.ShermansWorld.AlathraWar.hooks;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -50,6 +49,9 @@ public class LuckPermsHook {
 			User user = um.getUser(playername);
 			for (Group group : user.getInheritedGroups(user.getQueryOptions())) {
 				String groupPrefix = group.getCachedData().getMetaData().getPrefix();
+				if (groupPrefix == null) {
+					groupPrefix = "";
+				}
 				if (groupPrefix.equals(prefix)) {
 					isGroupPrefix = true;
 				}
@@ -60,11 +62,11 @@ public class LuckPermsHook {
 				Main.prefixData.saveConfig();
 			}
 		}
-        if (isWarMerc) {
-        	prefix = prefix + "&a[M]&r&c";
-        } else {
-        	prefix = prefix + "&c";
-        }
+		if (isWarMerc) {
+			prefix = prefix + "&a[M]&r&c";
+		} else {
+			prefix = prefix + "&c";
+		}
 		removePrefixNodes(playername);
 		addPrefix(playername, prefix);
 	}
@@ -89,12 +91,12 @@ public class LuckPermsHook {
 				Main.prefixData.saveConfig();
 			}
 		}
-		
-        if (isWarMerc) {
-        	prefix = prefix + "&a[M]&r&9";
-        } else {
-        	prefix = prefix + "&9";
-        }
+
+		if (isWarMerc) {
+			prefix = prefix + "&a[M]&r&9";
+		} else {
+			prefix = prefix + "&9";
+		}
 		removePrefixNodes(playername);
 		addPrefix(playername, prefix);
 	}
