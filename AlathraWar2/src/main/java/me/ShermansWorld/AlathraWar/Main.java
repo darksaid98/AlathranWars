@@ -48,6 +48,7 @@ public class Main extends JavaPlugin {
 		econ = null;
 	}
 
+	@SuppressWarnings("unchecked")
 	private static void initData() {
 		File userDataFolder = new File("plugins" + File.separator + "AlathraWar" + File.separator + "userdata");
 		if (!userDataFolder.exists()) {

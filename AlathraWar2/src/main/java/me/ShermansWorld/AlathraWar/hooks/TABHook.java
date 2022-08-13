@@ -6,7 +6,6 @@ import org.bukkit.entity.Player;
 
 import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.War;
-import me.ShermansWorld.AlathraWar.roles.Merc;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
 
