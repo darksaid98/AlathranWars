@@ -11,6 +11,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import me.ShermansWorld.AlathraWar.War;
+import me.ShermansWorld.AlathraWar.roles.Merc;
 
 public class WarTabCompletion implements TabCompleter{
 
@@ -55,6 +56,14 @@ public class WarTabCompletion implements TabCompleter{
 					}
 				}
 			}
+		} else if (args.length == 4) {
+			if (args[0].equalsIgnoreCase("join")) {
+				if (Merc.hasMercRole(p)) {
+					completions.add("merc");
+				}
+				return completions;
+			}
+			
 		}
 		
 		return Collections.emptyList();

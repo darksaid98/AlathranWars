@@ -48,7 +48,7 @@ public class RolesData {
         try {
             inputStream = new FileInputStream(userFile);
         } catch (FileNotFoundException e) {
-            Bukkit.getLogger().warning("[AlathraExtras] Encountered error when creating FileInputStream for " + strID);
+            Bukkit.getLogger().warning("[AlathraWar] Encountered error when creating FileInputStream for " + strID);
         }
         Yaml yaml = new Yaml();
         Map<String, Object> data = yaml.load(inputStream);
@@ -65,7 +65,7 @@ public class RolesData {
         try {
             writer = new PrintWriter(userFile);
         } catch (FileNotFoundException e) {
-            Bukkit.getLogger().warning("[AlathraExtras] Encountered error when creating PrintWriter for " + strID);
+            Bukkit.getLogger().warning("[AlathraWar] Encountered error when creating PrintWriter for " + strID);
         }
 
         DumperOptions options = new DumperOptions();
