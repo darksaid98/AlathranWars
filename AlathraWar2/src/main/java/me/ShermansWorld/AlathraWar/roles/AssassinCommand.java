@@ -33,7 +33,7 @@ public class AssassinCommand implements CommandExecutor {
         Map pData = (Map) Main.rolesData.getData(pID);
         //Bukkit.getwarLogger().info(Arrays.asList(pData).toString());
 
-        if(!p.hasPermission("AlathraExtras.UseRoles")) {
+        if(!p.hasPermission("AlathraWar.UseRoles")) {
             p.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
             return false;
         }
@@ -44,7 +44,7 @@ public class AssassinCommand implements CommandExecutor {
                 p.sendMessage(ChatColor.RED + "! " + ChatColor.GREEN + "/assassin accept <player>");
                 p.sendMessage(ChatColor.RED + "! " + ChatColor.GREEN + "/assassin decline <player>");
             }
-            if (p.hasPermission("AlathraExtras.Admin")) {
+            if (p.hasPermission("AlathraWar.Admin")) {
                 p.sendMessage(ChatColor.RED + "! " + ChatColor.GREEN + "/assassin add <player>");
                 p.sendMessage(ChatColor.RED + "! " + ChatColor.GREEN + "/assassin remove <player>");
             }

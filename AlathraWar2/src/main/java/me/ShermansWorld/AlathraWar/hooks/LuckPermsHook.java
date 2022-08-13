@@ -2,6 +2,7 @@ package me.ShermansWorld.AlathraWar.hooks;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -42,7 +43,7 @@ public class LuckPermsHook {
 		}
 	}
 
-	public static void assignSide1WarColor(String playername) {
+	public static void assignSide1WarColor(String playername, boolean isWarMerc) {
 		String prefix = getPrefix(playername);
 		boolean isGroupPrefix = false;
 		if (!prefix.equals("")) {
@@ -59,12 +60,16 @@ public class LuckPermsHook {
 				Main.prefixData.saveConfig();
 			}
 		}
-		prefix = prefix + "&c";
+        if (isWarMerc) {
+        	prefix = prefix + "&a[M]&r&c";
+        } else {
+        	prefix = prefix + "&c";
+        }
 		removePrefixNodes(playername);
 		addPrefix(playername, prefix);
 	}
 
-	public static void assignSide2WarColor(String playername) {
+	public static void assignSide2WarColor(String playername, boolean isWarMerc) {
 		String prefix = getPrefix(playername);
 		boolean isGroupPrefix = false;
 		if (!prefix.equals("")) {
@@ -84,7 +89,12 @@ public class LuckPermsHook {
 				Main.prefixData.saveConfig();
 			}
 		}
-		prefix = prefix + "&9";
+		
+        if (isWarMerc) {
+        	prefix = prefix + "&a[M]&r&9";
+        } else {
+        	prefix = prefix + "&9";
+        }
 		removePrefixNodes(playername);
 		addPrefix(playername, prefix);
 	}

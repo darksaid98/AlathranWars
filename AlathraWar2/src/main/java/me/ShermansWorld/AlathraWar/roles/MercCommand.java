@@ -32,7 +32,7 @@ public class MercCommand implements CommandExecutor {
         Map pData = (Map) Main.rolesData.getData(pID);
         //Bukkit.getLogger().info(Arrays.asList(pData).toString());
 
-        if(!p.hasPermission("AlathraExtras.UseRoles")) {
+        if(!p.hasPermission("AlathraWar.UseRoles")) {
             p.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
             return false;
         }
@@ -43,7 +43,7 @@ public class MercCommand implements CommandExecutor {
                 p.sendMessage(ChatColor.RED + "! " + ChatColor.GREEN + "/mercenary accept <player>");
                 p.sendMessage(ChatColor.RED + "! " + ChatColor.GREEN + "/mercenary decline <player>");
             }
-            if (p.hasPermission("AlathraExtras.Admin")) {
+            if (p.hasPermission("AlathraWar.Admin")) {
                 p.sendMessage(ChatColor.RED + "! " + ChatColor.GREEN + "/mercenary add <player>");
                 p.sendMessage(ChatColor.RED + "! " + ChatColor.GREEN + "/mercenary remove <player>");
             }
