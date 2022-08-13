@@ -99,10 +99,12 @@ public class WarCommands implements CommandExecutor
                             for (String playername : WarCommands.wars.get(j).getSide1Players()) {
                             	TABHook.resetSuffix(playername);
                             	LuckPermsHook.resetPrefix(playername);
+                            	TABHook.resetPrefix(playername);
                             }
                             for (String playername : WarCommands.wars.get(j).getSide2Players()) {
                             	TABHook.resetSuffix(playername);
                             	LuckPermsHook.resetPrefix(playername);
+                            	TABHook.resetPrefix(playername);
                             }
                             WarCommands.wars.remove(j);
                             Main.warData.getConfig().set("Wars." + args[1].toLowerCase(), (Object)null);
