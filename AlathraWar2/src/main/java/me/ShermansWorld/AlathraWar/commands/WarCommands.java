@@ -8,6 +8,7 @@ import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.War;
 import me.ShermansWorld.AlathraWar.hooks.LuckPermsHook;
 import me.ShermansWorld.AlathraWar.hooks.TABHook;
+import me.ShermansWorld.AlathraWar.roles.Merc;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -30,7 +31,6 @@ public class WarCommands implements CommandExecutor
         final Player p = (Player)sender;
         if (args.length == 0) {
             p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /war help");
-            Bukkit.broadcastMessage(LuckPermsHook.prefixMap.get(p.getName()));
         }
         else if (args.length >= 1) {
             if (args[0].equalsIgnoreCase("create")) {
@@ -99,10 +99,12 @@ public class WarCommands implements CommandExecutor
                             for (String playername : WarCommands.wars.get(j).getSide1Players()) {
                             	TABHook.resetSuffix(playername);
                             	LuckPermsHook.resetPrefix(playername);
+                            	TABHook.resetPrefix(playername);
                             }
                             for (String playername : WarCommands.wars.get(j).getSide2Players()) {
                             	TABHook.resetSuffix(playername);
                             	LuckPermsHook.resetPrefix(playername);
+                            	TABHook.resetPrefix(playername);
                             }
                             WarCommands.wars.remove(j);
                             Main.warData.getConfig().set("Wars." + args[1].toLowerCase(), (Object)null);
@@ -132,7 +134,17 @@ public class WarCommands implements CommandExecutor
             }
             else if (args[0].equalsIgnoreCase("join")) {
                 boolean found = false;
-                if (args.length == 3) {
+                boolean isMercJoining = false;
+                if (args.length == 3 || args.length == 4) {
+                	
+                	if (args.length == 4) {
+                		if (!Merc.hasMercRole(p)) {
+                			p.sendMessage(Helper.Chatlabel() + Helper.color("&cYou must have the mercenary role to join a war as a mercenary!"));
+                			return false;
+                		}
+                		isMercJoining = true;
+                	}
+                	
                     for (final War war2 : WarCommands.wars) {
                         if (war2.getName().equalsIgnoreCase(args[1].toLowerCase())) {
                             if (war2.getSide1().equalsIgnoreCase(args[2].toLowerCase())) {
@@ -143,13 +155,23 @@ public class WarCommands implements CommandExecutor
                                 war2.addPlayerSide1(p.getName());
                                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You have joined the war on the side of " + war2.getSide1());
                                 TABHook.assignSide1WarSuffix(p, war2);
-                            	LuckPermsHook.assignSide1WarColor(p.getName());
+                                if (isMercJoining) {
+                                	LuckPermsHook.assignSide1WarColor(p.getName(), true);
+                                } else {
+                                	LuckPermsHook.assignSide1WarColor(p.getName(), false);
+                                }
                             	TABHook.removeColorPrefix(p, LuckPermsHook.getPrefix(p.getName()));
                                 Main.warData.getConfig().set("Wars." + args[1].toLowerCase() + ".side1players", (Object)war2.getSide1Players());
                                 Main.warData.saveConfig();
-                                Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + p.getName() + " has joined " + war2.getName() + " on the side of " + war2.getSide1() + "!");
-                                Bukkit.getLogger().info("[AlathraWar] Player " + p.getName() + " has entered " + war2.getName() + " on the side of " + war2.getSide1());
-                                Main.warLogger.log(p.getName() + " has entered " + war2.getName() + " on the side of " + war2.getSide1());
+                                if (isMercJoining) {
+                                	Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + p.getName() + " has joined " + war2.getName() + " on the side of " + war2.getSide1() + " as a mercenary!");
+                                    Bukkit.getLogger().info("[AlathraWar] Player " + p.getName() + " has entered " + war2.getName() + " on the side of " + war2.getSide1() + " as a mercenary");
+                                    Main.warLogger.log(p.getName() + " has entered " + war2.getName() + " on the side of " + war2.getSide1() + " as a mercenary");
+                                } else {
+                                	Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + p.getName() + " has joined " + war2.getName() + " on the side of " + war2.getSide1() + "!");
+                                    Bukkit.getLogger().info("[AlathraWar] Player " + p.getName() + " has entered " + war2.getName() + " on the side of " + war2.getSide1());
+                                    Main.warLogger.log(p.getName() + " has entered " + war2.getName() + " on the side of " + war2.getSide1());
+                                }
                                 found = true;
                             }
                             else {
@@ -163,23 +185,33 @@ public class WarCommands implements CommandExecutor
                                 war2.addPlayerSide2(p.getName());
                                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You have joined the war on the side of " + war2.getSide2());
                                 TABHook.assignSide2WarSuffix(p, war2);
-                            	LuckPermsHook.assignSide2WarColor(p.getName());
+                                if (isMercJoining) {
+                                	LuckPermsHook.assignSide2WarColor(p.getName(), true);
+                                } else {
+                                	LuckPermsHook.assignSide2WarColor(p.getName(), false);
+                                }
                             	TABHook.removeColorPrefix(p, LuckPermsHook.getPrefix(p.getName()));
                                 Main.warData.getConfig().set("Wars." + args[1].toLowerCase() + ".side2players", (Object)war2.getSide2Players());
                                 Main.warData.saveConfig();
-                                Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + p.getName() + " has joined " + war2.getName() + " on the side of " + war2.getSide2() + "!");
-                                Bukkit.getLogger().info("[AlathraWar] Player " + p.getName() + " has entered " + war2.getName() + " on the side of " + war2.getSide2());
-                                Main.warLogger.log(p.getName() + " has entered " + war2.getName() + " on the side of " + war2.getSide2());
+                                if (isMercJoining) {
+                                	Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + p.getName() + " has joined " + war2.getName() + " on the side of " + war2.getSide2() + " as a mercenary!");
+                                    Bukkit.getLogger().info("[AlathraWar] Player " + p.getName() + " has entered " + war2.getName() + " on the side of " + war2.getSide2() + " as a mercenary");
+                                    Main.warLogger.log(p.getName() + " has entered " + war2.getName() + " on the side of " + war2.getSide2() + " as a mercenary");
+                                } else {
+                                	Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + p.getName() + " has joined " + war2.getName() + " on the side of " + war2.getSide2() + "!");
+                                    Bukkit.getLogger().info("[AlathraWar] Player " + p.getName() + " has entered " + war2.getName() + " on the side of " + war2.getSide2());
+                                    Main.warLogger.log(p.getName() + " has entered " + war2.getName() + " on the side of " + war2.getSide2());
+                                }
                                 found = true;
                             }
                         }
                     }
                     if (!found) {
-                        p.sendMessage(String.valueOf(Helper.Chatlabel()) + "War not found. /war join [name] [side], type /war list to view current wars");
+                        p.sendMessage(String.valueOf(Helper.Chatlabel()) + "War not found. /war join [name] [side] {merc}, type /war list to view current wars");
                     }
-                }
+                } 
                 else {
-                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /war join [name] [side]");
+                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /war join [name] [side] {merc}");
                 }
             }
             else if (args[0].equalsIgnoreCase("leave")) {
@@ -197,6 +229,7 @@ public class WarCommands implements CommandExecutor
                                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You have left the war");
                                 TABHook.resetSuffix(p);
                                 LuckPermsHook.resetPrefix(p.getName());
+                                TABHook.resetPrefix(p);
                                 Bukkit.getServer().broadcastMessage(String.valueOf(Helper.Chatlabel()) + p.getName() + " has left " + war3.getName() + ", they were on the side of " + war3.getSide1());
                                 Main.warLogger.log(p.getName() + " has left " + war3.getName() + ", they were on the side of " + war3.getSide1());
                             }
@@ -208,6 +241,7 @@ public class WarCommands implements CommandExecutor
                                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You have left the war");
                                 TABHook.resetSuffix(p);
                                 LuckPermsHook.resetPrefix(p.getName());
+                                TABHook.resetPrefix(p);
                                 Bukkit.getServer().broadcastMessage(String.valueOf(Helper.Chatlabel()) + p.getName() + " has left " + war3.getName() + ", they were on the side of " + war3.getSide2());
                                 Main.warLogger.log(p.getName() + " has left " + war3.getName() + ", they were on the side of " + war3.getSide2());
                             }
@@ -261,7 +295,7 @@ public class WarCommands implements CommandExecutor
 					p.sendMessage(Helper.Chatlabel() + "/war create [name] [side1] [side2]");
 					p.sendMessage(Helper.Chatlabel() + "/war delete [name]");
 				}
-				p.sendMessage(Helper.Chatlabel() + "/war join [name] [side]");
+				p.sendMessage(Helper.Chatlabel() + "/war join [name] [side] {merc}");
 				p.sendMessage(Helper.Chatlabel() + "/war leave [name]");
 				p.sendMessage(Helper.Chatlabel() + "/war info [player]");
 				p.sendMessage(Helper.Chatlabel() + "/war list");

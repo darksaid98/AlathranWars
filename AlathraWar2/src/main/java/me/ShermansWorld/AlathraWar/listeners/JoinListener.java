@@ -17,6 +17,7 @@ public class JoinListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(final PlayerJoinEvent event) {
 		final Player p = event.getPlayer();
+		Main.rolesData.getData(p.getUniqueId());
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), new Runnable() {
 			@Override
 			public void run() {

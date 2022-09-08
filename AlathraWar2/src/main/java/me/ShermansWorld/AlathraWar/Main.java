@@ -13,6 +13,7 @@ import me.ShermansWorld.AlathraWar.commands.SiegeTabCompletion;
 import me.ShermansWorld.AlathraWar.commands.WarCommands;
 import me.ShermansWorld.AlathraWar.commands.WarTabCompletion;
 import me.ShermansWorld.AlathraWar.data.PrefixData;
+import me.ShermansWorld.AlathraWar.data.RolesData;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.data.WarData;
 import me.ShermansWorld.AlathraWar.hooks.LuckPermsHook;
@@ -20,6 +21,8 @@ import me.ShermansWorld.AlathraWar.hooks.TABHook;
 import me.ShermansWorld.AlathraWar.listeners.BlockBreakListener;
 import me.ShermansWorld.AlathraWar.listeners.JoinListener;
 import me.ShermansWorld.AlathraWar.listeners.KillsListener;
+import me.ShermansWorld.AlathraWar.roles.AssassinCommand;
+import me.ShermansWorld.AlathraWar.roles.MercCommand;
 
 import com.palmergames.bukkit.towny.TownyAPI;
 
@@ -31,9 +34,11 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin {
+	
 	public static WarData warData;
 	public static SiegeData siegeData;
 	public static PrefixData prefixData;
+	public static RolesData rolesData;
 	public static Main instance;
 	public static Economy econ;
 	public static AlathraWarLogger warLogger;
@@ -43,7 +48,13 @@ public class Main extends JavaPlugin {
 		econ = null;
 	}
 
+	@SuppressWarnings("unchecked")
 	private static void initData() {
+		File userDataFolder = new File("plugins" + File.separator + "AlathraWar" + File.separator + "userdata");
+		if (!userDataFolder.exists()) {
+			userDataFolder.mkdirs();
+		}
+		rolesData = new RolesData();
 		try {
 			Set<String> warsSet = (Set<String>) warData.getConfig().getConfigurationSection("Wars").getKeys(false);
 			Iterator<String> it = warsSet.iterator();
@@ -190,6 +201,8 @@ public class Main extends JavaPlugin {
 		prefixData = new PrefixData(this);
 		new WarCommands(this);
 		new SiegeCommands(this);
+		new MercCommand(this);
+		new AssassinCommand(this);
 		getCommand("war").setTabCompleter(new WarTabCompletion());
 		getCommand("siege").setTabCompleter(new SiegeTabCompletion());
 		getServer().getPluginManager().registerEvents((Listener) new KillsListener(), (Plugin) this);
