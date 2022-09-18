@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.ShermansWorld.AlathraWar.Main;
+import me.ShermansWorld.AlathraWar.UUIDFetcher;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,8 +23,9 @@ public class AssassinCommand implements CommandExecutor {
         plugin.getCommand("assassin").setExecutor((CommandExecutor) this);
         plugin.getCommand("assassin").setTabCompleter(new CustomRoleTabCompletion());
     }
-
-    @Override
+    
+    @SuppressWarnings("unchecked")
+	@Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
         Player p = (Player) sender;
@@ -58,12 +60,14 @@ public class AssassinCommand implements CommandExecutor {
             }
 
             // Target Validator
-            Player target = Bukkit.getPlayer(args[1]);
+            Player target = Bukkit.getPlayer(args[1]);   	
             if (!(target instanceof Player)) {
                 p.sendMessage(ChatColor.RED + "Please enter a valid player.");
                 return false;
             }
-
+            UUID targetID = target.getUniqueId();
+            
+            
             // Number Validator
             double val = 0;
             try {
@@ -88,8 +92,8 @@ public class AssassinCommand implements CommandExecutor {
 
 
             //
-            String targetStrID = target.getUniqueId().toString();
-            Map TargetRequests = null;
+            String targetStrID = targetID.toString();
+            Map<String, Object> TargetRequests = null;
 
             Bukkit.getLogger().info(String.valueOf(ActiveAssassinRequests.containsKey(targetStrID)));
             if (ActiveAssassinRequests.containsKey(targetStrID)) {
@@ -103,7 +107,7 @@ public class AssassinCommand implements CommandExecutor {
                 return false;
             }
 
-            Map targetData = (Map) Main.rolesData.getData(target.getUniqueId());
+            Map targetData = (Map) Main.rolesData.getData(targetID);
 
             if (targetData.containsKey(pID.toString())) {
                 p.sendMessage(ChatColor.RED + "You already have an assassin contract with this user.");
@@ -131,7 +135,8 @@ public class AssassinCommand implements CommandExecutor {
                 p.sendMessage(ChatColor.RED + "/assassin accept <player>");
                 return false;
             }
-
+            
+            
             // Checks and defining target
             Player target = Bukkit.getPlayer(args[1]);
             if (!(target instanceof Player)) {
@@ -196,9 +201,19 @@ public class AssassinCommand implements CommandExecutor {
 
             //Checks and defining target
             Player target = Bukkit.getPlayer(args[1]);
-            if (!(target instanceof Player)) {
-                p.sendMessage(ChatColor.RED + "Please enter a valid player.");
-                return false;
+            UUID targetID;
+            String msgName;
+            if(target != null) {
+            	targetID = target.getUniqueId();
+            	msgName = target.getDisplayName();
+            }
+            else {
+            	targetID = UUIDFetcher.getUUID(args[1]);
+            	if(targetID == null) {
+            		p.sendMessage(ChatColor.RED + "Please enter a valid player.");
+            		return false;
+            	}
+            	msgName = args[1];
             }
 
             Map AssassinRequests = (Map) ActiveAssassinRequests.get(pID.toString());
@@ -207,19 +222,25 @@ public class AssassinCommand implements CommandExecutor {
                 return false;
             }
 
-            if(AssassinRequests.isEmpty() || !AssassinRequests.containsKey(target.getUniqueId().toString())) {
+            if(AssassinRequests.isEmpty() || !AssassinRequests.containsKey(targetID.toString())) {
                 p.sendMessage(ChatColor.RED + "This player has not made any requests.");
                 return false;
             }
 
             // Removes from ActiveAssassinRequests list
-            AssassinRequests.remove(target.getUniqueId().toString());
+            AssassinRequests.remove(targetID.toString());
             ActiveAssassinRequests.put(pID.toString(), AssassinRequests);
 
             // Messaging and logging
-            p.sendMessage(ChatColor.GREEN + "You have " + ChatColor.RED + "denied " + target.getDisplayName() + ChatColor.GREEN + "'s request.");
-            target.sendMessage(ChatColor.GREEN + "Your request to " + p.getDisplayName() + ChatColor.GREEN + " has been "+ ChatColor.RED + "denied" + ChatColor.GREEN + ".");
-            Main.warLogger.log("User " + p.getName() + " declined assassin work for " + target.getName());
+            p.sendMessage(ChatColor.GREEN + "You have " + ChatColor.RED + "denied " + msgName + ChatColor.GREEN + "'s request.");
+            if(target != null) {
+            	target.sendMessage(ChatColor.GREEN + "Your request to " + p.getDisplayName() + ChatColor.GREEN + " has been "+ ChatColor.RED + "denied" + ChatColor.GREEN + ".");
+                Main.warLogger.log("User " + p.getName() + " declined assassin work for " + target.getName());
+            }
+            else {
+            	Main.warLogger.log("User " + p.getName() + " declined assassin work for " + msgName);
+            }
+           
             return true;
         }
         else if (args[0].equalsIgnoreCase("add")) {
@@ -230,24 +251,39 @@ public class AssassinCommand implements CommandExecutor {
             }
 
             Player target = Bukkit.getPlayer(args[1]);
-            if (!(target instanceof Player)) {
-                p.sendMessage(ChatColor.RED + "Please enter a valid player.");
-                return false;
+            UUID targetID;
+            String msgName;
+            if(target != null) {
+            	targetID = target.getUniqueId();
+            	msgName = target.getDisplayName();
             }
-
+            else {
+            	targetID = UUIDFetcher.getUUID(args[1]);
+            	if(targetID == null) {
+            		p.sendMessage(ChatColor.RED + "Please enter a valid player.");
+            		return false;
+            	}
+            	msgName = args[1];
+            }
+            
             // Gets data and re-writes
-            Map targetData = (Map) Main.rolesData.getData(target.getUniqueId());
+            Map targetData = (Map) Main.rolesData.getData(targetID);
             Boolean AssassinPerm = (Boolean) targetData.get("AssassinPermission");
             if (AssassinPerm) {
                 p.sendMessage(ChatColor.RED + "This user already has assassin permissions!");
                 return false;
             }
-            Main.rolesData.editData(target.getUniqueId(), "AssassinPermission", true);
+            Main.rolesData.editData(targetID, "AssassinPermission", true);
 
             // Messaging and logging
-            p.sendMessage(ChatColor.GREEN + "User " + target.getDisplayName() + ChatColor.YELLOW + " may " + ChatColor.GREEN + "accept assassin work.");
-            target.sendMessage(ChatColor.GREEN + "You " + ChatColor.YELLOW + " may now " + ChatColor.GREEN + "accept assassin work.");
-            Main.warLogger.log("User " + p.getName() + " gave " + target.getName() + " assassin permissions");
+            p.sendMessage(ChatColor.GREEN + "User " + msgName + ChatColor.YELLOW + " may " + ChatColor.GREEN + "accept assassin work.");
+            if(target != null) {
+            	target.sendMessage(ChatColor.GREEN + "You " + ChatColor.YELLOW + " may now " + ChatColor.GREEN + "accept assassin work.");
+            	Main.warLogger.log("User " + p.getName() + " gave " + target.getName() + " assassin permissions");
+            }
+            else {
+            	Main.warLogger.log("User " + p.getName() + " gave " + msgName + " assassin permissions");
+            }
         }
         else if (args[0].equalsIgnoreCase("remove")) {
             // Valid number of arguments
@@ -256,25 +292,42 @@ public class AssassinCommand implements CommandExecutor {
                 return false;
             }
 
+            
             Player target = Bukkit.getPlayer(args[1]);
-            if (!(target instanceof Player)) {
-                p.sendMessage(ChatColor.RED + "Please enter a valid player.");
-                return false;
+            UUID targetID;
+            String msgName;
+            if(target != null) {
+            	targetID = target.getUniqueId();
+            	msgName = target.getDisplayName();
+            }
+            else {
+            	targetID = UUIDFetcher.getUUID(args[1]);
+            	if(targetID == null) {
+            		p.sendMessage(ChatColor.RED + "Please enter a valid player.");
+            		return false;
+            	}
+            	msgName = args[1];
             }
 
             // Gets data and re-writes
-            Map targetData = (Map) Main.rolesData.getData(target.getUniqueId());
+            Map targetData = (Map) Main.rolesData.getData(targetID);
             Boolean AssassinPerm = (Boolean) targetData.get("AssassinPermission");
             if (!AssassinPerm) {
                 p.sendMessage(ChatColor.RED + "This user has no assassin permissions!");
                 return false;
             }
-            Main.rolesData.editData(target.getUniqueId(), "AssassinPermission", false);
+            Main.rolesData.editData(targetID, "AssassinPermission", false);
 
             // Messaging and logging
-            p.sendMessage(ChatColor.GREEN + "User " + target.getDisplayName() + ChatColor.RED + " may not " + ChatColor.GREEN + "accept assassin work.");
-            target.sendMessage(ChatColor.GREEN + "You " + ChatColor.RED + " may no longer " + ChatColor.GREEN + "accept assassin work.");
-            Main.warLogger.log("User " + p.getName() + " removed " + target.getName() + "'s assassin permissions");
+            p.sendMessage(ChatColor.GREEN + "User " + msgName + ChatColor.RED + " may not " + ChatColor.GREEN + "accept assassin work.");
+            if(target != null) {
+            	target.sendMessage(ChatColor.GREEN + "You " + ChatColor.RED + " may no longer " + ChatColor.GREEN + "accept assassin work.");
+                Main.warLogger.log("User " + p.getName() + " removed " + target.getName() + "'s assassin permissions");
+            }
+            else {
+            	Main.warLogger.log("User " + p.getName() + " removed " + msgName + "'s assassin permissions");
+            }
+            
         }
         else if (args[0].equalsIgnoreCase("complete")) {
             // Valid number of arguments
@@ -284,24 +337,40 @@ public class AssassinCommand implements CommandExecutor {
             }
 
             Player target = Bukkit.getPlayer(args[1]);
-            if (!(target instanceof Player)) {
-                p.sendMessage(ChatColor.RED + "Please enter a valid player.");
-                return false;
+            UUID targetID;
+            String msgName;
+            if(target != null) {
+            	targetID = target.getUniqueId();
+            	msgName = target.getDisplayName();
+            }
+            else {
+            	targetID = UUIDFetcher.getUUID(args[1]);
+            	if(targetID == null) {
+            		p.sendMessage(ChatColor.RED + "Please enter a valid player.");
+            		return false;
+            	}
+            	msgName = args[1];
             }
 
             // Removal of contract from userdata
             Map Contracts = (Map) pData.get("Contracts");
-            if (!Contracts.containsKey(target.getUniqueId().toString())) {
+            if (!Contracts.containsKey(targetID.toString())) {
                 p.sendMessage(ChatColor.RED + "You have no assassin contract with this user!");
                 return false;
             }
-            Contracts.remove(target.getUniqueId().toString());
+            Contracts.remove(targetID.toString());
             Main.rolesData.editData(pID, "Contracts", Contracts);
 
             // Messaging and logging
-            p.sendMessage(ChatColor.GREEN + "You have " + ChatColor.GOLD + "completed " + target.getDisplayName() + ChatColor.GREEN + "'s assassin contract.");
-            target.sendMessage(ChatColor.GREEN + "Your assassin contract with " + p.getDisplayName() + ChatColor.GREEN + " has been "+ ChatColor.GOLD + "completed" + ChatColor.GREEN + ".");
-            Main.warLogger.log("User " + p.getName() + " completed " + target.getName() + "'s assassin contract.");
+            p.sendMessage(ChatColor.GREEN + "You have " + ChatColor.GOLD + "completed " + msgName + ChatColor.GREEN + "'s assassin contract.");
+            if(target != null) {
+            	target.sendMessage(ChatColor.GREEN + "Your assassin contract with " + p.getDisplayName() + ChatColor.GREEN + " has been "+ ChatColor.GOLD + "completed" + ChatColor.GREEN + ".");
+                Main.warLogger.log("User " + p.getName() + " completed " + target.getName() + "'s assassin contract.");
+            }
+            else {
+            	Main.warLogger.log("User " + p.getName() + " completed " + msgName + "'s assassin contract.");
+            }
+            
         }
         else {
             p.sendMessage(ChatColor.RED + "Unknown sub-command. Do " + ChatColor.YELLOW + "/assassin help" + ChatColor.RED + " for more info.");

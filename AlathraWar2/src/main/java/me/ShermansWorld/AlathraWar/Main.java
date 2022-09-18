@@ -22,6 +22,7 @@ import me.ShermansWorld.AlathraWar.listeners.BlockBreakListener;
 import me.ShermansWorld.AlathraWar.listeners.JoinListener;
 import me.ShermansWorld.AlathraWar.listeners.KillsListener;
 import me.ShermansWorld.AlathraWar.roles.AssassinCommand;
+import me.ShermansWorld.AlathraWar.roles.ContractCommand;
 import me.ShermansWorld.AlathraWar.roles.MercCommand;
 
 import com.palmergames.bukkit.towny.TownyAPI;
@@ -203,6 +204,7 @@ public class Main extends JavaPlugin {
 		new SiegeCommands(this);
 		new MercCommand(this);
 		new AssassinCommand(this);
+		new ContractCommand(this);
 		getCommand("war").setTabCompleter(new WarTabCompletion());
 		getCommand("siege").setTabCompleter(new SiegeTabCompletion());
 		getServer().getPluginManager().registerEvents((Listener) new KillsListener(), (Plugin) this);

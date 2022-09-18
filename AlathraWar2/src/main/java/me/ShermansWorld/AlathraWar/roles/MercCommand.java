@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import me.ShermansWorld.AlathraWar.Main;
+import me.ShermansWorld.AlathraWar.UUIDFetcher;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -194,30 +195,45 @@ public class MercCommand implements CommandExecutor {
 
             //Checks and defining target
             Player target = Bukkit.getPlayer(args[1]);
-            if (!(target instanceof Player)) {
-                p.sendMessage(ChatColor.RED + "Please enter a valid player.");
-                return false;
+            UUID targetID;
+            String msgName;
+            if(target != null) {
+            	targetID = target.getUniqueId();
+            	msgName = target.getDisplayName();
             }
-
+            else {
+            	targetID = UUIDFetcher.getUUID(args[1]);
+            	if(targetID == null) {
+            		p.sendMessage(ChatColor.RED + "Please enter a valid player.");
+            		return false;
+            	}
+            	msgName = args[1];
+            }
+            
             Map MercRequests = (Map) ActiveMercRequests.get(pID.toString());
             if (MercRequests == null) {
                 p.sendMessage(ChatColor.RED + "You do not have any pending contracts.");
                 return false;
             }
 
-            if(MercRequests.isEmpty() || !MercRequests.containsKey(target.getUniqueId().toString())) {
+            if(MercRequests.isEmpty() || !MercRequests.containsKey(targetID.toString())) {
                 p.sendMessage(ChatColor.RED + "This player has not made any requests.");
                 return false;
             }
 
             // Removes from ActiveMercRequests list
-            MercRequests.remove(target.getUniqueId().toString());
+            MercRequests.remove(targetID.toString());
             ActiveMercRequests.put(pID.toString(), MercRequests);
 
             // Messaging and logging
-            p.sendMessage(ChatColor.GREEN + "You have " + ChatColor.RED + "denied " + target.getDisplayName() + ChatColor.GREEN + "'s request.");
-            target.sendMessage(ChatColor.GREEN + "Your request to " + p.getDisplayName() + ChatColor.GREEN + " has been "+ ChatColor.RED + "denied" + ChatColor.GREEN + ".");
-            Main.warLogger.log("User " + p.getName() + " declined mercenary work for " + target.getName());
+            p.sendMessage(ChatColor.GREEN + "You have " + ChatColor.RED + "denied " + msgName + ChatColor.GREEN + "'s request.");
+            if(target != null) {
+            	target.sendMessage(ChatColor.GREEN + "Your request to " + p.getDisplayName() + ChatColor.GREEN + " has been "+ ChatColor.RED + "denied" + ChatColor.GREEN + ".");
+                Main.warLogger.log("User " + p.getName() + " declined mercenary work for " + target.getName());
+            }
+            else {
+            	Main.warLogger.log("User " + p.getName() + " declined mercenary work for " + msgName);
+            }
             return true;
         }
         else if (args[0].equalsIgnoreCase("add")) {
@@ -228,24 +244,39 @@ public class MercCommand implements CommandExecutor {
             }
 
             Player target = Bukkit.getPlayer(args[1]);
-            if (!(target instanceof Player)) {
-                p.sendMessage(ChatColor.RED + "Please enter a valid player.");
-                return false;
+            UUID targetID;
+            String msgName;
+            if(target != null) {
+            	targetID = target.getUniqueId();
+            	msgName = target.getDisplayName();
+            }
+            else {
+            	targetID = UUIDFetcher.getUUID(args[1]);
+            	if(targetID == null) {
+            		p.sendMessage(ChatColor.RED + "Please enter a valid player.");
+            		return false;
+            	}
+            	msgName = args[1];
             }
 
             // Gets data and re-writes
-            Map targetData = (Map) Main.rolesData.getData(target.getUniqueId());
+            Map targetData = (Map) Main.rolesData.getData(targetID);
             Boolean MercPerm = (Boolean) targetData.get("MercPermission");
             if (MercPerm) {
              p.sendMessage(ChatColor.RED + "This user already has mercenary permissions!");
              return false;
             }
-            Main.rolesData.editData(target.getUniqueId(), "MercPermission", true);
+            Main.rolesData.editData(targetID, "MercPermission", true);
 
             // Messaging and logging
-            p.sendMessage(ChatColor.GREEN + "User " + target.getDisplayName() + ChatColor.YELLOW + " may " + ChatColor.GREEN + "accept mercenary work.");
-            target.sendMessage(ChatColor.GREEN + "You " + ChatColor.YELLOW + " may now " + ChatColor.GREEN + "accept mercenary work.");
-            Main.warLogger.log("User " + p.getName() + " gave " + target.getName() + " mercenary permissions");
+            p.sendMessage(ChatColor.GREEN + "User " + msgName + ChatColor.YELLOW + " may " + ChatColor.GREEN + "accept mercenary work.");
+            if(target != null) {
+            	target.sendMessage(ChatColor.GREEN + "You " + ChatColor.YELLOW + " may now " + ChatColor.GREEN + "accept mercenary work.");
+                Main.warLogger.log("User " + p.getName() + " gave " + target.getName() + " mercenary permissions");
+            }
+            else {
+            	Main.warLogger.log("User " + p.getName() + " gave " + msgName + " mercenary permissions");
+            }
         }
         else if (args[0].equalsIgnoreCase("remove")) {
             // Valid number of arguments
@@ -255,24 +286,40 @@ public class MercCommand implements CommandExecutor {
             }
 
             Player target = Bukkit.getPlayer(args[1]);
-            if (!(target instanceof Player)) {
-                p.sendMessage(ChatColor.RED + "Please enter a valid player.");
-                return false;
+            UUID targetID;
+            String msgName;
+            if(target != null) {
+            	targetID = target.getUniqueId();
+            	msgName = target.getDisplayName();
+            }
+            else {
+            	targetID = UUIDFetcher.getUUID(args[1]);
+            	if(targetID == null) {
+            		p.sendMessage(ChatColor.RED + "Please enter a valid player.");
+            		return false;
+            	}
+            	msgName = args[1];
             }
 
             // Gets data and re-writes
-            Map targetData = (Map) Main.rolesData.getData(target.getUniqueId());
+            Map targetData = (Map) Main.rolesData.getData(targetID);
             Boolean MercPerm = (Boolean) targetData.get("MercPermission");
             if (!MercPerm) {
                 p.sendMessage(ChatColor.RED + "This user has no mercenary permissions!");
                 return false;
             }
-            Main.rolesData.editData(target.getUniqueId(), "MercPermission", false);
+            Main.rolesData.editData(targetID, "MercPermission", false);
 
             // Messaging and logging
-            p.sendMessage(ChatColor.GREEN + "User " + target.getDisplayName() + ChatColor.RED + " may not " + ChatColor.GREEN + "accept mercenary work.");
-            target.sendMessage(ChatColor.GREEN + "You " + ChatColor.RED + " may no longer " + ChatColor.GREEN + "accept mercenary work.");
-            Main.warLogger.log("User " + p.getName() + " removed " + target.getName() + "'s mercenary permissions");
+            p.sendMessage(ChatColor.GREEN + "User " + msgName + ChatColor.RED + " may not " + ChatColor.GREEN + "accept mercenary work.");
+            if(target != null) {
+            	target.sendMessage(ChatColor.GREEN + "You " + ChatColor.RED + " may no longer " + ChatColor.GREEN + "accept mercenary work.");
+                Main.warLogger.log("User " + p.getName() + " removed " + target.getName() + "'s mercenary permissions");
+            }
+            else {
+            	Main.warLogger.log("User " + p.getName() + " removed " + msgName + "'s mercenary permissions");
+            }
+            return true;
         }
         else if (args[0].equalsIgnoreCase("complete")) {
             // Valid number of arguments
@@ -282,24 +329,39 @@ public class MercCommand implements CommandExecutor {
             }
 
             Player target = Bukkit.getPlayer(args[1]);
-            if (!(target instanceof Player)) {
-                p.sendMessage(ChatColor.RED + "Please enter a valid player.");
-                return false;
+            UUID targetID;
+            String msgName;
+            if(target != null) {
+            	targetID = target.getUniqueId();
+            	msgName = target.getDisplayName();
+            }
+            else {
+            	targetID = UUIDFetcher.getUUID(args[1]);
+            	if(targetID == null) {
+            		p.sendMessage(ChatColor.RED + "Please enter a valid player.");
+            		return false;
+            	}
+            	msgName = args[1];
             }
 
             // Removal of contract from userdata
             Map Contracts = (Map) pData.get("Contracts");
-            if (!Contracts.containsKey(target.getUniqueId().toString())) {
+            if (!Contracts.containsKey(targetID.toString())) {
                 p.sendMessage(ChatColor.RED + "You have no contract with this user!");
                 return false;
             }
-            Contracts.remove(target.getUniqueId().toString());
+            Contracts.remove(targetID.toString());
             Main.rolesData.editData(pID, "Contracts", Contracts);
 
             // Messaging and logging
-            p.sendMessage(ChatColor.GREEN + "You have " + ChatColor.GOLD + "completed " + target.getDisplayName() + ChatColor.GREEN + "'s mercenary contract.");
-            target.sendMessage(ChatColor.GREEN + "Your contract with " + p.getDisplayName() + ChatColor.GREEN + " has been "+ ChatColor.GOLD + "completed" + ChatColor.GREEN + ".");
-            Main.warLogger.log("User " + p.getName() + " completed " + target.getName() + "'s mercenary contract.");
+            p.sendMessage(ChatColor.GREEN + "You have " + ChatColor.GOLD + "completed " + msgName + ChatColor.GREEN + "'s mercenary contract.");
+            if(target != null) {
+            	target.sendMessage(ChatColor.GREEN + "Your contract with " + p.getDisplayName() + ChatColor.GREEN + " has been "+ ChatColor.GOLD + "completed" + ChatColor.GREEN + ".");
+                Main.warLogger.log("User " + p.getName() + " completed " + target.getName() + "'s mercenary contract.");
+            }
+            else {
+            	Main.warLogger.log("User " + p.getName() + " completed " + msgName + "'s mercenary contract.");
+            }
         }
         else {
             p.sendMessage(ChatColor.RED + "Unknown sub-command. Do " + ChatColor.YELLOW + "/mercenary help" + ChatColor.RED + " for more info.");
