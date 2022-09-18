@@ -226,7 +226,7 @@ public class MercCommand implements CommandExecutor {
             ActiveMercRequests.put(pID.toString(), MercRequests);
 
             // Messaging and logging
-            p.sendMessage(ChatColor.GREEN + "You have " + ChatColor.RED + "denied " + msgName + ChatColor.GREEN + "'s request.");
+            p.sendMessage(ChatColor.GREEN + "You have " + ChatColor.RED + "denied " + ChatColor.WHITE + msgName + ChatColor.GREEN + "'s request.");
             if(target != null) {
             	target.sendMessage(ChatColor.GREEN + "Your request to " + p.getDisplayName() + ChatColor.GREEN + " has been "+ ChatColor.RED + "denied" + ChatColor.GREEN + ".");
                 Main.warLogger.log("User " + p.getName() + " declined mercenary work for " + target.getName());
@@ -269,7 +269,7 @@ public class MercCommand implements CommandExecutor {
             Main.rolesData.editData(targetID, "MercPermission", true);
 
             // Messaging and logging
-            p.sendMessage(ChatColor.GREEN + "User " + msgName + ChatColor.YELLOW + " may " + ChatColor.GREEN + "accept mercenary work.");
+            p.sendMessage(ChatColor.GREEN + "User " + ChatColor.WHITE + msgName + ChatColor.YELLOW + " may " + ChatColor.GREEN + "accept mercenary work.");
             if(target != null) {
             	target.sendMessage(ChatColor.GREEN + "You " + ChatColor.YELLOW + " may now " + ChatColor.GREEN + "accept mercenary work.");
                 Main.warLogger.log("User " + p.getName() + " gave " + target.getName() + " mercenary permissions");
@@ -311,7 +311,7 @@ public class MercCommand implements CommandExecutor {
             Main.rolesData.editData(targetID, "MercPermission", false);
 
             // Messaging and logging
-            p.sendMessage(ChatColor.GREEN + "User " + msgName + ChatColor.RED + " may not " + ChatColor.GREEN + "accept mercenary work.");
+            p.sendMessage(ChatColor.GREEN + "User " + ChatColor.WHITE + msgName + ChatColor.RED + " may not " + ChatColor.GREEN + "accept mercenary work.");
             if(target != null) {
             	target.sendMessage(ChatColor.GREEN + "You " + ChatColor.RED + " may no longer " + ChatColor.GREEN + "accept mercenary work.");
                 Main.warLogger.log("User " + p.getName() + " removed " + target.getName() + "'s mercenary permissions");
@@ -354,7 +354,7 @@ public class MercCommand implements CommandExecutor {
             Main.rolesData.editData(pID, "Contracts", Contracts);
 
             // Messaging and logging
-            p.sendMessage(ChatColor.GREEN + "You have " + ChatColor.GOLD + "completed " + msgName + ChatColor.GREEN + "'s mercenary contract.");
+            p.sendMessage(ChatColor.GREEN + "You have " + ChatColor.GOLD + "completed " + ChatColor.WHITE + msgName + ChatColor.GREEN + "'s mercenary contract.");
             if(target != null) {
             	target.sendMessage(ChatColor.GREEN + "Your contract with " + p.getDisplayName() + ChatColor.GREEN + " has been "+ ChatColor.GOLD + "completed" + ChatColor.GREEN + ".");
                 Main.warLogger.log("User " + p.getName() + " completed " + target.getName() + "'s mercenary contract.");
