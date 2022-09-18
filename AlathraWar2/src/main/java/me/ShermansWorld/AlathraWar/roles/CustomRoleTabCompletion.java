@@ -101,6 +101,19 @@ public class CustomRoleTabCompletion implements TabCompleter {
                 return null;
             }
         }
+        else if (cmdName.equalsIgnoreCase("contract")) {
+        	if(args.length == 1) {
+        		completions.add("list");
+        		return completions;
+        	}
+        	else if(args.length == 2) {
+        		if(player.hasPermission("AlathraExtras.Admin")) {
+        			return null;
+        		} else {
+        			return completions;
+        		}
+        	}
+        }
         return null;
     }
 }
