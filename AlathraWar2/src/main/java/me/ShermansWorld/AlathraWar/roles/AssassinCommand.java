@@ -113,7 +113,7 @@ public class AssassinCommand implements CommandExecutor {
                 p.sendMessage(ChatColor.RED + "You already have an assassin contract with this user.");
                 return false;
             }
-            if (!(Boolean) targetData.get("MercPermission")) {
+            if (!(Boolean) targetData.get("AssassinPermission")) {
                 p.sendMessage(ChatColor.RED + "This user is not an assassin.");
                 return false;
             }
@@ -126,7 +126,7 @@ public class AssassinCommand implements CommandExecutor {
 
             // Messaging and logging
             p.sendMessage(ChatColor.GREEN + "You have requested an assassin contract with " + target.getDisplayName() + " for " + ChatColor.YELLOW + Main.econ.format(val) + ".");
-            target.sendMessage(target.getDisplayName() + ChatColor.GREEN + " has requested an assassin contract worth " + ChatColor.YELLOW + Main.econ.format(val) + ".");
+            target.sendMessage(p.getDisplayName() + ChatColor.GREEN + " has requested an assassin contract worth " + ChatColor.YELLOW + Main.econ.format(val) + ".");
             Main.warLogger.log("User " + p.getName() + " requested assassin work from " + p.getName() + ", value " + val);
         }
         else if (args[0].equalsIgnoreCase("accept")) {

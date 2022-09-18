@@ -122,7 +122,7 @@ public class MercCommand implements CommandExecutor {
 
             // Messaging and logging
             p.sendMessage(ChatColor.GREEN + "You have requested a contract with " + target.getDisplayName() + " for " + ChatColor.YELLOW + Main.econ.format(val) + ".");
-            target.sendMessage(target.getDisplayName() + ChatColor.GREEN + " has requested a contract worth " + ChatColor.YELLOW + Main.econ.format(val) + ".");
+            target.sendMessage(p.getDisplayName() + ChatColor.GREEN + " has requested a contract worth " + ChatColor.YELLOW + Main.econ.format(val) + ".");
             Main.warLogger.log("User " + p.getName() + " requested mercenary work from " + p.getName() + ", value " + val);
         }
         else if (args[0].equalsIgnoreCase("accept")) {
