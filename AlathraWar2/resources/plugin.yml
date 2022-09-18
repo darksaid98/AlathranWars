@@ -23,3 +23,8 @@ commands:
     aliases:
       - ass
       - assin
+  contract:
+    description: Framework for handling contracts
+    softdepend: [Vault, Towny]
+    aliases:
+      - contracts
