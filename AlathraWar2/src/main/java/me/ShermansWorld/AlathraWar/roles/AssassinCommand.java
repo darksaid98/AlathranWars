@@ -176,7 +176,7 @@ public class AssassinCommand implements CommandExecutor {
 
             Main.rolesData.editData(pID, "Contracts", Contracts);
 
-            // Removes from ActiveMercRequests list
+            // Removes from ActiveAssassinRequests list
             AssassinRequests.remove(target.getUniqueId().toString());
             ActiveAssassinRequests.put(pID.toString(), AssassinRequests);
 
