@@ -13,7 +13,7 @@ import me.ShermansWorld.AlathraWar.UUIDFetcher;
 import java.util.Map;
 import java.util.UUID;
 
-
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class ContractCommand implements CommandExecutor {
 
 	public ContractCommand(final Main plugin) {

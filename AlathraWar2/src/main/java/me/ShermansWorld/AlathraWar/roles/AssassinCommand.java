@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class AssassinCommand implements CommandExecutor {
 
     public static Map<String, Object> ActiveAssassinRequests = new HashMap<String, Object>();
@@ -24,7 +25,7 @@ public class AssassinCommand implements CommandExecutor {
         plugin.getCommand("assassin").setTabCompleter(new CustomRoleTabCompletion());
     }
     
-    @SuppressWarnings("unchecked")
+    
 	@Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
