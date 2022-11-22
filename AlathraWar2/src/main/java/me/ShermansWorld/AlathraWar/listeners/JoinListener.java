@@ -24,13 +24,17 @@ public class JoinListener implements Listener {
 				boolean inWar = false;
 				boolean colorRemoved = false;
 				for (final War war : WarCommands.wars) {
-					if (war.getSide1Players().contains(p.getName())) {
+				    if (war.getSide1Players() == null) {
+				        Main.warLogger.log("ERROR: Unable to retrieve side 1 of war " + war.getName());
+				    } else if (war.getSide1Players().contains(p.getName())) {
 						TABHook.assignSide1WarSuffix(p, war);
 						if (!colorRemoved) {
 							TABHook.removeColorPrefix(p, LuckPermsHook.getPrefix(p.getName()));
 							colorRemoved = true;
 						}
 						inWar = true;
+					} else if (war.getSide2Players() == null) {
+					    Main.warLogger.log("ERROR: Unable to retrieve side 2 of war " + war.getName());
 					} else if (war.getSide2Players().contains(p.getName())) {
 						TABHook.assignSide2WarSuffix(p, war);
 						if (!colorRemoved) {
