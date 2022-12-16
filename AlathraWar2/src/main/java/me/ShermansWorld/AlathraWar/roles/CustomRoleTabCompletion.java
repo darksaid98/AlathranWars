@@ -30,7 +30,7 @@ public class CustomRoleTabCompletion implements TabCompleter {
                     completions.add("decline");
                     completions.add("complete");
                 }
-                if (player.hasPermission("AlathraExtras.Admin")) {
+                if (player.hasPermission("AlathraWar.Admin")) {
                     completions.add("add");
                     completions.add("remove");
                 }
@@ -108,7 +108,7 @@ public class CustomRoleTabCompletion implements TabCompleter {
         		return completions;
         	}
         	else if(args.length == 2) {
-        		if(player.hasPermission("AlathraExtras.Admin")) {
+        		if(player.hasPermission("AlathraWar.Admin")) {
         			return null;
         		} else {
         			return completions;
