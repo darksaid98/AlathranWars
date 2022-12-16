@@ -236,7 +236,7 @@ public class MercCommand implements CommandExecutor {
             }
             return true;
         }
-        else if (args[0].equalsIgnoreCase("add")) {
+        else if (args[0].equalsIgnoreCase("add") && p.hasPermission("AlathraExtras.Admin")) {
             // Valid number of arguments
             if (args.length < 2) {
                 p.sendMessage(ChatColor.RED + "/mercenary add <player>");
@@ -278,7 +278,7 @@ public class MercCommand implements CommandExecutor {
             	Main.warLogger.log("User " + p.getName() + " gave " + msgName + " mercenary permissions");
             }
         }
-        else if (args[0].equalsIgnoreCase("remove")) {
+        else if (args[0].equalsIgnoreCase("remove") && p.hasPermission("AlathraExtras.Admin")) {
             // Valid number of arguments
             if (args.length < 2) {
                 p.sendMessage(ChatColor.RED + "/mercenary remove <player>");
