@@ -69,7 +69,15 @@ public class TABHook {
 
 	public static void removeColorPrefix(Player p, String prefix) {
 		TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
-		prefix = prefix.substring(0, prefix.length() - 2);
+		if(prefix.length() > 2) {
+			prefix = prefix.substring(0, prefix.length() - 2);
+		}
+		else{
+			Bukkit.getLogger().info("There is an error when removing a color prefix, prefix not long enough:");
+			Bukkit.getLogger().info("Player: " + p.getDisplayName());
+			Bukkit.getLogger().info("Prefix: " + prefix);
+			Bukkit.getLogger().info("------");
+		}
 		tabAPI.getTablistFormatManager().setPrefix(tabPlayer, Helper.color(prefix));
 	}
 

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings({ "rawtypes" })
 public class CustomRoleTabCompletion implements TabCompleter {
 
     @Override
@@ -69,7 +70,7 @@ public class CustomRoleTabCompletion implements TabCompleter {
                     completions.add("decline");
                     completions.add("complete");
                 }
-                if (player.hasPermission("AlathraExtras.Admin")) {
+                if (player.hasPermission("AlathraWar.Admin")) {
                     completions.add("add");
                     completions.add("remove");
                 }

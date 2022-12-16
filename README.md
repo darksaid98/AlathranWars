@@ -1,4 +1,4 @@
-# AlathraWar Version: 1.2.1
+# AlathraWar Version: 1.2.2
 ## A unique Towny war system for the AlathraMC server
 
 ### Dependencies: Vault, Towny, SiegeWar, TAB, LuckPerms

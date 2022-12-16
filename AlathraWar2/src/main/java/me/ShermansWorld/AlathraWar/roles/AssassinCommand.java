@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class AssassinCommand implements CommandExecutor {
 
     public static Map<String, Object> ActiveAssassinRequests = new HashMap<String, Object>();
@@ -24,7 +25,7 @@ public class AssassinCommand implements CommandExecutor {
         plugin.getCommand("assassin").setTabCompleter(new CustomRoleTabCompletion());
     }
     
-    @SuppressWarnings("unchecked")
+    
 	@Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
@@ -176,7 +177,7 @@ public class AssassinCommand implements CommandExecutor {
 
             Main.rolesData.editData(pID, "Contracts", Contracts);
 
-            // Removes from ActiveMercRequests list
+            // Removes from ActiveAssassinRequests list
             AssassinRequests.remove(target.getUniqueId().toString());
             ActiveAssassinRequests.put(pID.toString(), AssassinRequests);
 
@@ -243,7 +244,7 @@ public class AssassinCommand implements CommandExecutor {
            
             return true;
         }
-        else if (args[0].equalsIgnoreCase("add")) {
+        else if (args[0].equalsIgnoreCase("add") && p.hasPermission("AlathraExtras.Admin")) {
             // Valid number of arguments
             if (args.length < 2) {
                 p.sendMessage(ChatColor.RED + "/assassin add <player>");
@@ -285,7 +286,7 @@ public class AssassinCommand implements CommandExecutor {
             	Main.warLogger.log("User " + p.getName() + " gave " + msgName + " assassin permissions");
             }
         }
-        else if (args[0].equalsIgnoreCase("remove")) {
+        else if (args[0].equalsIgnoreCase("remove") && p.hasPermission("AlathraExtras.Admin")) {
             // Valid number of arguments
             if (args.length < 2) {
                 p.sendMessage(ChatColor.RED + "/assassin remove <player>");
