@@ -12,11 +12,9 @@ import me.ShermansWorld.AlathraWar.commands.SiegeCommands;
 import me.ShermansWorld.AlathraWar.commands.SiegeTabCompletion;
 import me.ShermansWorld.AlathraWar.commands.WarCommands;
 import me.ShermansWorld.AlathraWar.commands.WarTabCompletion;
-import me.ShermansWorld.AlathraWar.data.PrefixData;
 import me.ShermansWorld.AlathraWar.data.RolesData;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.data.WarData;
-import me.ShermansWorld.AlathraWar.hooks.LuckPermsHook;
 import me.ShermansWorld.AlathraWar.hooks.TABHook;
 import me.ShermansWorld.AlathraWar.listeners.BlockBreakListener;
 import me.ShermansWorld.AlathraWar.listeners.JoinListener;
@@ -38,7 +36,6 @@ public class Main extends JavaPlugin {
 	
 	public static WarData warData;
 	public static SiegeData siegeData;
-	public static PrefixData prefixData;
 	public static RolesData rolesData;
 	public static Main instance;
 	public static Economy econ;
@@ -61,7 +58,7 @@ public class Main extends JavaPlugin {
 			Iterator<String> it = warsSet.iterator();
 			ArrayList<String> warsTempList = new ArrayList<String>();
 			while (it.hasNext()) {
-				warsTempList.add(it.next().toLowerCase());
+				warsTempList.add(it.next());
 			}
 			for (int i = 0; i < warsTempList.size(); ++i) {
 				final War war = new War(warsTempList.get(i).toLowerCase(),
@@ -69,31 +66,21 @@ public class Main extends JavaPlugin {
 						warData.getConfig().getString("Wars." + warsTempList.get(i) + ".side2"));
 				ArrayList<String> side1Players = new ArrayList<String>();
 				ArrayList<String> side2Players = new ArrayList<String>();
+				ArrayList<String> side1Mercs = new ArrayList<String>();
+				ArrayList<String> side2Mercs = new ArrayList<String>();
 				side1Players = (ArrayList<String>) warData.getConfig()
 						.getList("Wars." + war.getName() + ".side1players");
 				side2Players = (ArrayList<String>) warData.getConfig()
 						.getList("Wars." + war.getName() + ".side2players");
+				side1Mercs = (ArrayList<String>) warData.getConfig()
+						.getList("Wars." + war.getName() + ".side1mercs");
+				side2Mercs = (ArrayList<String>) warData.getConfig()
+						.getList("Wars." + war.getName() + ".side2mercs");
 				war.setSide1Players(side1Players);
 				war.setSide2Players(side2Players);
+				war.setSide1Mercs(side1Mercs);
+				war.setSide2Mercs(side2Mercs);
 				WarCommands.wars.add(war);
-				for (final String playerName : war.getSide1Players()) {
-					try {
-						Bukkit.getServer().getPlayer(playerName)
-								.setPlayerListName(String.valueOf(Helper.color(
-										new StringBuilder("&c[").append(war.getSide1()).append("]&r").toString()))
-										+ playerName);
-					} catch (NullPointerException ex) {
-					}
-				}
-				for (final String playerName : war.getSide2Players()) {
-					try {
-						Bukkit.getServer().getPlayer(playerName)
-								.setPlayerListName(String.valueOf(Helper.color(
-										new StringBuilder("&9[").append(war.getSide2()).append("]&r").toString()))
-										+ playerName);
-					} catch (NullPointerException ex2) {
-					}
-				}
 			}
 		} catch (NullPointerException e) {
 			Bukkit.getLogger().info("NULL when initializing wars");
@@ -137,21 +124,6 @@ public class Main extends JavaPlugin {
 		} catch (NullPointerException e) {
 			Bukkit.getLogger().info("NULL when initializing sieges");
 		}
-		try {
-			Set<String> prefixSet = (Set<String>) prefixData.getConfig().getConfigurationSection("Prefixes")
-					.getKeys(false);
-			Iterator<String> it3 = prefixSet.iterator();
-			ArrayList<String> prefixesTempList = new ArrayList<String>();
-			while (it3.hasNext()) {
-				prefixesTempList.add(it3.next());
-			}
-			for (int i = 0; i < prefixesTempList.size(); ++i) {
-				LuckPermsHook.prefixMap.put(prefixesTempList.get(i),
-						prefixData.getConfig().getString("Prefixes." + prefixesTempList.get(i)));
-			}
-		} catch (NullPointerException e) {
-			Bukkit.getLogger().info("NULL when initializing prefixes");
-		}
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -191,7 +163,6 @@ public class Main extends JavaPlugin {
 	}
 
 	private static void initAPIs() {
-		LuckPermsHook.init();
 		TABHook.init();
 	}
 
@@ -199,7 +170,6 @@ public class Main extends JavaPlugin {
 		instance = this;
 		warData = new WarData(this);
 		siegeData = new SiegeData(this);
-		prefixData = new PrefixData(this);
 		new WarCommands(this);
 		new SiegeCommands(this);
 		new MercCommand(this);

@@ -22,13 +22,25 @@ public class TABHook {
 	public static void assignSide1WarSuffix(Player p, War war) {
 		TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
 		tabAPI.getTablistFormatManager().setSuffix(tabPlayer,
-				Helper.color(new StringBuilder("&c[").append(war.getSide1()).append("]&r").toString()));
+				Helper.color("&c[") + war.getSide1() + "]&r");
 	}
 
 	public static void assignSide2WarSuffix(Player p, War war) {
 		TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
 		tabAPI.getTablistFormatManager().setSuffix(tabPlayer,
-				Helper.color(new StringBuilder("&9[").append(war.getSide2()).append("]&r").toString()));
+				Helper.color("&9[") + war.getSide2() + "]&r");
+	}
+	
+	public static void assignSide1WarSuffixMerc(Player p, War war) {
+		TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
+		tabAPI.getTablistFormatManager().setSuffix(tabPlayer,
+				Helper.color("&a[M]&c[") + war.getSide1() + "]&r");
+	}
+	
+	public static void assignSide2WarSuffixMerc(Player p, War war) {
+		TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
+		tabAPI.getTablistFormatManager().setSuffix(tabPlayer,
+				Helper.color("&a[M]&9[") + war.getSide2() + "]&r");
 	}
 
 	public static void resetSuffix(Player p) {
