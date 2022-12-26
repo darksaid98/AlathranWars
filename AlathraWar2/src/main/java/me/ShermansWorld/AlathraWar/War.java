@@ -19,6 +19,10 @@ public class War {
 		this.name = name;
 		this.side1 = side1;
 		this.side2 = side2;
+		side1Players.add("Placeholder1");
+		side2Players.add("Placeholder2");
+		side1Mercs.add("Placeholder1");
+		side2Mercs.add("Placeholder2");
 	}
 
 	public void addPlayerSide1(final String playerName) {
