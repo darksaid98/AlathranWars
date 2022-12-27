@@ -61,7 +61,7 @@ public class Main extends JavaPlugin {
 				warsTempList.add(it.next());
 			}
 			for (int i = 0; i < warsTempList.size(); ++i) {
-				final War war = new War(warsTempList.get(i).toLowerCase(),
+				final War war = new War(warsTempList.get(i),
 						warData.getConfig().getString("Wars." + warsTempList.get(i) + ".side1"),
 						warData.getConfig().getString("Wars." + warsTempList.get(i) + ".side2"));
 				ArrayList<String> side1Players = new ArrayList<String>();
