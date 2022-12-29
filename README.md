@@ -1,4 +1,4 @@
-# AlathraWar Version: 1.3
+# AlathraWar Version: 1.3.1
 ## A unique Towny war system for the AlathraMC server
 
 ### Dependencies: Vault, Towny, SiegeWar, TAB
