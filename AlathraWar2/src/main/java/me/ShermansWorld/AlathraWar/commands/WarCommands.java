@@ -93,6 +93,10 @@ public class WarCommands implements CommandExecutor
                 }
             }
             else if (args[0].equalsIgnoreCase("delete")) {
+            	if (args.length != 2) {
+            		p.sendMessage(Helper.Chatlabel() + Helper.color("&cInvalid Arguements. /war delete [name]"));
+            		return false;
+            	}
             	String deleteTarget = args[1];
                 if (!p.hasPermission("AlathraWar.admin")) {
                     p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&cYou do not have permission to do this"));
