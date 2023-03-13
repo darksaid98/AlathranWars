@@ -270,13 +270,13 @@ public class Siege {
 					+ " has been placed under occupation by " + nation.getName() + "!");
 		}
 		final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(owner.getUniqueId());
-		Main.econ.depositPlayer(offlinePlayer, 20000.0);
+		Main.econ.depositPlayer(offlinePlayer, 2500.0);
 		double amt = 0.0;
-		if (this.town.getAccount().getHoldingBalance() > 80000.0) {
+		if (this.town.getAccount().getHoldingBalance() > 10000.0) {
 			amt = Math.floor(this.town.getAccount().getHoldingBalance()) / 4.0;
 			this.town.getAccount().withdraw(amt, "war loot");
 		} else {
-			if (this.town.getAccount().getHoldingBalance() < 20000.0) {
+			if (this.town.getAccount().getHoldingBalance() < 2500.0) {
 				amt = this.town.getAccount().getHoldingBalance();
 				Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The town of " + this.town.getName()
 						+ " has been destroyed by " + this.getAttackers() + "!");
@@ -284,8 +284,8 @@ public class Siege {
 				Main.econ.depositPlayer(offlinePlayer, amt);
 				return;
 			}
-			this.town.getAccount().withdraw(20000.0, "war loot");
-			amt = 20000.0;
+			this.town.getAccount().withdraw(2500.0, "war loot");
+			amt = 2500.0;
 		}
 		Bukkit.broadcastMessage("The town of " + this.town.getName() + " has been sacked by " + this.getAttackers()
 				+ ", valuing $" + String.valueOf(amt));
@@ -298,11 +298,11 @@ public class Siege {
 	}
 
 	public void defendersWin() {
-		this.town.getAccount().deposit(20000.0, "War chest");
+		this.town.getAccount().deposit(2500.0, "War chest");
 		Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The defenders from " + this.defenders
 				+ " have won the siege of " + this.town.getName() + "!");
 		Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + this.town.getName()
-				+ " has recovered the attackers' war chest, valued at $20,000");
+				+ " has recovered the attackers' war chest, valued at $2,500");
 		Main.warLogger
 				.log("The defenders from " + this.defenders + " have won the siege of " + this.town.getName() + "!");
 		stop();

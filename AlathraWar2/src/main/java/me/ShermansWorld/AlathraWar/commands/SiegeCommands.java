@@ -225,13 +225,13 @@ public class SiegeCommands implements CommandExecutor
                                     }
                                 }
                                 final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(p.getUniqueId());
-                                if (Main.econ.getBalance(offlinePlayer) <= 20000.0) {
+                                if (Main.econ.getBalance(offlinePlayer) <= 2500.0) {
                                     p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must have at least $20,000 to put up to start a siege");
                                     Main.siegeData.getConfig().set("Sieges." + String.valueOf(SiegeCommands.maxID), (Object)null);
                                     Main.siegeData.saveConfig();
                                     return false;
                                 }
-                                Main.econ.withdrawPlayer(offlinePlayer, 20000.0);
+                                Main.econ.withdrawPlayer(offlinePlayer, 2500.0);
                                 SiegeCommands.sieges.add(siege2);
                                 siege2.start();
                                 siege2.createBeacon();
