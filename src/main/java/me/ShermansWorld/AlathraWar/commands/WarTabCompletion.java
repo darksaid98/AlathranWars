@@ -60,4 +60,3 @@ public class WarTabCompletion implements TabCompleter{
 		return Collections.emptyList();
 	}
 }
-
