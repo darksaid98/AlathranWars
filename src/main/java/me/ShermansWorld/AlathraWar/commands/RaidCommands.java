@@ -149,7 +149,7 @@ public class RaidCommands  implements CommandExecutor
                                     raid2 = new Raid(RaidCommands.maxID, war, town, war.getSide1(), war.getSide2(), true, false);
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".war", (Object)war.getName());
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".town", (Object)town.getName());
-                                    Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".attackers", (Object)war.getSide1());
+                                    Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".raiders", (Object)war.getSide1());
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".defenders", (Object)war.getSide2());
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".side1areraiders", (Object)true);
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".side2areraiders", (Object)false);
@@ -167,7 +167,7 @@ public class RaidCommands  implements CommandExecutor
                                     raid2 = new Raid(RaidCommands.maxID, war, town, war.getSide2(), war.getSide1(), false, true);
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".war", (Object)war.getName());
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".town", (Object)town.getName());
-                                    Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".attackers", (Object)war.getSide2());
+                                    Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".raiders", (Object)war.getSide2());
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".defenders", (Object)war.getSide1());
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".side1areraiders", (Object)false);
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".side2areraiders", (Object)true);

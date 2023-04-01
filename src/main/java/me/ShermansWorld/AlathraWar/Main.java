@@ -137,9 +137,8 @@ public class Main extends JavaPlugin {
 				Raid raid = new Raid(Integer.parseInt(raidsTempList.get(i)), raidWar, raidTown,
 						siegeData.getConfig().getString("Raids." + raidsTempList.get(i) + ".raiders"),
 						siegeData.getConfig().getString("Raids." + raidsTempList.get(i) + ".defenders"),
-						siegeData.getConfig().getBoolean("Raids." + raidsTempList.get(i) + ".siege1areraiders"),
-						siegeData.getConfig().getBoolean("Raids." + raidsTempList.get(i) + ".siege2areattackers"));
-				RaidCommands.raids.add(raid);
+						siegeData.getConfig().getBoolean("Raids." + raidsTempList.get(i) + ".side1areraiders"),
+						siegeData.getConfig().getBoolean("Raids." + raidsTempList.get(i) + ".side2areraiders"));
 				raid.start();
 			}
 		} catch (NullPointerException e) {
