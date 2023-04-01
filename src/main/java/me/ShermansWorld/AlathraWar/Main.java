@@ -1,5 +1,6 @@
 package me.ShermansWorld.AlathraWar;
 
+import me.ShermansWorld.AlathraWar.data.RaidData;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.Plugin;
@@ -32,6 +33,7 @@ public class Main extends JavaPlugin {
 	
 	public static WarData warData;
 	public static SiegeData siegeData;
+	public static RaidData raidData;
 	public static Main instance;
 	public static Economy econ;
 	public static AlathraWarLogger warLogger;
