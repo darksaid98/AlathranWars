@@ -75,56 +75,6 @@ public class War {
 		}
 	}
 
-	public void addMercSide1(final String playerName) {
-		boolean duplicate = false;
-		if (!side1Mercs.isEmpty()) {
-			for (int i = 0; i < side1Mercs.size(); ++i) {
-				if (playerName.equalsIgnoreCase(side1Mercs.get(i))) {
-					duplicate = true;
-				}
-			}
-		}
-		if (!duplicate) {
-			side1Mercs.add(playerName);
-		}
-	}
-
-	public void removeMercSide1(final String playerName) {
-		if (!side1Mercs.isEmpty()) {
-			for (int i = 0; i < side1Mercs.size(); ++i) {
-				if (playerName.equalsIgnoreCase(side1Mercs.get(i))) {
-					side1Mercs.remove(i);
-					return;
-				}
-			}
-		}
-	}
-
-	public void addMercSide2(final String playerName) {
-		boolean duplicate = false;
-		if (!side2Mercs.isEmpty()) {
-			for (int i = 0; i < side2Mercs.size(); ++i) {
-				if (playerName.equalsIgnoreCase(side2Mercs.get(i))) {
-					duplicate = true;
-				}
-			}
-		}
-		if (!duplicate) {
-			side2Mercs.add(playerName);
-		}
-	}
-
-	public void removeMercSide2(final String playerName) {
-		if (!side2Mercs.isEmpty()) {
-			for (int i = 0; i < side2Mercs.size(); ++i) {
-				if (playerName.equalsIgnoreCase(side2Mercs.get(i))) {
-					side2Mercs.remove(i);
-					return;
-				}
-			}
-		}
-	}
-
 	public String getName() {
 		return this.name;
 	}
@@ -163,21 +113,5 @@ public class War {
 
 	public void setSide2Players(final ArrayList<String> side2Players) {
 		this.side2Players = side2Players;
-	}
-
-	public ArrayList<String> getSide1Mercs() {
-		return this.side1Mercs;
-	}
-
-	public void setSide1Mercs(final ArrayList<String> side1Mercs) {
-		this.side1Mercs = side1Mercs;
-	}
-
-	public ArrayList<String> getSide2Mercs() {
-		return this.side2Mercs;
-	}
-
-	public void setSide2Mercs(final ArrayList<String> side2Mercs) {
-		this.side2Mercs = side2Mercs;
 	}
 }

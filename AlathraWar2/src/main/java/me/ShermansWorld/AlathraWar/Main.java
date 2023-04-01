@@ -12,16 +12,12 @@ import me.ShermansWorld.AlathraWar.commands.SiegeCommands;
 import me.ShermansWorld.AlathraWar.commands.SiegeTabCompletion;
 import me.ShermansWorld.AlathraWar.commands.WarCommands;
 import me.ShermansWorld.AlathraWar.commands.WarTabCompletion;
-import me.ShermansWorld.AlathraWar.data.RolesData;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.data.WarData;
 import me.ShermansWorld.AlathraWar.hooks.TABHook;
 import me.ShermansWorld.AlathraWar.listeners.BlockBreakListener;
 import me.ShermansWorld.AlathraWar.listeners.JoinListener;
 import me.ShermansWorld.AlathraWar.listeners.KillsListener;
-import me.ShermansWorld.AlathraWar.roles.AssassinCommand;
-import me.ShermansWorld.AlathraWar.roles.ContractCommand;
-import me.ShermansWorld.AlathraWar.roles.MercCommand;
 
 import com.palmergames.bukkit.towny.TownyAPI;
 
@@ -36,7 +32,6 @@ public class Main extends JavaPlugin {
 	
 	public static WarData warData;
 	public static SiegeData siegeData;
-	public static RolesData rolesData;
 	public static Main instance;
 	public static Economy econ;
 	public static AlathraWarLogger warLogger;
@@ -52,7 +47,6 @@ public class Main extends JavaPlugin {
 		if (!userDataFolder.exists()) {
 			userDataFolder.mkdirs();
 		}
-		rolesData = new RolesData();
 		try {
 			Set<String> warsSet = (Set<String>) warData.getConfig().getConfigurationSection("Wars").getKeys(false);
 			Iterator<String> it = warsSet.iterator();
@@ -66,20 +60,12 @@ public class Main extends JavaPlugin {
 						warData.getConfig().getString("Wars." + warsTempList.get(i) + ".side2"));
 				ArrayList<String> side1Players = new ArrayList<String>();
 				ArrayList<String> side2Players = new ArrayList<String>();
-				ArrayList<String> side1Mercs = new ArrayList<String>();
-				ArrayList<String> side2Mercs = new ArrayList<String>();
 				side1Players = (ArrayList<String>) warData.getConfig()
 						.getList("Wars." + war.getName() + ".side1players");
 				side2Players = (ArrayList<String>) warData.getConfig()
 						.getList("Wars." + war.getName() + ".side2players");
-				side1Mercs = (ArrayList<String>) warData.getConfig()
-						.getList("Wars." + war.getName() + ".side1mercs");
-				side2Mercs = (ArrayList<String>) warData.getConfig()
-						.getList("Wars." + war.getName() + ".side2mercs");
 				war.setSide1Players(side1Players);
 				war.setSide2Players(side2Players);
-				war.setSide1Mercs(side1Mercs);
-				war.setSide2Mercs(side2Mercs);
 				WarCommands.wars.add(war);
 			}
 		} catch (NullPointerException e) {
@@ -172,9 +158,6 @@ public class Main extends JavaPlugin {
 		siegeData = new SiegeData(this);
 		new WarCommands(this);
 		new SiegeCommands(this);
-		new MercCommand(this);
-		new AssassinCommand(this);
-		new ContractCommand(this);
 		getCommand("war").setTabCompleter(new WarTabCompletion());
 		getCommand("siege").setTabCompleter(new SiegeTabCompletion());
 		getServer().getPluginManager().registerEvents((Listener) new KillsListener(), (Plugin) this);

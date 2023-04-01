@@ -12,19 +12,3 @@ commands:
   siege:
     description: used to start, end, and view sieges
     softdepend: [Vault, Towny]
-  mercenary:
-    description: Framework for handling mercenary work
-    softdepend: [Vault, Towny]
-    aliases:
-      - merc
-  assassin:
-    description: Framework for handling assassin work
-    softdepend: [Vault, Towny]
-    aliases:
-      - ass
-      - assin
-  contract:
-    description: Framework for handling contracts
-    softdepend: [Vault, Towny]
-    aliases:
-      - contracts

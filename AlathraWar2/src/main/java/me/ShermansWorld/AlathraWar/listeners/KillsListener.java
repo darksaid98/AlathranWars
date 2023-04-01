@@ -4,7 +4,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -18,7 +17,6 @@ import com.palmergames.bukkit.towny.object.WorldCoord;
 import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.Siege;
 import me.ShermansWorld.AlathraWar.commands.SiegeCommands;
-import me.ShermansWorld.AlathraWar.roles.Assassin;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -213,24 +211,4 @@ public final class KillsListener implements Listener
         event.setKeepLevel(true);
     }
     
-    @EventHandler
-	public static void assassinKillListener(PlayerDeathEvent e) {
-		if (e.getEntity().getKiller() instanceof Player) {
-			Player killed = e.getEntity();
-			Player killer = killed.getKiller();
-			if (killed.hasMetadata("NPC")) {
-				e.setDeathMessage(null);
-			} else if (killer.hasMetadata("NPC")) {
-				Bukkit.broadcastMessage(killed.getName() + " has been slain by " + killer.getName());
-			}  else if (killer.hasPotionEffect(PotionEffectType.INVISIBILITY) && Assassin.hasAssassinRole(killer)) {
-				e.setDeathMessage(killed.getName() + " has been assassinated by an invisible player");
-				Bukkit.getLogger().info(Helper.Chatlabel() + killed.getName() + " was killed by " + killer.getName());
-				for (Player p : Bukkit.getOnlinePlayers()) {
-					if (p.hasPermission("AlathraExtras.deathmsg")) {
-						p.sendMessage(Helper.Chatlabel() + killed.getName() + " was killed by " + killer.getName());
-					}
-				}
-			}
-		}
-	}
 }
