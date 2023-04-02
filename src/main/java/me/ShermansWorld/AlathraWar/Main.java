@@ -1,5 +1,7 @@
 package me.ShermansWorld.AlathraWar;
 
+import me.ShermansWorld.AlathraWar.commands.*;
+import me.ShermansWorld.AlathraWar.data.RaidData;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.Plugin;
@@ -8,10 +10,6 @@ import java.util.Iterator;
 import java.util.Set;
 import com.palmergames.bukkit.towny.object.Town;
 
-import me.ShermansWorld.AlathraWar.commands.SiegeCommands;
-import me.ShermansWorld.AlathraWar.commands.SiegeTabCompletion;
-import me.ShermansWorld.AlathraWar.commands.WarCommands;
-import me.ShermansWorld.AlathraWar.commands.WarTabCompletion;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.data.WarData;
 import me.ShermansWorld.AlathraWar.hooks.TABHook;
@@ -32,6 +30,7 @@ public class Main extends JavaPlugin {
 	
 	public static WarData warData;
 	public static SiegeData siegeData;
+	public static RaidData raidData;
 	public static Main instance;
 	public static Economy econ;
 	public static AlathraWarLogger warLogger;
@@ -110,6 +109,41 @@ public class Main extends JavaPlugin {
 		} catch (NullPointerException e) {
 			Bukkit.getLogger().info("NULL when initializing sieges");
 		}
+
+		//TODO: Raids
+		try {
+			Set<String> raidSet = (Set<String>) raidData.getConfig().getConfigurationSection("Raids").getKeys(false);
+			Iterator<String> it2 = raidSet.iterator();
+			ArrayList<String> raidsTempList = new ArrayList<String>();
+			while (it2.hasNext()) {
+				raidsTempList.add(it2.next());
+			}
+			for (int i = 0; i < raidsTempList.size(); ++i) {
+				War raidWar = null;
+				Town raidTown = null;
+				for (final War war2 : WarCommands.wars) {
+					if (raidData.getConfig().getString("Raids." + raidsTempList.get(i) + ".war")
+							.equalsIgnoreCase(war2.getName())) {
+						raidWar = war2;
+					}
+				}
+				List<Town> townList = TownyAPI.getInstance().getTowns();
+				for (final Town town : townList) {
+					if (town.getName().equalsIgnoreCase(
+							siegeData.getConfig().getString("Raids." + raidsTempList.get(i) + ".town"))) {
+						raidTown = town;
+					}
+				}
+				Raid raid = new Raid(Integer.parseInt(raidsTempList.get(i)), raidWar, raidTown,
+						siegeData.getConfig().getString("Raids." + raidsTempList.get(i) + ".raiders"),
+						siegeData.getConfig().getString("Raids." + raidsTempList.get(i) + ".defenders"),
+						siegeData.getConfig().getBoolean("Raids." + raidsTempList.get(i) + ".side1areraiders"),
+						siegeData.getConfig().getBoolean("Raids." + raidsTempList.get(i) + ".side2areraiders"));
+				raid.start();
+			}
+		} catch (NullPointerException e) {
+			Bukkit.getLogger().info("NULL when initializing raids");
+		}
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -156,10 +190,13 @@ public class Main extends JavaPlugin {
 		instance = this;
 		warData = new WarData(this);
 		siegeData = new SiegeData(this);
+		raidData = new RaidData(this);
 		new WarCommands(this);
 		new SiegeCommands(this);
+		new RaidCommands(this);
 		getCommand("war").setTabCompleter(new WarTabCompletion());
 		getCommand("siege").setTabCompleter(new SiegeTabCompletion());
+		getCommand("raid").setTabCompleter(new RaidTabCompletion());
 		getServer().getPluginManager().registerEvents((Listener) new KillsListener(), (Plugin) this);
 		getServer().getPluginManager().registerEvents((Listener) new JoinListener(), (Plugin) this);
 		getServer().getPluginManager().registerEvents((Listener) new BlockBreakListener(), (Plugin) this);
