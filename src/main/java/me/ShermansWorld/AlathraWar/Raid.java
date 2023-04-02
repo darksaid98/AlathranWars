@@ -12,8 +12,7 @@ import org.bukkit.plugin.Plugin;
 import java.util.ArrayList;
 
 
-/*
-RAID EXPLANATION
+/* RAID EXPLANATION
 
 Raids are run by raiding parties, who gather at a separate town,
 begin a raid, then go to the town. They then kill and control the
@@ -142,6 +141,7 @@ public class Raid {
 
     }
 
+    // End of raid
     public void stop() {
         Bukkit.getScheduler().cancelTask(this.bukkitId[0]);
         RaidCommands.raids.remove(this);  //im not making this rn -Aubri
