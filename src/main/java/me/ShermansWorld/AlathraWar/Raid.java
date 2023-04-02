@@ -11,8 +11,40 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 
+
+/*
+RAID EXPLANATION
+
+Raids are run by raiding parties, who gather at a separate town,
+begin a raid, then go to the town. They then kill and control the
+town over the duration of time, or until the raid is completed by
+the raiders.
+
+They then gain plunder in the form of money from the town's bank,
+and then leave.
+
+Raids require at least one person from a town to be online, can only be
+done every 24 hours per raided town, every 6 hours in a war per side,
+and raided players may run out of the town, forfeiting the cost of the raid.
+
+The raid is split into two phases:
+- STAGING PHASE
+    - Raiders collect at raiding town, joining raid through command
+    - Defenders are given time to get to the town.
+
+TODO LIST:
+- No teleporting by raiders
+- Points management
+    - Both sides gain points for kills
+    - Raiders gain points for 
+- Raiders on death are teleported to their town spawn.
+*/
+
 /**
  * This is based on the existing Siege Class
+ * @author AubriTheHuman
+ * @author NinjaMandalorian
+ * @author ShermansWorld
  */
 public class Raid {
 
@@ -34,8 +66,10 @@ public class Raid {
     public ArrayList<String> raiderPlayers;
     public ArrayList<String> defenderPlayers;
 
+    // Constructs raid for staging phase
     public Raid(final int id, final War war, final Town town, final String raiders, final String defenders,
                  final boolean side1AreRaiders, final boolean side2AreRaiders) {
+        /*
         this.raidTicks = 0;
         this.bukkitId = new int[1];
         this.raiderPlayers = new ArrayList<String>();
@@ -43,29 +77,13 @@ public class Raid {
         this.war = war;
         this.town = town;
         this.raiders = raiders;
-        this.defenders = defenders;
-        this.side1AreRaiders = side1AreRaiders;
-        this.side2AreRaiders = side2AreRaiders;
         this.id = id;
+        */
     }
 
     public void start() {
-        this.raiderPoints = Main.raidData.getConfig().getInt("Raids." + String.valueOf(this.id) + ".raiderpoints");
-        this.defenderPoints = Main.raidData.getConfig().getInt("Raids." + String.valueOf(this.id) + ".defenderpoints");
-        this.side1AreRaiders = Main.raidData.getConfig()
-                .getBoolean("Raids." + String.valueOf(this.id) + ".side1areraiders");
-        this.side2AreRaiders = Main.raidData.getConfig()
-                .getBoolean("Raids." + String.valueOf(this.id) + ".side2areraiders");
-        this.MAXRAIDTICKS = 108000;
-        this.raidTicks = Main.raidData.getConfig().getInt("Raids." + String.valueOf(this.id) + ".raidticks");
-        this.owner = Bukkit.getPlayer(Main.raidData.getConfig().getString("Raids." + String.valueOf(this.id) + ".owner"));
-        if (this.side1AreRaiders) {
-            this.raiderPlayers = this.war.getSide1Players();
-            this.defenderPlayers = this.war.getSide2Players();
-        } else {
-            this.raiderPlayers = this.war.getSide2Players();
-            this.defenderPlayers = this.war.getSide1Players();
-        }
+
+        // Sets homeBlock and spawn for town. (So no mid-raid changes.)
         try {
             homeBlock = town.getHomeBlock();
             townSpawn = town.getSpawn();
@@ -73,7 +91,7 @@ public class Raid {
             e.printStackTrace();
         }
 
-        //Tick Loop sorta (runs every 10 seconds afaik)
+        // Creates 10 second looping function for Raid
         this.bukkitId[0] = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask((Plugin) Main.getInstance(),
                 (Runnable) new Runnable() {
                     int homeBlockControl = 0;
