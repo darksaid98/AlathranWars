@@ -45,6 +45,7 @@
 			<groupId>com.github.LlmDl</groupId>
 			<artifactId>Towny</artifactId>
 			<version>0.98.3.3</version>
+            <scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>
