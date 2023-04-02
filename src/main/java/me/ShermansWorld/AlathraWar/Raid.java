@@ -31,6 +31,10 @@ The raid is split into two phases:
 - STAGING PHASE
     - Raiders collect at raiding town, joining raid through command
     - Defenders are given time to get to the town.
+- COMBAT PHASE
+    - Raiders go to town
+    - Combat occurs
+    - Decides outcome of raid
 
 TODO LIST:
 - No teleporting by raiders
