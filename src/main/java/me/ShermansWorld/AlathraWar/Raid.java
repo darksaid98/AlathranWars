@@ -1,14 +1,11 @@
 package me.ShermansWorld.AlathraWar;
 
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
-import com.palmergames.bukkit.towny.object.WorldCoord;
 import me.ShermansWorld.AlathraWar.commands.RaidCommands;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -205,7 +202,7 @@ public class Raid {
         return this.raiderPoints;
     }
 
-    public void raiderPoints(final int raiderPointsPoints) {
+    public void raiderPoints(final int raiderPoints) {
         this.raiderPoints = raiderPoints;
     }
 
@@ -246,7 +243,7 @@ public class Raid {
     }
 
     public void setDefenderPlayer(final ArrayList<String> defenderPlayers) {
-        this.defenderPlayers = this.defenderPlayers;
+        this.defenderPlayers = defenderPlayers;
     }
 
     static /* synthetic */ void access$7(final Raid raid, final int raidTicks) {
