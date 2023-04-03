@@ -54,7 +54,8 @@ TODO LIST:
 public class Raid {
 
     private War war;
-    private Town town;
+    private Town raidedTown;
+    private Town gatherTown;
     private String raiders;
     private String defenders;
     private boolean side1AreRaiders;
@@ -64,23 +65,28 @@ public class Raid {
     private int MAXRAIDTICKS;
     private Player owner;
     private int raidTicks;
-    private TownBlock homeBlock;
+    private TownBlock homeBlockRaided;
+    private TownBlock homeBlockGather;
     private RaidPhase phase;
-    private Location townSpawn;
+    private Location townSpawnRaided;
+    private Location townSpawnGather;
     int[] bukkitId;
     public ArrayList<String> raiderPlayers;
     public ArrayList<String> defenderPlayers;
+    public ArrayList<String> activeRaiders;
 
     // Constructs raid for staging phase
-    public Raid(final int id, final War war, final Town town, final String raiders, final String defenders,
+    public Raid(final int id, final War war, final Town raidedTown, final Town gatherTown, final String raiders, final String defenders,
                  final boolean side1AreRaiders, final boolean side2AreRaiders) {
 
         this.raidTicks = 0;
         this.bukkitId = new int[1];
         this.raiderPlayers = new ArrayList<String>();
         this.defenderPlayers = new ArrayList<String>();
+        this.activeRaiders = new ArrayList<String>();
         this.war = war;
-        this.town = town;
+        this.raidedTown = raidedTown;
+        this.gatherTown = gatherTown;
         this.raiders = raiders;
         this.id = id;
 
@@ -110,8 +116,10 @@ public class Raid {
 
         // Sets homeBlock and spawn for town. (So no mid-raid changes.)
         try {
-            homeBlock = town.getHomeBlock();
-            townSpawn = town.getSpawn();
+            homeBlockRaided = raidedTown.getHomeBlock();
+            townSpawnRaided = raidedTown.getSpawn();
+            homeBlockGather = gatherTown.getHomeBlock();
+            townSpawnGather = gatherTown.getSpawn();
         } catch (TownyException e) {
             e.printStackTrace();
         }
@@ -122,9 +130,13 @@ public class Raid {
 
                 @Override
                 public void run() {
-                    if (homeBlock != null) {
-                        town.setHomeBlock(homeBlock);
-                        town.setSpawn(townSpawn);
+                    if (homeBlockRaided != null) {
+                        raidedTown.setHomeBlock(homeBlockRaided);
+                        raidedTown.setSpawn(townSpawnRaided);
+                    }
+                    if (homeBlockGather != null) {
+                        gatherTown.setHomeBlock(homeBlockGather);
+                        gatherTown.setSpawn(townSpawnGather);
                     }
                     if (Raid.this.side1AreRaiders) {
                         Raid.this.raiderPlayers = Raid.this.war.getSide1Players();
@@ -161,22 +173,31 @@ public class Raid {
 
 
                         //Raid start phase behavior
-                        if (Raid.this.phase == RaidPhase.START) {
-                            //update
-                            if (Raid.this.raidTicks % 6000 == 0) {
+                        if (Raid.this.phase == RaidPhase.GATHER) {
+                            //Broadcast
+                            if(raidTicks % 6000 == 0) {
                                 Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The raid of "
-                                        + Raid.this.town.getName() + " will begin in " + (RaidPhase.TRAVEL.startTick / 20 / 60) + " minutes!");
+                                        + Raid.this.getRaidedTown().getName() + " will begin in " + (int) (RaidPhase.TRAVEL.startTick / 20 / 60) + " minutes!");
                                 Bukkit.broadcastMessage(
-                                        "The Raiders are gathering at " + TownyAPI.getInstance().getTownName(Raid.this.owner.getLocation()) + " before making the journey over!");
+                                        "The Raiders are gathering at " + getGatherTown().getName() + " before making the journey over!");
                             }
 
                         }
+
                         //Raid Travel phase behavior
                         else if (Raid.this.phase == RaidPhase.TRAVEL) {
-                            //Check if a player has arrived at the town (in it) and if so start combat
+
+                            if(raidTicks % 2400 == 0) {
+                                Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The Raiders of "
+                                        + (side1AreRaiders ? Raid.this.war.getSide1() : Raid.this.war.getSide2())
+                                        + " are on their way to raid "
+                                        + Raid.this.getRaidedTown().getName() + "!");
+                            }
+
+                                //Check if a player has arrived at the town (in it) and if so start combat
                             for (String player : raiderPlayers) {
                                 WorldCoord playercoord = WorldCoord.parseWorldCoord(Bukkit.getPlayer(player));
-                                if (Raid.this.town.hasTownBlock(playercoord)) {
+                                if (Raid.this.getRaidedTown().hasTownBlock(playercoord)) {
                                     startCombat();
                                 }
                             }
@@ -188,7 +209,7 @@ public class Raid {
                             //Report
                             if (Raid.this.raidTicks % 6000 == 0) {
                                 Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "Report on the raid of "
-                                        + Raid.this.town.getName() + ":");
+                                        + Raid.this.getRaidedTown().getName() + ":");
                                 Bukkit.broadcastMessage(
                                         "Raid Score - " + String.valueOf(Raid.this.raidScore));
                             }
@@ -221,7 +242,7 @@ public class Raid {
         Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The Raiders of "
                 + (side1AreRaiders ? Raid.this.war.getSide1() : Raid.this.war.getSide2())
                 + " are coming to raid "
-                + Raid.this.town.getName() + "!");
+                + Raid.this.getRaidedTown().getName() + "!");
         //in the case were not at that stage already, if this happens we have an issue
         Raid.this.raidTicks = RaidPhase.TRAVEL.startTick;
     }
@@ -234,7 +255,7 @@ public class Raid {
         Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The Raiders of "
                 + (side1AreRaiders ? Raid.this.war.getSide1() : Raid.this.war.getSide2())
                 + " have arrived at "
-                + Raid.this.town.getName() + " and the fighting has begun!");
+                + Raid.this.getRaidedTown().getName() + " and the fighting has begun!");
         //in the case were not at that stage already
         Raid.this.raidTicks = RaidPhase.COMBAT.startTick;
     }
@@ -292,12 +313,20 @@ public class Raid {
         this.war = war;
     }
 
-    public Town getTown() {
-        return this.town;
+    public Town getRaidedTown() {
+        return this.raidedTown;
     }
 
-    public void setTown(final Town town) {
-        this.town = town;
+    public void setRaidedTown(final Town town) {
+        this.raidedTown = town;
+    }
+
+    public Town getGatherTown() {
+        return this.gatherTown;
+    }
+
+    public void setGatherTown(final Town town) {
+        this.gatherTown = town;
     }
 
     public String getRaiders() {
@@ -358,5 +387,25 @@ public class Raid {
 
     static /* synthetic */ void access$7(final Raid raid, final int raidTicks) {
         raid.raidTicks = raidTicks;
+    }
+
+    public RaidPhase getPhase() {
+        return this.phase;
+    }
+
+    public void setRaidPhase(final RaidPhase phase) {
+        this.phase = phase;
+    }
+
+    public ArrayList<String> getActiveRaiders() {
+        return this.activeRaiders;
+    }
+
+    public void setActiveRaiders(ArrayList<String> activeRaiders) {
+        this.activeRaiders = activeRaiders;
+    }
+
+    public void addActiveRaider(String player) {
+        this.activeRaiders.add(player);
     }
 }

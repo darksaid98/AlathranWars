@@ -1,11 +1,13 @@
 package me.ShermansWorld.AlathraWar.commands;
 
+import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownyWorld;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 import me.ShermansWorld.AlathraWar.*;
+import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -46,10 +48,12 @@ public class RaidCommands  implements CommandExecutor
                 for (final Raid raid : RaidCommands.raids) {
                     p.sendMessage("ID: " + String.valueOf(raid.getID()));
                     p.sendMessage("War: " + raid.getWar().getName());
-                    p.sendMessage("Town: " + raid.getTown().getName());
+                    p.sendMessage("Raiding: " + raid.getRaidedTown().getName());
+                    p.sendMessage("Gathering In: " + raid.getGatherTown().getName());
                     p.sendMessage("Raiders: " + raid.getRaiders());
                     p.sendMessage("Defenders: " + raid.getDefenders());
                     p.sendMessage("Raid Score: " + String.valueOf(raid.getRaidScore()));
+                    p.sendMessage("Raid Phase: " + raid.getPhase().name());
                     p.sendMessage("Time Left: " + String.valueOf((72000 - Main.raidData.getConfig().getInt("Raids." + String.valueOf(String.valueOf(raid.getID()) + ".raidticks"))) / 1200) + " minutes");
                     p.sendMessage("-=-=-=-=-=-=-=-=-=-=-=-");
                 }
@@ -58,6 +62,7 @@ public class RaidCommands  implements CommandExecutor
                     p.sendMessage(Helper.Chatlabel() + "/raid stop [id]");
                 }
                 p.sendMessage(Helper.Chatlabel() + "/raid start [war] [town]");
+                p.sendMessage(Helper.Chatlabel() + "/raid join [war] [town]");
                 p.sendMessage(Helper.Chatlabel() + "/raid abandon [id]");
                 p.sendMessage(Helper.Chatlabel() + "/raid list");
             } else {
@@ -80,7 +85,7 @@ public class RaidCommands  implements CommandExecutor
                     if (String.valueOf(RaidCommands.raids.get(i).getID()).equalsIgnoreCase(args[1])) {
                         found = true;
                         p.sendMessage(String.valueOf(Helper.Chatlabel()) + "raid cancelled");
-                        Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The raid at " + RaidCommands.raids.get(i).getTown().getName() + " has been cancelled by an admin");
+                        Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The raid of " + RaidCommands.raids.get(i).getRaidedTown().getName() + " has been cancelled by an admin");
                         RaidCommands.raids.get(i).stop();
                         break;
                     }
@@ -101,8 +106,8 @@ public class RaidCommands  implements CommandExecutor
                     for (int j = 0; j < RaidCommands.raids.size(); ++j) {
                         if (String.valueOf(RaidCommands.raids.get(j).getID()).equalsIgnoreCase(args[1])) {
                             found2 = true;
-                            Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The raid at " + RaidCommands.raids.get(j).getTown().getName() + " has been abandoned by " + RaidCommands.raids.get(j).getRaiders());
-                            Main.warLogger.log(p.getName() + " abandoned the raid they started at " + RaidCommands.raids.get(j).getTown().getName());
+                            Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The raid on " + RaidCommands.raids.get(j).getRaidedTown().getName() + " has been abandoned by " + RaidCommands.raids.get(j).getRaiders());
+                            Main.warLogger.log(p.getName() + " abandoned the raid on " + RaidCommands.raids.get(j).getRaidedTown().getName() + " they started at " + RaidCommands.raids.get(j).getGatherTown().getName());
                             RaidCommands.raids.get(j).defendersWin();
                             break;
                         }
@@ -131,13 +136,12 @@ public class RaidCommands  implements CommandExecutor
                             RaidCommands.towns.clear();
                         }
 
-                        //TODO: This needs to change
-                        //needs to have be in raiders town to delcare raid added
-                        //so that surprise raids arent a thing, ill leave that to someone else
                         for (final String entry : townyWorld.getTowns().keySet()) {
-                            final Town town = townyWorld.getTowns().get(entry);
-                            RaidCommands.towns.add(town);
-                            if (town.getName().equalsIgnoreCase(args[2])) {
+                            final Town raidedTown = townyWorld.getTowns().get(entry);
+                            //takes the command runners town
+                            final Town gatherTown = TownyAPI.getInstance().getTown(p.getLocation());
+                            RaidCommands.towns.add(raidedTown);
+                            if (raidedTown.getName().equalsIgnoreCase(args[2]) && gatherTown != null) {
                                 townExists = true;
                                 boolean attackingOwnSide = false;
                                 ++RaidCommands.maxID;
@@ -145,16 +149,17 @@ public class RaidCommands  implements CommandExecutor
                                 Main.raidData.saveConfig();
                                 Raid raid2;
                                 if (war.getSide1Players().contains(p.getName())) {
-                                    raid2 = new Raid(RaidCommands.maxID, war, town, war.getSide1(), war.getSide2(), true, false);
+                                    raid2 = new Raid(RaidCommands.maxID, war, raidedTown, gatherTown, war.getSide1(), war.getSide2(), true, false);
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".war", (Object)war.getName());
-                                    Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".town", (Object)town.getName());
+                                    Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".raidedTown", (Object)raidedTown.getName());
+                                    Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".gatherTown", (Object)gatherTown.getName());
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".raiders", (Object)war.getSide1());
+                                    Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".activeRaiders", raid2.getActiveRaiders());
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".defenders", (Object)war.getSide2());
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".side1areraiders", (Object)true);
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".side2areraiders", (Object)false);
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".raidticks", (Object)0);
-                                    Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".raiderpoints", (Object)0);
-                                    Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".defenderpoints", (Object)0);
+                                    Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".raidScore", (Object)0);
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".owner", (Object)p.getName());
                                     Main.raidData.saveConfig();
                                 }
@@ -163,21 +168,21 @@ public class RaidCommands  implements CommandExecutor
                                         Bukkit.getLogger().info("Unable to find player declaring raid in the war");
                                         return false;
                                     }
-                                    raid2 = new Raid(RaidCommands.maxID, war, town, war.getSide2(), war.getSide1(), false, true);
+                                    raid2 = new Raid(RaidCommands.maxID, war, raidedTown, gatherTown, war.getSide2(), war.getSide1(), false, true);
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".war", (Object)war.getName());
-                                    Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".town", (Object)town.getName());
+                                    Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".raidedTown", (Object)raidedTown.getName());
+                                    Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".gatherTown", (Object)gatherTown.getName());
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".raiders", (Object)war.getSide2());
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".defenders", (Object)war.getSide1());
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".side1areraiders", (Object)false);
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".side2areraiders", (Object)true);
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".raidticks", (Object)0);
-                                    Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".raiderpoints", (Object)0);
-                                    Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".defenderpoints", (Object)0);
+                                    Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".raidScore", (Object)0);
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID) + ".owner", (Object)p.getName());
                                     Main.raidData.saveConfig();
                                 }
                                 final ArrayList<String> residentNames = new ArrayList<String>();
-                                for (final Resident resident : town.getResidents()) {
+                                for (final Resident resident : raidedTown.getResidents()) {
                                     residentNames.add(resident.getName());
                                 }
                                 if (raid2.getSide1AreRaiders()) {
@@ -203,38 +208,52 @@ public class RaidCommands  implements CommandExecutor
                                     currentTown = WorldCoord.parseWorldCoord(p.getLocation()).getTownBlock().getTown();
                                 }
                                 catch (NotRegisteredException e2) {
-                                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must be within the town's claim to begin a raid");
+                                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must be within a town's claim to begin a raid. That town you are in will be the gathering town.");
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID), (Object)null);
                                     Main.raidData.saveConfig();
                                     return false;
                                 }
-                                if (!currentTown.equals(town)) {
-                                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must be within the town's claim to begin a raid");
+                                if (!currentTown.equals(gatherTown)) {
+                                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must be within a town's claim to begin a raid. That town you are in will be the gathering town.");
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID), (Object)null);
                                     Main.raidData.saveConfig();
                                     return false;
                                 }
                                 for (final Raid raidEntry : RaidCommands.raids) {
-                                    if (raidEntry.getTown().getName().equalsIgnoreCase(town.getName())) {
+                                    if (raidEntry.getRaidedTown().getName().equalsIgnoreCase(raidedTown.getName())) {
                                         p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town is already under raid by your side!");
+                                        Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID), (Object)null);
+                                        Main.raidData.saveConfig();
+                                        return false;
+                                    }
+                                    //TODO check when last raid was
+                                    int valid = Main.raidData.isValidRaid(raidEntry.getRaidedTown());
+                                    if (valid <= -1) {
+                                        p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town has been raided too recently! (24 hour cooldown)");
+                                        Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID), (Object)null);
+                                        Main.raidData.saveConfig();
+                                        return false;
+                                    } else if (valid == 0) {
+                                        p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Your side has raided too recently! (6 hour cooldown)");
                                         Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID), (Object)null);
                                         Main.raidData.saveConfig();
                                         return false;
                                     }
                                 }
                                 final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(p.getUniqueId());
-                                if (Main.econ.getBalance(offlinePlayer) <= 2500.0) {
-                                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must have at least $20,000 to put up to start a raid");
+                                //TODO check econ values, and if this costs money to begin with
+                                if (Main.econ.getBalance(offlinePlayer) <= 4000.0) {
+                                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must have at least $4,000 to put up to start a raid");
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID), (Object)null);
                                     Main.raidData.saveConfig();
                                     return false;
                                 }
-                                Main.econ.withdrawPlayer(offlinePlayer, 2500.0);
+                                Main.econ.withdrawPlayer(offlinePlayer, 4000.0);
                                 RaidCommands.raids.add(raid2);
                                 raid2.start();
-                                Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "As part of " + war.getName() + ", forces from " + raid2.getRaiders() + " are raiding the town of " + town.getName() + "!");
+                                Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "As part of " + war.getName() + ", forces from " + raid2.getRaiders() + " are gathering to raid the town of " + raidedTown.getName() + "!");
                                 Main.warLogger.log(p.getName() + " started a raid.");
-                                Main.warLogger.log("As part of " + war.getName() + ", forces from " + raid2.getRaiders() + " are raiding the town of " + town.getName() + "!");
+                                Main.warLogger.log("As part of " + war.getName() + ", forces from " + raid2.getRaiders() + " are raiding the town of " + raidedTown.getName() + "!");
                             }
                         }
                     }
@@ -245,6 +264,54 @@ public class RaidCommands  implements CommandExecutor
                 }
                 if (!townExists) {
                     p.sendMessage(String.valueOf(Helper.Chatlabel()) + "That town does not exist! /raid start [war] [town]");
+                }
+            } else if (args[0].equalsIgnoreCase("join")) {
+                boolean warFound = false;
+                boolean townExists = false;
+                boolean raidFound = false;
+                for (final War war : WarCommands.wars) {
+                    if (war.getName().equalsIgnoreCase(args[1])) {
+                        warFound = true;
+                        if (!war.getSide1Players().contains(p.getName()) && !war.getSide2Players().contains(p.getName())) {
+                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You are not in this war! Type /war join [war] [side]");
+                        }
+                        TownyWorld townyWorld;
+                        townyWorld = WorldCoord.parseWorldCoord(p.getLocation()).getTownyWorld();
+                        if (!RaidCommands.towns.isEmpty()) {
+                            RaidCommands.towns.clear();
+                        }
+
+                        //find the associated raid
+                        Raid raid = null;
+                        for(Raid r : raids) {
+                            if(r.getWar().getId() == war.getId()) {
+                                raidFound = true;
+                                raid = r;
+                            }
+                        }
+
+                        //if we find the raid
+                        if(raidFound) {
+                            if(raid.getPhase() == RaidPhase.GATHER) {
+                                if(raid.getGatherTown().hasTownBlock(WorldCoord.parseWorldCoord(p))) {
+                                    raid.addActiveRaider(p.getName());
+                                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You have joined the raid on " + raid.getRaidedTown().getName() + "!");
+                                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Leaving " + raid.getGatherTown().getName() + " will cause you to leave the raid party.");
+                                }
+                            }
+                        }
+                    }
+                }
+                if (!warFound) {
+                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "That war does not exist! /raid start [war] [town]");
+                    return false;
+                }
+                if (!townExists) {
+                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "That town does not exist! /raid start [war] [town]");
+                }
+                if (!raidFound) {
+                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "No raid is gathering in this town!");
+                    return false;
                 }
             } else {
                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /raid help");

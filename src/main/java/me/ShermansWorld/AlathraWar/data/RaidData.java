@@ -1,5 +1,6 @@
 package me.ShermansWorld.AlathraWar.data;
 
+import com.palmergames.bukkit.towny.object.Town;
 import me.ShermansWorld.AlathraWar.Main;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -57,5 +58,26 @@ public class RaidData {
         if (!this.configFile.exists()) {
             this.plugin.saveResource("raids.yml", false);
         }
+    }
+
+    //TODO raid time check
+    /**
+     * @Isaac this is for getting when the last raid was on a town
+     *
+     * @return
+     */
+    public int whenTownLastRaided() {
+        return 0;
+    }
+
+    //TODO raid validity check
+    /**
+     * @Isaac this is for getting if a town can be raided, return (-1, 0, 1) based on status
+     * (24 hours town cooldown, 6 hour nation cooldown, valid time to raid)
+     *
+     * @return
+     */
+    public int isValidRaid(Town t) {
+        return 0;
     }
 }
