@@ -10,6 +10,7 @@ import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
@@ -30,19 +31,20 @@ and raided players may run out of the town, forfeiting the cost of the raid.
 
 The raid is split into two phases:
 - STAGING PHASE
-    - Raiders collect at raiding town, joining raid through command
-    - Defenders are given time to get to the town.
+    v/ Raiders collect at raiding town, joining raid through command
+    v/ Defenders are given time to get to the town. (travel is announced way in ahead)
 - COMBAT PHASE
-    - Raiders go to town
+    v/ Raiders go to town
     - Combat occurs
     - Decides outcome of raid
 
 TODO LIST:
 - No teleporting by raiders
-- Points management
-    - Both sides gain points for kills
-    - Raiders gain points for 
-- Raiders on death are teleported to their town spawn.
+v/ Points management
+    v/ Raider death is negative score
+    v/ Defender death is positive score
+    - TODO Raiders gain points for
+v/ Raiders on death are teleported to their town spawn.
 */
 
 /**
@@ -62,7 +64,6 @@ public class Raid {
     private boolean side2AreRaiders;
     private int id;
     private int raidScore;
-    private int MAXRAIDTICKS;
     private Player owner;
     private int raidTicks;
     private TownBlock homeBlockRaided;
@@ -102,7 +103,6 @@ public class Raid {
                 .getBoolean("Raids." + String.valueOf(this.id) + ".side1areraiders");
         this.side2AreRaiders = Main.siegeData.getConfig()
                 .getBoolean("Raids." + String.valueOf(this.id) + ".side2areraiders");
-        this.MAXRAIDTICKS = 72000;
         this.raidTicks = Main.siegeData.getConfig().getInt("Raids." + String.valueOf(this.id) + ".raidticks");
         this.owner = Bukkit.getPlayer(Main.siegeData.getConfig().getString("Raids." + String.valueOf(this.id) + ".owner"));
 
@@ -145,8 +145,9 @@ public class Raid {
                         Raid.this.raiderPlayers = Raid.this.war.getSide2Players();
                         Raid.this.defenderPlayers = Raid.this.war.getSide1Players();
                     }
-                    if (Raid.this.raidTicks >= Raid.this.MAXRAIDTICKS) {
+                    if (Raid.this.raidTicks >= RaidPhase.END.startTick) {
                         Bukkit.getServer().getScheduler().cancelTask(Raid.this.bukkitId[0]);
+                        Raid.this.phase = RaidPhase.END;
                         //TODO: fix raid scoring
                         if (Raid.this.raidScore > 750) {
                             Raid.this.raidersWin(Raid.this.owner);
@@ -221,6 +222,7 @@ public class Raid {
 
     // End of raid
     public void stop() {
+        this.phase = RaidPhase.END;
         Bukkit.getScheduler().cancelTask(this.bukkitId[0]);
         RaidCommands.raids.remove(this);
         Main.raidData.getConfig().set("Raids." + String.valueOf(this.id), (Object) null);
@@ -263,28 +265,132 @@ public class Raid {
     /**
      * Need to add call to KillsListener (defined seperate from Siege)
      */
-    public void raiderKilled() {
+    public void raiderKilledInCombat(PlayerDeathEvent event) {
 
         //award negative score
+        this.subtractPointsFromRaidScore(20);
+        for (final String playerName : this.getActiveRaiders()) {
+            try {
+                Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.Chatlabel()) + "Raider killed! -40 Raid Score");
+            }
+            catch (NullPointerException ex3) {}
+        }
+        for (final String playerName : this.getDefenderPlayers()) {
+            try {
+                Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.Chatlabel()) + "Raider killed! -20 Raid Score");
+            }
+            catch (NullPointerException ex4) {}
+        }
 
-        //tp to town spawn
+        //tp to gather town spawn
+        final Player killed = event.getEntity();
+        if(this.getActiveRaiders().contains(killed.getName())) {
+            try {
+                killed.teleport(this.getGatherTown().getSpawn());
+                killed.sendMessage(String.valueOf(Helper.Chatlabel()) + "You died raiding and have been teleported back to the gather point.");
+            } catch (TownyException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     /**
      * Need to add call to KillsListener (defined seperate from Siege)
      */
-    public void defenderKilled() {
+    public void defenderKilledInCombat(PlayerDeathEvent event) {
+        this.addPointsToRaidScore(20);
+        for (final String playerName : this.getActiveRaiders()) {
+            try {
+                Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.Chatlabel()) + "Defender killed! +20 Raid Score");
+            }
+            catch (NullPointerException ex5) {}
+        }
+        for (final String playerName : this.getDefenderPlayers()) {
+            try {
+                Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.Chatlabel()) + "Defender killed! +20 Raid Score");
+            }
+            catch (NullPointerException ex6) {}
+        }
 
-        //award positive score
+        //tp to raid town spawn
+        final Player killed = event.getEntity();
+        if(this.getActiveRaiders().contains(killed.getName())) {
+            try {
+                killed.teleport(this.getGatherTown().getSpawn());
+                killed.sendMessage(String.valueOf(Helper.Chatlabel()) + "You died raiding and have been teleported back to your town's spawn.");
+            } catch (TownyException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * Need to add call to KillsListener (defined seperate from Siege)
+     */
+    public void raiderKilledOutofCombat(PlayerDeathEvent event) {
+
+        //award negative score
+        for (final String playerName : this.getActiveRaiders()) {
+            try {
+                Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.Chatlabel()) + "Raider killed before combat, no points awarded and death treated normally.");
+            }
+            catch (NullPointerException ex3) {}
+        }
+        for (final String playerName : this.getDefenderPlayers()) {
+            try {
+                Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.Chatlabel()) + "Raider killed before combat, no points awarded and death treated normally.");
+            }
+            catch (NullPointerException ex4) {}
+        }
+
+        //tp to gather town spawn
+        final Player killed = event.getEntity();
+        if(this.getActiveRaiders().contains(killed.getName())) {
+            try {
+                killed.teleport(this.getGatherTown().getSpawn());
+                killed.sendMessage(String.valueOf(Helper.Chatlabel()) + "You died before raiding and have been teleported back to the gather point.");
+            } catch (TownyException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * Need to add call to KillsListener (defined seperate from Siege)
+     */
+    public void defenderKilledOutofCombat(PlayerDeathEvent event) {
+        for (final String playerName : this.getActiveRaiders()) {
+            try {
+                Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.Chatlabel()) + "Defender killed before combat, no points awarded and death treated normally.");
+            }
+            catch (NullPointerException ex5) {}
+        }
+        for (final String playerName : this.getDefenderPlayers()) {
+            try {
+                Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.Chatlabel()) + "Defender killed before combat, no points awarded and death treated normally.");
+            }
+            catch (NullPointerException ex6) {}
+        }
+
+        //tp to raid town spawn
+        final Player killed = event.getEntity();
+        if(this.getActiveRaiders().contains(killed.getName())) {
+            try {
+                killed.teleport(this.getGatherTown().getSpawn());
+                killed.sendMessage(String.valueOf(Helper.Chatlabel()) + "You died before being raided and have been teleported back to your town's spawn.");
+            } catch (TownyException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public void raidersWin(final Player owner) {
-
+        //TODO
         stop();
     }
 
     public void defendersWin() {
-
+        //TODO
         stop();
     }
 

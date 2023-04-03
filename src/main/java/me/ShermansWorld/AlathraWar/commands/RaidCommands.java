@@ -292,12 +292,15 @@ public class RaidCommands  implements CommandExecutor
 
                         //if we find the raid
                         if(raidFound) {
-                            if(raid.getPhase() == RaidPhase.GATHER) {
+                            //check if gather phase
+                            if(raid.getPhase() == RaidPhase.GATHER || raid.getPhase() == RaidPhase.START) {
                                 if(raid.getGatherTown().hasTownBlock(WorldCoord.parseWorldCoord(p))) {
                                     raid.addActiveRaider(p.getName());
                                     p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You have joined the raid on " + raid.getRaidedTown().getName() + "!");
                                     p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Leaving " + raid.getGatherTown().getName() + " will cause you to leave the raid party.");
                                 }
+                            } else {
+                                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You cannot join the raid on " + raid.getRaidedTown().getName() + "! It has already started!");
                             }
                         }
                     }
