@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class War {
 	private String name;
+	private final int id;
 	private String side1;
 	private String side2;
 	private ArrayList<String> side1Players;
@@ -11,12 +12,13 @@ public class War {
 	private ArrayList<String> side1Mercs;
 	private ArrayList<String> side2Mercs;
 
-	public War(final String name, final String side1, final String side2) {
+	public War(final String name, final int id, final String side1, final String side2) {
 		side1Players = new ArrayList<String>();
 		side2Players = new ArrayList<String>();
 		side1Mercs = new ArrayList<String>();
 		side2Mercs = new ArrayList<String>();
 		this.name = name;
+		this.id = id;
 		this.side1 = side1;
 		this.side2 = side2;
 		side1Players.add("Placeholder1");
@@ -73,6 +75,10 @@ public class War {
 				}
 			}
 		}
+	}
+	
+	public int getId() {
+		return this.id;
 	}
 
 	public String getName() {

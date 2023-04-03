@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -50,8 +51,6 @@ public class WarData
             this.configFile = new File(this.plugin.getDataFolder(), "wars.yml");
         }
 
-
-
         //Gather all war files in this
         warsData.clear();
         Stream<Path> stream = null;
@@ -62,7 +61,10 @@ public class WarData
                     .map(Path::toFile)
                     .filter(file -> {
                         if (file.getName().split(".").length > 1) {
-                            if (file.getName().split(".")[1].equalsIgnoreCase("yml")) {
+                            String[] parse = file.getName().split(".");
+                            int extensionCheck = Arrays.binarySearch(parse, "yml");
+                            // -1 if search fail
+                            if (extensionCheck >= 0) {
                                 return true;
                             }
                         }
@@ -74,7 +76,6 @@ public class WarData
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
-
 
         int i = 0;
         for(File file : warsFiles) {
