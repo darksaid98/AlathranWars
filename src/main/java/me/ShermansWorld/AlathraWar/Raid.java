@@ -1,15 +1,16 @@
 package me.ShermansWorld.AlathraWar;
 
+import com.gmail.goosius.siegewar.TownOccupationController;
 import com.palmergames.bukkit.towny.TownyAPI;
+import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
-import com.palmergames.bukkit.towny.object.Town;
-import com.palmergames.bukkit.towny.object.TownBlock;
-import com.palmergames.bukkit.towny.object.WorldCoord;
+import com.palmergames.bukkit.towny.object.*;
 import me.ShermansWorld.AlathraWar.commands.RaidCommands;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.Plugin;
@@ -150,10 +151,11 @@ public class Raid {
                         Bukkit.getServer().getScheduler().cancelTask(Raid.this.bukkitId[0]);
                         Raid.this.phase = RaidPhase.END;
                         //TODO: fix raid scoring
-                        if (Raid.this.raidScore > 750) {
-                            Raid.this.raidersWin(Raid.this.owner);
+                        //for raiders to win, they need a significant up from the defenders
+                        if (Raid.this.raidScore > 700) {
+                            Raid.this.raidersWin(Raid.this.owner, Raid.this.raidScore);
                         } else {
-                            Raid.this.defendersWin();
+                            Raid.this.defendersWin(Raid.this.raidScore);
                         }
                     } else {
                         final Raid this$0 = Raid.this;
@@ -403,22 +405,117 @@ public class Raid {
         }
     }
 
-    public void raidersWin(final Player owner) {
-        //TODO
+    public void raidersWin(final Player owner, int raidScore) {
+        //TODO finalize payout
+
+        //Calc win factor
+        //difference of score minus 700, then divided by 100
+        //raid needs 10+ kills over defenders to win
+        //factor is 0.5 -> 3
+        double factor = ((raidScore - 700.0) / 100) + 0.5;
+        if(factor > 3.0) factor = 3.0;
+
+        final Resident resident = TownyAPI.getInstance().getResident(owner);
+        Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The raiders from " + this.raiders
+                + " have successfully raided " + this.raidedTown.getName() + "!");
+
+        /*
+        if town has more than 10k, 1/8th of its valuables times the factor is taken
+        if it has less than 10k, 1250 is taken
+
+        the raid chest is also kept
+         */
+        final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(owner.getUniqueId());
+
+        //raid chest
+        Main.econ.depositPlayer(offlinePlayer, 1250);
+        double amt = 0.0;
+        if (this.raidedTown.getAccount().getHoldingBalance() > 10000) {
+            amt = Math.floor(this.raidedTown.getAccount().getHoldingBalance()) / 8.0;
+            amt *= factor;
+            if(amt > 10000.0) amt= 10000.0;
+            this.raidedTown.getAccount().withdraw(amt, "war loot");
+        } else if (this.raidedTown.getAccount().getHoldingBalance() < 1250) {
+            amt = 1250;
+            this.raidedTown.getAccount().withdraw(this.raidedTown.getAccount().getHoldingBalance(), "war loot");
+        } else {
+            amt = 1250;
+            this.raidedTown.getAccount().withdraw(amt, "war loot");
+        }
+
+        String statement = "raided";
+        if(factor <= 1.0) {
+            statement = "looted";
+        } else if(factor <= 2.0) {
+            statement = "ransacked";
+        } else if(factor <= 3.0) {
+            statement = "emptied";
+        }
+
+        Bukkit.broadcastMessage("The town of " + this.raidedTown.getName() + " has been " + statement + " by " + this.getRaiders()
+                + " in a raid for $" + String.valueOf(amt));
+        Main.warLogger.log("The town of " + this.raidedTown.getName() + " has been " + statement + " by " + this.getRaiders()
+                + " in a raid for $" + String.valueOf(amt));
+        Main.econ.depositPlayer(offlinePlayer, amt);
+
+
         stop();
     }
 
-    public void defendersWin() {
-        //TODO
+    public void defendersWin(int raidScore) {
+        //TODO finalize payout
+        /*
+        If defenders win, they get the 1250 deposit.
+         */
+
+        //at a raid score of 699.9999, this results in 0, 700 is considered raider victory
+        //at 600 this results in 0.5
+        //at 500 this results in 1.0
+        //at 0 this results in 3.5, which is capped to 3
+
+        double factor = (3 - ((raidScore) / 200.0) - 0.5);
+        if(factor > 3.0) factor = 3.0;
+
+        String statement = "raided";
+        if(factor <= 0.5) {
+            Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The defenders from " + this.defenders
+                    + " have barely pushed back the raiders of " + this.raiders + ". More has been lost than gained.");
+            Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + this.raidedTown.getName()
+                    + " has recovered part of the attackers' raid chest, valued at $625");
+            Main.warLogger
+                    .log("The defenders from " + this.defenders + " have won the raid of " + this.raidedTown.getName() + "!");
+            this.raidedTown.getAccount().deposit(625, "Raid chest");
+        } else if(factor <= 1.5) {
+            Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The defenders from " + this.defenders
+                    + " have fended off the raiders of " + this.raiders + "!");
+            Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + this.raidedTown.getName()
+                    + " has recovered the attackers' raid chest, valued at $1,250");
+            Main.warLogger
+                    .log("The defenders from " + this.defenders + " have won the raid of " + this.raidedTown.getName() + "!");
+            this.raidedTown.getAccount().deposit(1250, "Raid chest");
+        } else if(factor <= 3.0) {
+            Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The defenders from " + this.defenders
+                    + " have wholly defeated the raiders of " + this.raiders + "! They barely broke the walls.");
+            Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + this.raidedTown.getName()
+                    + " has recovered the attackers' raid chest, valued at $1,250.");
+            Main.warLogger
+                    .log("The defenders from " + this.defenders + " have won the raid of " + this.raidedTown.getName() + "!");
+            this.raidedTown.getAccount().deposit(1250, "Raid chest");
+        }
+
         stop();
     }
 
     public void addPointsToRaidScore(final int points) {
         this.raidScore += points;
+        //cap
+        if(raidScore > 1000) this.raidScore = 1000;
     }
 
     public void subtractPointsFromRaidScore(final int points) {
         this.raidScore -= points;
+        //cap
+        if(raidScore < 0) this.raidScore = 0;
     }
 
 

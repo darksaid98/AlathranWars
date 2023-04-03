@@ -14,7 +14,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
 
@@ -110,7 +109,7 @@ public class RaidCommands implements CommandExecutor
                             found2 = true;
                             Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The raid on " + RaidCommands.raids.get(j).getRaidedTown().getName() + " has been abandoned by " + RaidCommands.raids.get(j).getRaiders());
                             Main.warLogger.log(p.getName() + " abandoned the raid on " + RaidCommands.raids.get(j).getRaidedTown().getName() + " they started at " + RaidCommands.raids.get(j).getGatherTown().getName());
-                            RaidCommands.raids.get(j).defendersWin();
+                            RaidCommands.raids.get(j).defendersWin(raids.get(j).getRaidScore());
                             break;
                         }
                     }
@@ -243,14 +242,13 @@ public class RaidCommands implements CommandExecutor
                                     }
                                 }
                                 final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(p.getUniqueId());
-                                //TODO check econ values, and if this costs money to begin with
-                                if (Main.econ.getBalance(offlinePlayer) <= 4000.0) {
-                                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must have at least $4,000 to put up to start a raid");
+                                if (Main.econ.getBalance(offlinePlayer) <= 2500.0) {
+                                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must have at least $2500 to put up to start a raid.");
                                     Main.raidData.getConfig().set("Raids." + String.valueOf(RaidCommands.maxID), (Object)null);
                                     Main.raidData.saveConfig();
                                     return false;
                                 }
-                                Main.econ.withdrawPlayer(offlinePlayer, 4000.0);
+                                Main.econ.withdrawPlayer(offlinePlayer, 2500);
                                 RaidCommands.raids.add(raid2);
                                 raid2.start();
                                 Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "As part of " + war.getName() + ", forces from " + raid2.getRaiders() + " are gathering to raid the town of " + raidedTown.getName() + "!");
