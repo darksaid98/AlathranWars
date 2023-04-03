@@ -6,7 +6,6 @@ import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
 import com.palmergames.bukkit.towny.object.WorldCoord;
-import com.sun.tools.javac.util.Pair;
 import me.ShermansWorld.AlathraWar.commands.RaidCommands;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import org.bukkit.Bukkit;
@@ -37,11 +36,11 @@ The raid is split into two phases:
     v/ Defenders are given time to get to the town. (travel is announced way in ahead)
 - COMBAT PHASE
     v/ Raiders go to town
-    v/ Combat occurs
+    - Combat occurs
     - Decides outcome of raid
 
 TODO LIST:
-v/ No teleporting by raiders (also defenders)
+- No teleporting by raiders
 v/ Points management
     v/ Raider death is negative score
     v/ Defender death is positive score
@@ -76,7 +75,7 @@ public class Raid {
     int[] bukkitId;
     public ArrayList<String> raiderPlayers;
     public ArrayList<String> defenderPlayers;
-    public ArrayList<Pair<String,Boolean>> activeRaiders;
+    public ArrayList<String> activeRaiders;
 
     // Constructs raid for staging phase
     public Raid(final int id, final War war, final Town raidedTown, final Town gatherTown, final String raiders, final String defenders,
@@ -86,7 +85,7 @@ public class Raid {
         this.bukkitId = new int[1];
         this.raiderPlayers = new ArrayList<String>();
         this.defenderPlayers = new ArrayList<String>();
-        this.activeRaiders = new ArrayList<Pair<String,Boolean>>();
+        this.activeRaiders = new ArrayList<String>();
         this.war = war;
         this.raidedTown = raidedTown;
         this.gatherTown = gatherTown;
@@ -283,8 +282,7 @@ public class Raid {
     }
 
     /**
-     * Use only during combat phase of raid
-     * @param event
+     * Need to add call to KillsListener (defined seperate from Siege)
      */
     public void raiderKilledInCombat(PlayerDeathEvent event) {
 
@@ -313,20 +311,10 @@ public class Raid {
                 throw new RuntimeException(e);
             }
         }
-
-        //Tag that the player has been killed in the raid
-        for(Pair<String,Boolean> p : this.activeRaiders) {
-            if(p.fst.equals(killed.getName()) && !p.snd) {
-                Pair<String,Boolean> newP = new Pair<String,Boolean>(p.fst, true);
-                this.activeRaiders.remove(p);
-                this.activeRaiders.add(newP);
-            }
-        }
     }
 
     /**
-     * Use only during combat phase of raid
-     * @param event
+     * Need to add call to KillsListener (defined seperate from Siege)
      */
     public void defenderKilledInCombat(PlayerDeathEvent event) {
         this.addPointsToRaidScore(20);
@@ -356,8 +344,7 @@ public class Raid {
     }
 
     /**
-     * Use only out of combat phase of raid
-     * @param event
+     * Need to add call to KillsListener (defined seperate from Siege)
      */
     public void raiderKilledOutofCombat(PlayerDeathEvent event) {
 
@@ -388,8 +375,7 @@ public class Raid {
     }
 
     /**
-     * Use only out of combat phase of raid
-     * @param event
+     * Need to add call to KillsListener (defined seperate from Siege)
      */
     public void defenderKilledOutofCombat(PlayerDeathEvent event) {
         for (final String playerName : this.getActiveRaiders()) {
@@ -537,33 +523,18 @@ public class Raid {
     }
 
     public ArrayList<String> getActiveRaiders() {
-        ArrayList<String> raidersNames = new ArrayList<>();
-        for(Pair<String,Boolean> p : this.activeRaiders) {
-            raidersNames.add(p.fst);
-        }
-        return raidersNames;
-    }
-
-    public ArrayList<Pair<String,Boolean>> getActiveRaidersRaw() {
         return this.activeRaiders;
     }
 
-    public void setActiveRaiders(ArrayList<Pair<String,Boolean>> activeRaiders) {
+    public void setActiveRaiders(ArrayList<String> activeRaiders) {
         this.activeRaiders = activeRaiders;
     }
 
     public void addActiveRaider(String player) {
-        this.activeRaiders.add(new Pair<String,Boolean>(player, false));
+        this.activeRaiders.add(player);
     }
 
-    /**
-     * Finds first!!!! and removes
-     * @param name
-     */
     public void removeActiveRaider(String name) {
-        for(Pair<String,Boolean> p : this.activeRaiders) {
-            if(p.fst.equals(name)) this.activeRaiders.remove(p);
-            return;
-        }
+        this.activeRaiders.remove(name);
     }
 }
