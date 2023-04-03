@@ -49,9 +49,8 @@ public class RaidCommands  implements CommandExecutor
                     p.sendMessage("Town: " + raid.getTown().getName());
                     p.sendMessage("Raiders: " + raid.getRaiders());
                     p.sendMessage("Defenders: " + raid.getDefenders());
-                    p.sendMessage("Raider Points: " + String.valueOf(raid.getRaiderPoints()));
-                    p.sendMessage("Defender Points: " + String.valueOf(raid.getDefenderPoints()));
-                    p.sendMessage("Time Left: " + String.valueOf((108000 - Main.raidData.getConfig().getInt("Raids." + String.valueOf(String.valueOf(raid.getID()) + ".raidticks"))) / 1200) + " minutes");
+                    p.sendMessage("Raid Score: " + String.valueOf(raid.getRaidScore()));
+                    p.sendMessage("Time Left: " + String.valueOf((72000 - Main.raidData.getConfig().getInt("Raids." + String.valueOf(String.valueOf(raid.getID()) + ".raidticks"))) / 1200) + " minutes");
                     p.sendMessage("-=-=-=-=-=-=-=-=-=-=-=-");
                 }
             } else if (args[0].equalsIgnoreCase("help")) {
