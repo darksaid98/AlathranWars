@@ -14,10 +14,11 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 
 import java.util.ArrayList;
 
-public class RaidCommands  implements CommandExecutor
+public class RaidCommands implements CommandExecutor
 {
     public static ArrayList<Town> towns;
     public static ArrayList<Raid> raids;

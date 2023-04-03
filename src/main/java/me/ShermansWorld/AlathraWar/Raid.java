@@ -1,6 +1,7 @@
 package me.ShermansWorld.AlathraWar;
 
 import com.palmergames.bukkit.towny.TownyAPI;
+import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
@@ -181,6 +182,24 @@ public class Raid {
                                         + Raid.this.getRaidedTown().getName() + " will begin in " + (int) (RaidPhase.TRAVEL.startTick / 20 / 60) + " minutes!");
                                 Bukkit.broadcastMessage(
                                         "The Raiders are gathering at " + getGatherTown().getName() + " before making the journey over!");
+                            }
+
+
+                            //Prevent players from leaving gather town prematurely
+                            for (String playerName : getActiveRaiders()) {
+                                try {
+                                    Player p = Bukkit.getPlayer(playerName);
+                                    if(!WorldCoord.parseWorldCoord(p).getTownBlock().getTown().equals(Raid.this.getGatherTown())) {
+                                        Raid.this.removeActiveRaider(p.getName());
+                                        p.sendMessage(String.valueOf(Helper.Chatlabel()) + "By leaving the gathering town you have left the raid on " + Raid.this.getRaidedTown().getName() + "!");
+                                        p.sendMessage(String.valueOf(Helper.Chatlabel()) + "To rejoin, do /raid join [war] [town]");
+
+                                    }
+                                } catch (NullPointerException e) {
+                                    e.printStackTrace();
+                                } catch (NotRegisteredException e) {
+                                    e.printStackTrace();
+                                }
                             }
 
                         }
