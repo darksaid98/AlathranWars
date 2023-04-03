@@ -1,7 +1,6 @@
 package me.ShermansWorld.AlathraWar;
 
 import com.palmergames.bukkit.towny.TownyAPI;
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
@@ -119,7 +118,7 @@ public class Raid {
 
         // Creates 10 second looping function for Raid
         this.bukkitId[0] = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask((Plugin) Main.getInstance(),
-                (Runnable) new Runnable() {
+            (Runnable) new Runnable() {
 
                 @Override
                 public void run() {
@@ -148,27 +147,7 @@ public class Raid {
                         Main.raidData.getConfig().set("Raids." + String.valueOf(Raid.this.id) + ".raidticks",
                                 (Object) Raid.this.raidTicks);
                         Main.raidData.saveConfig();
-                    @Override
-                    public void run() {
-                        if (homeBlock != null) {
-                            town.setHomeBlock(homeBlock);
-                            town.setSpawn(townSpawn);
-                        }
 
-                        // If time runs out, stops scheduled task.
-                        if (Raid.this.raidTicks >= Raid.this.MAXRAIDTICKS) {
-                            Bukkit.getServer().getScheduler().cancelTask(Raid.this.bukkitId[0]);
-                            if (Raid.this.raiderPoints > Raid.this.defenderPoints) {
-                                Raid.this.raidersWin(Raid.this.owner);
-                            } else {
-                                Raid.this.defendersWin();
-                            }
-                        } else {
-                            final Raid this$0 = Raid.this;
-                            Raid.access$7(this$0, this$0.raidTicks + 200);
-                            Main.raidData.getConfig().set("Raids." + String.valueOf(Raid.this.id) + ".raidticks",
-                                    (Object) Raid.this.raidTicks);
-                            Main.raidData.saveConfig();
 
                         //check and start travel phase
                         if (Raid.this.raidTicks >= RaidPhase.TRAVEL.startTick && Raid.this.phase != RaidPhase.TRAVEL) {
@@ -177,7 +156,7 @@ public class Raid {
 
                         //check and start combat phase
                         if (Raid.this.raidTicks >= RaidPhase.COMBAT.startTick && Raid.this.phase != RaidPhase.COMBAT) {
-                           startCombat();
+                            startCombat();
                         }
 
 
@@ -195,9 +174,9 @@ public class Raid {
                         //Raid Travel phase behavior
                         else if (Raid.this.phase == RaidPhase.TRAVEL) {
                             //Check if a player has arrived at the town (in it) and if so start combat
-                            for(String player : raiderPlayers) {
+                            for (String player : raiderPlayers) {
                                 WorldCoord playercoord = WorldCoord.parseWorldCoord(Bukkit.getPlayer(player));
-                                if(Raid.this.town.hasTownBlock(playercoord)) {
+                                if (Raid.this.town.hasTownBlock(playercoord)) {
                                     startCombat();
                                 }
                             }
@@ -217,8 +196,7 @@ public class Raid {
                     }
                 }
             }, 0L, 200L);
-
-    }
+        }
 
     // End of raid
     public void stop() {
