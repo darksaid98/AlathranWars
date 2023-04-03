@@ -514,4 +514,8 @@ public class Raid {
     public void addActiveRaider(String player) {
         this.activeRaiders.add(player);
     }
+
+    public void removeActiveRaider(String name) {
+        this.activeRaiders.remove(name);
+    }
 }

@@ -130,15 +130,15 @@ public class Main extends JavaPlugin {
 				List<Town> townList = TownyAPI.getInstance().getTowns();
 				for (final Town town : townList) {
 					if (town.getName().equalsIgnoreCase(
-							siegeData.getConfig().getString("Raids." + raidsTempList.get(i) + ".town"))) {
+							raidData.getConfig().getString("Raids." + raidsTempList.get(i) + ".town"))) {
 						raidTown = town;
 					}
 				}
 				Raid raid = new Raid(Integer.parseInt(raidsTempList.get(i)), raidWar, raidTown,
-						siegeData.getConfig().getString("Raids." + raidsTempList.get(i) + ".raiders"),
-						siegeData.getConfig().getString("Raids." + raidsTempList.get(i) + ".defenders"),
-						siegeData.getConfig().getBoolean("Raids." + raidsTempList.get(i) + ".side1areraiders"),
-						siegeData.getConfig().getBoolean("Raids." + raidsTempList.get(i) + ".side2areraiders"));
+						raidData.getConfig().getString("Raids." + raidsTempList.get(i) + ".raiders"),
+						raidData.getConfig().getString("Raids." + raidsTempList.get(i) + ".defenders"),
+						raidData.getConfig().getBoolean("Raids." + raidsTempList.get(i) + ".side1areraiders"),
+						raidData.getConfig().getBoolean("Raids." + raidsTempList.get(i) + ".side2areraiders"));
 				raid.start();
 			}
 		} catch (NullPointerException e) {

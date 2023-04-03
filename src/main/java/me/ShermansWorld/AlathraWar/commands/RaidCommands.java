@@ -63,6 +63,7 @@ public class RaidCommands  implements CommandExecutor
                 }
                 p.sendMessage(Helper.Chatlabel() + "/raid start [war] [town]");
                 p.sendMessage(Helper.Chatlabel() + "/raid join [war] [town]");
+                p.sendMessage(Helper.Chatlabel() + "/raid leave [war] [town]");
                 p.sendMessage(Helper.Chatlabel() + "/raid abandon [id]");
                 p.sendMessage(Helper.Chatlabel() + "/raid list");
             } else {
@@ -301,6 +302,56 @@ public class RaidCommands  implements CommandExecutor
                                 }
                             } else {
                                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You cannot join the raid on " + raid.getRaidedTown().getName() + "! It has already started!");
+                            }
+                        }
+                    }
+                }
+                if (!warFound) {
+                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "That war does not exist! /raid start [war] [town]");
+                    return false;
+                }
+                if (!townExists) {
+                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "That town does not exist! /raid start [war] [town]");
+                }
+                if (!raidFound) {
+                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "No raid is gathering in this town!");
+                    return false;
+                }
+            } else if (args[0].equalsIgnoreCase("leave")) {
+                boolean warFound = false;
+                boolean townExists = false;
+                boolean raidFound = false;
+                for (final War war : WarCommands.wars) {
+                    if (war.getName().equalsIgnoreCase(args[1])) {
+                        warFound = true;
+                        if (!war.getSide1Players().contains(p.getName()) && !war.getSide2Players().contains(p.getName())) {
+                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You are not in this war! Type /war join [war] [side]");
+                        }
+                        TownyWorld townyWorld;
+                        townyWorld = WorldCoord.parseWorldCoord(p.getLocation()).getTownyWorld();
+                        if (!RaidCommands.towns.isEmpty()) {
+                            RaidCommands.towns.clear();
+                        }
+
+                        //find the associated raid
+                        Raid raid = null;
+                        for(Raid r : raids) {
+                            if(r.getWar().getId() == war.getId()) {
+                                raidFound = true;
+                                raid = r;
+                            }
+                        }
+
+                        //if we find the raid
+                        if(raidFound) {
+                            //check if gather phase
+                            if(raid.getPhase() == RaidPhase.GATHER || raid.getPhase() == RaidPhase.START) {
+                                if(raid.getGatherTown().hasTownBlock(WorldCoord.parseWorldCoord(p))) {
+                                    raid.removeActiveRaider(p.getName());
+                                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You have left the raid on " + raid.getRaidedTown().getName() + "!");
+                                }
+                            } else {
+                                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You cannot leave the raid on " + raid.getRaidedTown().getName() + "! It has already started!");
                             }
                         }
                     }
