@@ -21,11 +21,13 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class WarData
@@ -80,7 +82,7 @@ public class WarData
         int i = 0;
         for(File file : warsFiles) {
             this.warsData.add(i, new Pair(YamlConfiguration.loadConfiguration(file), file));
-            //template
+            //template, may not be needed but eh ill let this work for now
             final InputStream defaultStream = this.plugin.getResource("warstemplate.yml");
             if (defaultStream != null) {
                 final YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration((Reader)new InputStreamReader(defaultStream));
@@ -91,21 +93,22 @@ public class WarData
     }
 
     @Nullable
-    public FileConfiguration getConfig(int id) {
+    public FileConfiguration getConfig(@Nonnull UUID id) {
         if (this.warsData.isEmpty() || this.warsData == null) {
             this.reloadConfig();
         }
 
 
         for (Pair<FileConfiguration,File> file : this.warsData) {
-            if(file.fst.getInt("id") == id) {
+            UUID fileUUID = UUID.fromString(file.fst.getString("id"));
+            if(fileUUID.compareTo(id) == 0) {
                 return file.fst;
             }
         }
         return null;
     }
     
-    public void saveConfig(int id) {
+    public void saveConfig(@Nonnull UUID id) {
         if (this.warsData.isEmpty() || this.warsData == null) {
             return;
         }
@@ -113,7 +116,8 @@ public class WarData
         FileConfiguration toSave = null;
 
         for (int i = 0; i < warsData.size(); i++) {
-            if (warsData.get(i).fst.getInt("id") == id) {
+            UUID fileUUID = UUID.fromString(warsData.get(i).fst.getString("id"));
+            if (fileUUID.compareTo(id) == 0) {
                 try {
                     warsData.get(i).fst.save(warsData.get(i).snd);
                 } catch (IOException e) {
@@ -129,13 +133,14 @@ public class WarData
      * Also removes the war from the data list
      * @param id
      */
-    public void archiveWar(int id) {
+    public void archiveWar(@Nonnull UUID id) {
         if (this.warsData.isEmpty() || this.warsData == null) {
             return;
         }
 
         for (int i = 0; i < warsData.size(); i++) {
-            if (warsData.get(i).fst.getInt("id") == id) {
+            UUID fileUUID = UUID.fromString(warsData.get(i).fst.getString("id"));
+            if (fileUUID.compareTo(id) == 0) {
                 try {
                     Path archive = Paths.get(this.plugin.getDataFolder().toString() + "/wars/archive/" + warsData.get(i).snd.getName() + ".old");
                     Files.copy(warsData.get(i).snd.toPath(), archive, StandardCopyOption.REPLACE_EXISTING);
@@ -149,6 +154,10 @@ public class WarData
     }
 
 
+    /**
+     * Grab actual config for war file
+     * @return
+     */
     public FileConfiguration getConfigConfig() {
         if (this.warsData.isEmpty() || this.warsData == null) {
             this.reloadConfig();
@@ -157,6 +166,9 @@ public class WarData
         return this.configConfig;
     }
 
+    /**
+     * Save actual config for war file
+     */
     public void saveConfigConfig() {
         if (this.configConfig == null || this.configFile == null) {
             return;
