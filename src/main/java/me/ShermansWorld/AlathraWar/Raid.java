@@ -11,7 +11,6 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 
-
 /* RAID EXPLANATION
 
 Raids are run by raiding parties, who gather at a separate town,
@@ -45,6 +44,7 @@ TODO LIST:
 
 /**
  * This is based on the existing Siege Class
+ * 
  * @author AubriTheHuman
  * @author NinjaMandalorian
  * @author ShermansWorld
@@ -71,17 +71,17 @@ public class Raid {
 
     // Constructs raid for staging phase
     public Raid(final int id, final War war, final Town town, final String raiders, final String defenders,
-                 final boolean side1AreRaiders, final boolean side2AreRaiders) {
+            final boolean side1AreRaiders, final boolean side2AreRaiders) {
         /*
-        this.raidTicks = 0;
-        this.bukkitId = new int[1];
-        this.raiderPlayers = new ArrayList<String>();
-        this.defenderPlayers = new ArrayList<String>();
-        this.war = war;
-        this.town = town;
-        this.raiders = raiders;
-        this.id = id;
-        */
+         * this.raidTicks = 0;
+         * this.bukkitId = new int[1];
+         * this.raiderPlayers = new ArrayList<String>();
+         * this.defenderPlayers = new ArrayList<String>();
+         * this.war = war;
+         * this.town = town;
+         * this.raiders = raiders;
+         * this.id = id;
+         */
     }
 
     public void start() {
@@ -97,7 +97,6 @@ public class Raid {
         // Creates 10 second looping function for Raid
         this.bukkitId[0] = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask((Plugin) Main.getInstance(),
                 (Runnable) new Runnable() {
-                    int homeBlockControl = 0;
 
                     @Override
                     public void run() {
@@ -105,13 +104,8 @@ public class Raid {
                             town.setHomeBlock(homeBlock);
                             town.setSpawn(townSpawn);
                         }
-                        if (Raid.this.side1AreRaiders) {
-                            Raid.this.raiderPlayers = Raid.this.war.getSide1Players();
-                            Raid.this.defenderPlayers = Raid.this.war.getSide2Players();
-                        } else {
-                            Raid.this.raiderPlayers = Raid.this.war.getSide2Players();
-                            Raid.this.defenderPlayers = Raid.this.war.getSide1Players();
-                        }
+
+                        // If time runs out, stops scheduled task.
                         if (Raid.this.raidTicks >= Raid.this.MAXRAIDTICKS) {
                             Bukkit.getServer().getScheduler().cancelTask(Raid.this.bukkitId[0]);
                             if (Raid.this.raiderPoints > Raid.this.defenderPoints) {
@@ -126,7 +120,7 @@ public class Raid {
                                     (Object) Raid.this.raidTicks);
                             Main.raidData.saveConfig();
 
-
+                            // Raid update
                             if (Raid.this.raidTicks % 6000 == 0) {
                                 Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "Report on the raid of "
                                         + Raid.this.town.getName() + ":");
@@ -144,11 +138,10 @@ public class Raid {
     // End of raid
     public void stop() {
         Bukkit.getScheduler().cancelTask(this.bukkitId[0]);
-        RaidCommands.raids.remove(this);  //im not making this rn -Aubri
+        RaidCommands.raids.remove(this); // im not making this rn -Aubri
         Main.raidData.getConfig().set("Raids." + String.valueOf(this.id), (Object) null);
         Main.raidData.saveConfig();
     }
-
 
     /**
      * Need to add call to KillsListener (defined seperate from Siege)
