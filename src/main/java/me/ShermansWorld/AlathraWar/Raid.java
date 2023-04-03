@@ -15,7 +15,6 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 
-
 /* RAID EXPLANATION
 
 Raids are run by raiding parties, who gather at a separate town,
@@ -120,8 +119,7 @@ public class Raid {
 
         // Creates 10 second looping function for Raid
         this.bukkitId[0] = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask((Plugin) Main.getInstance(),
-            (Runnable) new Runnable() {
-                int homeBlockControl = 0;
+                (Runnable) new Runnable() {
 
                 @Override
                 public void run() {
@@ -150,6 +148,27 @@ public class Raid {
                         Main.raidData.getConfig().set("Raids." + String.valueOf(Raid.this.id) + ".raidticks",
                                 (Object) Raid.this.raidTicks);
                         Main.raidData.saveConfig();
+                    @Override
+                    public void run() {
+                        if (homeBlock != null) {
+                            town.setHomeBlock(homeBlock);
+                            town.setSpawn(townSpawn);
+                        }
+
+                        // If time runs out, stops scheduled task.
+                        if (Raid.this.raidTicks >= Raid.this.MAXRAIDTICKS) {
+                            Bukkit.getServer().getScheduler().cancelTask(Raid.this.bukkitId[0]);
+                            if (Raid.this.raiderPoints > Raid.this.defenderPoints) {
+                                Raid.this.raidersWin(Raid.this.owner);
+                            } else {
+                                Raid.this.defendersWin();
+                            }
+                        } else {
+                            final Raid this$0 = Raid.this;
+                            Raid.access$7(this$0, this$0.raidTicks + 200);
+                            Main.raidData.getConfig().set("Raids." + String.valueOf(Raid.this.id) + ".raidticks",
+                                    (Object) Raid.this.raidTicks);
+                            Main.raidData.saveConfig();
 
                         //check and start travel phase
                         if (Raid.this.raidTicks >= RaidPhase.TRAVEL.startTick && Raid.this.phase != RaidPhase.TRAVEL) {

@@ -76,7 +76,7 @@ public class War {
 			}
 		}
 	}
-	
+
 	public int getId() {
 		return this.id;
 	}
