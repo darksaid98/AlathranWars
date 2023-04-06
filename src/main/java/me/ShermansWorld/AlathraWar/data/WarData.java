@@ -12,14 +12,18 @@ import java.io.FilenameFilter;
 public class WarData
 {
     private static Main plugin;
-    private static String dataFolderPath = "plugins" + File.separator + "AlathraWar" + File.separator + "data";
-    FilenameFilter ymlFilter = new FilenameFilter() {
+    private final static String dataFolderPath = "plugins" + File.separator + "AlathraWar" + File.separator + "data";
+
+    // Static War list for all active wars
+    private static ArrayList<War> wars = new ArrayList<War>();
+
+    // Filter for only accessing yml files
+    private static FilenameFilter ymlFilter = new FilenameFilter() {
         @Override
         public boolean accept(File dir, String name) {
             return name.endsWith(".yml");
         }
     };
-
 
     public WarData(final Main plugin) {
         File userDataFolder = new File(dataFolderPath + File.separator + "wars");
@@ -30,12 +34,24 @@ public class WarData
         WarData.plugin = plugin;
     }
     
+    public static ArrayList<War> getWars() {
+        return wars;
+    }
+
+    public static void setWars(ArrayList<War> wars) {
+        WarData.wars = wars;
+    }
+
+    public static void addWar(War war) {
+        wars.add(war);
+    }
+
     /**
      * Gets the wars currently saved in files as an ArrayList of War Objects
      * @return War Object ArrayList
      */
     public static ArrayList<War> createWars() {
-        File[] files = new File(dataFolderPath + File.separator + "wars").listFiles();
+        File[] files = new File(dataFolderPath + File.separator + "wars").listFiles(ymlFilter);
 
         ArrayList<War> returnList = new ArrayList<War>();
         for (File file : files) {
