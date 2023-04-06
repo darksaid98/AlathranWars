@@ -1,192 +1,91 @@
 package me.ShermansWorld.AlathraWar.data;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import com.sun.tools.javac.util.Pair;
-import org.bukkit.configuration.Configuration;
-import java.io.Reader;
-import java.io.InputStreamReader;
-import org.bukkit.configuration.file.YamlConfiguration;
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import me.ShermansWorld.AlathraWar.Main;
+import me.ShermansWorld.AlathraWar.War;
 
 import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.bukkit.configuration.file.FileConfiguration;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.io.FilenameFilter;
 
 public class WarData
 {
-    private Main plugin;
-    private File configFile;
-    private FileConfiguration configConfig;
+    private static Main plugin;
+    private static String dataFolderPath = "plugins" + File.separator + "AlathraWar" + File.separator + "data";
+    FilenameFilter ymlFilter = new FilenameFilter() {
+        @Override
+        public boolean accept(File dir, String name) {
+            return name.endsWith(".yml");
+        }
+    };
 
 
-    //Stored as a pair so theres no need to sync two lists
-    private final List<Pair<FileConfiguration, File>> warsData;
-    
     public WarData(final Main plugin) {
-        this.configFile = null;
-        this.configConfig = null;
-        this.warsData = new ArrayList<Pair<FileConfiguration, File>>();
-        this.plugin = plugin;
-        this.saveDefaultConfig();
+        File userDataFolder = new File(dataFolderPath + File.separator + "wars");
+		if (!userDataFolder.exists()) {
+			userDataFolder.mkdirs();
+		}
+
+        WarData.plugin = plugin;
     }
     
-    public void reloadConfig() {
-        if (this.configFile == null) {
-            this.configFile = new File(this.plugin.getDataFolder(), "wars.yml");
+    /**
+     * Gets the wars currently saved in files as an ArrayList of War Objects
+     * @return War Object ArrayList
+     */
+    public static ArrayList<War> createWars() {
+        File[] files = new File(dataFolderPath + File.separator + "wars").listFiles();
+
+        ArrayList<War> returnList = new ArrayList<War>();
+        for (File file : files) {
+            HashMap<String, Object> fileData = DataManager.getData(file);
+            War fileWar = fromMap(fileData);
+            returnList.add(fileWar);
         }
 
-        //Gather all war files in this
-        warsData.clear();
-        Stream<Path> stream = null;
-        List<File> warsFiles = new ArrayList<File>();
-        try {
-            stream = Files.list(Paths.get(new URI(this.plugin.getDataFolder().toString() + "/wars/")));
-            warsFiles.addAll(stream.filter(file -> !Files.isDirectory(file))
-                    .map(Path::toFile)
-                    .filter(file -> {
-                        if (file.getName().split(".").length > 1) {
-                            String[] parse = file.getName().split(".");
-                            int extensionCheck = Arrays.binarySearch(parse, "yml");
-                            // -1 if search fail
-                            if (extensionCheck >= 0) {
-                                return true;
-                            }
-                        }
-                        return false;
-                    })
-                    .collect(Collectors.toList()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-
-        int i = 0;
-        for(File file : warsFiles) {
-            this.warsData.add(i, new Pair(YamlConfiguration.loadConfiguration(file), file));
-            //template, may not be needed but eh ill let this work for now
-            final InputStream defaultStream = this.plugin.getResource("warstemplate.yml");
-            if (defaultStream != null) {
-                final YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration((Reader)new InputStreamReader(defaultStream));
-                this.warsData.get(i).fst.setDefaults((Configuration)defaultConfig);
-            }
-            i++;
-        }
+        return returnList;
     }
 
-    @Nullable
-    public FileConfiguration getConfig(@Nonnull UUID id) {
-        if (this.warsData.isEmpty() || this.warsData == null) {
-            this.reloadConfig();
-        }
+    /**
+     * Creates a war object from a provided HashMap
+     * @param fileData
+     * @return War object
+     */
+    public static War fromMap(HashMap<String, Object> fileData) {
+
+        War war = new War((String) fileData.get("name"),
+        (String) fileData.get("side1"),
+        (String) fileData.get("side2")
+        );
+        
+        war.setSide1Towns(null);
+        war.setSide2Towns(null);
 
 
-        for (Pair<FileConfiguration,File> file : this.warsData) {
-            UUID fileUUID = UUID.fromString(file.fst.getString("id"));
-            if(fileUUID.compareTo(id) == 0) {
-                return file.fst;
-            }
-        }
         return null;
     }
-    
-    public void saveConfig(@Nonnull UUID id) {
-        if (this.warsData.isEmpty() || this.warsData == null) {
-            return;
-        }
-
-        FileConfiguration toSave = null;
-
-        for (int i = 0; i < warsData.size(); i++) {
-            UUID fileUUID = UUID.fromString(warsData.get(i).fst.getString("id"));
-            if (fileUUID.compareTo(id) == 0) {
-                try {
-                    warsData.get(i).fst.save(warsData.get(i).snd);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
 
     /**
-     * Archive a wars file for later reference (deleted basically)
-     * Also removes the war from the data list
-     * @param id
+     * Saves the war into files.
+     * @param war - War to be saved.
      */
-    public void archiveWar(@Nonnull UUID id) {
-        if (this.warsData.isEmpty() || this.warsData == null) {
-            return;
-        }
+    public static void saveWar(War war) {
+        HashMap<String, Object> sHashMap = new HashMap<String,Object>();
 
-        for (int i = 0; i < warsData.size(); i++) {
-            UUID fileUUID = UUID.fromString(warsData.get(i).fst.getString("id"));
-            if (fileUUID.compareTo(id) == 0) {
-                try {
-                    Path archive = Paths.get(this.plugin.getDataFolder().toString() + "/wars/archive/" + warsData.get(i).snd.getName() + ".old");
-                    Files.copy(warsData.get(i).snd.toPath(), archive, StandardCopyOption.REPLACE_EXISTING);
-                    Files.delete(warsData.get(i).snd.toPath());
-                    warsData.remove(i);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-    }
+        // Shoves everything into a map.
+        sHashMap.put("name", war.getName());
+        sHashMap.put("side1", war.getSide1());
+        sHashMap.put("side2", war.getSide2());
+        sHashMap.put("side1Towns", (List<String>) war.getSide1Towns());
+        sHashMap.put("side2Towns", (List<String>) war.getSide2Towns());
+        sHashMap.put("surrenderedTowns", (List<String>) war.getSurrenderedTowns());
+
+        sHashMap.put("sieges", SiegeData.getSiegeMap(war));
+        sHashMap.put("raids", RaidData.getRaidMap(war));
 
 
-    /**
-     * Grab actual config for war file
-     * @return
-     */
-    public FileConfiguration getConfigConfig() {
-        if (this.warsData.isEmpty() || this.warsData == null) {
-            this.reloadConfig();
-        }
-
-        return this.configConfig;
-    }
-
-    /**
-     * Save actual config for war file
-     */
-    public void saveConfigConfig() {
-        if (this.configConfig == null || this.configFile == null) {
-            return;
-        }
-        try {
-            this.getConfigConfig().save(this.configFile);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+        DataManager.saveData(dataFolderPath + File.separator + "wars" + File.separator + war.getName() + ".yml", sHashMap);
     }
     
-    public void saveDefaultConfig() {
-        if (this.configFile == null) {
-            this.configFile = new File(this.plugin.getDataFolder(), "wars.yml");
-        }
-        if (!this.configFile.exists()) {
-            this.plugin.saveResource("wars.yml", false);
-        }
-    }
 }
