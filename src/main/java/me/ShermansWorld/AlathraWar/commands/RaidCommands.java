@@ -2,10 +2,8 @@ package me.ShermansWorld.AlathraWar.commands;
 
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
-import com.palmergames.bukkit.towny.object.Resident;
-import com.palmergames.bukkit.towny.object.Town;
-import com.palmergames.bukkit.towny.object.TownyWorld;
-import com.palmergames.bukkit.towny.object.WorldCoord;
+import com.palmergames.bukkit.towny.exceptions.TownyException;
+import com.palmergames.bukkit.towny.object.*;
 import me.ShermansWorld.AlathraWar.*;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import org.bukkit.Bukkit;
@@ -294,11 +292,17 @@ public class RaidCommands implements CommandExecutor
                         if(raidFound) {
                             //check if gather phase
                             if(raid.getPhase() == RaidPhase.GATHER || raid.getPhase() == RaidPhase.START) {
-                                if(raid.getGatherTown().hasTownBlock(WorldCoord.parseWorldCoord(p))) {
-                                    raid.addActiveRaider(p.getName());
-                                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You have joined the raid on " + raid.getRaidedTown().getName() + "!");
-                                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Leaving " + raid.getGatherTown().getName() + " will cause you to leave the raid party.");
+                                try {
+                                    ArrayList<WorldCoord> cluster = Helper.getCluster(raid.getGatherTown().getHomeBlock().getWorldCoord());
+                                    if(cluster.contains(WorldCoord.parseWorldCoord(p))) {
+                                        raid.addActiveRaider(p.getName());
+                                        p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You have joined the raid on " + raid.getRaidedTown().getName() + "!");
+                                        p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Leaving " + raid.getGatherTown().getName() + " will cause you to leave the raid party.");
+                                    }
+                                } catch (TownyException e) {
+                                    throw new RuntimeException(e);
                                 }
+
                             } else {
                                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You cannot join the raid on " + raid.getRaidedTown().getName() + "! It has already started!");
                             }

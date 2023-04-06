@@ -1,5 +1,6 @@
 package me.ShermansWorld.AlathraWar;
 
+import com.palmergames.bukkit.towny.object.WorldCoord;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -8,6 +9,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.ArrayList;
 
 public class Helper
 {
@@ -136,5 +139,68 @@ public class Helper
                 }
             }
         }
+    }
+
+    /**
+     *
+     * @param worldCoord worldCoord
+     * @return List of connected chunks
+     * @author NinjaMandalorian
+     */
+    private static ArrayList<WorldCoord> getAdjCells(WorldCoord worldCoord) {
+        ArrayList<WorldCoord> ReturnList = new ArrayList<>();
+
+        int[][] XZarray = new int[][]{
+                {-1, 0},
+                {1, 0},
+                {0, -1},
+                {0, 1}
+        }; // Array that contains relative orthogonal shifts from origin
+        for ( int[] pair: XZarray) {
+            // Constructs new WorldCoord for comparison
+            WorldCoord tCoord = new WorldCoord(worldCoord.getWorldName(), worldCoord.getX() + pair[0], worldCoord.getZ() + pair[1]);
+            if (tCoord.getTownOrNull() != null && tCoord.getTownOrNull() == worldCoord.getTownOrNull()) {
+                // If in town, and in same town, adds to return list
+                ReturnList.add(tCoord);
+            }
+        }
+        return ReturnList;
+    }
+
+    /** Gets all adjacently connected townblocks
+     * @param chunkCoord - WorldCoord to check at
+     * @return List of WorldCoords
+     * @author NinjaMandalorian
+     */
+    public static ArrayList<WorldCoord> getCluster(WorldCoord chunkCoord){
+        // WCoordList is the returning array, SearchList is the to-search list.
+        ArrayList<WorldCoord> WCoordList = new ArrayList<>();
+        ArrayList<WorldCoord> SearchList = new ArrayList<>();
+        SearchList.add(chunkCoord); // Adds 1st chunk to list
+
+        // Iterates through SearchList, to create a full list of every adjacent cell.
+        while (SearchList.size() > 0) {
+            // Gets WorldCoord
+            WorldCoord toSearch = SearchList.get(0);
+            // Gets adjacent cells
+            ArrayList<WorldCoord> adjCells = getAdjCells(toSearch);
+            for (WorldCoord cell : adjCells) {
+                // If in final list, ignore.
+                if (WCoordList.contains(cell)) {
+                    continue;
+                    // If in to-search list, ignore
+                } else if (SearchList.contains(cell)) {
+                    continue;
+                    // Otherwise, add to search-list.
+                } else {
+                    SearchList.add(cell);
+                }
+            }
+            // Removes from search list and adds to finished list. After checking all adjacent chunks.
+            SearchList.remove(toSearch);
+            WCoordList.add(toSearch);
+        }
+
+        return WCoordList; // Returns list
     }
 }

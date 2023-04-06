@@ -422,6 +422,15 @@ public class Siege {
 		this.id = id;
 	}
 
+	public int getSiegeTicks() {
+		return this.siegeTicks;
+	}
+
+	public void setSiegeTicks(final int siegeTicks) {
+		this.siegeTicks = siegeTicks;
+	}
+
+
 	public War getWar() {
 		return this.war;
 	}

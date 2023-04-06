@@ -27,6 +27,8 @@ public class RaidTabCompletion implements TabCompleter {
             completions.add("abandon");
             completions.add("list");
             completions.add("help");
+            completions.add("join");
+            completions.add("leave");
             return completions;
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("start")) {
@@ -43,6 +45,20 @@ public class RaidTabCompletion implements TabCompleter {
                     }
                     return completions;
                 }
+            } else if (args[0].equalsIgnoreCase("join")) {
+                if (!WarCommands.wars.isEmpty()) {
+                    for (War war : WarCommands.wars) {
+                        completions.add(war.getName());
+                    }
+                    return completions;
+                }
+            } else if (args[0].equalsIgnoreCase("leave")) {
+                if (!WarCommands.wars.isEmpty()) {
+                    for (War war : WarCommands.wars) {
+                        completions.add(war.getName());
+                    }
+                    return completions;
+                }
             }
         } else if (args.length == 3) {
             if (args[0].equalsIgnoreCase("start")) {
@@ -52,8 +68,24 @@ public class RaidTabCompletion implements TabCompleter {
                     }
                     return completions;
                 }
+            } else if (args[0].equalsIgnoreCase("join")) {
+                if (!TownyAPI.getInstance().getTowns().isEmpty()) {
+                    for (Town town : TownyAPI.getInstance().getTowns()) {
+                        completions.add(town.getName());
+                    }
+                    return completions;
+                }
+            } else if (args[0].equalsIgnoreCase("leave")) {
+                if (!TownyAPI.getInstance().getTowns().isEmpty()) {
+                    for (Town town : TownyAPI.getInstance().getTowns()) {
+                        completions.add(town.getName());
+                    }
+                    return completions;
+                }
             }
+
         }
+
         return Collections.emptyList();
     }
 }

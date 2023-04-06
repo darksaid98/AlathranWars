@@ -191,15 +191,17 @@ public class Raid {
                             for (String playerName : getActiveRaiders()) {
                                 try {
                                     Player p = Bukkit.getPlayer(playerName);
-                                    if(!WorldCoord.parseWorldCoord(p).getTownBlock().getTown().equals(Raid.this.getGatherTown())) {
+                                    ArrayList<WorldCoord> cluster = Helper.getCluster(Raid.this.getGatherTown().getHomeBlock().getWorldCoord());
+                                    if(!cluster.contains(WorldCoord.parseWorldCoord(p))) {
                                         Raid.this.removeActiveRaider(p.getName());
                                         p.sendMessage(String.valueOf(Helper.Chatlabel()) + "By leaving the gathering town you have left the raid on " + Raid.this.getRaidedTown().getName() + "!");
                                         p.sendMessage(String.valueOf(Helper.Chatlabel()) + "To rejoin, do /raid join [war] [town]");
-
                                     }
                                 } catch (NullPointerException e) {
                                     e.printStackTrace();
                                 } catch (NotRegisteredException e) {
+                                    e.printStackTrace();
+                                } catch (TownyException e) {
                                     e.printStackTrace();
                                 }
                             }
@@ -336,12 +338,8 @@ public class Raid {
         //tp to raid town spawn
         final Player killed = event.getEntity();
         if(this.getActiveRaiders().contains(killed.getName())) {
-            try {
-                killed.teleport(this.getGatherTown().getSpawn());
-                killed.sendMessage(String.valueOf(Helper.Chatlabel()) + "You died raiding and have been teleported back to your town's spawn.");
-            } catch (TownyException e) {
-                throw new RuntimeException(e);
-            }
+            //                killed.teleport(this.getGatherTown().getSpawn());
+//                killed.sendMessage(String.valueOf(Helper.Chatlabel()) + "You died raiding and have been teleported back to your town's spawn.");
         }
     }
 
@@ -396,12 +394,8 @@ public class Raid {
         //tp to raid town spawn
         final Player killed = event.getEntity();
         if(this.getActiveRaiders().contains(killed.getName())) {
-            try {
-                killed.teleport(this.getGatherTown().getSpawn());
-                killed.sendMessage(String.valueOf(Helper.Chatlabel()) + "You died before being raided and have been teleported back to your town's spawn.");
-            } catch (TownyException e) {
-                throw new RuntimeException(e);
-            }
+            //                killed.teleport(this.getGatherTown().getSpawn());
+//                killed.sendMessage(String.valueOf(Helper.Chatlabel()) + "You died before being raided and have been teleported back to your town's spawn.");
         }
     }
 
