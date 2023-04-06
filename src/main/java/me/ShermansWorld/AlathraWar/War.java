@@ -12,9 +12,9 @@ public class War {
 	private String name;
     private String side1;
     private String side2;
-	private ArrayList<String> side1Towns;
-	private ArrayList<String> side2Towns;
-    private ArrayList<String> surrenderedTowns;
+	private ArrayList<String> side1Towns = new ArrayList<String>();
+	private ArrayList<String> side2Towns = new ArrayList<String>();
+    private ArrayList<String> surrenderedTowns = new ArrayList<String>();
 
     /**
      * War Constructor
@@ -26,9 +26,6 @@ public class War {
 		this.name = name;
 		this.side1 = side1;
 		this.side2 = side2;
-        side1Towns = new ArrayList<String>();
-		side2Towns = new ArrayList<String>();
-        surrenderedTowns = new ArrayList<String>();
 	}
 
     /**
@@ -118,6 +115,12 @@ public class War {
      */
     public void save() {
         WarData.saveWar(this);
+    }
+
+    public String toString() {
+        return name + "[" + side1 + "." + side2 + "](" 
+        + side1Towns.size() + "/" + side2Towns.size() + "/" + 
+        surrenderedTowns.size() + ")";
     }
 
 }
