@@ -69,15 +69,7 @@ public class War {
         } else if(side2.equalsIgnoreCase(side)) {
             if (!side2Towns.contains(town)) {
                 side2Towns.add(town);
-			}
-			}
-		}
-		if (!duplicate) {
-			this.side2Players.add(playerName);
             }
-		}
-		if (!duplicate) {
-			this.side2Players.add(playerName);
         }
 	}
 
