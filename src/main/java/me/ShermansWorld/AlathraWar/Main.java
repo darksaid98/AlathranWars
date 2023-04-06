@@ -41,14 +41,13 @@ public class Main extends JavaPlugin {
 		econ = null;
 	}
 
-	@SuppressWarnings("unchecked")
 	private static void initData() {
 		File userDataFolder = new File("plugins" + File.separator + "AlathraWar" + File.separator + "userdata");
 		if (!userDataFolder.exists()) {
 			userDataFolder.mkdirs();
 		}
 
-        War.wars = WarData.createWars();
+        WarData.setWars(WarData.createWars());
 		
         try {
 			Set<String> siegeSet = (Set<String>) siegeData.getConfig().getConfigurationSection("Sieges").getKeys(false);
