@@ -29,6 +29,11 @@ public class WarCommands implements CommandExecutor {
 	}
 
 	public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
+        if (!(sender instanceof Player)) {
+            consoleCommand(sender, args);
+            return true;
+        }
+
 		final Player p = (Player) sender;
 		if (args.length == 0) {
 			p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /war help");
@@ -74,6 +79,7 @@ public class WarCommands implements CommandExecutor {
                     if (args.length < 3) {
                         p.sendMessage(Helper.Chatlabel()
 								+ "/war join [name] [side], type /war list to view current wars");
+                        return true;
                     }
 
                     // War check
@@ -93,10 +99,11 @@ public class WarCommands implements CommandExecutor {
 
                     Resident res = TownyAPI.getInstance().getResident(p);
                     if (res.hasNation()) {
-                        if(p.hasPermission("AlathraWar.nationjoin")) {
+                        if(p.hasPermission("AlathraWar.nationjoin" )|| res.isKing()) {
                             // Has nation declaration permission
                             war.addNation(res.getNationOrNull(), args[2]);
                             p.sendMessage(Helper.Chatlabel() + "You have joined the war for " + res.getNationOrNull().getName());
+                            war.save();
                             return true;
                         } else {
                             // Cannot declare nation involvement
@@ -104,9 +111,11 @@ public class WarCommands implements CommandExecutor {
                             return true;
                         }
                     } else if (res.hasTown()) {
-                        if (p.hasPermission("AlathraWar.townjoin")) {
+                        if (p.hasPermission("AlathraWar.townjoin") || res.isMayor()) {
                             // Is in indepdenent town & has declaration perms
+                            war.addTown(res.getTownOrNull(), args[2]);
                             p.sendMessage(Helper.Chatlabel() + "You have joined the war for " + res.getTownOrNull().getName());
+                            war.save();
                             return true;
                         } else {
                             // No perms
@@ -115,11 +124,11 @@ public class WarCommands implements CommandExecutor {
                         }
                     }
 
-
                     return true;
                 case "surrender":
                     return true;
                 case "list":
+                    
                     return true;
                 case "info":
                     return true;
@@ -133,4 +142,22 @@ public class WarCommands implements CommandExecutor {
         } 
 		return false;
 	}
+
+    /**
+     * Method for console access
+     * @param sender
+     * @param args
+     */
+    private static void consoleCommand(CommandSender sender, String[] args) {
+        if (args.length < 1) return;
+        if (args[0].equalsIgnoreCase("list")) {
+            ArrayList<War> warList = WarData.getWars();
+            sender.sendMessage("Wars: " + warList.size());
+            for (War war : WarData.getWars()) {
+                if (war == null) continue;
+                sender.sendMessage(war.toString());
+            }
+        }
+    }
+
 }
