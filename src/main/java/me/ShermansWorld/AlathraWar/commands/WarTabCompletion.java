@@ -11,6 +11,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import me.ShermansWorld.AlathraWar.War;
+import me.ShermansWorld.AlathraWar.data.WarData;
 
 public class WarTabCompletion implements TabCompleter{
 
@@ -24,15 +25,16 @@ public class WarTabCompletion implements TabCompleter{
 				completions.add("delete");
 			}
 			completions.add("join");
-			completions.add("leave");
+			completions.add("surrender");
 			completions.add("info");
 			completions.add("list");
 			completions.add("help");
 			return completions;
 		} else if (args.length == 2) {
-			if (args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("join") || args[0].equalsIgnoreCase("leave")) {
-				if (!WarCommands.wars.isEmpty()) {
-					for (War war : WarCommands.wars) {
+			if (args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("join") || args[0].equalsIgnoreCase("surrender")) {
+                ArrayList<War> wars = WarData.getWars();
+				if (!wars.isEmpty()) {
+					for (War war : wars) {
 						completions.add(war.getName());
 					}
 					return completions;
@@ -45,8 +47,9 @@ public class WarTabCompletion implements TabCompleter{
 			}
 		} else if (args.length == 3) {
 			if (args[0].equalsIgnoreCase("join")) {
-				if (!WarCommands.wars.isEmpty()) {
-					for (War war : WarCommands.wars) {
+                ArrayList<War> wars = WarData.getWars();
+				if (!wars.isEmpty()) {
+					for (War war : wars) {
 						if (war.getName().equalsIgnoreCase(args[1])) {
 							completions.add(war.getSide1());
 							completions.add(war.getSide2());
