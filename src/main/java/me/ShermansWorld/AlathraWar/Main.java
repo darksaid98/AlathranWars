@@ -46,31 +46,10 @@ public class Main extends JavaPlugin {
 		if (!userDataFolder.exists()) {
 			userDataFolder.mkdirs();
 		}
-		try {
-			Set<String> warsSet = (Set<String>) warData.getConfig().getConfigurationSection("Wars").getKeys(false);
-			Iterator<String> it = warsSet.iterator();
-			ArrayList<String> warsTempList = new ArrayList<String>();
-			while (it.hasNext()) {
-				warsTempList.add(it.next());
-			}
-			for (int i = 0; i < warsTempList.size(); ++i) {
-				final War war = new War(warsTempList.get(i),
-						warData.getConfig().getString("Wars." + warsTempList.get(i) + ".side1"),
-						warData.getConfig().getString("Wars." + warsTempList.get(i) + ".side2"));
-				ArrayList<String> side1Players = new ArrayList<String>();
-				ArrayList<String> side2Players = new ArrayList<String>();
-				side1Players = (ArrayList<String>) warData.getConfig()
-						.getList("Wars." + war.getName() + ".side1players");
-				side2Players = (ArrayList<String>) warData.getConfig()
-						.getList("Wars." + war.getName() + ".side2players");
-				war.setSide1Players(side1Players);
-				war.setSide2Players(side2Players);
-				WarCommands.wars.add(war);
-			}
-		} catch (NullPointerException e) {
-			Bukkit.getLogger().info("NULL when initializing wars");
-		}
-		try {
+
+        War.wars = WarData.createWars();
+		
+        try {
 			Set<String> siegeSet = (Set<String>) siegeData.getConfig().getConfigurationSection("Sieges").getKeys(false);
 			Iterator<String> it2 = siegeSet.iterator();
 			ArrayList<String> siegesTempList = new ArrayList<String>();
