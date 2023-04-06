@@ -90,6 +90,16 @@ public class WarCommands implements CommandExecutor {
                         return true;
                     }
 
+                    // Side checks
+                    int side = war.getSide(args[2]);
+                    if (side == -1) {
+                        p.sendMessage(Helper.Chatlabel() + "You've surrendered!");
+                        return true;
+                    } else if (war.getSide(args[2]) > 0) {
+                        p.sendMessage(Helper.Chatlabel() + "You're already in this war!");
+                        return true;
+                    }
+
                     // Side check
                     if (!war.getSide1().equalsIgnoreCase(args[2]) && !war.getSide2().equalsIgnoreCase(args[2])) {
                         p.sendMessage(Helper.Chatlabel()
