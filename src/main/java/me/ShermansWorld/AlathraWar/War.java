@@ -60,12 +60,15 @@ public class War {
         if (side1.equalsIgnoreCase(side)) {
             if (!side1Towns.contains(town)) {
                 side1Towns.add(town);
+                Main.warLogger.log("Town "+ town + " joined " + this.name + " on " + side);
             }
         } else if(side2.equalsIgnoreCase(side)) {
             if (!side2Towns.contains(town)) {
                 side2Towns.add(town);
+                Main.warLogger.log("Town "+ town + " joined " + this.name + " on " + side);
             }
         }
+        Main.warLogger.log("Town "+ town + " failed to join " + this.name + " on " + side);
 	}
 
     /**

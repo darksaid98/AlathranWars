@@ -38,6 +38,18 @@ public class WarData
         return wars;
     }
 
+    /**
+     * Gets a war with a specific name
+     * @param name - Name to check
+     * @return War or Null
+     */
+    public static War getWar(String name) {
+        for (War war : wars) {
+            if (war.getName().equalsIgnoreCase(name)) return war;
+        }
+        return null;
+    }
+
     public static void setWars(ArrayList<War> wars) {
         WarData.wars = wars;
     }
