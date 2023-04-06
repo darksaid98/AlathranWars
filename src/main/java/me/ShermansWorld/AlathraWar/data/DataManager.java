@@ -38,6 +38,7 @@ public class DataManager {
             writer = new PrintWriter(file);
         } catch (FileNotFoundException e) {
             Main.warLogger.log("Encountered error when creating PrintWriter for " + filePath);
+            return;
         }
         
         if (options == null) {
