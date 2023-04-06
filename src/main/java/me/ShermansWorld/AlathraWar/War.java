@@ -1,17 +1,12 @@
 package me.ShermansWorld.AlathraWar;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
 
 import me.ShermansWorld.AlathraWar.data.WarData;
 
 public class War {
-
-    // Static War list for all active wars
-    public static ArrayList<War> wars = new ArrayList<War>();
 
     // Object Fields
 	private String name;
