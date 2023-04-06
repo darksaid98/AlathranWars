@@ -217,7 +217,7 @@ public class Raid {
                             }
 
                                 //Check if a player has arrived at the town (in it) and if so start combat
-                            for (String player : raiderPlayers) {
+                            for (String player : activeRaiders) {
                                 WorldCoord playercoord = WorldCoord.parseWorldCoord(Bukkit.getPlayer(player));
                                 if (Raid.this.getRaidedTown().hasTownBlock(playercoord)) {
                                     startCombat();
