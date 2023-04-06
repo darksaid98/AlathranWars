@@ -56,12 +56,12 @@ public class War {
 	public void addTown(final String town, String side) {
         if (side1.equalsIgnoreCase(side)) {
             if (!side1Towns.contains(town)) {
-                side1Towns.add(town);
+                side1Towns.add(town.toLowerCase());
                 Main.warLogger.log("Town "+ town + " joined " + this.name + " on " + side);
             }
         } else if(side2.equalsIgnoreCase(side)) {
             if (!side2Towns.contains(town)) {
-                side2Towns.add(town);
+                side2Towns.add(town.toLowerCase());
                 Main.warLogger.log("Town "+ town + " joined " + this.name + " on " + side);
             }
         }
@@ -76,6 +76,22 @@ public class War {
         side1Towns.remove(town);
         side2Towns.remove(town);
         surrenderedTowns.add(town);
+    }
+
+    /**
+     * Gets side of town
+     * -1 - Surrendered
+     * 0 - None
+     * 1 - Side 1
+     * 2 - Side 2
+     * @param string
+     * @return
+     */
+    public int getSide(String string) {
+        if (surrenderedTowns.contains(string.toLowerCase())) return -1;
+        if (side1Towns.contains(string.toLowerCase())) return 1;
+        if (side2Towns.contains(string.toLowerCase())) return 2;
+        return 0;
     }
 	
 	public String getName() {
