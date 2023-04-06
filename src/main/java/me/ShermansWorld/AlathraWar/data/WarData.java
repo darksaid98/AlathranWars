@@ -11,11 +11,10 @@ import java.io.FilenameFilter;
 
 public class WarData
 {
-    private static Main plugin;
-    private final static String dataFolderPath = "plugins" + File.separator + "AlathraWar" + File.separator + "data";
 
     // Static War list for all active wars
     private static ArrayList<War> wars = new ArrayList<War>();
+    private final static String dataFolderPath = "plugins" + File.separator + "AlathraWar" + File.separator + "data";
 
     // Filter for only accessing yml files
     private static FilenameFilter ymlFilter = new FilenameFilter() {
@@ -25,13 +24,12 @@ public class WarData
         }
     };
 
+    // Constructor used to initialise folder.
     public WarData(final Main plugin) {
         File userDataFolder = new File(dataFolderPath + File.separator + "wars");
 		if (!userDataFolder.exists()) {
 			userDataFolder.mkdirs();
 		}
-
-        WarData.plugin = plugin;
     }
     
     public static ArrayList<War> getWars() {
@@ -55,6 +53,10 @@ public class WarData
     }
 
     public static void addWar(War war) {
+        if (war == null) {
+            Main.warLogger.log("Attempted to add NULL to war list.");
+            return;
+        }
         wars.add(war);
     }
 
@@ -80,6 +82,7 @@ public class WarData
      * @param fileData
      * @return War object
      */
+    @SuppressWarnings("unchecked")
     public static War fromMap(HashMap<String, Object> fileData) {
 
         War war = new War((String) fileData.get("name"),
@@ -87,11 +90,11 @@ public class WarData
         (String) fileData.get("side2")
         );
         
-        war.setSide1Towns(null);
-        war.setSide2Towns(null);
+        war.setSide1Towns((ArrayList<String>) fileData.get("side1Towns"));
+        war.setSide2Towns((ArrayList<String>) fileData.get("side2Towns"));
 
 
-        return null;
+        return war;
     }
 
     /**
@@ -113,7 +116,7 @@ public class WarData
         sHashMap.put("raids", RaidData.getRaidMap(war));
 
 
-        DataManager.saveData(dataFolderPath + File.separator + "wars" + File.separator + war.getName() + ".yml", sHashMap);
+        DataManager.saveData("wars" + File.separator + war.getName() + ".yml", sHashMap);
     }
     
 }
