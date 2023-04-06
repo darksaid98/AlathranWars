@@ -99,8 +99,8 @@ public class War {
 		return this.side1Towns;
 	}
 
-	public void setSide1Towns(final ArrayList<String> side1Players) {
-		this.side1Towns = side1Players;
+	public void setSide1Towns(final ArrayList<String> side1Towns) {
+		this.side1Towns = side1Towns;
 	}
 
 	public ArrayList<String> getSide2Towns() {
@@ -120,25 +120,6 @@ public class War {
      */
     public void save() {
         WarData.saveWar(this);
-    }
-
-    /**
-     * Creates a war object from a provided HashMap
-     * @param fileData
-     * @return War object
-     */
-    public static War fromMap(HashMap<String, Object> fileData) {
-
-        War war = new War((String) fileData.get("name"),
-        (String) fileData.get("side1"),
-        (String) fileData.get("side2")
-        );
-        
-        war.setSide1Towns(null);
-        war.setSide2Towns(null);
-
-
-        return null;
     }
 
 }
