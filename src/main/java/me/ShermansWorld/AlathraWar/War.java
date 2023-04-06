@@ -1,6 +1,12 @@
 package me.ShermansWorld.AlathraWar;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import com.palmergames.bukkit.towny.object.Nation;
+import com.palmergames.bukkit.towny.object.Town;
+
+import me.ShermansWorld.AlathraWar.data.WarData;
 
 public class War {
 
@@ -63,14 +69,7 @@ public class War {
         } else if(side2.equalsIgnoreCase(side)) {
             if (!side2Towns.contains(town)) {
                 side2Towns.add(town);
-			}
-		}
-		if (!duplicate) {
-			this.side2Players.add(playerName);
             }
-		}
-		if (!duplicate) {
-			this.side2Players.add(playerName);
         }
 	}
 
@@ -83,22 +82,7 @@ public class War {
         side2Towns.remove(town);
         surrenderedTowns.add(town);
     }
-
-	public void removePlayerSide2(final String playerName) {
-		if (!side2Players.isEmpty()) {
-			for (int i = 0; i < this.side2Players.size(); ++i) {
-				if (playerName.equalsIgnoreCase(this.side2Players.get(i))) {
-					this.side2Players.remove(i);
-					return;
-				}
-			}
-		}
-	}
-
-	public int getId() {
-		return this.id;
-	}
-
+	
 	public String getName() {
 		return this.name;
 	}
@@ -149,7 +133,7 @@ public class War {
         (String) fileData.get("side1"),
         (String) fileData.get("side2")
         );
-
+        
         war.setSide1Towns(null);
         war.setSide2Towns(null);
 
