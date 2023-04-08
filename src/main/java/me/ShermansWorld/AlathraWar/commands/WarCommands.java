@@ -1,16 +1,16 @@
 package me.ShermansWorld.AlathraWar.commands;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Resident;
+import com.palmergames.bukkit.towny.object.Town;
 
 import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.War;
 import me.ShermansWorld.AlathraWar.data.WarData;
-import me.ShermansWorld.AlathraWar.hooks.TABHook;
+import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -73,6 +73,27 @@ public class WarCommands implements CommandExecutor {
                         p.sendMessage("You do not have permission to run this command.");
                         return true;
                     }
+
+                    if (args.length >= 2) {
+                        War war = WarData.getWar(args[1]);
+
+                        // War Check
+                        if (war == null) {
+                            p.sendMessage(Helper.Chatlabel()
+                                    + "War not found. Type /war list to view current wars.");
+                            return true;
+                        }
+
+                        WarData.removeWar(war);
+
+                        p.sendMessage(String.valueOf(Helper.Chatlabel()) + "War " + args[1] + " deleted.");
+						Main.warLogger.log(p.getName() + " deleted " + args[1]);
+                                return true;
+                    } else {
+                        p.sendMessage(String.valueOf(Helper.Chatlabel())
+                                + "Invalid Arguments. /war delete [name]");
+                    }
+
                     return true;
                 case "join":
                     // Sufficient args check
@@ -90,24 +111,26 @@ public class WarCommands implements CommandExecutor {
                         return true;
                     }
 
-                    // Side checks
-                    int side = war.getSide(args[2]);
-                    if (side == -1) {
-                        p.sendMessage(Helper.Chatlabel() + "You've surrendered!");
+                    // Towny Resident Object
+                    Resident res = TownyAPI.getInstance().getResident(p);
+
+                    // Town check
+                    Town town = res.getTownOrNull();
+                    if (town == null) {
+                        p.sendMessage(ChatColor.RED + "You are not in a town.");
                         return true;
-                    } else if (war.getSide(args[2]) > 0) {
+                    }
+
+                    // Side checks
+                    int side = war.getSide(town.getName().toLowerCase());
+                    if (side == -1) {
+                        p.sendMessage(Helper.Chatlabel() + "You've already surrendered!");
+                        return true;
+                    } else if (side > 0) {
                         p.sendMessage(Helper.Chatlabel() + "You're already in this war!");
                         return true;
                     }
 
-                    // Side check
-                    if (!war.getSide1().equalsIgnoreCase(args[2]) && !war.getSide2().equalsIgnoreCase(args[2])) {
-                        p.sendMessage(Helper.Chatlabel()
-								+ "Side not found. Type /war list to view current wars");
-                        return true;
-                    }
-
-                    Resident res = TownyAPI.getInstance().getResident(p);
                     if (res.hasNation()) {
                         if(p.hasPermission("AlathraWar.nationjoin" )|| res.isKing()) {
                             // Has nation declaration permission
@@ -136,6 +159,7 @@ public class WarCommands implements CommandExecutor {
 
                     return true;
                 case "surrender":
+                    warSurrender(p, args);
                     return true;
                 case "list":
                     
@@ -152,6 +176,60 @@ public class WarCommands implements CommandExecutor {
         } 
 		return false;
 	}
+
+    private static void warSurrender(Player p, String[] args) {
+        // Sufficient args check
+        if (args.length < 2) {
+            p.sendMessage(Helper.Chatlabel()
+                    + "/war surrender [name], type /war list to view current wars");
+            return;
+        }
+
+        // War check
+        War war = WarData.getWar(args[1]);
+        if (war == null) {
+            p.sendMessage(Helper.Chatlabel()
+                    + "War not found. Type /war list to view current wars");
+            return;
+        }
+
+        // Towny Resident Object
+        Resident res = TownyAPI.getInstance().getResident(p);
+
+        // Town check
+        Town town = res.getTownOrNull();
+        if (town == null) {
+            p.sendMessage(ChatColor.RED + "You are not in a town.");
+            return;
+        }
+        
+        if (res.hasNation()) {
+            if(p.hasPermission("AlathraWar.nationsurrender" )|| res.isKing()) {
+                // Has nation surrender permission
+                war.surrenderNation(res.getNationOrNull());
+                p.sendMessage(Helper.Chatlabel() + "You have surrendered the war for " + res.getNationOrNull().getName());
+                war.save();
+                return;
+            } else {
+                // Cannot surrender nation involvement
+                p.sendMessage(Helper.Chatlabel() + "You cannot surrender war for your nation.");
+                return;
+            }
+        } else if (res.hasTown()) {
+            if (p.hasPermission("AlathraWar.townsurrender") || res.isMayor()) {
+                // Is in indepdenent town & has surrender perms
+                war.surrenderTown(res.getTownOrNull().getName());
+                p.sendMessage(Helper.Chatlabel() + "You have surrendered the war for " + res.getTownOrNull().getName());
+                war.save();
+                return;
+            } else {
+                // No perms
+                p.sendMessage(Helper.Chatlabel() + "You cannot surrender war for your town.");
+                return;
+            }
+        }
+
+    }
 
     /**
      * Method for console access

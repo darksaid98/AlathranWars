@@ -1,6 +1,7 @@
 package me.ShermansWorld.AlathraWar;
 
 import java.util.ArrayList;
+
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
 
@@ -58,15 +59,27 @@ public class War {
             if (!side1Towns.contains(town)) {
                 side1Towns.add(town.toLowerCase());
                 Main.warLogger.log("Town "+ town + " joined " + this.name + " on " + side);
+                return;
             }
         } else if(side2.equalsIgnoreCase(side)) {
             if (!side2Towns.contains(town)) {
                 side2Towns.add(town.toLowerCase());
                 Main.warLogger.log("Town "+ town + " joined " + this.name + " on " + side);
+                return;
             }
         }
         Main.warLogger.log("Town "+ town + " failed to join " + this.name + " on " + side);
 	}
+
+    /**
+     * Surrenders town
+     * @param nation - Nation to surrender
+     */
+    public void surrenderNation(Nation nation) {
+        for (Town town : nation.getTowns()) {
+            surrenderTown(town.getName());
+        }
+    }
 
     /**
      * Surrenders town
@@ -88,9 +101,17 @@ public class War {
      * @return
      */
     public int getSide(String string) {
-        if (surrenderedTowns.contains(string.toLowerCase())) return -1;
-        if (side1Towns.contains(string.toLowerCase())) return 1;
-        if (side2Towns.contains(string.toLowerCase())) return 2;
+        for (String str : surrenderedTowns) {
+            if (str.equalsIgnoreCase(string)) return -1;
+        }
+
+        for (String str : side1Towns) {
+            if (str.equalsIgnoreCase(string)) return 1;
+        }
+
+        for (String str : side2Towns) {
+            if (str.equalsIgnoreCase(string)) return 2;
+        }
         return 0;
     }
 	
