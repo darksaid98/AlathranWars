@@ -60,6 +60,11 @@ public class WarData
         wars.add(war);
     }
 
+    public static void removeWar(War war) {
+        wars.remove(war);
+        deleteWar(war);
+    }
+
     /**
      * Gets the wars currently saved in files as an ArrayList of War Objects
      * @return War Object ArrayList
@@ -117,6 +122,16 @@ public class WarData
 
 
         DataManager.saveData("wars" + File.separator + war.getName() + ".yml", sHashMap);
+    }
+
+    private static void deleteWar(War war) {
+        File[] files = new File(dataFolderPath + File.separator + "wars").listFiles(ymlFilter);
+
+        for (File file : files) {
+            if (file.getName().startsWith(war.getName())) {
+                file.delete();
+            }
+        }
     }
     
 }
