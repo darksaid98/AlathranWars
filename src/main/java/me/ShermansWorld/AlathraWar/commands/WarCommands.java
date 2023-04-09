@@ -18,11 +18,6 @@ import java.util.ArrayList;
 import org.bukkit.command.CommandExecutor;
 
 public class WarCommands implements CommandExecutor {
-	public static ArrayList<War> wars;
-
-	static {
-		WarCommands.wars = new ArrayList<War>();
-	}
 
 	public WarCommands(final Main plugin) {
 		plugin.getCommand("war").setExecutor((CommandExecutor) this);
@@ -162,9 +157,10 @@ public class WarCommands implements CommandExecutor {
                     warSurrender(p, args);
                     return true;
                 case "list":
-                    
+                    warList(p, args);
                     return true;
                 case "info":
+                    warInfo(p, args);
                     return true;
                 default:
                     p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /war help");
@@ -229,6 +225,43 @@ public class WarCommands implements CommandExecutor {
             }
         }
 
+    }
+
+    private static void warList(Player p, String[] args) {
+        p.sendMessage(Helper.Chatlabel()+ "Wars:");
+        ArrayList<War> wars = WarData.getWars();
+        if (wars.size() < 1) {
+            p.sendMessage("There are no current wars.");
+        } else {
+            for (War war : wars) {
+                p.sendMessage(war.getName() + " - " + war.getSide1() + " vs. " + war.getSide2());
+            }
+        }
+    }
+
+    private static void warInfo(Player p, String[] args) {
+        if (args.length < 2) {
+            p.sendMessage(Helper.Chatlabel() + "/war info [Player]");
+        }
+
+        Resident res = TownyAPI.getInstance().getResident(args[1]);
+        if (res == null || res.getTownOrNull() == null) {
+            p.sendMessage(Helper.Chatlabel() + "Invalid town resident.");
+        }
+
+        p.sendMessage(Helper.Chatlabel() + p.getName() + "'s wars:");
+        for (War war : WarData.getWars()) {
+            int side = war.getSide(args[1]);
+            if (side != 0) {
+                if (side == -1) {
+                    p.sendMessage(war.getName() +  " - Surrendered");
+                } else if (side == 1) {
+                    p.sendMessage(war.getName() +  " - " + war.getSide1());
+                } else if (side == 2) {
+                    p.sendMessage(war.getName() +  " - " + war.getSide2());
+                }
+            }
+        }
     }
 
     /**
