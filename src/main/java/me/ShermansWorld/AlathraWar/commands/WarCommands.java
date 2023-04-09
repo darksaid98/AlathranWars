@@ -1,12 +1,16 @@
 package me.ShermansWorld.AlathraWar.commands;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+
+import com.palmergames.bukkit.towny.TownyAPI;
+import com.palmergames.bukkit.towny.object.Resident;
+import com.palmergames.bukkit.towny.object.Town;
 
 import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.War;
-import me.ShermansWorld.AlathraWar.hooks.TABHook;
+import me.ShermansWorld.AlathraWar.data.WarData;
+import net.md_5.bungee.api.ChatColor;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -14,296 +18,276 @@ import java.util.ArrayList;
 import org.bukkit.command.CommandExecutor;
 
 public class WarCommands implements CommandExecutor {
-	public static ArrayList<War> wars;
-
-	static {
-		WarCommands.wars = new ArrayList<War>();
-	}
 
 	public WarCommands(final Main plugin) {
 		plugin.getCommand("war").setExecutor((CommandExecutor) this);
 	}
 
 	public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
+        if (!(sender instanceof Player)) {
+            consoleCommand(sender, args);
+            return true;
+        }
+
 		final Player p = (Player) sender;
 		if (args.length == 0) {
 			p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /war help");
+            return true;
 		} else if (args.length >= 1) {
-			if (args[0].equalsIgnoreCase("create")) {
-				if (!p.hasPermission("AlathraWar.admin")) {
-					p.sendMessage(String.valueOf(Helper.Chatlabel())
-							+ Helper.color("&cYou do not have permission to do this"));
-					return false;
-				}
-				if (args.length == 4) {
-					if (WarCommands.wars.isEmpty()) {
-						final War war = new War(args[1], args[2], args[3]);
-						WarCommands.wars.add(war);
-						final ArrayList<String> side1Players = new ArrayList<String>();
-						final ArrayList<String> side2Players = new ArrayList<String>();
-						final ArrayList<String> side1Mercs = new ArrayList<String>();
-						final ArrayList<String> side2Mercs = new ArrayList<String>();
-						side1Players.add("Placeholder1");
-						side2Players.add("Placeholder2");
-						side1Mercs.add("Placeholder1");
-						side2Mercs.add("Placeholder2");
-						war.setSide1Players(side1Players);
-						war.setSide2Players(side2Players);
-						Main.warData.getConfig().set("Wars." + args[1] + ".side1", (Object) args[2]);
-						Main.warData.getConfig().set("Wars." + args[1] + ".side2", (Object) args[3]);
-						Main.warData.getConfig().set("Wars." + args[1] + ".side1players", (Object) side1Players);
-						Main.warData.getConfig().set("Wars." + args[1] + ".side2players", (Object) side2Players);
-						Main.warData.saveConfig();
-						p.sendMessage(String.valueOf(Helper.Chatlabel()) + "War created with the name " + args[1] + ", "
-								+ args[2] + " vs. " + args[3]);
-						Main.warLogger.log(p.getName() + " created a new war with the name " + args[1] + ", " + args[2]
-								+ " vs. " + args[3]);
-					} else {
-						for (int i = 0; i < WarCommands.wars.size(); ++i) {
-							if (WarCommands.wars.get(i).getName().equalsIgnoreCase(args[1])) {
-								p.sendMessage(String.valueOf(Helper.Chatlabel())
-										+ "A war already exists with that name! To view wars type /war list");
-								break;
-							}
-							++i;
-							final War war2 = new War(args[1], args[2], args[3]);
-							WarCommands.wars.add(war2);
-							final ArrayList<String> side1Players2 = new ArrayList<String>();
-							final ArrayList<String> side2Players2 = new ArrayList<String>();
-							side1Players2.add("Placeholder1");
-							side2Players2.add("Placeholder2");
-							war2.setSide1Players(side1Players2);
-							war2.setSide2Players(side2Players2);
-							Main.warData.getConfig().set("Wars." + args[1] + ".side1", (Object) args[2]);
-							Main.warData.getConfig().set("Wars." + args[1] + ".side2", (Object) args[3]);
-							Main.warData.getConfig().set("Wars." + args[1] + ".side1players", (Object) side1Players2);
-							Main.warData.getConfig().set("Wars." + args[1] + ".side2players", (Object) side2Players2);
-							Main.warData.saveConfig();
-							p.sendMessage(String.valueOf(Helper.Chatlabel()) + "War created with the name " + args[1]
-									+ ", " + args[2] + " vs. " + args[3]);
-							Main.warLogger.log(p.getName() + " created a new war with the name " + args[1] + ", "
-									+ args[2] + " vs. " + args[3]);
-						}
-					}
-				} else {
-					p.sendMessage(String.valueOf(Helper.Chatlabel())
-							+ "Invalid Arguments. /war create [name] [side1] [side2]");
-				}
-			} else if (args[0].equalsIgnoreCase("delete")) {
-				if (args.length != 2) {
-					p.sendMessage(Helper.Chatlabel() + Helper.color("&cInvalid Arguements. /war delete [name]"));
-					return false;
-				}
-				String deleteTarget = args[1];
-				if (!p.hasPermission("AlathraWar.admin")) {
-					p.sendMessage(String.valueOf(Helper.Chatlabel())
-							+ Helper.color("&cYou do not have permission to do this"));
-					return false;
-				}
-				if (args.length == 2) {
-					boolean found = false;
-					for (int j = 0; j < WarCommands.wars.size(); ++j) {
-						if (WarCommands.wars.get(j).getName().equalsIgnoreCase(args[1])) {
-							p.sendMessage(String.valueOf(Helper.Chatlabel()) + "The war named " + deleteTarget
-									+ " has been deleted");
-							Main.warLogger.log(p.getName() + " deleted a war named " + deleteTarget);
-							for (String playername : WarCommands.wars.get(j).getSide1Players()) {
-								TABHook.resetSuffix(playername);
-							}
-							for (String playername : WarCommands.wars.get(j).getSide2Players()) {
-								TABHook.resetSuffix(playername);
-							}
-							deleteTarget = wars.get(j).getName();
-							Main.warData.getConfig().set("Wars." + deleteTarget, (Object) null);
-							WarCommands.wars.remove(j);
-							Main.warData.saveConfig();
-							found = true;
-							break;
-						}
-					}
-					if (!found) {
-						p.sendMessage(String.valueOf(Helper.Chatlabel())
-								+ "Could not find a war with that name! To view wars type /war list");
-					}
-				} else {
-					p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /war delete [name]");
-				}
-			} else if (args[0].equalsIgnoreCase("list")) {
-				if (WarCommands.wars.isEmpty()) {
-					p.sendMessage(String.valueOf(Helper.Chatlabel()) + "There are currently no wars");
-				} else {
-					p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Current Wars:");
-					for (final War war : WarCommands.wars) {
-						p.sendMessage(
-								String.valueOf(war.getName()) + " - " + war.getSide1() + " vs. " + war.getSide2());
-					}
-				}
-			} else if (args[0].equalsIgnoreCase("join")) {
-				boolean found = false;
-				if (args.length == 3 || args.length == 4) {
-					String joinWarTarget = args[1];
-					String joinSideTarget = args[2];
-					
-					for (final War war2 : WarCommands.wars) {
-						if (war2.getName().equalsIgnoreCase(joinWarTarget)) {
-							if (war2.getSide1().equalsIgnoreCase(joinSideTarget)) {
-								if (war2.getSide1Players().contains(p.getName())
-										|| war2.getSide2Players().contains(p.getName())) {
-									p.sendMessage(String.valueOf(Helper.Chatlabel())
-											+ "You have already joined this war! Type /war leave [war] to leave the war");
-									return false;
-								}
-								joinWarTarget = war2.getName();
-								war2.addPlayerSide1(p.getName());
-								Main.warData.getConfig().set("Wars." + joinWarTarget + ".side1players",
-										(Object) war2.getSide1Players());
-								Main.warData.saveConfig();
-								p.sendMessage(String.valueOf(Helper.Chatlabel())
-										+ "You have joined the war on the side of " + war2.getSide1());
-								TABHook.assignSide1WarSuffix(p, war2);
-								Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + p.getName()
-										+ " has joined " + war2.getName() + " on the side of " + war2.getSide1() + "!");
-								Bukkit.getLogger().info("[AlathraWar] Player " + p.getName() + " has entered "
-										+ war2.getName() + " on the side of " + war2.getSide1());
-								Main.warLogger.log(p.getName() + " has entered " + war2.getName() + " on the side of "
-										+ war2.getSide1());
-								found = true;
-							} else {
-								if (!war2.getSide2().equalsIgnoreCase(args[2])) {
-									continue;
-								}
-								if (war2.getSide2Players().contains(p.getName())
-										|| war2.getSide1Players().contains(p.getName())) {
-									p.sendMessage(String.valueOf(Helper.Chatlabel())
-											+ "You have already joined this war! Type /war leave [war] to leave the war");
-									return false;
-								}
-								joinWarTarget = war2.getName();
-								war2.addPlayerSide2(p.getName());
-								Main.warData.getConfig().set("Wars." + joinWarTarget + ".side2players",
-										(Object) war2.getSide2Players());
-								Main.warData.saveConfig();
-								p.sendMessage(String.valueOf(Helper.Chatlabel())
-										+ "You have joined the war on the side of " + war2.getSide2());
 
-								TABHook.assignSide2WarSuffix(p, war2);
-								Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + p.getName()
-										+ " has joined " + war2.getName() + " on the side of " + war2.getSide2() + "!");
-								Bukkit.getLogger().info("[AlathraWar] Player " + p.getName() + " has entered "
-										+ war2.getName() + " on the side of " + war2.getSide2());
-								Main.warLogger.log(p.getName() + " has entered " + war2.getName() + " on the side of "
-										+ war2.getSide2());
-								found = true;
-							}
-						}
-					}
-					if (!found) {
-						p.sendMessage(String.valueOf(Helper.Chatlabel())
-								+ "War not found. /war join [name] [side] {merc}, type /war list to view current wars");
-					}
-				} else {
-					p.sendMessage(
-							String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /war join [name] [side] {merc}");
-				}
-			} else if (args[0].equalsIgnoreCase("leave")) {
-				if (args.length == 2) {
-					boolean found = false;
-					boolean found2 = false;
-					String leaveWarTarget = args[1];
-					for (final War war3 : WarCommands.wars) {
-						if (war3.getName().equalsIgnoreCase(leaveWarTarget)) {
-							found = true;
-							leaveWarTarget = war3.getName();
-							if (war3.getSide1Players().contains(p.getName())) {
-								found2 = true;
-								war3.removePlayerSide1(p.getName());
-								Main.warData.getConfig().set("Wars." + leaveWarTarget + ".side1players",
-										(Object) war3.getSide1Players());
-								Main.warData.saveConfig();
-								p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You have left the war");
-								TABHook.resetSuffix(p);
-								Bukkit.getServer()
-										.broadcastMessage(String.valueOf(Helper.Chatlabel()) + p.getName()
-												+ " has left " + war3.getName() + ", they were on the side of "
-												+ war3.getSide1());
-								Main.warLogger.log(p.getName() + " has left " + war3.getName()
-										+ ", they were on the side of " + war3.getSide1());
-							}
-							if (war3.getSide2Players().contains(p.getName())) {
-								found2 = true;
-								war3.removePlayerSide2(p.getName());
-								Main.warData.getConfig().set("Wars." + leaveWarTarget + ".side2players",
-										(Object) war3.getSide2Players());
-								Main.warData.saveConfig();
-								p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You have left the war");
-								TABHook.resetSuffix(p);
-								Bukkit.getServer()
-										.broadcastMessage(String.valueOf(Helper.Chatlabel()) + p.getName()
-												+ " has left " + war3.getName() + ", they were on the side of "
-												+ war3.getSide2());
-								Main.warLogger.log(p.getName() + " has left " + war3.getName()
-										+ ", they were on the side of " + war3.getSide2());
-							}
-						}
-					}
-					if (!found) {
-						p.sendMessage(String.valueOf(Helper.Chatlabel())
-								+ "War not found. /war leave [name], type /war list to view current wars");
-						return false;
-					}
-					if (!found2) {
-						p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You are not part of this war!");
-						return false;
-					}
-				} else {
-					p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /war leave [name]");
-				}
-			} else if (args[0].equalsIgnoreCase("info")) {
-				boolean found = false;
-				if (args.length == 2) {
-					for (final War war2 : WarCommands.wars) {
-						if (war2.getSide1Players().contains(args[1])) {
-							if (!found) {
-								p.sendMessage(String.valueOf(Helper.Chatlabel()) + args[1]
-										+ " is currently in the following wars");
-							}
-							found = true;
-							p.sendMessage(String.valueOf(war2.getName()) + " - " + " Fighting for " + war2.getSide1());
-						} else {
-							if (!war2.getSide2Players().contains(args[1])) {
-								continue;
-							}
-							if (!found) {
-								p.sendMessage(String.valueOf(Helper.Chatlabel()) + args[1]
-										+ " is currently in the following wars");
-							}
-							found = true;
-							p.sendMessage(String.valueOf(war2.getName()) + " - " + " Fighting for " + war2.getSide2());
-						}
-					}
-					if (!found) {
-						p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This player is not currently in any wars");
-					}
-				} else {
-					p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /war info [player]");
-				}
-			} else if (args[0].equalsIgnoreCase("help")) {
-
-				if (p.hasPermission("!AlathraWar.admin")) {
-					p.sendMessage(Helper.Chatlabel() + "/war create [name] [side1] [side2]");
-					p.sendMessage(Helper.Chatlabel() + "/war delete [name]");
-				}
-				p.sendMessage(Helper.Chatlabel() + "/war join [name] [side] {merc}");
-				p.sendMessage(Helper.Chatlabel() + "/war leave [name]");
-				p.sendMessage(Helper.Chatlabel() + "/war info [player]");
-				p.sendMessage(Helper.Chatlabel() + "/war list");
-
-			} else {
-				p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /war help");
-			}
-		} else {
-			p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /war help");
-		}
+            switch(args[0].toLowerCase()) {
+                case "create":
+                    warCreate(p, args);
+                    return true;
+                case "delete":
+                    warDelete(p, args);
+                    return true;
+                case "join":
+                    warJoin(p, args);
+                    return true;
+                case "surrender":
+                    warSurrender(p, args);
+                    return true;
+                case "list":
+                    warList(p, args);
+                    return true;
+                case "info":
+                    warInfo(p, args);
+                    return true;
+                case "help":
+                    warHelp(p, args);
+                    return true;
+                default:
+                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /war help");
+                    return true;
+            }
+       
+        } 
 		return false;
 	}
+
+    private static void warCreate(Player p, String[] args) {
+        if (!p.hasPermission("AlathraWar.admin")) {
+            p.sendMessage("You do not have permission to run this command.");
+            return;
+        }
+        if (args.length >= 4) {
+            War war = new War(args[1], args[2], args[3]);
+            WarData.addWar(war);
+            war.save();
+
+            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "War created with the name " + args[1] + ", "
+                    + args[2] + " vs. " + args[3]);
+            Main.warLogger.log(p.getName() + " created a new war with the name " + args[1] + ", " + args[2]
+                    + " vs. " + args[3]);
+                    return;
+        } else {
+            p.sendMessage(String.valueOf(Helper.Chatlabel())
+                    + "Invalid Arguments. /war create [name] [side1] [side2]");
+        }
+
+    }
+
+    private static void warDelete(Player p, String[] args) {
+        if (!p.hasPermission("AlathraWar.admin")) {
+            p.sendMessage("You do not have permission to run this command.");
+            return;
+        }
+
+        if (args.length >= 2) {
+            War war = WarData.getWar(args[1]);
+
+            // War Check
+            if (war == null) {
+                p.sendMessage(Helper.Chatlabel()
+                        + "War not found. Type /war list to view current wars.");
+                return;
+            }
+
+            WarData.removeWar(war);
+
+            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "War " + args[1] + " deleted.");
+            Main.warLogger.log(p.getName() + " deleted " + args[1]);
+                    return;
+        } else {
+            p.sendMessage(String.valueOf(Helper.Chatlabel())
+                    + "Invalid Arguments. /war delete [name]");
+        }
+    }
+
+    private static void warJoin(Player p, String[] args) {
+        // Sufficient args check
+        if (args.length < 3) {
+            p.sendMessage(Helper.Chatlabel()
+                    + "/war join [name] [side], type /war list to view current wars");
+            return;
+        }
+
+        // War check
+        War war = WarData.getWar(args[1]);
+        if (war == null) {
+            p.sendMessage(Helper.Chatlabel()
+                    + "War not found. /war join [name] [side], type /war list to view current wars");
+            return;
+        }
+
+        // Towny Resident Object
+        Resident res = TownyAPI.getInstance().getResident(p);
+
+        // Town check
+        Town town = res.getTownOrNull();
+        if (town == null) {
+            p.sendMessage(ChatColor.RED + "You are not in a town.");
+            return;
+        }
+
+        // Side checks
+        int side = war.getSide(town.getName().toLowerCase());
+        if (side == -1) {
+            p.sendMessage(Helper.Chatlabel() + "You've already surrendered!");
+            return;
+        } else if (side > 0) {
+            p.sendMessage(Helper.Chatlabel() + "You're already in this war!");
+            return;
+        }
+
+        if (res.hasNation()) {
+            if(p.hasPermission("AlathraWar.nationjoin" )|| res.isKing()) {
+                // Has nation declaration permission
+                war.addNation(res.getNationOrNull(), args[2]);
+                p.sendMessage(Helper.Chatlabel() + "You have joined the war for " + res.getNationOrNull().getName());
+                war.save();
+                return;
+            } else {
+                // Cannot declare nation involvement
+                p.sendMessage(Helper.Chatlabel() + "You cannot declare war for your nation.");
+                return;
+            }
+        } else if (res.hasTown()) {
+            if (p.hasPermission("AlathraWar.townjoin") || res.isMayor()) {
+                // Is in indepdenent town & has declaration perms
+                war.addTown(res.getTownOrNull(), args[2]);
+                p.sendMessage(Helper.Chatlabel() + "You have joined the war for " + res.getTownOrNull().getName());
+                war.save();
+                return;
+            } else {
+                // No perms
+                p.sendMessage(Helper.Chatlabel() + "You cannot declare war for your town.");
+                return;
+            }
+        }
+    }
+
+    private static void warSurrender(Player p, String[] args) {
+        // Sufficient args check
+        if (args.length < 2) {
+            p.sendMessage(Helper.Chatlabel()
+                    + "/war surrender [name], type /war list to view current wars");
+            return;
+        }
+
+        // War check
+        War war = WarData.getWar(args[1]);
+        if (war == null) {
+            p.sendMessage(Helper.Chatlabel()
+                    + "War not found. Type /war list to view current wars");
+            return;
+        }
+
+        // Towny Resident Object
+        Resident res = TownyAPI.getInstance().getResident(p);
+
+        // Town check
+        Town town = res.getTownOrNull();
+        if (town == null) {
+            p.sendMessage(ChatColor.RED + "You are not in a town.");
+            return;
+        }
+        
+        if (res.hasNation()) {
+            if(p.hasPermission("AlathraWar.nationsurrender" )|| res.isKing()) {
+                // Has nation surrender permission
+                war.surrenderNation(res.getNationOrNull());
+                p.sendMessage(Helper.Chatlabel() + "You have surrendered the war for " + res.getNationOrNull().getName());
+                war.save();
+                return;
+            } else {
+                // Cannot surrender nation involvement
+                p.sendMessage(Helper.Chatlabel() + "You cannot surrender war for your nation.");
+                return;
+            }
+        } else if (res.hasTown()) {
+            if (p.hasPermission("AlathraWar.townsurrender") || res.isMayor()) {
+                // Is in indepdenent town & has surrender perms
+                war.surrenderTown(res.getTownOrNull().getName());
+                p.sendMessage(Helper.Chatlabel() + "You have surrendered the war for " + res.getTownOrNull().getName());
+                war.save();
+                return;
+            } else {
+                // No perms
+                p.sendMessage(Helper.Chatlabel() + "You cannot surrender war for your town.");
+                return;
+            }
+        }
+
+    }
+
+    private static void warList(Player p, String[] args) {
+        p.sendMessage(Helper.Chatlabel()+ "Wars:");
+        ArrayList<War> wars = WarData.getWars();
+        if (wars.size() < 1) {
+            p.sendMessage("There are no current wars.");
+        } else {
+            for (War war : wars) {
+                p.sendMessage(war.getName() + " - " + war.getSide1() + " vs. " + war.getSide2());
+            }
+        }
+    }
+
+    private static void warInfo(Player p, String[] args) {
+        if (args.length < 2) {
+            p.sendMessage(Helper.Chatlabel() + "/war info [Player]");
+        }
+
+        Resident res = TownyAPI.getInstance().getResident(args[1]);
+        if (res == null || res.getTownOrNull() == null) {
+            p.sendMessage(Helper.Chatlabel() + "Invalid town resident.");
+        }
+
+        p.sendMessage(Helper.Chatlabel() + p.getName() + "'s wars:");
+        for (War war : WarData.getWars()) {
+            int side = war.getSide(args[1]);
+            if (side != 0) {
+                if (side == -1) {
+                    p.sendMessage(war.getName() +  " - Surrendered");
+                } else if (side == 1) {
+                    p.sendMessage(war.getName() +  " - " + war.getSide1());
+                } else if (side == 2) {
+                    p.sendMessage(war.getName() +  " - " + war.getSide2());
+                }
+            }
+        }
+    }
+
+    private static void warHelp(Player p, String[] args) {
+        // TODO
+    }
+
+    /**
+     * Method for console access
+     * @param sender
+     * @param args
+     */
+    private static void consoleCommand(CommandSender sender, String[] args) {
+        if (args.length < 1) return;
+        if (args[0].equalsIgnoreCase("list")) {
+            ArrayList<War> warList = WarData.getWars();
+            sender.sendMessage("Wars: " + warList.size());
+            for (War war : WarData.getWars()) {
+                if (war == null) continue;
+                sender.sendMessage(war.toString());
+            }
+        }
+    }
+
 }

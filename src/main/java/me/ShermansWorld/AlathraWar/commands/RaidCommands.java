@@ -24,15 +24,14 @@ public class RaidCommands implements CommandExecutor
     static {
         RaidCommands.towns = new ArrayList<Town>();
         RaidCommands.raids = new ArrayList<Raid>();
-        RaidCommands.maxID = Main.raidData.getConfig().getInt("MaxID");
     }
 
     public RaidCommands(final Main plugin) {
-        plugin.getCommand("raid").setExecutor((CommandExecutor)this);
+        //plugin.getCommand("raid").setExecutor((CommandExecutor)this);
     }
 
     public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
-        final Player p = (Player)sender;
+        /*final Player p = (Player)sender;
         if (args.length == 0) {
             p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /raid help");
         }
@@ -126,7 +125,7 @@ public class RaidCommands implements CommandExecutor
                 for (final War war : WarCommands.wars) {
                     if (war.getName().equalsIgnoreCase(args[1])) {
                         warFound = true;
-                        if (!war.getSide1Players().contains(p.getName()) && !war.getSide2Players().contains(p.getName())) {
+                        /*if (!war.getSide1Players().contains(p.getName()) && !war.getSide2Players().contains(p.getName())) {
                             p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You are not in this war! Type /war join [war] [side]");
                         }
                         TownyWorld townyWorld;
@@ -198,6 +197,7 @@ public class RaidCommands implements CommandExecutor
                                         }
                                     }
                                 }
+                                
                                 if (attackingOwnSide) {
                                     p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You cannot raid a town with members on your side of the war!");
                                     return false;
@@ -376,7 +376,8 @@ public class RaidCommands implements CommandExecutor
         }
         else {
             p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /raid help");
-        }
+        }*/
         return false;
+        
     }
 }
