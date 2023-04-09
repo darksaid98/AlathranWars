@@ -10,6 +10,7 @@ import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.Siege;
 import me.ShermansWorld.AlathraWar.War;
+import me.ShermansWorld.AlathraWar.data.WarData;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -22,13 +23,12 @@ import org.bukkit.command.CommandExecutor;
 public class SiegeCommands implements CommandExecutor
 {
     public static ArrayList<Town> towns;
-    public static ArrayList<Siege> sieges;
     public static int maxID;
     
     static {
         SiegeCommands.towns = new ArrayList<Town>();
-        SiegeCommands.sieges = new ArrayList<Siege>();
-        SiegeCommands.maxID = Main.siegeData.getConfig().getInt("MaxID");
+        //SiegeCommands.sieges = new ArrayList<Siege>();
+        //SiegeCommands.maxID = Main.siegeData.getConfig().getInt("MaxID");
     }
     
     public SiegeCommands(final Main plugin) {
@@ -39,7 +39,7 @@ public class SiegeCommands implements CommandExecutor
         final Player p = (Player)sender;
         if (args.length == 0) {
             p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /siege help");
-        }
+        } /*
         else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("list")) {
                 if (SiegeCommands.sieges.isEmpty()) {
@@ -125,10 +125,10 @@ public class SiegeCommands implements CommandExecutor
             if (args[0].equalsIgnoreCase("start")) {
                 boolean warFound = false;
                 boolean townExists = false;
-                for (final War war : WarCommands.wars) {
+                for (final War war : WarData.getWars()) {
                     if (war.getName().equalsIgnoreCase(args[1])) {
                         warFound = true;
-                        if (!war.getSide1Players().contains(p.getName()) && !war.getSide2Players().contains(p.getName())) {
+                        /*if (!war.getSide1Players().contains(p.getName()) && !war.getSide2Players().contains(p.getName())) {
                             p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You are not in this war! Type /war join [war] [side]");
                         }
                         TownyWorld townyWorld;
@@ -146,7 +146,7 @@ public class SiegeCommands implements CommandExecutor
                                 Main.siegeData.getConfig().set("MaxID", (Object)SiegeCommands.maxID);
                                 Main.siegeData.saveConfig();
                                 Siege siege2;
-                                if (war.getSide1Players().contains(p.getName())) {
+                                /*if (war.getSide1Players().contains(p.getName())) {
                                     siege2 = new Siege(SiegeCommands.maxID, war, town, war.getSide1(), war.getSide2(), true, false);
                                     Main.siegeData.getConfig().set("Sieges." + String.valueOf(SiegeCommands.maxID) + ".war", (Object)war.getName());
                                     Main.siegeData.getConfig().set("Sieges." + String.valueOf(SiegeCommands.maxID) + ".town", (Object)town.getName());
@@ -195,7 +195,7 @@ public class SiegeCommands implements CommandExecutor
                                             attackingOwnSide = true;
                                         }
                                     }
-                                }
+                                }//
                                 if (attackingOwnSide) {
                                     p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You cannot siege a town with members on your side of the war!");
                                     return false;
@@ -226,18 +226,19 @@ public class SiegeCommands implements CommandExecutor
                                 }
                                 final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(p.getUniqueId());
                                 if (Main.econ.getBalance(offlinePlayer) <= 2500.0) {
-                                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must have at least $20,000 to put up to start a siege");
+                                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must have at least $2500 to put up to start a siege");
                                     Main.siegeData.getConfig().set("Sieges." + String.valueOf(SiegeCommands.maxID), (Object)null);
                                     Main.siegeData.saveConfig();
                                     return false;
                                 }
                                 Main.econ.withdrawPlayer(offlinePlayer, 2500.0);
-                                SiegeCommands.sieges.add(siege2);
+                                /*SiegeCommands.sieges.add(siege2);
                                 siege2.start();
                                 siege2.createBeacon();
                                 Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "As part of " + war.getName() + ", forces from " + siege2.getAttackers() + " are laying siege to the town of " + town.getName() + "!");
                                 Main.warLogger.log(p.getName() + " started a siege.");
                                 Main.warLogger.log("As part of " + war.getName() + ", forces from " + siege2.getAttackers() + " are laying siege to the town of " + town.getName() + "!");
+                                *
                             }
                         }
                     }
@@ -256,6 +257,7 @@ public class SiegeCommands implements CommandExecutor
         else {
             p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /siege help");
         }
+        */
         return false;
     }
 }

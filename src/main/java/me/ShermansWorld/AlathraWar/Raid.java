@@ -116,9 +116,6 @@ public class Raid {
                         } else {
                             final Raid this$0 = Raid.this;
                             Raid.access$7(this$0, this$0.raidTicks + 200);
-                            Main.raidData.getConfig().set("Raids." + String.valueOf(Raid.this.id) + ".raidticks",
-                                    (Object) Raid.this.raidTicks);
-                            Main.raidData.saveConfig();
 
                             // Raid update
                             if (Raid.this.raidTicks % 6000 == 0) {
@@ -139,8 +136,6 @@ public class Raid {
     public void stop() {
         Bukkit.getScheduler().cancelTask(this.bukkitId[0]);
         RaidCommands.raids.remove(this); // im not making this rn -Aubri
-        Main.raidData.getConfig().set("Raids." + String.valueOf(this.id), (Object) null);
-        Main.raidData.saveConfig();
     }
 
     /**

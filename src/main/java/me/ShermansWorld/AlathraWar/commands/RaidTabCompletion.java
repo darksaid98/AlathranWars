@@ -19,6 +19,7 @@ public class RaidTabCompletion implements TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
         List<String> completions = new ArrayList<>();
         Player p = (Player)sender;
+        /*
         if (args.length == 1) {
             if (p.hasPermission("AlathraWar.admin")) {
                 completions.add("stop");
@@ -54,6 +55,7 @@ public class RaidTabCompletion implements TabCompleter {
                 }
             }
         }
+        */
         return Collections.emptyList();
     }
 }

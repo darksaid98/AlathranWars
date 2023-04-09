@@ -34,12 +34,6 @@ public class WarCommands implements CommandExecutor {
 			p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /war help");
             return true;
 		} else if (args.length >= 1) {
-            // Create - Admin Command
-            // Delete - Admin Command
-            // Join - Auto works out town/nation e.t.c.
-            // Surrender - Auto works out town/nation e.t.c.
-            // List - Lists all current wars
-            // Info - Info on a player and their wars.
 
             switch(args[0].toLowerCase()) {
                 case "create":
@@ -67,9 +61,7 @@ public class WarCommands implements CommandExecutor {
                     p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /war help");
                     return true;
             }
-
-			
-		
+       
         } 
 		return false;
 	}
