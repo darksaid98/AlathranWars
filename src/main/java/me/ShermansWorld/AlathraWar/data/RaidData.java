@@ -1,6 +1,8 @@
 package me.ShermansWorld.AlathraWar.data;
 
 import me.ShermansWorld.AlathraWar.Main;
+import me.ShermansWorld.AlathraWar.War;
+
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -57,5 +59,9 @@ public class RaidData {
         if (!this.configFile.exists()) {
             this.plugin.saveResource("raids.yml", false);
         }
+    }
+
+    public static Object getRaidMap(War war) {
+        return null;
     }
 }

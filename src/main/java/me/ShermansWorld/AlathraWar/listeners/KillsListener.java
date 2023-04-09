@@ -17,6 +17,7 @@ import com.palmergames.bukkit.towny.object.WorldCoord;
 import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.Siege;
 import me.ShermansWorld.AlathraWar.commands.SiegeCommands;
+import me.ShermansWorld.AlathraWar.data.SiegeData;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -38,7 +39,7 @@ public final class KillsListener implements Listener
         catch (NotRegisteredException ex2) {}
         boolean playerCloseToHomeBlock = false;
         try {
-            for (final Siege siege : SiegeCommands.sieges) {
+            for (final Siege siege : SiegeData.getSieges()) {
                 final int homeBlockXCoord = siege.getTown().getHomeBlock().getCoord().getX() * 16;
                 final int homeBlockZCoord = siege.getTown().getHomeBlock().getCoord().getZ() * 16;
                 if (Math.abs(killed.getLocation().getBlockX() - homeBlockXCoord) <= 300 && Math.abs(killed.getLocation().getBlockZ() - homeBlockZCoord) <= 300) {

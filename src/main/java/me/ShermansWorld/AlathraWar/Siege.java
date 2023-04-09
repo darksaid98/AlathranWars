@@ -8,13 +8,12 @@ import org.bukkit.World;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.TownyUniverse;
-import com.gmail.goosius.siegewar.TownOccupationController;
 import com.palmergames.bukkit.towny.TownyAPI;
 import org.bukkit.plugin.Plugin;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 
-import me.ShermansWorld.AlathraWar.commands.SiegeCommands;
+import me.ShermansWorld.AlathraWar.data.SiegeData;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -24,17 +23,14 @@ import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
 
 public class Siege {
-	private War war;
-	private Town town;
-	private String attackers;
-	private String defenders;
-	private boolean side1AreAttackers;
-	private boolean side2AreAttackers;
-	private int id;
+
+	private War war; // War which siege belongs to
+	private Town town; // Town of the siege
+	private boolean side1AreAttackers; // bool of if side1 being attacker
 	private int attackerPoints;
 	private int defenderPoints;
-	private int MAXSIEGETICKS;
-	private Player owner;
+	private int maxSiegeTicks;
+	private Player siegeOwner;
 	private int siegeTicks;
 	private TownBlock homeBlock;
 	private Location townSpawn;
@@ -43,8 +39,7 @@ public class Siege {
 	public ArrayList<String> defenderPlayers;
 	public ArrayList<Location> beaconLocs;
 
-	public Siege(final int id, final War war, final Town town, final String attackers, final String defenders,
-			final boolean side1AreAttackers, final boolean side2AreAttackers) {
+	public Siege(final War war, final Town town, final boolean side1AreAttackers) {
 		this.siegeTicks = 0;
 		this.bukkitId = new int[1];
 		this.attackerPlayers = new ArrayList<String>();
@@ -52,35 +47,17 @@ public class Siege {
 		this.beaconLocs = new ArrayList<Location>();
 		this.war = war;
 		this.town = town;
-		this.attackers = attackers;
-		this.defenders = defenders;
 		this.side1AreAttackers = side1AreAttackers;
-		this.side2AreAttackers = side2AreAttackers;
-		this.id = id;
 	}
 
+    /** Starts a siege */
 	public void start() {
-		this.attackerPoints = Main.siegeData.getConfig().getInt("Sieges." + String.valueOf(this.id) + ".attackerpoints");
-		this.defenderPoints = Main.siegeData.getConfig().getInt("Sieges." + String.valueOf(this.id) + ".defenderpoints");
-		this.side1AreAttackers = Main.siegeData.getConfig()
-				.getBoolean("Sieges." + String.valueOf(this.id) + ".side1areattackers");
-		this.side2AreAttackers = Main.siegeData.getConfig()
-				.getBoolean("Sieges." + String.valueOf(this.id) + ".side2areattackers");
-		this.MAXSIEGETICKS = 108000;
-		this.siegeTicks = Main.siegeData.getConfig().getInt("Sieges." + String.valueOf(this.id) + ".siegeticks");
-		this.owner = Bukkit.getPlayer(Main.siegeData.getConfig().getString("Sieges." + String.valueOf(this.id) + ".owner"));
-		if (this.side1AreAttackers) {
-			this.attackerPlayers = this.war.getSide1Players();
-			this.defenderPlayers = this.war.getSide2Players();
-		} else {
-			this.attackerPlayers = this.war.getSide2Players();
-			this.defenderPlayers = this.war.getSide1Players();
-		}
-		try {
-			homeBlock = town.getHomeBlock();
-			townSpawn = town.getSpawn();
-		} catch (TownyException e) {
-		}
+        attackerPoints = 0;
+        defenderPoints = 0;
+        this.maxSiegeTicks = 108000;
+		this.siegeTicks = 0;
+        homeBlock = town.getHomeBlockOrNull();
+        townSpawn = town.getSpawnOrNull();
 
 		this.bukkitId[0] = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask((Plugin) Main.getInstance(),
 				(Runnable) new Runnable() {
@@ -96,24 +73,20 @@ public class Siege {
 							Siege.this.attackerPlayers = Siege.this.war.getSide1Players();
 							Siege.this.defenderPlayers = Siege.this.war.getSide2Players();
 						} else {
-							Siege.this.attackerPlayers = Siege.this.war.getSide2Players();
+                            Siege.this.attackerPlayers = Siege.this.war.getSide2Players();
 							Siege.this.defenderPlayers = Siege.this.war.getSide1Players();
 						}
-						if (Siege.this.siegeTicks >= Siege.this.MAXSIEGETICKS) {
+						if (Siege.this.siegeTicks >= Siege.this.maxSiegeTicks) {
 							Bukkit.getServer().getScheduler().cancelTask(Siege.this.bukkitId[0]);
 							if (Siege.this.attackerPoints > Siege.this.defenderPoints) {
-								Siege.this.attackersWin(Siege.this.owner);
+								Siege.this.attackersWin(Siege.this.siegeOwner);
 							} else {
 								Siege.this.defendersWin();
 							}
 						} else {
 							boolean attackersAreOnHomeBlock = false;
 							boolean defendersAreOnHomeBlock = false;
-							final Siege this$0 = Siege.this;
-							Siege.access$7(this$0, this$0.siegeTicks + 200);
-							Main.siegeData.getConfig().set("Sieges." + String.valueOf(Siege.this.id) + ".siegeticks",
-									(Object) Siege.this.siegeTicks);
-							Main.siegeData.saveConfig();
+                            siegeTicks = siegeTicks + 200;
 							for (final String playerName : Siege.this.attackerPlayers) {
 								try {
 									if (WorldCoord.parseWorldCoord(Main.getInstance().getServer().getPlayer(playerName))
@@ -150,7 +123,7 @@ public class Siege {
 								} catch (NullPointerException ex4) {
 								}
 							}
-							if (attackersAreOnHomeBlock && defendersAreOnHomeBlock) {
+							if (attackersAreOnHomeBlock && defendersAreOnHomeBlock) { // Contested
 								if (this.homeBlockControl != 1) {
 									for (final String playerName : Siege.this.attackerPlayers) {
 										try {
@@ -168,7 +141,7 @@ public class Siege {
 									}
 								}
 								this.homeBlockControl = 1;
-							} else if (attackersAreOnHomeBlock && !defendersAreOnHomeBlock) {
+							} else if (attackersAreOnHomeBlock && !defendersAreOnHomeBlock) { // Attackers
 								if (this.homeBlockControl != 2) {
 									for (final String playerName : Siege.this.attackerPlayers) {
 										try {
@@ -189,11 +162,7 @@ public class Siege {
 								}
 								this.homeBlockControl = 2;
 								Siege.this.addPointsToAttackers(10);
-								Main.siegeData.getConfig().set(
-										"Sieges." + String.valueOf(Siege.this.id) + ".attackerpoints",
-										(Object) Siege.this.attackerPoints);
-								Main.siegeData.saveConfig();
-							} else {
+							} else { // Defenders / None
 								if (this.homeBlockControl != 3) {
 									for (final String playerName : Siege.this.attackerPlayers) {
 										try {
@@ -213,13 +182,9 @@ public class Siege {
 									}
 								}
 								Siege.this.addPointsToDefenders(10);
-								Main.siegeData.getConfig().set(
-										"Sieges." + String.valueOf(Siege.this.id) + ".defenderpoints",
-										(Object) Siege.this.defenderPoints);
-								Main.siegeData.saveConfig();
 								this.homeBlockControl = 3;
 							}
-							if (Siege.this.siegeTicks % 6000 == 0) {
+							if (Siege.this.siegeTicks % 6000 == 0) { // Updates every 5 minutes
 								Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "Report on the siege of "
 										+ Siege.this.town.getName() + ":");
 								Bukkit.broadcastMessage(
@@ -227,23 +192,29 @@ public class Siege {
 								Bukkit.broadcastMessage(
 										"Defender Points - " + String.valueOf(Siege.this.defenderPoints));
 							}
+                            if (siegeTicks % 1200 == 0) { // Saves every minute
+                                save();
+                            }
 						}
 					}
 				}, 0L, 200L);
 	}
 
+    /** Resumes a siege (after a server restart e.t.c.)*/
+    public void resume() {
+
+    }
+
+    /** Stops a siege */
 	public void stop() {
 		Bukkit.getScheduler().cancelTask(this.bukkitId[0]);
-		SiegeCommands.sieges.remove(this);
-		Main.siegeData.getConfig().set("Sieges." + String.valueOf(this.id), (Object) null);
-		Main.siegeData.saveConfig();
+		SiegeData.removeSiege(this);
 	}
 
 	public void attackersWin(final Player owner) {
 		final Resident resident = TownyAPI.getInstance().getResident(owner);
 		Nation nation = null;
-		Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The attackers from " + this.attackers
-				+ " have won the siege of " + this.town.getName() + "!");
+		Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The attackers have won the siege of " + this.town.getName() + "!");
 		try {
 			nation = resident.getTown().getNation();
 		} catch (NotRegisteredException e) {
@@ -265,7 +236,6 @@ public class Siege {
 			}
 		}
 		if (nation != null) {
-			TownOccupationController.setTownOccupation(this.town, nation);
 			Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The town of " + this.town.getName()
 					+ " has been placed under occupation by " + nation.getName() + "!");
 		}
@@ -299,12 +269,11 @@ public class Siege {
 
 	public void defendersWin() {
 		this.town.getAccount().deposit(2500.0, "War chest");
-		Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The defenders from " + this.defenders
-				+ " have won the siege of " + this.town.getName() + "!");
+		Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The defenders have won the siege of " + this.town.getName() + "!");
 		Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + this.town.getName()
 				+ " has recovered the attackers' war chest, valued at $2,500");
 		Main.warLogger
-				.log("The defenders from " + this.defenders + " have won the siege of " + this.town.getName() + "!");
+				.log(war.getName() + ": The defenders have won the siege of " + this.town.getName() + "!");
 		stop();
 		clearBeacon();
 	}
@@ -369,11 +338,7 @@ public class Siege {
 			for (int i = 2; i < this.beaconLocs.size(); ++i) {
 				this.beaconLocs.get(i).getBlock().setType(Material.IRON_BLOCK);
 			}
-			Main.siegeData.getConfig().set("Sieges." + String.valueOf(this.id) + ".world", world.getName());
-			Main.siegeData.getConfig().set("Sieges." + String.valueOf(this.id) + ".homeblockx", homeBlockX);
-			Main.siegeData.getConfig().set("Sieges." + String.valueOf(this.id) + ".homeblocky", homeBlockY);
-			Main.siegeData.getConfig().set("Sieges." + String.valueOf(this.id) + ".homeblockz", homeBlockZ);
-			Main.siegeData.saveConfig();
+            save();
 		} catch (TownyException ex) {
 		}
 	}
@@ -414,14 +379,6 @@ public class Siege {
 		this.defenderPoints += points;
 	}
 
-	public int getID() {
-		return this.id;
-	}
-
-	public void setID(final int id) {
-		this.id = id;
-	}
-
 	public War getWar() {
 		return this.war;
 	}
@@ -438,36 +395,30 @@ public class Siege {
 		this.town = town;
 	}
 
+    /** Gets attacker name string */
 	public String getAttackers() {
-		return this.attackers;
+		if (side1AreAttackers) {
+            return war.getSide1();
+        } else {
+            return war.getSide2();
+        }
 	}
 
-	public void setAttackers(final String attackers) {
-		this.attackers = attackers;
-	}
-
+    /** Gets defender name string */
 	public String getDefenders() {
-		return this.defenders;
-	}
-
-	public void setDefenders(final String defenders) {
-		this.attackers = defenders;
+		if (side1AreAttackers) {
+            return war.getSide2();
+        } else {
+            return war.getSide1();
+        }
 	}
 
 	public int getAttackerPoints() {
 		return this.attackerPoints;
 	}
 
-	public void attackerPoints(final int attackerPoints) {
-		this.attackerPoints = attackerPoints;
-	}
-
 	public int getDefenderPoints() {
 		return this.defenderPoints;
-	}
-
-	public void defenderPoints(final int defenderPoints) {
-		this.defenderPoints = this.attackerPoints;
 	}
 
 	public boolean getSide1AreAttackers() {
@@ -476,14 +427,6 @@ public class Siege {
 
 	public void setSide1AreAttackers(final boolean side1AreAttackers) {
 		this.side1AreAttackers = side1AreAttackers;
-	}
-
-	public boolean getSide2AreAttackers() {
-		return this.side2AreAttackers;
-	}
-
-	public void setSide2AreAttackers(final boolean side2AreAttackers) {
-		this.side2AreAttackers = side2AreAttackers;
 	}
 
 	public ArrayList<String> getAttackerPlayers() {
@@ -502,7 +445,11 @@ public class Siege {
 		this.defenderPlayers = this.attackerPlayers;
 	}
 
-	static /* synthetic */ void access$7(final Siege siege, final int siegeTicks) {
-		siege.siegeTicks = siegeTicks;
-	}
+    public int getSiegeTicks() {
+        return siegeTicks;
+    }
+
+	public void save() {
+        SiegeData.saveSiege(this);
+    }
 }
