@@ -11,6 +11,7 @@ import com.palmergames.bukkit.towny.object.Town;
 import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.War;
 import me.ShermansWorld.AlathraWar.commands.WarCommands;
+import me.ShermansWorld.AlathraWar.data.WarData;
 import me.ShermansWorld.AlathraWar.hooks.TABHook;
 
 import org.bukkit.event.Listener;
@@ -27,7 +28,7 @@ public class JoinListener implements Listener {
         if (town == null) return;
         String townName = town.getName();
         boolean inWar = false;
-        for (final War war : WarCommands.wars) {
+        for (final War war : WarData.getWars()) {
             if (war.getSide1Towns().contains(townName)) {
                 TABHook.assignSide1WarSuffix(p, war);
                 inWar = true;

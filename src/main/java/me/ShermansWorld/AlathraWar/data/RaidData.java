@@ -2,6 +2,8 @@ package me.ShermansWorld.AlathraWar.data;
 
 import com.palmergames.bukkit.towny.object.Town;
 import me.ShermansWorld.AlathraWar.Main;
+import me.ShermansWorld.AlathraWar.War;
+
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -79,5 +81,9 @@ public class RaidData {
      */
     public int isValidRaid(Town t) {
         return 0;
+    }
+
+    public static Object getRaidMap(War war) {
+        return null;
     }
 }

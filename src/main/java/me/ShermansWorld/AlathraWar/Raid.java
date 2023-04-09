@@ -51,6 +51,7 @@ v/ Raiders on death are teleported to their town spawn.
 
 /**
  * This is based on the existing Siege Class
+ *
  * @author AubriTheHuman
  * @author NinjaMandalorian
  * @author ShermansWorld

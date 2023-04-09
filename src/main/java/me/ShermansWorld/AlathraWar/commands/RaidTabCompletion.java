@@ -83,9 +83,7 @@ public class RaidTabCompletion implements TabCompleter {
                     return completions;
                 }
             }
-
         }
-
         return Collections.emptyList();
     }
 }
