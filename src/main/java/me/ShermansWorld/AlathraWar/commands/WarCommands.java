@@ -43,115 +43,13 @@ public class WarCommands implements CommandExecutor {
 
             switch(args[0].toLowerCase()) {
                 case "create":
-                    if (!p.hasPermission("AlathraWar.admin")) {
-                        p.sendMessage("You do not have permission to run this command.");
-                        return true;
-                    }
-                    if (args.length >= 4) {
-                        War war = new War(args[1], args[2], args[3]);
-                        WarData.addWar(war);
-                        war.save();
-
-                        p.sendMessage(String.valueOf(Helper.Chatlabel()) + "War created with the name " + args[1] + ", "
-								+ args[2] + " vs. " + args[3]);
-						Main.warLogger.log(p.getName() + " created a new war with the name " + args[1] + ", " + args[2]
-								+ " vs. " + args[3]);
-                                return true;
-                    } else {
-                        p.sendMessage(String.valueOf(Helper.Chatlabel())
-                                + "Invalid Arguments. /war create [name] [side1] [side2]");
-                    }
-
+                    warCreate(p, args);
                     return true;
                 case "delete":
-                    if (!p.hasPermission("AlathraWar.admin")) {
-                        p.sendMessage("You do not have permission to run this command.");
-                        return true;
-                    }
-
-                    if (args.length >= 2) {
-                        War war = WarData.getWar(args[1]);
-
-                        // War Check
-                        if (war == null) {
-                            p.sendMessage(Helper.Chatlabel()
-                                    + "War not found. Type /war list to view current wars.");
-                            return true;
-                        }
-
-                        WarData.removeWar(war);
-
-                        p.sendMessage(String.valueOf(Helper.Chatlabel()) + "War " + args[1] + " deleted.");
-						Main.warLogger.log(p.getName() + " deleted " + args[1]);
-                                return true;
-                    } else {
-                        p.sendMessage(String.valueOf(Helper.Chatlabel())
-                                + "Invalid Arguments. /war delete [name]");
-                    }
-
+                    warDelete(p, args);
                     return true;
                 case "join":
-                    // Sufficient args check
-                    if (args.length < 3) {
-                        p.sendMessage(Helper.Chatlabel()
-								+ "/war join [name] [side], type /war list to view current wars");
-                        return true;
-                    }
-
-                    // War check
-                    War war = WarData.getWar(args[1]);
-                    if (war == null) {
-                        p.sendMessage(Helper.Chatlabel()
-								+ "War not found. /war join [name] [side], type /war list to view current wars");
-                        return true;
-                    }
-
-                    // Towny Resident Object
-                    Resident res = TownyAPI.getInstance().getResident(p);
-
-                    // Town check
-                    Town town = res.getTownOrNull();
-                    if (town == null) {
-                        p.sendMessage(ChatColor.RED + "You are not in a town.");
-                        return true;
-                    }
-
-                    // Side checks
-                    int side = war.getSide(town.getName().toLowerCase());
-                    if (side == -1) {
-                        p.sendMessage(Helper.Chatlabel() + "You've already surrendered!");
-                        return true;
-                    } else if (side > 0) {
-                        p.sendMessage(Helper.Chatlabel() + "You're already in this war!");
-                        return true;
-                    }
-
-                    if (res.hasNation()) {
-                        if(p.hasPermission("AlathraWar.nationjoin" )|| res.isKing()) {
-                            // Has nation declaration permission
-                            war.addNation(res.getNationOrNull(), args[2]);
-                            p.sendMessage(Helper.Chatlabel() + "You have joined the war for " + res.getNationOrNull().getName());
-                            war.save();
-                            return true;
-                        } else {
-                            // Cannot declare nation involvement
-                            p.sendMessage(Helper.Chatlabel() + "You cannot declare war for your nation.");
-                            return true;
-                        }
-                    } else if (res.hasTown()) {
-                        if (p.hasPermission("AlathraWar.townjoin") || res.isMayor()) {
-                            // Is in indepdenent town & has declaration perms
-                            war.addTown(res.getTownOrNull(), args[2]);
-                            p.sendMessage(Helper.Chatlabel() + "You have joined the war for " + res.getTownOrNull().getName());
-                            war.save();
-                            return true;
-                        } else {
-                            // No perms
-                            p.sendMessage(Helper.Chatlabel() + "You cannot declare war for your town.");
-                            return true;
-                        }
-                    }
-
+                    warJoin(p, args);
                     return true;
                 case "surrender":
                     warSurrender(p, args);
@@ -161,6 +59,9 @@ public class WarCommands implements CommandExecutor {
                     return true;
                 case "info":
                     warInfo(p, args);
+                    return true;
+                case "help":
+                    warHelp(p, args);
                     return true;
                 default:
                     p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /war help");
@@ -172,6 +73,118 @@ public class WarCommands implements CommandExecutor {
         } 
 		return false;
 	}
+
+    private static void warCreate(Player p, String[] args) {
+        if (!p.hasPermission("AlathraWar.admin")) {
+            p.sendMessage("You do not have permission to run this command.");
+            return;
+        }
+        if (args.length >= 4) {
+            War war = new War(args[1], args[2], args[3]);
+            WarData.addWar(war);
+            war.save();
+
+            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "War created with the name " + args[1] + ", "
+                    + args[2] + " vs. " + args[3]);
+            Main.warLogger.log(p.getName() + " created a new war with the name " + args[1] + ", " + args[2]
+                    + " vs. " + args[3]);
+                    return;
+        } else {
+            p.sendMessage(String.valueOf(Helper.Chatlabel())
+                    + "Invalid Arguments. /war create [name] [side1] [side2]");
+        }
+
+    }
+
+    private static void warDelete(Player p, String[] args) {
+        if (!p.hasPermission("AlathraWar.admin")) {
+            p.sendMessage("You do not have permission to run this command.");
+            return;
+        }
+
+        if (args.length >= 2) {
+            War war = WarData.getWar(args[1]);
+
+            // War Check
+            if (war == null) {
+                p.sendMessage(Helper.Chatlabel()
+                        + "War not found. Type /war list to view current wars.");
+                return;
+            }
+
+            WarData.removeWar(war);
+
+            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "War " + args[1] + " deleted.");
+            Main.warLogger.log(p.getName() + " deleted " + args[1]);
+                    return;
+        } else {
+            p.sendMessage(String.valueOf(Helper.Chatlabel())
+                    + "Invalid Arguments. /war delete [name]");
+        }
+    }
+
+    private static void warJoin(Player p, String[] args) {
+        // Sufficient args check
+        if (args.length < 3) {
+            p.sendMessage(Helper.Chatlabel()
+                    + "/war join [name] [side], type /war list to view current wars");
+            return;
+        }
+
+        // War check
+        War war = WarData.getWar(args[1]);
+        if (war == null) {
+            p.sendMessage(Helper.Chatlabel()
+                    + "War not found. /war join [name] [side], type /war list to view current wars");
+            return;
+        }
+
+        // Towny Resident Object
+        Resident res = TownyAPI.getInstance().getResident(p);
+
+        // Town check
+        Town town = res.getTownOrNull();
+        if (town == null) {
+            p.sendMessage(ChatColor.RED + "You are not in a town.");
+            return;
+        }
+
+        // Side checks
+        int side = war.getSide(town.getName().toLowerCase());
+        if (side == -1) {
+            p.sendMessage(Helper.Chatlabel() + "You've already surrendered!");
+            return;
+        } else if (side > 0) {
+            p.sendMessage(Helper.Chatlabel() + "You're already in this war!");
+            return;
+        }
+
+        if (res.hasNation()) {
+            if(p.hasPermission("AlathraWar.nationjoin" )|| res.isKing()) {
+                // Has nation declaration permission
+                war.addNation(res.getNationOrNull(), args[2]);
+                p.sendMessage(Helper.Chatlabel() + "You have joined the war for " + res.getNationOrNull().getName());
+                war.save();
+                return;
+            } else {
+                // Cannot declare nation involvement
+                p.sendMessage(Helper.Chatlabel() + "You cannot declare war for your nation.");
+                return;
+            }
+        } else if (res.hasTown()) {
+            if (p.hasPermission("AlathraWar.townjoin") || res.isMayor()) {
+                // Is in indepdenent town & has declaration perms
+                war.addTown(res.getTownOrNull(), args[2]);
+                p.sendMessage(Helper.Chatlabel() + "You have joined the war for " + res.getTownOrNull().getName());
+                war.save();
+                return;
+            } else {
+                // No perms
+                p.sendMessage(Helper.Chatlabel() + "You cannot declare war for your town.");
+                return;
+            }
+        }
+    }
 
     private static void warSurrender(Player p, String[] args) {
         // Sufficient args check
@@ -262,6 +275,10 @@ public class WarCommands implements CommandExecutor {
                 }
             }
         }
+    }
+
+    private static void warHelp(Player p, String[] args) {
+        // TODO
     }
 
     /**
