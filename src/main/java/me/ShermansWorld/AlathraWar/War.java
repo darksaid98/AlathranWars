@@ -2,7 +2,9 @@ package me.ShermansWorld.AlathraWar;
 
 import java.util.ArrayList;
 
+import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Nation;
+import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 
 import me.ShermansWorld.AlathraWar.data.WarData;
@@ -16,6 +18,10 @@ public class War {
 	private ArrayList<String> side1Towns = new ArrayList<String>();
 	private ArrayList<String> side2Towns = new ArrayList<String>();
     private ArrayList<String> surrenderedTowns = new ArrayList<String>();
+
+    // References
+    private ArrayList<Siege> sieges = new ArrayList<Siege>();
+    private ArrayList<Raid> raids = new ArrayList<Raid>();
 
     /**
      * War Constructor
@@ -147,6 +153,23 @@ public class War {
         return surrenderedTowns;
     }
 
+
+    public ArrayList<Siege> getSieges() {
+        return sieges;
+    }
+
+    public void addSiege(Siege siege) {
+        sieges.add(siege);
+    }
+
+    public ArrayList<Raid> getRaids() {
+        return raids;
+    }
+
+    public void addRaid(Raid raid) {
+        raids.add(raid);
+    }
+
     /**
      * Saves the war into .yml file folders.
      */
@@ -158,6 +181,27 @@ public class War {
         return name + "[" + side1 + "." + side2 + "](" 
         + side1Towns.size() + "/" + side2Towns.size() + "/" + 
         surrenderedTowns.size() + ")";
+    }
+
+    public ArrayList<String> getSide1Players() {
+        return townListToPlayers(side1Towns);
+    }
+
+    public ArrayList<String> getSide2Players() {
+        return townListToPlayers(side2Towns);
+    }
+
+    private static ArrayList<String> townListToPlayers(ArrayList<String> townList) {
+        ArrayList<String> returnList = new ArrayList<String>();
+        for (String townString : townList) {
+            Town town = TownyAPI.getInstance().getTown(townString);
+            if (town != null) {
+                for (Resident res : town.getResidents()) {
+                    returnList.add(res.getName());
+                }
+            }
+        }
+        return returnList;
     }
 
 }
