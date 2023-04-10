@@ -1,8 +1,6 @@
 package me.ShermansWorld.AlathraWar;
 
-import com.gmail.goosius.siegewar.TownOccupationController;
 import com.palmergames.bukkit.towny.TownyAPI;
-import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.*;
@@ -41,12 +39,14 @@ The raid is split into two phases:
     - Decides outcome of raid
 
 TODO LIST:
-- No teleporting by raiders
+v/ No teleporting by raiders
 v/ Points management
     v/ Raider death is negative score
     v/ Defender death is positive score
+    - Raiders can loot townblocks for extra score
     - TODO Raiders gain points for
 v/ Raiders on death are teleported to their town spawn.
+
 */
 
 /**
@@ -394,8 +394,8 @@ public class Raid {
         //tp to raid town spawn
         final Player killed = event.getEntity();
         if(this.getActiveRaiders().contains(killed.getName())) {
-            //                killed.teleport(this.getGatherTown().getSpawn());
-//                killed.sendMessage(String.valueOf(Helper.Chatlabel()) + "You died before being raided and have been teleported back to your town's spawn.");
+            // killed.teleport(this.getGatherTown().getSpawn());
+            // killed.sendMessage(String.valueOf(Helper.Chatlabel()) + "You died before being raided and have been teleported back to your town's spawn.");
         }
     }
 
