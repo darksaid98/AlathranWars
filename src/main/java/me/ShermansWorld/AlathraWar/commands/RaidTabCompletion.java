@@ -40,14 +40,21 @@ public class RaidTabCompletion implements TabCompleter {
                     }
                     return completions;
                 }
-            } else if (args[0].equalsIgnoreCase("stop") || args[0].equalsIgnoreCase("abandon")) {
+            } else if (args[0].equalsIgnoreCase("stop")) {
                 if (!RaidData.getRaids().isEmpty()) {
-                    for (Raid raid : RaidCommands.raids) {
-                        completions.add(String.valueOf(raid.getID()));
+                    for (Raid raid : RaidData.getRaids()) {
+                        completions.add(String.valueOf(raid.getName()));
                     }
                     return completions;
                 }
             } else if (args[0].equalsIgnoreCase("join")) {
+                if (!WarData.getWars().isEmpty()) {
+                    for (War war : WarData.getWars()) {
+                        completions.add(war.getName());
+                    }
+                    return completions;
+                }
+            } else if (args[0].equalsIgnoreCase("abandon")) {
                 if (!WarData.getWars().isEmpty()) {
                     for (War war : WarData.getWars()) {
                         completions.add(war.getName());
@@ -71,6 +78,13 @@ public class RaidTabCompletion implements TabCompleter {
                     return completions;
                 }
             } else if (args[0].equalsIgnoreCase("join")) {
+                if (!TownyAPI.getInstance().getTowns().isEmpty()) {
+                    for (Town town : TownyAPI.getInstance().getTowns()) {
+                        completions.add(town.getName());
+                    }
+                    return completions;
+                }
+            } else if (args[0].equalsIgnoreCase("abandon")) {
                 if (!TownyAPI.getInstance().getTowns().isEmpty()) {
                     for (Town town : TownyAPI.getInstance().getTowns()) {
                         completions.add(town.getName());

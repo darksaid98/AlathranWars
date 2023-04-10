@@ -2,6 +2,7 @@ package me.ShermansWorld.AlathraWar.data;
 
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Town;
+import com.palmergames.bukkit.towny.object.WorldCoord;
 import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.Raid;
 import me.ShermansWorld.AlathraWar.War;
@@ -85,8 +86,12 @@ public class RaidData {
             raid.setActiveRaiders((ArrayList<String>) fileData.get("activeRaiders"));
         }
 
+//        HashMap<WorldCoord,Raid.LootBlock> lootBlockHashMap = fileData.get("lootedChunks");
+
         return raid;
     }
+
+
 
     /**
      * Saves the war into files.
