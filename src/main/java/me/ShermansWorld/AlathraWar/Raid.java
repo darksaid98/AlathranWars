@@ -3,22 +3,22 @@ package me.ShermansWorld.AlathraWar;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
-import com.palmergames.bukkit.towny.object.*;
+import com.palmergames.bukkit.towny.object.Resident;
+import com.palmergames.bukkit.towny.object.Town;
+import com.palmergames.bukkit.towny.object.TownBlock;
+import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.palmergames.bukkit.towny.object.metadata.LongDataField;
-import me.ShermansWorld.AlathraWar.commands.RaidCommands;
 import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -110,7 +110,6 @@ public class Raid {
         this.activeRaiders = activeRaiders;
         this.setRaidPhase(phase);
     }
-
 
 
     public Raid(final War war, final Town raidedTown, final Town gatherTown,
@@ -260,21 +259,21 @@ public class Raid {
                                 }
 
                                 //Looting chunks
-                                for(String name : Raid.this.getActiveRaiders()) {
+                                for (String name : Raid.this.getActiveRaiders()) {
                                     Player p = Bukkit.getPlayer(name);
                                     WorldCoord wc = WorldCoord.parseWorldCoord(p);
                                     if (p.isSneaking()) {
                                         //check if our chunk is looted, if so skip this player
                                         //Idk if thisll work but if it do then ye
-                                        if(Raid.this.lootedChunks.containsKey(wc)) {
-                                            if(Raid.this.lootedChunks.get(wc).finished) {
+                                        if (Raid.this.lootedChunks.containsKey(wc)) {
+                                            if (Raid.this.lootedChunks.get(wc).finished) {
                                                 p.sendMessage(Helper.Chatlabel() + "This chunk is already looted, try another.");
                                             } else {
                                                 doLootAt(p, wc);
                                             }
                                         } else {
-                                            if(Raid.this.getRaidedTown().hasTownBlock(wc)) {
-                                               doLootAt(p, wc);
+                                            if (Raid.this.getRaidedTown().hasTownBlock(wc)) {
+                                                doLootAt(p, wc);
                                             } else {
                                                 p.sendMessage(Helper.Chatlabel() + "This space is not part of the raided town, you cannot loot this area.");
                                             }
@@ -295,6 +294,179 @@ public class Raid {
                 }, 0L, incremental);
     }
 
+
+    /**
+     * Resumes a Raid (after a server restart e.t.c.)
+     */
+    public void resume() {
+        if (this.side1AreRaiders) {
+            this.raiderPlayers = this.war.getSide1Players();
+            this.defenderPlayers = this.war.getSide2Players();
+        } else {
+            this.raiderPlayers = this.war.getSide2Players();
+            this.defenderPlayers = this.war.getSide1Players();
+        }
+
+        // Sets homeBlock and spawn for town. (So no mid-raid changes.)
+        try {
+            homeBlockRaided = raidedTown.getHomeBlock();
+            townSpawnRaided = raidedTown.getSpawn();
+            homeBlockGather = gatherTown.getHomeBlock();
+            townSpawnGather = gatherTown.getSpawn();
+        } catch (TownyException e) {
+            e.printStackTrace();
+        }
+
+        // Creates 10 second looping function for Raid, restarting this!
+        this.bukkitId[0] = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask((Plugin) Main.getInstance(),
+                (Runnable) new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if (homeBlockRaided != null) {
+                            raidedTown.setHomeBlock(homeBlockRaided);
+                            raidedTown.setSpawn(townSpawnRaided);
+                        }
+                        if (homeBlockGather != null) {
+                            gatherTown.setHomeBlock(homeBlockGather);
+                            gatherTown.setSpawn(townSpawnGather);
+                        }
+                        if (Raid.this.side1AreRaiders) {
+                            Raid.this.raiderPlayers = Raid.this.war.getSide1Players();
+                            Raid.this.defenderPlayers = Raid.this.war.getSide2Players();
+                        } else {
+                            Raid.this.raiderPlayers = Raid.this.war.getSide2Players();
+                            Raid.this.defenderPlayers = Raid.this.war.getSide1Players();
+                        }
+                        if (Raid.this.raidTicks >= RaidPhase.END.startTick) {
+                            Bukkit.getServer().getScheduler().cancelTask(Raid.this.bukkitId[0]);
+                            Raid.this.phase = RaidPhase.END;
+                            //TODO: fix raid scoring
+                            //for raiders to win, they need a significant up from the defenders
+                            if (Raid.this.raidScore > 700) {
+                                Raid.this.raidersWin(Raid.this.owner, Raid.this.raidScore);
+                            } else {
+                                Raid.this.defendersWin(Raid.this.raidScore);
+                            }
+                        } else {
+                            raidTicks += incremental;
+
+                            //check and start travel phase
+                            if (Raid.this.raidTicks >= RaidPhase.TRAVEL.startTick && Raid.this.phase != RaidPhase.TRAVEL) {
+                                startTravel();
+                            }
+
+                            //check and start combat phase
+                            if (Raid.this.raidTicks >= RaidPhase.COMBAT.startTick && Raid.this.phase != RaidPhase.COMBAT) {
+                                startCombat();
+                            }
+
+                            //Raid start phase behavior
+                            if (Raid.this.phase == RaidPhase.GATHER) {
+                                //Broadcast
+                                if (raidTicks % 6000 == 0) {
+                                    Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The raid of "
+                                            + Raid.this.getRaidedTown().getName() + " will begin in " + (int) (RaidPhase.TRAVEL.startTick / 20 / 60) + " minutes!");
+                                    Bukkit.broadcastMessage(
+                                            "The Raiders are gathering at " + getGatherTown().getName() + " before making the journey over!");
+                                }
+
+
+                                //Prevent players from leaving gather town prematurely
+                                for (String playerName : getActiveRaiders()) {
+                                    try {
+                                        Player p = Bukkit.getPlayer(playerName);
+                                        ArrayList<WorldCoord> cluster = Helper.getCluster(Raid.this.getGatherTown().getHomeBlock().getWorldCoord());
+                                        if (!cluster.contains(WorldCoord.parseWorldCoord(p))) {
+                                            Raid.this.removeActiveRaider(p.getName());
+                                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "By leaving the gathering town you have left the raid on " + Raid.this.getRaidedTown().getName() + "!");
+                                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "To rejoin, do /raid join [war] [town]");
+                                        }
+                                    } catch (NullPointerException e) {
+                                        e.printStackTrace();
+                                    } catch (NotRegisteredException e) {
+                                        e.printStackTrace();
+                                    } catch (TownyException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                            }
+
+                            //Raid Travel phase behavior
+                            else if (Raid.this.phase == RaidPhase.TRAVEL) {
+
+                                if (raidTicks % 2400 == 0) {
+                                    Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The Raiders of "
+                                            + (side1AreRaiders ? Raid.this.war.getSide1() : Raid.this.war.getSide2())
+                                            + " are on their way to raid "
+                                            + Raid.this.getRaidedTown().getName() + "!");
+                                }
+
+                                //Check if a player has arrived at the town (in it) and if so start combat
+                                for (String player : activeRaiders) {
+                                    WorldCoord playercoord = WorldCoord.parseWorldCoord(Bukkit.getPlayer(player));
+                                    if (Raid.this.getRaidedTown().hasTownBlock(playercoord)) {
+                                        startCombat();
+                                    }
+                                }
+
+                            }
+                            //Raid combat phase behavior
+                            else if (Raid.this.phase == RaidPhase.COMBAT) {
+
+                                //Report
+                                if (Raid.this.raidTicks % 6000 == 0) {
+                                    Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "Report on the raid of "
+                                            + Raid.this.getRaidedTown().getName() + ":");
+                                    Bukkit.broadcastMessage(
+                                            "Raid Score - " + String.valueOf(Raid.this.raidScore));
+                                }
+
+                                //Looting chunks
+                                for (String name : Raid.this.getActiveRaiders()) {
+                                    Player p = Bukkit.getPlayer(name);
+                                    WorldCoord wc = WorldCoord.parseWorldCoord(p);
+                                    if (p.isSneaking()) {
+                                        //check if our chunk is looted, if so skip this player
+                                        //Idk if thisll work but if it do then ye
+                                        if (Raid.this.lootedChunks.containsKey(wc)) {
+                                            if (Raid.this.lootedChunks.get(wc).finished) {
+                                                p.sendMessage(Helper.Chatlabel() + "This chunk is already looted, try another.");
+                                            } else {
+                                                doLootAt(p, wc);
+                                            }
+                                        } else {
+                                            if (Raid.this.getRaidedTown().hasTownBlock(wc)) {
+                                                doLootAt(p, wc);
+                                            } else {
+                                                p.sendMessage(Helper.Chatlabel() + "This space is not part of the raided town, you cannot loot this area.");
+                                            }
+                                        }
+//                                        for (LootBlock c : Raid.this.lootedChunks.values()) {
+//                                            if (c.worldCoord.equals(wc)) {
+//                                                looted = true;
+//                                                p.sendMessage(Helper.Chatlabel() + "This chunk is already looted, try another.");
+//                                                continue;
+//                                            }
+//                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }, 0L, incremental);
+    }
+
+    // End of raid
+    public void stop() {
+        this.phase = RaidPhase.END;
+        Bukkit.getScheduler().cancelTask(this.bukkitId[0]);
+        RaidData.removeRaid(this);
+    }
+
+
     /**
      * do loot logic for a chunk, synchronized in case multiple players are looting at once and something breaks
      *
@@ -305,11 +477,11 @@ public class Raid {
         p.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 60, 0, true, false, true));
 
         //check if this loot is in progress
-        if(this.lootedChunks.containsKey(wc)) {
+        if (this.lootedChunks.containsKey(wc)) {
             LootBlock lb = this.lootedChunks.get(wc);
             lb.ticks += incremental;
             //60 seconds to loot
-            if(lb.ticks >= 1200 && !lb.finished) {
+            if (lb.ticks >= 1200 && !lb.finished) {
                 lb.finished = true;
                 Random r = new Random();
                 //The base value can be abjusted
@@ -320,7 +492,7 @@ public class Raid {
 
                 Main.warLogger.log(String.format("A townblock has been looted for $%.2d", lb.value));
                 //Broadcast to the whole raid
-                for(String s : activeRaiders) {
+                for (String s : activeRaiders) {
                     Bukkit.getPlayer(s).sendMessage(Helper.Chatlabel() + String.format("A townblock has been looted for $%.2d and +10 points. (Added to pool)", lb.value));
                 }
                 for (String s : defenderPlayers) {
@@ -330,7 +502,7 @@ public class Raid {
         } else {
             //if not make a new property for it
             this.addLootedChunk(wc);
-            for(String s : activeRaiders) {
+            for (String s : activeRaiders) {
                 Bukkit.getPlayer(s).sendMessage(Helper.Chatlabel() + "Raiders have started looting a town block!");
             }
             for (String s : defenderPlayers) {
@@ -338,20 +510,6 @@ public class Raid {
             }
         }
 
-    }
-
-    /**
-     * Resumes a Raid (after a server restart e.t.c.)
-     */
-    public void resume() {
-
-    }
-
-    // End of raid
-    public void stop() {
-        this.phase = RaidPhase.END;
-        Bukkit.getScheduler().cancelTask(this.bukkitId[0]);
-        RaidData.removeRaid(this);
     }
 
     /**
@@ -551,7 +709,7 @@ public class Raid {
         double looted = 0.0;
         //calc looted chunks
         for (WorldCoord wc : this.getLootedChunks().keySet()) {
-            if(this.getLootedChunks().get(wc).finished) looted += this.getLootedChunks().get(wc).value;
+            if (this.getLootedChunks().get(wc).finished) looted += this.getLootedChunks().get(wc).value;
         }
 
         amt += looted;
@@ -711,7 +869,9 @@ public class Raid {
         return this.raidTicks;
     }
 
-    public void setRaidTicks(int ticks) { this.raidTicks = ticks; }
+    public void setRaidTicks(int ticks) {
+        this.raidTicks = ticks;
+    }
 
     static /* synthetic */ void access$7(final Raid raid, final int raidTicks) {
         raid.raidTicks = raidTicks;
@@ -742,7 +902,7 @@ public class Raid {
     }
 
     public Map<WorldCoord, LootBlock> getLootedChunks() {
-        if(lootedChunks == null) {
+        if (lootedChunks == null) {
             lootedChunks = new HashMap<>();
         }
         return lootedChunks;
