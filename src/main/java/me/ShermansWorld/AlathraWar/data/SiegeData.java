@@ -85,7 +85,7 @@ public class SiegeData
 
     /**
      * Saves the war into files.
-     * @param war - War to be saved.
+     * @param siege - War to be saved.
      */
     public static void saveSiege(Siege siege) {
         War war = siege.getWar();

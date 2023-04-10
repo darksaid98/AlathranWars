@@ -1,65 +1,141 @@
 package me.ShermansWorld.AlathraWar.data;
 
+import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Town;
 import me.ShermansWorld.AlathraWar.Main;
+import me.ShermansWorld.AlathraWar.Raid;
 import me.ShermansWorld.AlathraWar.War;
 
-import org.bukkit.configuration.Configuration;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-
-import java.io.*;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class RaidData {
-    private Main plugin;
-    private FileConfiguration dataConfig;
-    private File configFile;
+    // Static Raid list for all active raids
+    private static ArrayList<Raid> raids = new ArrayList<Raid>();
+    private final static String dataFolderPath = "plugins" + File.separator + "AlathraWar" + File.separator + "data";
 
-    public RaidData(final Main plugin) {
-        this.dataConfig = null;
-        this.configFile = null;
-        this.plugin = plugin;
-        this.saveDefaultConfig();
+    // Filter for only accessing yml files
+    private static FilenameFilter ymlFilter = new FilenameFilter() {
+        @Override
+        public boolean accept(File dir, String name) {
+            return name.endsWith(".yml");
+        }
+    };
+
+    public static ArrayList<Raid> getRaids() {
+        return raids;
     }
 
-    public void reloadConfig() {
-        if (this.configFile == null) {
-            this.configFile = new File(this.plugin.getDataFolder(), "raids.yml");
+    /**
+     * Gets a raid with a specific name
+     * @param name - Name to check
+     * @return Raid or Null
+     */
+    public static Raid getRaid(String name) {
+        for (Raid raid : raids) {
+
         }
-        this.dataConfig = (FileConfiguration) YamlConfiguration.loadConfiguration(this.configFile);
-        final InputStream defaultStream = this.plugin.getResource("raids.yml");
-        if (defaultStream != null) {
-            final YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration((Reader)new InputStreamReader(defaultStream));
-            this.dataConfig.setDefaults((Configuration)defaultConfig);
+        return null;
+    }
+
+    public static void setRaids(ArrayList<Raid> raids) {
+        for (Raid raid : raids) {
+            addRaid(raid);
         }
     }
 
-    public FileConfiguration getConfig() {
-        if (this.dataConfig == null) {
-            this.reloadConfig();
-        }
-        return this.dataConfig;
-    }
-
-    public void saveConfig() {
-        if (this.dataConfig == null || this.configFile == null) {
+    public static void addRaid(Raid raid) {
+        if (raid == null) {
+            Main.warLogger.log("Attempted to add NULL to raid list.");
             return;
         }
-        try {
-            this.getConfig().save(this.configFile);
+        raids.add(raid);
+    }
+
+    public static void removeRaid(Raid raid) {
+        raids.remove(raid);
+        //deleteRaid(raid);
+    }
+
+    /**
+     * Creates a raid object from a provided HashMap
+     * @param fileData
+     * @return Raid object
+     */
+    @SuppressWarnings("unchecked")
+    public static Raid fromMap(War war, HashMap<String, Object> fileData) {
+
+        if (fileData.get("raidedTown") == null || fileData.get("gatherTown") == null  || fileData.get("side1AreRaiders") == null) {
+            return null;
         }
-        catch (IOException e) {
-            e.printStackTrace();
+
+        Town raidedTown = TownyAPI.getInstance().getTown((String) fileData.get("raidedTown"));
+        Town gatherTown = TownyAPI.getInstance().getTown((String) fileData.get("gatherTown"));
+        boolean attackBoolean = Boolean.parseBoolean((String) fileData.get("side1AreRaiders"));
+
+        Raid raid = new Raid(war, raidedTown, gatherTown, attackBoolean);
+
+        if(fileData.get("raidTicks") != null && fileData.get("raidPhase") != null && fileData.get("activeRaiders") != null) {
+            raid.setRaidPhase(RaidPhase.getByName((String) fileData.get("raidPhase")));
+            raid.setRaidTicks((Integer) fileData.get("raidTicks"));
+            raid.setActiveRaiders((ArrayList<String>) fileData.get("activeRaiders"));
+        }
+
+        return raid;
+    }
+
+    /**
+     * Saves the war into files.
+     * @param raid - War to be saved.
+     */
+    public static void saveRaid(Raid raid) {
+        War war = raid.getWar();
+        war.save();
+    }
+
+    //TODO Delete raid
+    private static void deleteRaid(War war) {
+        File[] files = new File(dataFolderPath + File.separator + "wars").listFiles(ymlFilter);
+
+        for (File file : files) {
+            if (file.getName().startsWith(war.getName())) {
+                file.delete();
+            }
         }
     }
 
-    public void saveDefaultConfig() {
-        if (this.configFile == null) {
-            this.configFile = new File(this.plugin.getDataFolder(), "raids.yml");
+    /**
+     * Turns a raid into a map
+     * @param raid - Raid
+     * @return Map
+     */
+    public static HashMap<String, Object> raidToMap(Raid raid) {
+        HashMap<String, Object> returnMap = new HashMap<String, Object>();
+        // Shoves everything into a map.
+        returnMap.put("raidedTown", raid.getRaidedTown());
+        returnMap.put("gatherTown", raid.getRaidedTown());
+        returnMap.put("raidTicks", raid.getRaidTicks());
+        returnMap.put("raidPhase", raid.getPhase().name());
+        returnMap.put("raidScore", raid.getRaidScore());
+        returnMap.put("side1AreRaiders", Boolean.toString(raid.getSide1AreRaiders()));
+        returnMap.put("activeRaiders", raid.getActiveRaiders());
+
+        return returnMap;
+    }
+
+    /**
+     * Creates a map of raid maps
+     * @param war - War to map
+     * @return Map of Maps
+     */
+    public static HashMap<String, Object> getRaidMap(War war) {
+        HashMap<String, Object> returnMap = new HashMap<String, Object>();
+        for (Raid raid : war.getRaids()) {
+            returnMap.put(raid.getRaidedTown().getName(), raidToMap(raid));
         }
-        if (!this.configFile.exists()) {
-            this.plugin.saveResource("raids.yml", false);
-        }
+        return returnMap;
     }
 
     //TODO raid time check
@@ -83,7 +159,4 @@ public class RaidData {
         return 0;
     }
 
-    public static Object getRaidMap(War war) {
-        return null;
-    }
 }

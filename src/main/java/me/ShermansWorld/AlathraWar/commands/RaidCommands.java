@@ -17,33 +17,27 @@ import java.util.ArrayList;
 
 public class RaidCommands implements CommandExecutor
 {
-    public static ArrayList<Town> towns;
-    public static ArrayList<Raid> raids;
     public static int maxID;
 
-    static {
-        RaidCommands.towns = new ArrayList<Town>();
-        RaidCommands.raids = new ArrayList<Raid>();
-    }
 
     public RaidCommands(final Main plugin) {
         //plugin.getCommand("raid").setExecutor((CommandExecutor)this);
     }
 
     public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
-        /*final Player p = (Player)sender;
+        final Player p = (Player)sender;
         if (args.length == 0) {
             p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /raid help");
         }
         else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("list")) {
-                if (RaidCommands.raids.isEmpty()) {
+                if (RaidData.raids.isEmpty()) {
                     p.sendMessage(String.valueOf(Helper.Chatlabel()) + "There are currently no Raids in progress");
                     return false;
                 }
                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Raids currently in progress:");
                 for (final Raid raid : RaidCommands.raids) {
-                    p.sendMessage("ID: " + String.valueOf(raid.getID()));
+                    p.sendMessage("Name: " + raid.getName());
                     p.sendMessage("War: " + raid.getWar().getName());
                     p.sendMessage("Raiding: " + raid.getRaidedTown().getName());
                     p.sendMessage("Gathering In: " + raid.getGatherTown().getName());
@@ -51,7 +45,7 @@ public class RaidCommands implements CommandExecutor
                     p.sendMessage("Defenders: " + raid.getDefenders());
                     p.sendMessage("Raid Score: " + String.valueOf(raid.getRaidScore()));
                     p.sendMessage("Raid Phase: " + raid.getPhase().name());
-                    p.sendMessage("Time Left: " + String.valueOf((72000 - Main.raidData.getConfig().getInt("Raids." + String.valueOf(String.valueOf(raid.getID()) + ".raidticks"))) / 1200) + " minutes");
+                    p.sendMessage("Time Left: " + String.valueOf((RaidPhase.END.startTick - raid.getRaidTicks()) / 1200) + " minutes");
                     p.sendMessage("-=-=-=-=-=-=-=-=-=-=-=-");
                 }
             } else if (args[0].equalsIgnoreCase("help")) {
@@ -74,17 +68,17 @@ public class RaidCommands implements CommandExecutor
                     p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&cYou do not have permission to do this"));
                     return false;
                 }
-                if (RaidCommands.raids.isEmpty()) {
+                if (RaidData.raids.isEmpty()) {
                     p.sendMessage(String.valueOf(Helper.Chatlabel()) + "There are currently no Raids in progress");
                     return false;
                 }
                 boolean found = false;
-                for (int i = 0; i < RaidCommands.raids.size(); ++i) {
-                    if (String.valueOf(RaidCommands.raids.get(i).getID()).equalsIgnoreCase(args[1])) {
+                for (int i = 0; i < RaidData.raids.size(); ++i) {
+                    if (String.valueOf(RaidData.raids.get(i).getID()).equalsIgnoreCase(args[1])) {
                         found = true;
                         p.sendMessage(String.valueOf(Helper.Chatlabel()) + "raid cancelled");
-                        Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The raid of " + RaidCommands.raids.get(i).getRaidedTown().getName() + " has been cancelled by an admin");
-                        RaidCommands.raids.get(i).stop();
+                        Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The raid of " + RaidData.raids.get(i).getRaidedTown().getName() + " has been cancelled by an admin");
+                        RaidData.raids.get(i).stop();
                         break;
                     }
                 }
@@ -101,12 +95,12 @@ public class RaidCommands implements CommandExecutor
                 }
                 final String configOwner = Main.raidData.getConfig().getString("Raids." + args[1] + ".owner");
                 if (configOwner.equalsIgnoreCase(p.getName())) {
-                    for (int j = 0; j < RaidCommands.raids.size(); ++j) {
+                    for (int j = 0; j < RaidData.raids.size(); ++j) {
                         if (String.valueOf(RaidCommands.raids.get(j).getID()).equalsIgnoreCase(args[1])) {
                             found2 = true;
-                            Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The raid on " + RaidCommands.raids.get(j).getRaidedTown().getName() + " has been abandoned by " + RaidCommands.raids.get(j).getRaiders());
-                            Main.warLogger.log(p.getName() + " abandoned the raid on " + RaidCommands.raids.get(j).getRaidedTown().getName() + " they started at " + RaidCommands.raids.get(j).getGatherTown().getName());
-                            RaidCommands.raids.get(j).defendersWin(raids.get(j).getRaidScore());
+                            Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The raid on " + RaidData.raids.get(j).getRaidedTown().getName() + " has been abandoned by " + RaidCommands.raids.get(j).getRaiders());
+                            Main.warLogger.log(p.getName() + " abandoned the raid on " + RaidData.raids.get(j).getRaidedTown().getName() + " they started at " + RaidCommands.raids.get(j).getGatherTown().getName());
+                            RaidData.raids.get(j).defendersWin(raids.get(j).getRaidScore());
                             break;
                         }
                     }
@@ -125,7 +119,7 @@ public class RaidCommands implements CommandExecutor
                 for (final War war : WarCommands.wars) {
                     if (war.getName().equalsIgnoreCase(args[1])) {
                         warFound = true;
-                        /*if (!war.getSide1Players().contains(p.getName()) && !war.getSide2Players().contains(p.getName())) {
+                        if (!war.getSide1Players().contains(p.getName()) && !war.getSide2Players().contains(p.getName())) {
                             p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You are not in this war! Type /war join [war] [side]");
                         }
                         TownyWorld townyWorld;
@@ -376,7 +370,7 @@ public class RaidCommands implements CommandExecutor
         }
         else {
             p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /raid help");
-        }*/
+        }
         return false;
         
     }

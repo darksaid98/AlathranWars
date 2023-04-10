@@ -4,6 +4,8 @@ import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Town;
 import me.ShermansWorld.AlathraWar.Raid;
 import me.ShermansWorld.AlathraWar.War;
+import me.ShermansWorld.AlathraWar.data.RaidData;
+import me.ShermansWorld.AlathraWar.data.WarData;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -32,29 +34,29 @@ public class RaidTabCompletion implements TabCompleter {
             return completions;
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("start")) {
-                if (!WarCommands.wars.isEmpty()) {
-                    for (War war : WarCommands.wars) {
+                if (!WarData.getWars().isEmpty()) {
+                    for (War war : WarData.getWars()) {
                         completions.add(war.getName());
                     }
                     return completions;
                 }
             } else if (args[0].equalsIgnoreCase("stop") || args[0].equalsIgnoreCase("abandon")) {
-                if (!RaidCommands.raids.isEmpty()) {
+                if (!RaidData.getRaids().isEmpty()) {
                     for (Raid raid : RaidCommands.raids) {
                         completions.add(String.valueOf(raid.getID()));
                     }
                     return completions;
                 }
             } else if (args[0].equalsIgnoreCase("join")) {
-                if (!WarCommands.wars.isEmpty()) {
-                    for (War war : WarCommands.wars) {
+                if (!WarData.getWars().isEmpty()) {
+                    for (War war : WarData.getWars()) {
                         completions.add(war.getName());
                     }
                     return completions;
                 }
             } else if (args[0].equalsIgnoreCase("leave")) {
-                if (!WarCommands.wars.isEmpty()) {
-                    for (War war : WarCommands.wars) {
+                if (!WarData.getWars().isEmpty()) {
+                    for (War war : WarData.getWars()) {
                         completions.add(war.getName());
                     }
                     return completions;
