@@ -4,6 +4,9 @@ import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Coord;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.WorldCoord;
+import com.palmergames.bukkit.towny.object.metadata.CustomDataField;
+import com.palmergames.bukkit.towny.object.metadata.IntegerDataField;
+import com.palmergames.bukkit.towny.object.metadata.LongDataField;
 import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.Raid;
 import me.ShermansWorld.AlathraWar.War;
@@ -58,7 +61,7 @@ public class RaidData {
     }
 
     public static void removeRaid(Raid raid) {
-//        raid.getWar().getRaids().remove(raid); //TODO remove from war
+        raid.getWar().getRaids().remove(raid);
         raids.remove(raid);
 
         //deleteRaid(raid);
@@ -123,16 +126,18 @@ public class RaidData {
         war.save();
     }
 
-    //TODO Delete raid
-    private static void deleteRaid(War war) {
-        File[] files = new File(dataFolderPath + File.separator + "wars").listFiles(ymlFilter);
-
-        for (File file : files) {
-            if (file.getName().startsWith(war.getName())) {
-                file.delete();
-            }
-        }
-    }
+    /**
+     * deletes raid, unused
+     */
+//    private static void deleteRaid(War war) {
+//        File[] files = new File(dataFolderPath + File.separator + "wars").listFiles(ymlFilter);
+//
+//        for (File file : files) {
+//            if (file.getName().startsWith(war.getName())) {
+//                file.delete();
+//            }
+//        }
+//    }
 
     /**
      * Turns a raid into a map
@@ -186,25 +191,53 @@ public class RaidData {
         return returnMap;
     }
 
-    //TODO raid time check
     /**
      * @Isaac this is for getting when the last raid was on a town
      *
      * @return
      */
-    public static int whenTownLastRaided() {
-        return 0;
+    public static long whenTownLastRaided(Town town) {
+        if(town.hasMeta("lastRaided")) {
+            CustomDataField field = town.getMetadata("lastRaided");
+            if(field != null) {
+                if (field instanceof IntegerDataField) {
+                    return ((IntegerDataField) field).getValue();
+                }
+            }
+            return -1L;
+        } else {
+            town.addMetaData(new LongDataField("lastRaided", 0L));
+        }
+        return -1L;
     }
 
-    //TODO raid validity check
     /**
      * @Isaac this is for getting if a town can be raided, return (-1, 0, 1, 2) based on status
-     * (24 hours town cooldown, 6 hour nation cooldown, valid time to raid, town being raided already)
+     * (24 hours town cooldown, 6 hour war cooldown, valid time to raid, town being raided already)
      *
      * @return
      */
     public static int isValidRaid(War war, Town town) {
-        return 0;
+        long townTime = whenTownLastRaided(town);
+
+        //24 hours town cooldown
+        if((System.currentTimeMillis() / 1000) - townTime <= 86400) {
+            return -1;
+        }
+
+        //6 hour raid cooldown for war
+        if((System.currentTimeMillis() / 1000) - war.getLastRaidTime() <= 21600) {
+            return 0;
+        }
+
+        //check if being raided
+        for (Raid raid : war.getRaids()) {
+            if (raid.getRaidedTown().getName().equals(town.getName())) {
+                return 2;
+            }
+        }
+
+        return 1;
     }
 
 }

@@ -4,6 +4,7 @@ import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.*;
+import com.palmergames.bukkit.towny.object.metadata.LongDataField;
 import me.ShermansWorld.AlathraWar.*;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import me.ShermansWorld.AlathraWar.data.WarData;
@@ -108,7 +109,7 @@ public class RaidCommands implements CommandExecutor {
                                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Your side has raided too recently!");
                                 return;
                             } else if (c == -1) {
-                                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Thi town was raided too recently!");
+                                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town was raided too recently!");
                                 return;
                             } else if (c == 2) {
                                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town is already being raided at this time!");
@@ -130,7 +131,7 @@ public class RaidCommands implements CommandExecutor {
                                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Your side has raided too recently!");
                                 return;
                             } else if (c == -1) {
-                                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Thi town was raided too recently!");
+                                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town was raided too recently!");
                                 return;
                             } else if (c == 2) {
                                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town is already being raided at this time!");

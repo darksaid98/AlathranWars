@@ -4,6 +4,7 @@ import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.*;
+import com.palmergames.bukkit.towny.object.metadata.LongDataField;
 import me.ShermansWorld.AlathraWar.commands.RaidCommands;
 import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
@@ -51,8 +52,7 @@ v/ No teleporting by raiders
 v/ Points management
     v/ Raider death is negative score
     v/ Defender death is positive score
-    - Raiders can loot townblocks for extra score
-    - TODO Raiders gain points for
+    v/ Raiders can loot townblocks for extra score
 v/ Raiders on death are teleported to their town spawn.
 
 */
@@ -148,6 +148,10 @@ public class Raid {
         } catch (TownyException e) {
             e.printStackTrace();
         }
+
+        //set the last raided time to now
+        raidedTown.addMetaData(new LongDataField("lastRaided", (System.currentTimeMillis() / 1000)));
+        war.setLastRaidTime((System.currentTimeMillis() / 1000));
 
         // Creates 10 second looping function for Raid
         this.bukkitId[0] = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask((Plugin) Main.getInstance(),
