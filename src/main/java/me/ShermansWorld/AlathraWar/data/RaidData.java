@@ -1,6 +1,7 @@
 package me.ShermansWorld.AlathraWar.data;
 
 import com.palmergames.bukkit.towny.TownyAPI;
+import com.palmergames.bukkit.towny.object.Coord;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 import me.ShermansWorld.AlathraWar.Main;
@@ -11,6 +12,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class RaidData {
     // Static Raid list for all active raids
@@ -80,13 +82,32 @@ public class RaidData {
 
         Raid raid = new Raid(war, raidedTown, gatherTown, attackBoolean);
 
-        if(fileData.get("raidTicks") != null && fileData.get("raidPhase") != null && fileData.get("activeRaiders") != null) {
+        //Extra properties, if any are missing the raid doesnt exist yet
+        if(fileData.get("raidTicks") != null && fileData.get("raidPhase") != null && fileData.get("activeRaiders") != null && fileData.get("lootedChunks") != null) {
+            //active properties
             raid.setRaidPhase(RaidPhase.getByName((String) fileData.get("raidPhase")));
             raid.setRaidTicks((Integer) fileData.get("raidTicks"));
             raid.setActiveRaiders((ArrayList<String>) fileData.get("activeRaiders"));
-        }
 
-//        HashMap<WorldCoord,Raid.LootBlock> lootBlockHashMap = fileData.get("lootedChunks");
+            //looted chunks
+            HashMap<String, Object> o = (HashMap<String, Object>) fileData.get("lootedChunks");
+            for (String s : o.keySet()) {
+                //grab the chunk
+                HashMap<String, Object> chunk = (HashMap<String, Object>) o.get(s);
+
+                //grab data for this chunk
+                //worldcoord is its own map
+                HashMap<String, Object> wc = (HashMap<String, Object>) chunk.get("worldCoord");
+                WorldCoord worldCoordc = WorldCoord.parseWorldCoord((String) wc.get("world"), ((Integer) wc.get("x")), ((Integer) wc.get("z")));
+                int ticks = (int) chunk.get("ticks");
+                double value = (double) chunk.get("value");
+                boolean finished = (boolean) chunk.get("finished");
+
+                //put
+                Raid.LootBlock lb = new Raid.LootBlock(worldCoordc, ticks, value, finished);
+                raid.getLootedChunks().put(worldCoordc, lb);
+            }
+        }
 
         return raid;
     }
@@ -129,6 +150,25 @@ public class RaidData {
         returnMap.put("raidScore", raid.getRaidScore());
         returnMap.put("side1AreRaiders", Boolean.toString(raid.getSide1AreRaiders()));
         returnMap.put("activeRaiders", raid.getActiveRaiders());
+
+        //create a list from the looted chunks
+        List<Object> chunkList = new ArrayList<Object>();
+        for (Raid.LootBlock b : raid.getLootedChunks().values()) {
+            HashMap<String, Object> blockMap = new HashMap<String, Object>();
+            //worldcoord
+            HashMap<String, Object> wcMap = new HashMap<String, Object>();
+            wcMap.put("world", b.worldCoord.getWorldName());
+            wcMap.put("x", b.worldCoord.getCoord().getX());
+            wcMap.put("z", b.worldCoord.getCoord().getZ());
+            blockMap.put("worldCoord", wcMap);
+            //properties
+            blockMap.put("ticks", b.ticks);
+            blockMap.put("value", b.value);
+            blockMap.put("finished", b.finished);
+            chunkList.add(blockMap);
+        }
+
+        returnMap.put("lootedChunks", chunkList);
 
         return returnMap;
     }

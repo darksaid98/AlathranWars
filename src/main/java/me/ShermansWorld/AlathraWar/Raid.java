@@ -727,6 +727,9 @@ public class Raid {
     }
 
     public Map<WorldCoord, LootBlock> getLootedChunks() {
+        if(lootedChunks == null) {
+            lootedChunks = new HashMap<>();
+        }
         return lootedChunks;
     }
 
@@ -752,6 +755,12 @@ public class Raid {
             this.finished = false;
         }
 
+        public LootBlock(WorldCoord c, int ticks, double value, boolean finished) {
+            this.worldCoord = c;
+            this.ticks = ticks;
+            this.value = value;
+            this.finished = finished;
+        }
 
 
     }
