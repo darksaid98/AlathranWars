@@ -61,6 +61,7 @@ v/ Raiders on death are teleported to their town spawn.
 public class Raid {
 
     private War war;
+    private final String name;
     private Town raidedTown;
     private Town gatherTown;
     private String raiders;
@@ -90,6 +91,9 @@ public class Raid {
         this.raidedTown = raidedTown;
         this.gatherTown = gatherTown;
 
+        //AttackSide-Town
+        this.name = (side1AreRaiders ? war.getSide1() : war.getSide2()).toLowerCase() + "-" + raidedTown.getName().toLowerCase();
+
     }
 
     public Raid(final War war, final Town raidedTown, final Town gatherTown, final boolean side1AreRaiders, final int raidTicks, ArrayList<String> activeRaiders, RaidPhase phase) {
@@ -106,21 +110,15 @@ public class Raid {
         this.war = war;
         this.raidTicks = 0;
         this.raidedTown = raidedTown;
-        this.gatherTown = gatherTown;
+
+        //AttackSide-Town
+        this.name = (side1AreRaiders ? war.getSide1() : war.getSide2()).toLowerCase() + "-" + raidedTown.getName().toLowerCase();
     }
 
     public void start() {
 
         //start
         this.phase = RaidPhase.START;
-
-//        this.raidScore = Main.raidData.getConfig().getInt("Raids." + String.valueOf(this.id) + ".raidscore");
-//        this.side1AreRaiders = Main.raidData.getConfig()
-//                .getBoolean("Raids." + String.valueOf(this.id) + ".side1areraiders");
-//        this.side2AreRaiders = Main.raidData.getConfig()
-//                .getBoolean("Raids." + String.valueOf(this.id) + ".side2areraiders");
-//        this.raidTicks = Main.raidData.getConfig().getInt("Raids." + String.valueOf(this.id) + ".raidticks");
-//        this.owner = Bukkit.getPlayer(Main.raidData.getConfig().getString("Raids." + String.valueOf(this.id) + ".owner"));
 
         if (this.side1AreRaiders) {
             this.raiderPlayers = this.war.getSide1Players();
@@ -525,6 +523,10 @@ public class Raid {
         if (raidScore < 0) this.raidScore = 0;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
 
     public War getWar() {
         return this.war;
@@ -548,6 +550,14 @@ public class Raid {
 
     public void setGatherTown(final Town town) {
         this.gatherTown = town;
+    }
+
+    public Player getOwner() {
+        return this.owner;
+    }
+
+    public void setOwner(Player owner) {
+        this.owner = owner;
     }
 
     public String getRaiders() {

@@ -33,9 +33,9 @@ public class RaidData {
      * @param name - Name to check
      * @return Raid or Null
      */
-    public static Raid getRaid(String name) {
+    public static Raid getRaidOrNull(String name) {
         for (Raid raid : raids) {
-
+            if(raid.getName().equals(name)) return raid;
         }
         return null;
     }
@@ -114,6 +114,7 @@ public class RaidData {
     public static HashMap<String, Object> raidToMap(Raid raid) {
         HashMap<String, Object> returnMap = new HashMap<String, Object>();
         // Shoves everything into a map.
+        returnMap.put("name", raid.getName());
         returnMap.put("raidedTown", raid.getRaidedTown());
         returnMap.put("gatherTown", raid.getRaidedTown());
         returnMap.put("raidTicks", raid.getRaidTicks());
@@ -144,18 +145,18 @@ public class RaidData {
      *
      * @return
      */
-    public int whenTownLastRaided() {
+    public static int whenTownLastRaided() {
         return 0;
     }
 
     //TODO raid validity check
     /**
-     * @Isaac this is for getting if a town can be raided, return (-1, 0, 1) based on status
-     * (24 hours town cooldown, 6 hour nation cooldown, valid time to raid)
+     * @Isaac this is for getting if a town can be raided, return (-1, 0, 1, 2) based on status
+     * (24 hours town cooldown, 6 hour nation cooldown, valid time to raid, town being raided already)
      *
      * @return
      */
-    public int isValidRaid(Town t) {
+    public static int isValidRaid(War war, Town town) {
         return 0;
     }
 
