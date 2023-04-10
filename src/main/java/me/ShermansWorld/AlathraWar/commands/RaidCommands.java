@@ -166,13 +166,13 @@ public class RaidCommands implements CommandExecutor {
 
                         //check player balance
                         final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(p.getUniqueId());
-                        if (Main.econ.getBalance(offlinePlayer) <= 2500.0) {
-                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must have at least $2500 to put up to start a raid.");
+                        if (Main.econ.getBalance(offlinePlayer) <= 1000.0) {
+                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must have at least $1000 to put up to start a raid.");
                             return;
                         }
 
                         //publish raid
-                        Main.econ.withdrawPlayer(offlinePlayer, 2500);
+                        Main.econ.withdrawPlayer(offlinePlayer, 1000);
                         RaidData.addRaid(raid2);
                         raid2.start(); //funny funny method haha
                         WarData.saveWar(raid2.getWar());
