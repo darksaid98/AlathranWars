@@ -60,7 +60,7 @@ public class RaidCommands implements CommandExecutor {
     }
 
     /**
-     * //TODO FIXUP
+     * Starts a raid
      *
      * @param p
      * @param args
@@ -77,18 +77,30 @@ public class RaidCommands implements CommandExecutor {
                 TownyWorld townyWorld;
                 townyWorld = WorldCoord.parseWorldCoord(p.getLocation()).getTownyWorld();
 
-                final Town gatherTown = TownyAPI.getInstance().getTown(p.getLocation());
+                //check if in a town
+                //takes the command runners town as the gather point
+                Town gatherTown = null;
+                try {
+                    gatherTown = TownyAPI.getInstance().getTownOrNull(WorldCoord.parseWorldCoord(p.getLocation()).getTownBlock());
+                } catch (NotRegisteredException e2) {
+                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must be within a town's claim to begin a raid. That town you are in will be the gathering town.");
+                    return;
+                }
+                if (gatherTown == null) {
+                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must be within a town's claim to begin a raid. That town you are in will be the gathering town.");
+                    return;
+                }
 
+                //parse the argunment for town
                 for (final String entry : townyWorld.getTowns().keySet()) {
                     final Town raidedTown = townyWorld.getTowns().get(entry);
-
-                    //takes the command runners town
 
                     if (raidedTown.getName().equalsIgnoreCase(args[2]) && gatherTown != null) {
                         townExists = true;
                         boolean attackingOwnSide = false;
                         Raid raid2;
                         if (war.getSide1Players().contains(p.getName())) {
+                            //Time and raid activity validity check
                             int c = RaidData.isValidRaid(war, raidedTown);
                             if (c == 1) {
                                 raid2 = new Raid(war, raidedTown, gatherTown, true);
@@ -105,10 +117,12 @@ public class RaidCommands implements CommandExecutor {
                                 throw new IllegalArgumentException();
                             }
                         } else {
+                            //Something broke if this runs
                             if (!war.getSide2Players().contains(p.getName())) {
                                 Bukkit.getLogger().info("Unable to find player declaring raid in the war");
                                 return;
                             }
+                            //Time and raid activity validity check
                             int c = RaidData.isValidRaid(war, raidedTown);
                             if (c == 1) {
                                 raid2 = new Raid(war, raidedTown, gatherTown, false);
@@ -126,6 +140,7 @@ public class RaidCommands implements CommandExecutor {
                             }
                         }
 
+                        //validity check over attacking own towns
                         final ArrayList<String> residentNames = new ArrayList<String>();
                         for (final Resident resident : raidedTown.getResidents()) {
                             residentNames.add(resident.getName());
@@ -144,34 +159,25 @@ public class RaidCommands implements CommandExecutor {
                                 }
                             }
                         }
-
                         if (attackingOwnSide) {
                             p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You cannot raid a town with members on your side of the war!");
                             return;
                         }
 
-                        Town currentTown;
-                        try {
-                            currentTown = WorldCoord.parseWorldCoord(p.getLocation()).getTownBlock().getTown();
-                        } catch (NotRegisteredException e2) {
-                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must be within a town's claim to begin a raid. That town you are in will be the gathering town.");
-                            return;
-                        }
-                        if (!currentTown.equals(gatherTown)) {
-                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must be within a town's claim to begin a raid. That town you are in will be the gathering town.");
-                            return;
-                        }
-
+                        //check player balance
                         final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(p.getUniqueId());
                         if (Main.econ.getBalance(offlinePlayer) <= 2500.0) {
                             p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must have at least $2500 to put up to start a raid.");
                             return;
                         }
+
+                        //publish raid
                         Main.econ.withdrawPlayer(offlinePlayer, 2500);
                         RaidData.addRaid(raid2);
-                        raid2.start();
+                        raid2.start(); //funny funny method haha
                         WarData.saveWar(raid2.getWar());
 
+                        //broadcast
                         Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "As part of " + war.getName() + ", forces from " + raid2.getRaiders() + " are gathering to raid the town of " + raidedTown.getName() + "!");
                         Main.warLogger.log(p.getName() + " started a raid.");
                         Main.warLogger.log("As part of " + war.getName() + ", forces from " + raid2.getRaiders() + " are raiding the town of " + raidedTown.getName() + "!");
@@ -189,33 +195,38 @@ public class RaidCommands implements CommandExecutor {
     }
 
     /**
-     * Stopes the current raid by admins
+     * Stops the current raid by admins
      *
      * @param p
      * @param args
      */
     private static void stopRaid(Player p, String[] args) {
+        //admin check
         if (!p.hasPermission("AlathraWar.admin")) {
             fail(p, args, "permission");
             return;
         }
+
+        //are there even any raids
         if (RaidData.getRaids().isEmpty()) {
             fail(p, args, "noRaids");
             return;
         }
         boolean found = false;
 
+        //find our desired raid and stop it
         Raid raid = RaidData.getRaidOrNull(args[1]);
         if (raid != null) {
             p.sendMessage(String.valueOf(Helper.Chatlabel()) + "raid cancelled");
             Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The raid of " + raid.getRaidedTown().getName() + " has been cancelled by an admin");
-            raid.stop();
+            raid.stop(); //this purges itself from raids
         } else {
             fail(p, args, "badName");
         }
     }
 
     private static void joinRaid(Player p, String[] args) {
+        //Grab raid!
         Raid raid = RaidData.getRaidOrNull(args[1] + "-" + args[2]);
         if (raid != null) {
             if (raid.getWar().getName().equalsIgnoreCase(args[1])) {
@@ -226,6 +237,7 @@ public class RaidCommands implements CommandExecutor {
                 //check if gather phase
                 if (raid.getPhase() == RaidPhase.GATHER || raid.getPhase() == RaidPhase.START) {
                     try {
+                        //check if the player is in the gather town
                         ArrayList<WorldCoord> cluster = Helper.getCluster(raid.getGatherTown().getHomeBlock().getWorldCoord());
                         if (cluster.contains(WorldCoord.parseWorldCoord(p))) {
                             raid.addActiveRaider(p.getName());
@@ -247,6 +259,7 @@ public class RaidCommands implements CommandExecutor {
     }
 
     private static void leaveRaid(Player p, String[] args) {
+        //Get raid!
         Raid raid = RaidData.getRaidOrNull(args[1] + "-" + args[2]);
         if (raid != null) {
             if (raid.getWar().getName().equalsIgnoreCase(args[1])) {
@@ -257,6 +270,7 @@ public class RaidCommands implements CommandExecutor {
                 //check if gather phase
                 if (raid.getPhase() == RaidPhase.GATHER || raid.getPhase() == RaidPhase.START) {
                     try {
+                        //check if player is in gather town
                         ArrayList<WorldCoord> cluster = Helper.getCluster(raid.getGatherTown().getHomeBlock().getWorldCoord());
                         if (cluster.contains(WorldCoord.parseWorldCoord(p))) {
                             raid.removeActiveRaider(p.getName());
@@ -282,6 +296,7 @@ public class RaidCommands implements CommandExecutor {
      * @param args
      */
     private static void abandonRaid(Player p, String[] args) {
+        //Get raid
         Raid raid = RaidData.getRaidOrNull(args[1] + "-" + args[2]);
         if (raid != null) {
             if (raid.getWar().getName().equalsIgnoreCase(args[1])) {
@@ -293,6 +308,7 @@ public class RaidCommands implements CommandExecutor {
                     //check if gather phase
                     if (raid.getPhase() == RaidPhase.GATHER || raid.getPhase() == RaidPhase.START || raid.getPhase() == RaidPhase.TRAVEL || raid.getPhase() == RaidPhase.COMBAT) {
                         if (raid.getGatherTown().hasTownBlock(WorldCoord.parseWorldCoord(p))) {
+                            //force defender victory
                             Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The raid on " + raid.getRaidedTown().getName() + " has been abandoned by " + raid.getRaiders());
                             Main.warLogger.log(p.getName() + " abandoned the raid on " + raid.getRaidedTown().getName() + " they started at " + raid.getGatherTown().getName());
                             raid.defendersWin(raid.getRaidScore());

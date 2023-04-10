@@ -55,7 +55,9 @@ public class RaidData {
     }
 
     public static void removeRaid(Raid raid) {
+//        raid.getWar().getRaids().remove(raid); //TODO remove from war
         raids.remove(raid);
+
         //deleteRaid(raid);
     }
 
