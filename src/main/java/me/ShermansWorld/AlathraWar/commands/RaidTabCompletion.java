@@ -4,6 +4,8 @@ import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Town;
 import me.ShermansWorld.AlathraWar.Raid;
 import me.ShermansWorld.AlathraWar.War;
+import me.ShermansWorld.AlathraWar.data.RaidData;
+import me.ShermansWorld.AlathraWar.data.WarData;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -28,25 +30,69 @@ public class RaidTabCompletion implements TabCompleter {
             completions.add("abandon");
             completions.add("list");
             completions.add("help");
+            completions.add("join");
+            completions.add("leave");
             return completions;
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("start")) {
-                if (!WarCommands.wars.isEmpty()) {
-                    for (War war : WarCommands.wars) {
+                if (!WarData.getWars().isEmpty()) {
+                    for (War war : WarData.getWars()) {
                         completions.add(war.getName());
                     }
                     return completions;
                 }
-            } else if (args[0].equalsIgnoreCase("stop") || args[0].equalsIgnoreCase("abandon")) {
-                if (!RaidCommands.raids.isEmpty()) {
-                    for (Raid raid : RaidCommands.raids) {
-                        completions.add(String.valueOf(raid.getID()));
+            } else if (args[0].equalsIgnoreCase("stop")) {
+                if (!RaidData.getRaids().isEmpty()) {
+                    for (Raid raid : RaidData.getRaids()) {
+                        completions.add(String.valueOf(raid.getName()));
+                    }
+                    return completions;
+                }
+            } else if (args[0].equalsIgnoreCase("join")) {
+                if (!WarData.getWars().isEmpty()) {
+                    for (War war : WarData.getWars()) {
+                        completions.add(war.getName());
+                    }
+                    return completions;
+                }
+            } else if (args[0].equalsIgnoreCase("abandon")) {
+                if (!WarData.getWars().isEmpty()) {
+                    for (War war : WarData.getWars()) {
+                        completions.add(war.getName());
+                    }
+                    return completions;
+                }
+            } else if (args[0].equalsIgnoreCase("leave")) {
+                if (!WarData.getWars().isEmpty()) {
+                    for (War war : WarData.getWars()) {
+                        completions.add(war.getName());
                     }
                     return completions;
                 }
             }
         } else if (args.length == 3) {
             if (args[0].equalsIgnoreCase("start")) {
+                if (!TownyAPI.getInstance().getTowns().isEmpty()) {
+                    for (Town town : TownyAPI.getInstance().getTowns()) {
+                        completions.add(town.getName());
+                    }
+                    return completions;
+                }
+            } else if (args[0].equalsIgnoreCase("join")) {
+                if (!TownyAPI.getInstance().getTowns().isEmpty()) {
+                    for (Town town : TownyAPI.getInstance().getTowns()) {
+                        completions.add(town.getName());
+                    }
+                    return completions;
+                }
+            } else if (args[0].equalsIgnoreCase("abandon")) {
+                if (!TownyAPI.getInstance().getTowns().isEmpty()) {
+                    for (Town town : TownyAPI.getInstance().getTowns()) {
+                        completions.add(town.getName());
+                    }
+                    return completions;
+                }
+            } else if (args[0].equalsIgnoreCase("leave")) {
                 if (!TownyAPI.getInstance().getTowns().isEmpty()) {
                     for (Town town : TownyAPI.getInstance().getTowns()) {
                         completions.add(town.getName());

@@ -2,6 +2,7 @@ package me.ShermansWorld.AlathraWar;
 
 import me.ShermansWorld.AlathraWar.commands.*;
 import me.ShermansWorld.AlathraWar.data.RaidData;
+import me.ShermansWorld.AlathraWar.listeners.CommandsListener;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.Plugin;
@@ -27,7 +28,6 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin {
-	
 	public static Main instance;
 	public static Economy econ;
 	public static AlathraWarLogger warLogger;
@@ -98,6 +98,7 @@ public class Main extends JavaPlugin {
 		getCommand("siege").setTabCompleter(new SiegeTabCompletion());
 		//getCommand("raid").setTabCompleter(new RaidTabCompletion());
 		getServer().getPluginManager().registerEvents((Listener) new KillsListener(), (Plugin) this);
+		getServer().getPluginManager().registerEvents((Listener) new CommandsListener(), (Plugin) this);
 		getServer().getPluginManager().registerEvents((Listener) new JoinListener(), (Plugin) this);
 		getServer().getPluginManager().registerEvents((Listener) new BlockBreakListener(), (Plugin) this);
 		initData();

@@ -98,6 +98,7 @@ public class WarData
         war.setSide1Towns((ArrayList<String>) fileData.get("side1Towns"));
         war.setSide2Towns((ArrayList<String>) fileData.get("side2Towns"));
 
+        war.setLastRaidTime((Long) fileData.get("lastRaidTime"));
 
         return war;
     }
@@ -119,6 +120,7 @@ public class WarData
 
         sHashMap.put("sieges", SiegeData.getSiegeMap(war));
         sHashMap.put("raids", RaidData.getRaidMap(war));
+        sHashMap.put("lastRaidTime", war.getLastRaidTime());
 
 
         DataManager.saveData("wars" + File.separator + war.getName() + ".yml", sHashMap);
