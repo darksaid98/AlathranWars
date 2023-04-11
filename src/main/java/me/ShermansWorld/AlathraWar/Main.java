@@ -96,7 +96,7 @@ public class Main extends JavaPlugin {
 		new RaidCommands(this);
 		getCommand("war").setTabCompleter(new WarTabCompletion());
 		getCommand("siege").setTabCompleter(new SiegeTabCompletion());
-		//getCommand("raid").setTabCompleter(new RaidTabCompletion());
+		getCommand("raid").setTabCompleter(new RaidTabCompletion());
 		getServer().getPluginManager().registerEvents((Listener) new KillsListener(), (Plugin) this);
 		getServer().getPluginManager().registerEvents((Listener) new CommandsListener(), (Plugin) this);
 		getServer().getPluginManager().registerEvents((Listener) new JoinListener(), (Plugin) this);
@@ -104,6 +104,7 @@ public class Main extends JavaPlugin {
 		initData();
 		initAPIs();
 		setupEconomy();
+		initLogs();
 	}
 
 	public void onDisable() {
