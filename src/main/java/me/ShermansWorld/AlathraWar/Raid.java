@@ -44,7 +44,7 @@ The raid is split into two phases:
     v/ Defenders are given time to get to the town. (travel is announced way in ahead)
 - COMBAT PHASE
     v/ Raiders go to town
-    - Combat occurs
+    v/ Combat occurs
     - Decides outcome of raid
 
 TODO LIST:
@@ -89,7 +89,8 @@ public class Raid {
     public ArrayList<String> defenderPlayers;
     public Map<WorldCoord, LootBlock> lootedChunks;
 
-    /** Constructs raid for staging phase
+    /**
+     * Constructs raid for staging phase
      *
      * @param war
      * @param raidedTown
@@ -115,6 +116,7 @@ public class Raid {
 
     /**
      * IDK why this constructor exists but it does
+     *
      * @param war
      * @param raidedTown
      * @param gatherTown
@@ -132,6 +134,7 @@ public class Raid {
 
     /**
      * Initial Constructor
+     *
      * @param war
      * @param raidedTown
      * @param gatherTown
@@ -230,7 +233,7 @@ public class Raid {
                                 //Broadcast
                                 if (raidTicks % 6000 == 0) {
                                     Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The raid of "
-                                            + Raid.this.getRaidedTown().getName() + " will begin in " + (int) (RaidPhase.TRAVEL.startTick / 20 / 60) + " minutes!");
+                                            + Raid.this.getRaidedTown().getName() + " will begin in " + (int) ((RaidPhase.TRAVEL.startTick - raidTicks) / 20 / 60) + " minutes!");
                                     Bukkit.broadcastMessage(
                                             "The Raiders are gathering at " + getGatherTown().getName() + " before making the journey over!");
                                 }
@@ -381,12 +384,12 @@ public class Raid {
                             raidTicks += incremental;
 
                             //check and start travel phase
-                            if (Raid.this.raidTicks >= RaidPhase.TRAVEL.startTick && Raid.this.phase != RaidPhase.TRAVEL) {
+                            if (Raid.this.raidTicks >= RaidPhase.TRAVEL.startTick && Raid.this.phase == RaidPhase.GATHER) {
                                 startTravel();
                             }
 
                             //check and start combat phase
-                            if (Raid.this.raidTicks >= RaidPhase.COMBAT.startTick && Raid.this.phase != RaidPhase.COMBAT) {
+                            if (Raid.this.raidTicks >= RaidPhase.COMBAT.startTick && Raid.this.phase == RaidPhase.TRAVEL) {
                                 startCombat();
                             }
 
@@ -419,12 +422,12 @@ public class Raid {
                                         e.printStackTrace();
                                     }
                                 }
-
                             }
 
                             //Raid Travel phase behavior
                             else if (Raid.this.phase == RaidPhase.TRAVEL) {
 
+                                //Report
                                 if (raidTicks % 2400 == 0) {
                                     Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The Raiders of "
                                             + (side1AreRaiders ? Raid.this.war.getSide1() : Raid.this.war.getSide2())
@@ -432,15 +435,28 @@ public class Raid {
                                             + Raid.this.getRaidedTown().getName() + "!");
                                 }
 
-                                //Check if a player has arrived at the town (in it) and if so start combat
+                                //Check if a player has arrived at the town (in it, or within 200 blocks) and if so start combat
                                 for (String player : activeRaiders) {
-                                    WorldCoord playercoord = WorldCoord.parseWorldCoord(Bukkit.getPlayer(player));
-                                    if (Raid.this.getRaidedTown().hasTownBlock(playercoord)) {
-                                        startCombat();
+                                    try {
+                                        boolean playerCloseToHomeBlockRaid = false;
+                                        final int homeBlockXCoordRaided = Raid.this.getRaidedTown().getHomeBlock().getCoord().getX() * 16;
+                                        final int homeBlockZCoordRaided = Raid.this.getRaidedTown().getHomeBlock().getCoord().getZ() * 16;
+                                        Player p = Bukkit.getPlayer(player);
+                                        //Carryover from sieges
+                                        if (Math.abs(p.getLocation().getBlockX() - homeBlockXCoordRaided) <= 200 && Math.abs(p.getLocation().getBlockZ() - homeBlockZCoordRaided) <= 200) {
+                                            playerCloseToHomeBlockRaid = true;
+                                        }
+
+                                        WorldCoord playercoord = WorldCoord.parseWorldCoord(Bukkit.getPlayer(player));
+                                        if (Raid.this.getRaidedTown().hasTownBlock(playercoord) || playerCloseToHomeBlockRaid) {
+                                            startCombat();
+                                        }
+                                    } catch (TownyException e) {
+                                        e.printStackTrace();
                                     }
                                 }
-
                             }
+
                             //Raid combat phase behavior
                             else if (Raid.this.phase == RaidPhase.COMBAT) {
 
@@ -663,6 +679,16 @@ public class Raid {
                 throw new RuntimeException(e);
             }
         }
+
+        //teleport the killer back to the raided towns spawn
+        if (this.getDefenders().contains(killed.getKiller().getName())) {
+            try {
+                killed.getKiller().teleport(this.getRaidedTown().getSpawn());
+                killed.getKiller().sendMessage(String.valueOf(Helper.Chatlabel()) + "You killed a raider before the raid began and have been teleported back to the defending town.");
+            } catch (TownyException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     /**
@@ -684,14 +710,27 @@ public class Raid {
 
         //tp to raid town spawn
         final Player killed = event.getEntity();
-        if (this.getActiveRaiders().contains(killed.getName())) {
-            // killed.teleport(this.getGatherTown().getSpawn());
-            // killed.sendMessage(String.valueOf(Helper.Chatlabel()) + "You died before being raided and have been teleported back to your town's spawn.");
+        if (this.getDefenders().contains(killed.getName())) {
+//             killed.teleport(this.getGatherTown().getSpawn());
+//             killed.sendMessage(String.valueOf(Helper.Chatlabel()) + "You died before being raided and have been teleported back to the defending town's spawn.");
+        }
+
+        //teleport the killer back to the raided towns spawn
+        if (killed.getKiller() instanceof Player) {
+            if (this.getActiveRaiders().contains(killed.getKiller().getName())) {
+                try {
+                    killed.getKiller().teleport(this.getGatherTown().getSpawn());
+                    killed.getKiller().sendMessage(String.valueOf(Helper.Chatlabel()) + "You killed a defender before the raid began and have been teleported back to the gather town.");
+                } catch (TownyException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
     }
 
     /**
      * Raiders win, give payout and finalize raid
+     *
      * @param owner
      * @param raidScore
      */
@@ -762,6 +801,7 @@ public class Raid {
 
     /**
      * Defenders win, payout, and finalize raid
+     *
      * @param raidScore
      */
     public void defendersWin(int raidScore) {
@@ -810,6 +850,7 @@ public class Raid {
 
     /**
      * Positively impact the raid score
+     *
      * @param points
      */
     public void addPointsToRaidScore(final int points) {
@@ -820,6 +861,7 @@ public class Raid {
 
     /**
      * Negatively impact the raid score
+     *
      * @param points
      */
     public void subtractPointsFromRaidScore(final int points) {

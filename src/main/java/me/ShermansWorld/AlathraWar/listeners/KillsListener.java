@@ -100,31 +100,39 @@ public final class KillsListener implements Listener
                 final int homeBlockZCoordRaided = raid.getRaidedTown().getHomeBlock().getCoord().getZ() * 16;
 //                final int homeBlockXCoordGather = raid.getGatherTown().getHomeBlock().getCoord().getX() * 16;
 //                final int homeBlockZCoordGather = raid.getGatherTown().getHomeBlock().getCoord().getZ() * 16;
+                //Carryover from sieges
                 if (Math.abs(killed.getLocation().getBlockX() - homeBlockXCoordRaided) <= 300 && Math.abs(killed.getLocation().getBlockZ() - homeBlockZCoordRaided) <= 300) {
                     playerCloseToHomeBlockRaid = true;
                 }
                 if (raid.getActiveRaiders().contains(killer.getName()) && ((town != null && town.equals(raid.getRaidedTown())) || playerCloseToHomeBlockRaid)) {
-
+                    //There is seperate behavior if combat hasnt started
                     if(raid.getPhase() == RaidPhase.COMBAT) {
+                        this.siegeKill(killed, event);
                         if (raid.getDefenderPlayers().contains(killed.getName())) {
                             raid.defenderKilledInCombat(event);
                         }
-                        this.siegeKill(killed, event);
                         return;
                     } else {
+                        //teleport back to raided spawn, without damaged gear
+                        this.oocKill(killed, event);
                         raid.defenderKilledOutofCombat(event);
+                        return;
                     }
                 }
                 if (raid.getDefenderPlayers().contains(killer.getName()) && ((town != null && town.equals(raid.getRaidedTown())) || playerCloseToHomeBlockRaid)) {
-
+                    //There is seperate behavior if combat hasnt started
                     if(raid.getPhase() == RaidPhase.COMBAT) {
+                        this.siegeKill(killed, event);
                         if (raid.getActiveRaiders().contains(killed.getName())) {
                             raid.raiderKilledInCombat(event);
                         }
-                        this.siegeKill(killed, event);
                         return;
                     } else {
+                        //teleport back to gather town spawn, without damaged gear
+                        //this is to disincentive people prekilling
+                        this.oocKill(killed, event);
                         raid.raiderKilledOutofCombat(event);
+                        return;
                     }
 
                 }
@@ -154,5 +162,19 @@ public final class KillsListener implements Listener
         event.getDrops().clear();
         event.setKeepLevel(true);
     }
-    
+
+    /**
+     * Dont damage items held by the player
+     * They don't lose items from death.
+     * @param killed
+     * @param event
+     */
+    private void oocKill(final Player killed, final PlayerDeathEvent event) {
+        //Siege specific
+        Bukkit.dispatchCommand((CommandSender)Bukkit.getConsoleSender(), "spawn " + killed.getName());
+        event.setKeepInventory(true);
+        event.getDrops().clear();
+        event.setKeepLevel(true);
+    }
+
 }

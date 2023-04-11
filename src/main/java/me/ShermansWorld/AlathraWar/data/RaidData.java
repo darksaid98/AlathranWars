@@ -1,6 +1,7 @@
 package me.ShermansWorld.AlathraWar.data;
 
 import com.palmergames.bukkit.towny.TownyAPI;
+import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.palmergames.bukkit.towny.object.metadata.CustomDataField;
@@ -10,6 +11,7 @@ import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.Raid;
 import me.ShermansWorld.AlathraWar.War;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
@@ -215,10 +217,10 @@ public class RaidData {
 
     /**
      * @return
-     * @Isaac this is for getting if a town can be raided, return (-1, 0, 1, 2) based on status
-     * (24 hours town cooldown, 6 hour war cooldown, valid time to raid, town being raided already)
+     * @Isaac this is for getting if a town can be raided, return (-2, -1, 0, 1, 2) based on status
+     * (no players online, 24 hours town cooldown, 6 hour war cooldown, town being raided already, valid time to raid)
      */
-    public static int isValidRaid(War war, Town town) {
+    public static int isValidRaid(War war, @Nonnull Town town) {
         long townTime = whenTownLastRaided(town);
 
         //24 hours town cooldown
@@ -231,14 +233,24 @@ public class RaidData {
             return 0;
         }
 
+        //make sure a player is online in the raided town
+        boolean onlinePlayer = false;
+        for(Resident r : town.getResidents()) {
+            if(r.isOnline()) {
+                onlinePlayer = true;
+            }
+        }
+        if(!onlinePlayer) return -2;
+
         //check if being raided
         for (Raid raid : war.getRaids()) {
             if (raid.getRaidedTown().getName().equals(town.getName())) {
-                return 2;
+                return 1;
             }
+
         }
 
-        return 1;
+        return 2;
     }
 
 }

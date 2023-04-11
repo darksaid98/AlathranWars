@@ -104,18 +104,21 @@ public class RaidCommands implements CommandExecutor {
                         if (war.getSide1Players().contains(p.getName())) {
                             //Time and raid activity validity check
                             int c = RaidData.isValidRaid(war, raidedTown);
-                            if (c == 1) {
+                            if (c == 2) {
                                 raid2 = new Raid(war, raidedTown, gatherTown, true);
+                            } else if (c == 1) {
+                                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town is already being raided at this time!");
+                                return;
                             } else if (c == 0) {
                                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Your side has raided too recently!");
                                 return;
                             } else if (c == -1) {
                                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town was raided too recently!");
                                 return;
-                            } else if (c == 2) {
-                                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town is already being raided at this time!");
+                            } else if (c == -2) {
+                                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town has no online players to defend it!");
                                 return;
-                            } else {
+                            }  else {
                                 throw new IllegalArgumentException();
                             }
                         } else {
@@ -126,18 +129,21 @@ public class RaidCommands implements CommandExecutor {
                             }
                             //Time and raid activity validity check
                             int c = RaidData.isValidRaid(war, raidedTown);
-                            if (c == 1) {
+                            if (c == 2) {
                                 raid2 = new Raid(war, raidedTown, gatherTown, false);
+                            } else if (c == 1) {
+                                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town is already being raided at this time!");
+                                return;
                             } else if (c == 0) {
                                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Your side has raided too recently!");
                                 return;
                             } else if (c == -1) {
                                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town was raided too recently!");
                                 return;
-                            } else if (c == 2) {
-                                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town is already being raided at this time!");
+                            } else if (c == -2) {
+                                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "At least on member of the raided town must be online to defend it!");
                                 return;
-                            } else {
+                            }  else {
                                 throw new IllegalArgumentException();
                             }
                         }
@@ -181,8 +187,15 @@ public class RaidCommands implements CommandExecutor {
 
                         //broadcast
                         Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "As part of " + war.getName() + ", forces from " + raid2.getRaiders() + " are gathering to raid the town of " + raidedTown.getName() + "!");
+                        Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "All players from the defending side have been drafted for the town's defense.");
+                        Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The raid of "
+                                + raidedTown.getName() + " will begin in " + (int) (RaidPhase.TRAVEL.startTick / 20 / 60) + " minutes!");
+                        Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) +
+                                "The Raiders are gathering at " + gatherTown.getName() + " before making the journey over!");
+
                         Main.warLogger.log(p.getName() + " started a raid.");
                         Main.warLogger.log("As part of " + war.getName() + ", forces from " + raid2.getRaiders() + " are raiding the town of " + raidedTown.getName() + "!");
+                        Main.warLogger.log("The Raiders are gathering at " + gatherTown.getName() + " before making the journey over!");
                     }
                 }
             }
