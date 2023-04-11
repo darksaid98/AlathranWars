@@ -202,6 +202,7 @@ public class Raid {
                             Raid.this.defenderPlayers = Raid.this.war.getSide1Players();
                         }
                         if (Raid.this.raidTicks >= RaidPhase.END.startTick) {
+
                             Bukkit.getServer().getScheduler().cancelTask(Raid.this.bukkitId[0]);
                             Raid.this.phase = RaidPhase.END;
                             //TODO: fix raid scoring

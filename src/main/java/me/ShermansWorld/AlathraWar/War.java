@@ -24,7 +24,6 @@ public class War {
     private ArrayList<Raid> raids = new ArrayList<Raid>();
     private Long lastRaidTime;
 
-
     /**
      * War Constructor
      * @param name - Name of war
@@ -205,7 +204,6 @@ public class War {
         }
         return returnList;
     }
-
 
     public void setLastRaidTime(Long lastRaidTime) {
         this.lastRaidTime = lastRaidTime;

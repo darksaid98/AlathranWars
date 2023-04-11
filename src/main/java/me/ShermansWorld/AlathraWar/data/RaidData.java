@@ -241,4 +241,7 @@ public class RaidData {
         return 1;
     }
 
+    public static Object getRaidMap(War war) {
+        return null;
+    }
 }

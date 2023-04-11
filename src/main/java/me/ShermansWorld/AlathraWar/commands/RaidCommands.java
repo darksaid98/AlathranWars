@@ -19,6 +19,15 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 
 public class RaidCommands implements CommandExecutor {
+    public static ArrayList<Town> towns;
+    public static ArrayList<Raid> raids;
+    public static int maxID;
+
+    static {
+        RaidCommands.towns = new ArrayList<Town>();
+        RaidCommands.raids = new ArrayList<Raid>();
+    }
+
     public RaidCommands(final Main plugin) {
         //plugin.getCommand("raid").setExecutor((CommandExecutor)this);
     }
