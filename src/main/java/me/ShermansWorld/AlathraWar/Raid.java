@@ -66,6 +66,7 @@ v/ Raiders on death are teleported to their town spawn.
  */
 public class Raid {
 
+    //Ticks between activity, this is lower than siege because more activity is occuring in a raid
     private static final int incremental = 40;
     private War war;
     private final String name;
@@ -88,7 +89,14 @@ public class Raid {
     public ArrayList<String> defenderPlayers;
     public Map<WorldCoord, LootBlock> lootedChunks;
 
-    // Constructs raid for staging phase
+    /** Constructs raid for staging phase
+     *
+     * @param war
+     * @param raidedTown
+     * @param gatherTown
+     * @param side1AreRaiders
+     * @param raidTicks
+     */
     public Raid(final War war, final Town raidedTown, final Town gatherTown,
                 final boolean side1AreRaiders, final int raidTicks) {
 
@@ -105,6 +113,16 @@ public class Raid {
 
     }
 
+    /**
+     * IDK why this constructor exists but it does
+     * @param war
+     * @param raidedTown
+     * @param gatherTown
+     * @param side1AreRaiders
+     * @param raidTicks
+     * @param activeRaiders
+     * @param phase
+     */
     public Raid(final War war, final Town raidedTown, final Town gatherTown, final boolean side1AreRaiders, final int raidTicks, ArrayList<String> activeRaiders, RaidPhase phase) {
         this(war, raidedTown, gatherTown, side1AreRaiders, raidTicks);
         this.activeRaiders = activeRaiders;
@@ -112,6 +130,13 @@ public class Raid {
     }
 
 
+    /**
+     * Initial Constructor
+     * @param war
+     * @param raidedTown
+     * @param gatherTown
+     * @param side1AreRaiders
+     */
     public Raid(final War war, final Town raidedTown, final Town gatherTown,
                 final boolean side1AreRaiders) {
         this.bukkitId = new int[1];
@@ -125,6 +150,9 @@ public class Raid {
         this.lootedChunks = new HashMap<>();
     }
 
+    /**
+     * Run when raid starts
+     */
     public void start() {
 
         //start
@@ -459,7 +487,9 @@ public class Raid {
                 }, 0L, incremental);
     }
 
-    // End of raid
+    /**
+     * End of raid
+     */
     public void stop() {
         this.phase = RaidPhase.END;
         Bukkit.getScheduler().cancelTask(this.bukkitId[0]);
@@ -468,7 +498,7 @@ public class Raid {
 
 
     /**
-     * do loot logic for a chunk, synchronized in case multiple players are looting at once and something breaks
+     * Do loot logic for a chunk, synchronized in case multiple players are looting at once and something breaks
      *
      * @param p
      * @param wc
@@ -546,7 +576,7 @@ public class Raid {
     }
 
     /**
-     * Need to add call to KillsListener (defined seperate from Siege)
+     * Raider killed in combat
      */
     public void raiderKilledInCombat(PlayerDeathEvent event) {
 
@@ -578,7 +608,7 @@ public class Raid {
     }
 
     /**
-     * Need to add call to KillsListener (defined seperate from Siege)
+     * Defender killed in combat
      */
     public void defenderKilledInCombat(PlayerDeathEvent event) {
         this.addPointsToRaidScore(20);
@@ -604,7 +634,7 @@ public class Raid {
     }
 
     /**
-     * Need to add call to KillsListener (defined seperate from Siege)
+     * Raider killed outside of combat
      */
     public void raiderKilledOutofCombat(PlayerDeathEvent event) {
 
@@ -635,7 +665,7 @@ public class Raid {
     }
 
     /**
-     * Need to add call to KillsListener (defined seperate from Siege)
+     * Defender killed out of combat
      */
     public void defenderKilledOutofCombat(PlayerDeathEvent event) {
         for (final String playerName : this.getActiveRaiders()) {
@@ -659,6 +689,11 @@ public class Raid {
         }
     }
 
+    /**
+     * Raiders win, give payout and finalize raid
+     * @param owner
+     * @param raidScore
+     */
     public void raidersWin(final Player owner, int raidScore) {
         //TODO finalize payout
 
@@ -724,6 +759,10 @@ public class Raid {
         stop();
     }
 
+    /**
+     * Defenders win, payout, and finalize raid
+     * @param raidScore
+     */
     public void defendersWin(int raidScore) {
         //TODO finalize payout
         /*
@@ -768,12 +807,20 @@ public class Raid {
         stop();
     }
 
+    /**
+     * Positively impact the raid score
+     * @param points
+     */
     public void addPointsToRaidScore(final int points) {
         this.raidScore += points;
         //cap
         if (raidScore > 1000) this.raidScore = 1000;
     }
 
+    /**
+     * Negatively impact the raid score
+     * @param points
+     */
     public void subtractPointsFromRaidScore(final int points) {
         this.raidScore -= points;
         //cap

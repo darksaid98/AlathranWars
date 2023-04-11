@@ -1,7 +1,6 @@
 package me.ShermansWorld.AlathraWar.data;
 
 import com.palmergames.bukkit.towny.TownyAPI;
-import com.palmergames.bukkit.towny.object.Coord;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.palmergames.bukkit.towny.object.metadata.CustomDataField;
@@ -36,12 +35,13 @@ public class RaidData {
 
     /**
      * Gets a raid with a specific name
+     *
      * @param name - Name to check
      * @return Raid or Null
      */
     public static Raid getRaidOrNull(String name) {
         for (Raid raid : raids) {
-            if(raid.getName().equals(name)) return raid;
+            if (raid.getName().equals(name)) return raid;
         }
         return null;
     }
@@ -69,13 +69,14 @@ public class RaidData {
 
     /**
      * Creates a raid object from a provided HashMap
+     *
      * @param fileData
      * @return Raid object
      */
     @SuppressWarnings("unchecked")
     public static Raid fromMap(War war, HashMap<String, Object> fileData) {
 
-        if (fileData.get("raidedTown") == null || fileData.get("gatherTown") == null  || fileData.get("side1AreRaiders") == null) {
+        if (fileData.get("raidedTown") == null || fileData.get("gatherTown") == null || fileData.get("side1AreRaiders") == null) {
             return null;
         }
 
@@ -86,7 +87,7 @@ public class RaidData {
         Raid raid = new Raid(war, raidedTown, gatherTown, attackBoolean);
 
         //Extra properties, if any are missing the raid doesnt exist yet
-        if(fileData.get("raidTicks") != null && fileData.get("raidPhase") != null && fileData.get("activeRaiders") != null && fileData.get("lootedChunks") != null) {
+        if (fileData.get("raidTicks") != null && fileData.get("raidPhase") != null && fileData.get("activeRaiders") != null && fileData.get("lootedChunks") != null) {
             //active properties
             raid.setRaidPhase(RaidPhase.getByName((String) fileData.get("raidPhase")));
             raid.setRaidTicks((Integer) fileData.get("raidTicks"));
@@ -116,9 +117,9 @@ public class RaidData {
     }
 
 
-
     /**
      * Saves the war into files.
+     *
      * @param raid - War to be saved.
      */
     public static void saveRaid(Raid raid) {
@@ -141,6 +142,7 @@ public class RaidData {
 
     /**
      * Turns a raid into a map
+     *
      * @param raid - Raid
      * @return Map
      */
@@ -180,6 +182,7 @@ public class RaidData {
 
     /**
      * Creates a map of raid maps
+     *
      * @param war - War to map
      * @return Map of Maps
      */
@@ -192,14 +195,13 @@ public class RaidData {
     }
 
     /**
-     * @Isaac this is for getting when the last raid was on a town
-     *
      * @return
+     * @Isaac this is for getting when the last raid was on a town
      */
     public static long whenTownLastRaided(Town town) {
-        if(town.hasMeta("lastRaided")) {
+        if (town.hasMeta("lastRaided")) {
             CustomDataField field = town.getMetadata("lastRaided");
-            if(field != null) {
+            if (field != null) {
                 if (field instanceof IntegerDataField) {
                     return ((IntegerDataField) field).getValue();
                 }
@@ -212,21 +214,20 @@ public class RaidData {
     }
 
     /**
+     * @return
      * @Isaac this is for getting if a town can be raided, return (-1, 0, 1, 2) based on status
      * (24 hours town cooldown, 6 hour war cooldown, valid time to raid, town being raided already)
-     *
-     * @return
      */
     public static int isValidRaid(War war, Town town) {
         long townTime = whenTownLastRaided(town);
 
         //24 hours town cooldown
-        if((System.currentTimeMillis() / 1000) - townTime <= 86400) {
+        if ((System.currentTimeMillis() / 1000) - townTime <= 86400) {
             return -1;
         }
 
         //6 hour raid cooldown for war
-        if((System.currentTimeMillis() / 1000) - war.getLastRaidTime() <= 21600) {
+        if ((System.currentTimeMillis() / 1000) - war.getLastRaidTime() <= 21600) {
             return 0;
         }
 

@@ -4,31 +4,24 @@ import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.Raid;
 import me.ShermansWorld.AlathraWar.Siege;
 import me.ShermansWorld.AlathraWar.War;
-import me.ShermansWorld.AlathraWar.commands.RaidCommands;
-import me.ShermansWorld.AlathraWar.commands.SiegeCommands;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import me.ShermansWorld.AlathraWar.data.WarData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
-import java.util.ArrayList;
-import java.util.List;
+public class CommandsListener implements Listener {
 
-public class CommandsListener implements Listener
-{
-
-    final static String[] prefixes = new String[] {
-        "", "towny", "essentials", "wild", "minecraft"
+    final static String[] prefixes = new String[]{
+            "", "towny", "essentials", "wild", "minecraft"
     };
-    final static String[] blacklistedLong = new String[] {
+    final static String[] blacklistedLong = new String[]{
             "n spawn", "nat spawn", "nation spawn",
             "t spawn", "town spawn"
     };
-    final static String[] blacklistedShort = new String[] {
+    final static String[] blacklistedShort = new String[]{
             "home", "homes", "warp", "warps",
             "wild", "rtp", "spawn", "wilderness", "wildtp",
             "tpa", "tpahere", "tpaccept", "tpacancel",
@@ -36,7 +29,6 @@ public class CommandsListener implements Listener
             "ehome", "ehomes", "ewarp", "ewarps"
 
     };
-
 
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -54,8 +46,8 @@ public class CommandsListener implements Listener
 
         allow n spawn and t spawn for defenders trapped in spawn
          */
-        for(War war : WarData.getWars()) {
-            for(Raid raid : war.getRaids()) {
+        for (War war : WarData.getWars()) {
+            for (Raid raid : war.getRaids()) {
                 //Only do this during regular phases, start and end ignored in case something breaks
                 if (raid.getPhase() == RaidPhase.COMBAT || raid.getPhase() == RaidPhase.TRAVEL || raid.getPhase() == RaidPhase.GATHER) {
                     //only do for active raiders and any defenders
@@ -74,9 +66,12 @@ public class CommandsListener implements Listener
                                                     || parse.equals("t spawn") || parse.equals("town spawn")
                                                     || parse.equals("towny:n spawn") || parse.equals("towny:nat spawn") || parse.equals("towny:nation spawn")
                                                     || parse.equals("towny:t spawn") || parse.equals("towny:town spawn")) {
-                                                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You are stuck in spawn and allowed to teleport to your town or nation!");
+                                                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You are stuck in spawn and are allowed to teleport to your town or nation.");
                                                 return;
                                             }
+                                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You are stuck in spawn and are allowed to teleport to your town or nation.");
+                                            event.setCancelled(true);
+                                            return;
                                         }
 
                                         //else
@@ -107,7 +102,7 @@ public class CommandsListener implements Listener
             /*
             Prevent players from teleporting during a siege
              */
-            for(Siege siege : war.getSieges()) {
+            for (Siege siege : war.getSieges()) {
                 //Only do this during regular phases, start and end ignored in case something breaks
                 if (siege.getSiegeTicks() > 0) {
                     //only do for active raiders and any defenders
