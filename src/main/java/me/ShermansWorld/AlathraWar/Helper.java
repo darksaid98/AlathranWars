@@ -26,6 +26,12 @@ public class Helper
     	Bukkit.broadcastMessage("test message");
     }
 
+    /**
+     * Damages all gear in a players inventory
+     *
+     * @param p
+     * @author ShermansWorld
+     */
     public static void damageAllGear(Player p) {
         final Inventory inv = p.getInventory();
         for (int i = 0; i < inv.getSize(); ++i) {

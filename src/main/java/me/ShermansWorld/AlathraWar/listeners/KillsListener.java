@@ -2,6 +2,7 @@ package me.ShermansWorld.AlathraWar.listeners;
 
 import me.ShermansWorld.AlathraWar.Raid;
 import me.ShermansWorld.AlathraWar.commands.RaidCommands;
+import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Inventory;
@@ -50,8 +51,8 @@ public final class KillsListener implements Listener
                     playerCloseToHomeBlockSiege = true;
                 }
                 if (siege.getAttackerPlayers().contains(killer.getName()) && ((town != null && town.equals(siege.getTown())) || playerCloseToHomeBlockSiege)) {
-                	if (siege.getDefenderPlayers().contains(killed.getName())) {
-                		siege.addPointsToAttackers(20);
+                    if (siege.getDefenderPlayers().contains(killed.getName())) {
+                        siege.addPointsToAttackers(20);
                         for (final String playerName : siege.getAttackerPlayers()) {
                             try {
                                 Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.Chatlabel()) + "Defender killed! + 20 Attacker Points");
@@ -64,13 +65,13 @@ public final class KillsListener implements Listener
                             }
                             catch (NullPointerException ex6) {}
                         }
-                	}
+                    }
                     this.siegeKill(killed, event);
                     return;
                 }
                 if (siege.getDefenderPlayers().contains(killer.getName()) && ((town != null && town.equals(siege.getTown())) || playerCloseToHomeBlockSiege)) {
-                	if (siege.getAttackerPlayers().contains(killed.getName())) {
-                		siege.addPointsToDefenders(20);
+                    if (siege.getAttackerPlayers().contains(killed.getName())) {
+                        siege.addPointsToDefenders(20);
                         for (final String playerName : siege.getAttackerPlayers()) {
                             try {
                                 Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.Chatlabel()) + "Attacker killed! + 20 Defender Points");
@@ -83,18 +84,18 @@ public final class KillsListener implements Listener
                             }
                             catch (NullPointerException ex4) {}
                         }
-                	}
-                	this.siegeKill(killed, event);
+                    }
+                    this.siegeKill(killed, event);
                     return;
                 }
                 if ( (town != null && town.equals(siege.getTown()) || playerCloseToHomeBlockSiege) ) {
-                	this.siegeKill(killed, event);
+                    this.siegeKill(killed, event);
                 }
             }
 
 
             //Raid logic
-            for (final Raid raid : RaidCommands.raids) {
+            for (final Raid raid : RaidData.getRaids()) {
                 final int homeBlockXCoordRaided = raid.getRaidedTown().getHomeBlock().getCoord().getX() * 16;
                 final int homeBlockZCoordRaided = raid.getRaidedTown().getHomeBlock().getCoord().getZ() * 16;
 //                final int homeBlockXCoordGather = raid.getGatherTown().getHomeBlock().getCoord().getX() * 16;
