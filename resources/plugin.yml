@@ -9,6 +9,17 @@ commands:
   war:
     description: used to create, delete, join and leave wars
     softdepend: [Vault, Towny, TAB]
+    usage: /war
   siege:
     description: used to start, end, and view sieges
     softdepend: [Vault, Towny]
+    usage: /siege
+  raid:
+    description: used to start, end, and view raids
+    softdepend: [Vault, Towny]
+    usage: /raid
+  alathrawaradmin:
+    description: used to administrate wars and modify existing events
+    softdepend: [Vault, Towny, TAB]
+    usage: /alathrawaradmin
+    aliases: [awa]

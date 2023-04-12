@@ -84,9 +84,11 @@ public class Main extends JavaPlugin {
 		new WarCommands(this);
 		new SiegeCommands(this);
 		new RaidCommands(this);
+		new AdminCommands(this);
 		getCommand("war").setTabCompleter(new WarTabCompletion());
 		getCommand("siege").setTabCompleter(new SiegeTabCompletion());
 		getCommand("raid").setTabCompleter(new RaidTabCompletion());
+		getCommand("alathrawaradmin").setTabCompleter(new AdminTabCompletion());
 		getServer().getPluginManager().registerEvents((Listener) new KillsListener(), (Plugin) this);
 		getServer().getPluginManager().registerEvents((Listener) new CommandsListener(), (Plugin) this);
 		getServer().getPluginManager().registerEvents((Listener) new JoinListener(), (Plugin) this);
