@@ -10,6 +10,9 @@ import com.palmergames.bukkit.towny.object.metadata.LongDataField;
 import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.Raid;
 import me.ShermansWorld.AlathraWar.War;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -85,8 +88,10 @@ public class RaidData {
         Town raidedTown = TownyAPI.getInstance().getTown((String) fileData.get("raidedTown"));
         Town gatherTown = TownyAPI.getInstance().getTown((String) fileData.get("gatherTown"));
         boolean attackBoolean = Boolean.parseBoolean((String) fileData.get("side1AreRaiders"));
+        //THIS MAY OR MAY NOT WORK
+        OfflinePlayer p = Bukkit.getOfflinePlayer((String) fileData.get("owner"));
 
-        Raid raid = new Raid(war, raidedTown, gatherTown, attackBoolean);
+        Raid raid = new Raid(war, raidedTown, gatherTown, attackBoolean, p.getPlayer());
 
         //Extra properties, if any are missing the raid doesnt exist yet
         if (fileData.get("raidTicks") != null && fileData.get("raidPhase") != null && fileData.get("activeRaiders") != null && fileData.get("lootedChunks") != null) {
@@ -159,6 +164,8 @@ public class RaidData {
         returnMap.put("raidScore", raid.getRaidScore());
         returnMap.put("side1AreRaiders", Boolean.toString(raid.getSide1AreRaiders()));
         returnMap.put("activeRaiders", raid.getActiveRaiders());
+        //THIS MAY OR MAY NOT WORK
+        returnMap.put("owner", raid.getOwner().getUniqueId().toString());
 
         //create a list from the looted chunks
         List<Object> chunkList = new ArrayList<Object>();

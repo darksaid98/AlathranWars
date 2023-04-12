@@ -44,7 +44,7 @@ public class RaidCommands implements CommandExecutor {
             }
         } else if (args.length == 3) {
             if (args[0].equalsIgnoreCase("start")) {
-                startRaid(p, args);
+                startRaid(p, args, false);
             } else if (args[0].equalsIgnoreCase("join")) {
                 joinRaid(p, args);
             } else if (args[0].equalsIgnoreCase("leave")) {
@@ -67,11 +67,12 @@ public class RaidCommands implements CommandExecutor {
      * @param p
      * @param args
      */
-    private static void startRaid(Player p, String[] args) {
+    public static void startRaid(Player p, String[] args, boolean admin) {
         boolean warFound = false;
         boolean townExists = false;
         for (final War war : WarData.getWars()) {
-            if (war.getName().equalsIgnoreCase(args[1])) {
+            //if this is run as admin, shift our check forward a slot
+            if (war.getName().equalsIgnoreCase(args[1 + (admin ? 1 : 0)])) {
                 warFound = true;
                 if (!war.getSide1Players().contains(p.getName()) && !war.getSide2Players().contains(p.getName())) {
                     p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You are not in this war! Type /war join [war] [side]");
@@ -79,11 +80,32 @@ public class RaidCommands implements CommandExecutor {
                 TownyWorld townyWorld;
                 townyWorld = WorldCoord.parseWorldCoord(p.getLocation()).getTownyWorld();
 
+                Player raidOwner = p;
+                if(admin && args.length >= 6) {
+                    raidOwner = Bukkit.getOfflinePlayer(args[5]).getPlayer();
+                    if(raidOwner == null) {
+                        raidOwner = p;
+                    }
+                }
+
                 //check if in a town
                 //takes the command runners town as the gather point
                 Town gatherTown = null;
                 try {
-                    gatherTown = TownyAPI.getInstance().getTownOrNull(WorldCoord.parseWorldCoord(p.getLocation()).getTownBlock());
+                    //if admin, and we have a gather town argument, use it
+                    if(admin && args.length >= 5) {
+                        if(args[4].equalsIgnoreCase("defaultCode")) {
+                            //use default behavior
+                            gatherTown = TownyAPI.getInstance().getTownOrNull(WorldCoord.parseWorldCoord(p.getLocation()).getTownBlock());
+                        } else if(TownyAPI.getInstance().getTown(args[4]) != null) {
+                            gatherTown = TownyAPI.getInstance().getTown(args[4]);
+                        } else {
+                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "No valid town set for gather town, defaulting to current location");
+                            gatherTown = TownyAPI.getInstance().getTownOrNull(WorldCoord.parseWorldCoord(p.getLocation()).getTownBlock());
+                        }
+                    } else {
+                        gatherTown = TownyAPI.getInstance().getTownOrNull(WorldCoord.parseWorldCoord(p.getLocation()).getTownBlock());
+                    }
                 } catch (NotRegisteredException e2) {
                     p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must be within a town's claim to begin a raid. That town you are in will be the gathering town.");
                     return;
@@ -97,7 +119,8 @@ public class RaidCommands implements CommandExecutor {
                 for (final String entry : townyWorld.getTowns().keySet()) {
                     final Town raidedTown = townyWorld.getTowns().get(entry);
 
-                    if (raidedTown.getName().equalsIgnoreCase(args[2]) && gatherTown != null) {
+                    //if this is run as admin, shift our check forward a slot
+                    if (raidedTown.getName().equalsIgnoreCase(args[2 + (admin ? 1 : 0)]) && gatherTown != null) {
                         townExists = true;
                         boolean attackingOwnSide = false;
                         Raid raid2;
@@ -105,7 +128,8 @@ public class RaidCommands implements CommandExecutor {
                             //Time and raid activity validity check
                             int c = RaidData.isValidRaid(war, raidedTown);
                             if (c == 2) {
-                                raid2 = new Raid(war, raidedTown, gatherTown, true);
+                                //if were admin, see if an owner arg exists, and if so then use it
+                                raid2 = new Raid(war, raidedTown, gatherTown, true, raidOwner);
                             } else if (c == 1) {
                                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town is already being raided at this time!");
                                 return;
@@ -130,7 +154,7 @@ public class RaidCommands implements CommandExecutor {
                             //Time and raid activity validity check
                             int c = RaidData.isValidRaid(war, raidedTown);
                             if (c == 2) {
-                                raid2 = new Raid(war, raidedTown, gatherTown, false);
+                                raid2 = new Raid(war, raidedTown, gatherTown, false, raidOwner);
                             } else if (c == 1) {
                                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town is already being raided at this time!");
                                 return;

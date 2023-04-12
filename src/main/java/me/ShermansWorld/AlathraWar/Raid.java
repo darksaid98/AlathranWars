@@ -99,7 +99,7 @@ public class Raid {
      * @param raidTicks
      */
     public Raid(final War war, final Town raidedTown, final Town gatherTown,
-                final boolean side1AreRaiders, final int raidTicks) {
+                final boolean side1AreRaiders, final int raidTicks, Player owner) {
 
         this.bukkitId = new int[1];
         this.activeRaiders = activeRaiders == null ? new ArrayList<>() : activeRaiders;
@@ -107,6 +107,7 @@ public class Raid {
         this.raidTicks = raidTicks;
         this.raidedTown = raidedTown;
         this.gatherTown = gatherTown;
+        this.owner = owner;
 
         //AttackSide-Town
         this.name = (side1AreRaiders ? war.getSide1() : war.getSide2()).toLowerCase() + "-" + raidedTown.getName().toLowerCase();
@@ -125,8 +126,8 @@ public class Raid {
      * @param activeRaiders
      * @param phase
      */
-    public Raid(final War war, final Town raidedTown, final Town gatherTown, final boolean side1AreRaiders, final int raidTicks, ArrayList<String> activeRaiders, RaidPhase phase) {
-        this(war, raidedTown, gatherTown, side1AreRaiders, raidTicks);
+    public Raid(final War war, final Town raidedTown, final Town gatherTown, final boolean side1AreRaiders, final int raidTicks, ArrayList<String> activeRaiders, RaidPhase phase, Player owner) {
+        this(war, raidedTown, gatherTown, side1AreRaiders, raidTicks, owner);
         this.activeRaiders = activeRaiders;
         this.setRaidPhase(phase);
     }
@@ -141,12 +142,13 @@ public class Raid {
      * @param side1AreRaiders
      */
     public Raid(final War war, final Town raidedTown, final Town gatherTown,
-                final boolean side1AreRaiders) {
+                final boolean side1AreRaiders, Player owner) {
         this.bukkitId = new int[1];
         this.activeRaiders = activeRaiders == null ? new ArrayList<>() : activeRaiders;
         this.war = war;
         this.raidTicks = 0;
         this.raidedTown = raidedTown;
+        this.owner = owner;
 
         //AttackSide-Town
         this.name = (side1AreRaiders ? war.getSide1() : war.getSide2()).toLowerCase() + "-" + raidedTown.getName().toLowerCase();

@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class AdminCommands implements CommandExecutor {
 
@@ -100,42 +101,130 @@ public class AdminCommands implements CommandExecutor {
      * @param command Command which was executed
      * @param label Alias of the command which was used
      * @param args Passed command arguments
-     * @return
+     * @return Valid command
      */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         final Player p = (Player) sender;
         if (p.hasPermission("!AlathraWar.admin")) {
-            fail(p, args, "permissions");
-            return false;
+            return fail(p, args, "permissions");
         }
 
         if (args.length == 0) {
-            fail(p, args, "syntax");
-        } else if (args.length == 1) {
-            if (args[0].equalsIgnoreCase("help")) {
-                help(p, args);
+            return fail(p, args, "syntax");
+        } else if (args.length >= 1) {
+            if (args[0].equalsIgnoreCase("create")) {
+                return create(p, args);
+            } else if (args[0].equalsIgnoreCase("exclude")) {
+                return exclude(p, args);
+            } else if (args[0].equalsIgnoreCase("force")) {
+                return force(p, args);
+            } else if (args[0].equalsIgnoreCase("help")) {
+                return help(p, args);
+            } else if (args[0].equalsIgnoreCase("info")) {
+                return info(p, args);
+            } else if (args[0].equalsIgnoreCase("modify")) {
+                return modify(p, args);
+            } else if (args[0].equalsIgnoreCase("rule")) {
+                return rule(p, args);
             }
         }
         return false;
     }
 
-    private static void help(Player p, String[] args) {
-        p.sendMessage(Helper.Chatlabel() + "/alathrawaradmin start [war] [town]");
+    /**
+     * //force make event or war, if owner isnt defined, idk havent decided
+     * -create siege [war] [town] (owner)
+     * -create raid [war] [raidTown] [gatherTown] (owner)
+     * -create war [name] [side1] [side2]
+    */
+    private static boolean create(Player p, String[] args) {
+        if(args.length >= 2) {
+            if(args[1].equalsIgnoreCase("raid")) {
+                if(args.length >= 4) {
+                    //specific behavior exists if an admin ran this
+                    //using same method so that this doesnt get fucked up if we go back and change original implementation
+                    RaidCommands.startRaid(p, args, true);
+                    return true;
+                } else {
+                    //defaultCode will bypass the custom gather town to force set owner
+                    p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin create raid [war] [raidTown] (gatherTown/\"defaultCode\") (owner)");
+                    return false;
+                }
+            } else if(args[1].equalsIgnoreCase("siege")) {
+                if(args.length >= 4) {
+                    //TODO once siege command is done
+                    p.sendMessage(Helper.Chatlabel() + "Try again later!");
+                } else {
+                    p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin create siege [war] [town] (owner)");
+                    return false;
+                }
+            } else if(args[1].equalsIgnoreCase("war")) {
+                //this command basically is a copy or /war create
+                if(args.length == 5) {
+                    //should purge the first argument;
+                    String[] adjusted = new String[] {
+                            args[1],
+                            args[2],
+                            args[3],
+                            args[4]
+                    };
+                    WarCommands.warCreate(p, adjusted);
+                } else {
+                    p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin create war [name] [side1] [side2]");
+                    return false;
+                }
+            }
+        } else {
+            return fail(p, args, "syntax");
+        }
+        return fail(p, args, "syntax");
     }
 
-    private static void fail(Player p, String[] args, String type) {
+    private static boolean exclude(Player p, String[] args) {
+        return false;
+    }
+
+    private static boolean force(Player p, String[] args) {
+        return false;
+    }
+
+    private static boolean help(Player p, String[] args) {
+        p.sendMessage(Helper.Chatlabel() + "/alathrawaradmin create");
+        p.sendMessage(Helper.Chatlabel() + "/alathrawaradmin exclude");
+        p.sendMessage(Helper.Chatlabel() + "/alathrawaradmin force");
+        p.sendMessage(Helper.Chatlabel() + "/alathrawaradmin help");
+        p.sendMessage(Helper.Chatlabel() + "/alathrawaradmin info");
+        p.sendMessage(Helper.Chatlabel() + "/alathrawaradmin modify");
+        p.sendMessage(Helper.Chatlabel() + "/alathrawaradmin rule");
+        return true;
+    }
+
+    private static boolean info(Player p, String[] args) {
+        return false;
+    }
+
+    private static boolean modify(Player p, String[] args) {
+        return false;
+    }
+
+    private static boolean rule(Player p, String[] args) {
+        return false;
+    }
+
+    private static boolean fail(Player p, String[] args, String type) {
         switch (type) {
             case "permissions": {
                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&cYou do not have permission to do this"));
-                return;
+                return false;
             }
             case "syntax": {
-                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /raid help");
-                return;
+                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /alathrawaradmin help");
+                return false;
             }
             default: {
-                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /raid help");
+                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Something wrong. /alathrawaradmin help");
+                return false;
             }
         }
     }

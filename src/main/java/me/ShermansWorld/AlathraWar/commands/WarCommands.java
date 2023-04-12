@@ -66,7 +66,7 @@ public class WarCommands implements CommandExecutor {
 		return false;
 	}
 
-    private static void warCreate(Player p, String[] args) {
+    public static void warCreate(Player p, String[] args) {
         if (!p.hasPermission("AlathraWar.admin")) {
             p.sendMessage("You do not have permission to run this command.");
             return;
