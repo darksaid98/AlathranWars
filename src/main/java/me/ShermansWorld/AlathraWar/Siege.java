@@ -24,12 +24,13 @@ import com.palmergames.bukkit.towny.object.TownBlock;
 
 public class Siege {
 
+    public static final int maxSiegeTicks = 72000; // 60 minute tick constant
+
 	private War war; // War which siege belongs to
 	private Town town; // Town of the siege
 	private boolean side1AreAttackers; // bool of if side1 being attacker
 	private int attackerPoints;
 	private int defenderPoints;
-	private int maxSiegeTicks;
 	private Player siegeOwner;
 	private int siegeTicks;
 	private TownBlock homeBlock;
@@ -54,7 +55,6 @@ public class Siege {
 	public void start() {
         attackerPoints = 0;
         defenderPoints = 0;
-        this.maxSiegeTicks = 108000;
 		this.siegeTicks = 0;
         homeBlock = town.getHomeBlockOrNull();
         townSpawn = town.getSpawnOrNull();
