@@ -3,6 +3,7 @@ package me.ShermansWorld.AlathraWar.commands;
 import com.palmergames.bukkit.towny.object.Town;
 import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.Main;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -194,7 +195,7 @@ public class AdminCommands implements CommandExecutor {
      * //force player into or out of a war/event
      * -force join war [player] [war] [side]
      * -force join siege [player] [war] [town] (side)
-     * -force join raid [player] [war] [town] (side)
+     * -force join raid [player] [war] [town] (side) //TODO time until must be in gather?
      * -force leave war [war] [player] (timeout)
      * -force leave siege [war] [player] (timeout)
      * -force leave raid  [war] [player] (timeout) //kicks from raid party
@@ -206,11 +207,89 @@ public class AdminCommands implements CommandExecutor {
     private static boolean force(Player p, String[] args) {
         if(args.length >= 2) {
             if(args[1].equalsIgnoreCase("end")) {
+                if(args.length >= 3) {
+                    if(args[2].equalsIgnoreCase("raid")) {
 
+                    } else if(args[2].equalsIgnoreCase("siege")) {
+
+                    } else if(args[2].equalsIgnoreCase("war")) {
+
+                    } else {
+                        p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin force end [raid/siege/war]");
+                        return false;
+                    }
+                } else {
+                    p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin force end [raid/siege/war]");
+                    return false;
+                }
             } else if(args[1].equalsIgnoreCase("join")) {
-
+                if(args.length >= 3) {
+                    if(args[2].equalsIgnoreCase("raid")) {
+                        if(args.length >= 6) {
+                            //fix args
+                            String[] adjusted = new String[] {
+                                    args[1], //join
+                                    args[4], //war
+                                    args[5], //town
+                                    args[3], //player
+                                    args.length >= 7 ? args[6] : null //side
+                            };
+                            RaidCommands.joinRaid(p, adjusted, true);
+                            return true;
+                        } else {
+                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin force join raid [player] [war] [town] (side)");
+                            return false;
+                        }
+                    } else if(args[2].equalsIgnoreCase("siege")) {
+                        //TODO when siege commands are done
+                    } else if(args[2].equalsIgnoreCase("war")) {
+                        if(args.length >= 6) {
+                            //fix args to match
+                            String[] adjusted = new String[] {
+                                    args[1],
+                                    args[4],
+                                    args[5],
+                                    args[3]
+                            };
+                            //find the player
+                            if(Bukkit.getPlayer(args[3]) != null) {
+                                p = Bukkit.getPlayer(args[3]);
+                            } else {
+                                p.sendMessage(Helper.color("c") + args[3] + " does not exist!");
+                                p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin force join war [player] [war] [side]");
+                                return false;
+                            }
+                            WarCommands.warJoin(p, adjusted, true);
+                            p.sendMessage(Helper.color("c") + "Forced " + args[3] + " to join the war " + args[4] + " on side " + args[5]);
+                            Main.warLogger.log("Forced " + args[3] + " to join the war " + args[4] + " on side " + args[5]);
+                        } else {
+                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin force join war [player] [war] [side]");
+                            return false;
+                        }
+                    } else {
+                        p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin force join [raid/siege/war]");
+                        return false;
+                    }
+                } else {
+                    p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin force join [raid/siege/war]");
+                    return false;
+                }
             } else if(args[1].equalsIgnoreCase("leave")) {
+                if(args.length >= 3) {
+                    if(args[2].equalsIgnoreCase("raid")) {
 
+                    } else if(args[2].equalsIgnoreCase("siege")) {
+
+                    } else if(args[2].equalsIgnoreCase("war")) {
+
+                    } else {
+                        p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin force leave [raid/siege/war]");
+                        return false;
+                    }
+                } else {
+                    p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin force leave [raid/siege/war]");
+                    return false;
+                }
             } else {
                 return fail(p, args, "syntax");
             }

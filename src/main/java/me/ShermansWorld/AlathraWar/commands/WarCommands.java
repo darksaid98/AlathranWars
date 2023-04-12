@@ -1,5 +1,6 @@
 package me.ShermansWorld.AlathraWar.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.palmergames.bukkit.towny.TownyAPI;
@@ -19,21 +20,21 @@ import org.bukkit.command.CommandExecutor;
 
 public class WarCommands implements CommandExecutor {
 
-	public WarCommands(final Main plugin) {
-		plugin.getCommand("war").setExecutor((CommandExecutor) this);
-	}
+    public WarCommands(final Main plugin) {
+        plugin.getCommand("war").setExecutor((CommandExecutor) this);
+    }
 
-	public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
+    public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
         if (!(sender instanceof Player)) {
             consoleCommand(sender, args);
             return true;
         }
 
-		final Player p = (Player) sender;
-		if (args.length == 0) {
-			p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /war help");
+        final Player p = (Player) sender;
+        if (args.length == 0) {
+            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /war help");
             return true;
-		} else if (args.length >= 1) {
+        } else if (args.length >= 1) {
 
             switch(args[0].toLowerCase()) {
                 case "create":
@@ -43,7 +44,7 @@ public class WarCommands implements CommandExecutor {
                     warDelete(p, args);
                     return true;
                 case "join":
-                    warJoin(p, args);
+                    warJoin(p, args, false);
                     return true;
                 case "surrender":
                     warSurrender(p, args);
@@ -62,11 +63,11 @@ public class WarCommands implements CommandExecutor {
                     return true;
             }
        
-        } 
-		return false;
-	}
+        }
+        return false;
+    }
 
-    public static void warCreate(Player p, String[] args) {
+    protected static void warCreate(Player p, String[] args) {
         if (!p.hasPermission("AlathraWar.admin")) {
             p.sendMessage("You do not have permission to run this command.");
             return;
@@ -115,7 +116,13 @@ public class WarCommands implements CommandExecutor {
         }
     }
 
-    private static void warJoin(Player p, String[] args) {
+    /**
+     *
+     * @param p - executor
+     * @param args
+     * @param admin - admin behavior
+     */
+    protected static void warJoin(Player p, String[] args, boolean admin) {
         // Sufficient args check
         if (args.length < 3) {
             p.sendMessage(Helper.Chatlabel()
@@ -131,8 +138,8 @@ public class WarCommands implements CommandExecutor {
             return;
         }
 
-        // Towny Resident Object
-        Resident res = TownyAPI.getInstance().getResident(p);
+        // Towny Resident Object, if admin then dont use command runner, use declared player
+        Resident res = TownyAPI.getInstance().getResident(admin ? Bukkit.getPlayer(args[3]) : p);
 
         // Town check
         Town town = res.getTownOrNull();
@@ -152,9 +159,10 @@ public class WarCommands implements CommandExecutor {
         }
 
         if (res.hasNation()) {
-            if(p.hasPermission("AlathraWar.nationjoin" )|| res.isKing()) {
+            if(res.getPlayer().hasPermission("AlathraWar.nationjoin" )|| res.isKing()) {
                 // Has nation declaration permission
                 war.addNation(res.getNationOrNull(), args[2]);
+                res.getPlayer().sendMessage(Helper.Chatlabel() + "You have joined the war for " + res.getNationOrNull().getName());
                 p.sendMessage(Helper.Chatlabel() + "You have joined the war for " + res.getNationOrNull().getName());
                 war.save();
                 return;
@@ -164,9 +172,10 @@ public class WarCommands implements CommandExecutor {
                 return;
             }
         } else if (res.hasTown()) {
-            if (p.hasPermission("AlathraWar.townjoin") || res.isMayor()) {
+            if (res.getPlayer().hasPermission("AlathraWar.townjoin") || res.isMayor()) {
                 // Is in indepdenent town & has declaration perms
                 war.addTown(res.getTownOrNull(), args[2]);
+                res.getPlayer().sendMessage(Helper.Chatlabel() + "You have joined the war for " + res.getTownOrNull().getName());
                 p.sendMessage(Helper.Chatlabel() + "You have joined the war for " + res.getTownOrNull().getName());
                 war.save();
                 return;

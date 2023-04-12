@@ -4,7 +4,6 @@ import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.*;
-import com.palmergames.bukkit.towny.object.metadata.LongDataField;
 import me.ShermansWorld.AlathraWar.*;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import me.ShermansWorld.AlathraWar.data.WarData;
@@ -46,9 +45,9 @@ public class RaidCommands implements CommandExecutor {
             if (args[0].equalsIgnoreCase("start")) {
                 startRaid(p, args, false);
             } else if (args[0].equalsIgnoreCase("join")) {
-                joinRaid(p, args);
+                joinRaid(p, args, false);
             } else if (args[0].equalsIgnoreCase("leave")) {
-                leaveRaid(p, args);
+                leaveRaid(p, args, false);
             } else if (args[0].equalsIgnoreCase("abandon")) {
                 abandonRaid(p, args);
             } else {
@@ -67,7 +66,7 @@ public class RaidCommands implements CommandExecutor {
      * @param p
      * @param args
      */
-    public static void startRaid(Player p, String[] args, boolean admin) {
+    protected static void startRaid(Player p, String[] args, boolean admin) {
         boolean warFound = false;
         boolean townExists = false;
         for (final War war : WarData.getWars()) {
@@ -218,6 +217,7 @@ public class RaidCommands implements CommandExecutor {
                                 "The Raiders are gathering at " + gatherTown.getName() + " before making the journey over!");
 
                         Main.warLogger.log(p.getName() + " started a raid.");
+                        if(admin) Main.warLogger.log(p.getName() + " started a raid using admin methods.");
                         Main.warLogger.log("As part of " + war.getName() + ", forces from " + raid2.getRaiders() + " are raiding the town of " + raidedTown.getName() + "!");
                         Main.warLogger.log("The Raiders are gathering at " + gatherTown.getName() + " before making the journey over!");
                     }
@@ -264,13 +264,34 @@ public class RaidCommands implements CommandExecutor {
         }
     }
 
-    private static void joinRaid(Player p, String[] args) {
+    protected static void joinRaid(Player p, String[] args, boolean admin) {
         //Grab raid!
         Raid raid = RaidData.getRaidOrNull(args[1] + "-" + args[2]);
         if (raid != null) {
             if (raid.getWar().getName().equalsIgnoreCase(args[1])) {
-                if (!raid.getWar().getSide1Players().contains(p.getName()) && !raid.getWar().getSide2Players().contains(p.getName())) {
-                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You are not in this war! Type /war join [war] [side]");
+                Player joiner = p;
+                if (admin) {
+                    joiner = Bukkit.getOfflinePlayer(args[3]).getPlayer();
+
+                    if(args[4] != null) {
+                        if(args[4].equals(raid.getDefenders())) {
+                            if(!raid.getDefenderPlayers().contains(joiner.getName()))
+                                raid.getDefenderPlayers().add(joiner.getName());
+                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Player " + joiner.getName() + " added to defender side.");
+                            Main.warLogger.log("Player " + joiner.getName() + " added to defender side.");
+                            joiner.sendMessage(String.valueOf(Helper.Chatlabel()) + "You were forcefully added to the defender side against the raid party on " + raid.getRaidedTown() + " by an admin.");
+                            return;
+                        } else {
+                            if(!raid.getRaiderPlayers().contains(joiner.getName()))
+                                raid.getRaiderPlayers().add(joiner.getName());
+                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Player " + joiner.getName() + " added to raider side.");
+                            Main.warLogger.log("Player " + joiner.getName() + " added to raider side.");
+                            joiner.sendMessage(String.valueOf(Helper.Chatlabel()) + "You were forcefully added to the raid party on " + raid.getRaidedTown() + " by an admin. Leaving the gather town will remove you from the raid party.");
+                        }
+                    }
+                }
+                if (!raid.getWar().getSide1Players().contains(joiner.getName()) && !raid.getWar().getSide2Players().contains(joiner.getName())) {
+                    joiner.sendMessage(String.valueOf(Helper.Chatlabel()) + "You are not in this war! Type /war join [war] [side]");
                 }
 
                 //check if gather phase
@@ -278,18 +299,18 @@ public class RaidCommands implements CommandExecutor {
                     try {
                         //check if the player is in the gather town
                         ArrayList<WorldCoord> cluster = Helper.getCluster(raid.getGatherTown().getHomeBlock().getWorldCoord());
-                        if (cluster.contains(WorldCoord.parseWorldCoord(p))) {
-                            raid.addActiveRaider(p.getName());
-                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You have joined the raid on " + raid.getRaidedTown().getName() + "!");
-                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Leaving " + raid.getGatherTown().getName() + " will cause you to leave the raid party.");
+                        if (cluster.contains(WorldCoord.parseWorldCoord(joiner))) {
+                            raid.addActiveRaider(joiner.getName());
+                            joiner.sendMessage(String.valueOf(Helper.Chatlabel()) + "You have joined the raid on " + raid.getRaidedTown().getName() + "!");
+                            joiner.sendMessage(String.valueOf(Helper.Chatlabel()) + "Leaving " + raid.getGatherTown().getName() + " will cause you to leave the raid party.");
                         } else {
-                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must be in the gathering town to join the raid on " + raid.getRaidedTown().getName() + ".");
+                            joiner.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must be in the gathering town to join the raid on " + raid.getRaidedTown().getName() + ".");
                         }
                     } catch (TownyException e) {
                         throw new RuntimeException(e);
                     }
                 } else {
-                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You cannot join the raid on " + raid.getRaidedTown().getName() + "! It has already started!");
+                    joiner.sendMessage(String.valueOf(Helper.Chatlabel()) + "You cannot join the raid on " + raid.getRaidedTown().getName() + "! It has already started!");
                 }
             }
         } else {
@@ -297,7 +318,7 @@ public class RaidCommands implements CommandExecutor {
         }
     }
 
-    private static void leaveRaid(Player p, String[] args) {
+    protected static void leaveRaid(Player p, String[] args, boolean admin) {
         //Get raid!
         Raid raid = RaidData.getRaidOrNull(args[1] + "-" + args[2]);
         if (raid != null) {
