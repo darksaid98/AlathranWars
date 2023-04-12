@@ -1,9 +1,11 @@
 package me.ShermansWorld.AlathraWar.data;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import me.ShermansWorld.AlathraWar.Main;
+import me.ShermansWorld.AlathraWar.Siege;
 import me.ShermansWorld.AlathraWar.War;
 
 import java.io.File;
@@ -74,9 +76,13 @@ public class WarData
 
         ArrayList<War> returnList = new ArrayList<War>();
         for (File file : files) {
-            HashMap<String, Object> fileData = DataManager.getData(file);
-            War fileWar = fromMap(fileData);
-            returnList.add(fileWar);
+            try {
+                HashMap<String, Object> fileData = DataManager.getData(file);
+                War fileWar = fromMap(fileData);
+                returnList.add(fileWar); 
+            } catch (Exception e) {
+                Main.warLogger.log("Failed to load " + file.getName());
+            }
         }
 
         return returnList;
@@ -102,6 +108,14 @@ public class WarData
         if(fileData.get("lastRaidTimeSide1") != null && fileData.get("lastRaidTimeSide2") != null) {
             war.setLastRaidTimeSide1((long)((int) fileData.get("lastRaidTimeSide1")));
             war.setLastRaidTimeSide2((long)((int) fileData.get("lastRaidTimeSide2")));
+        }
+
+
+        // Siege adding from map.
+        Collection<HashMap<String, Object>> siegeMaps = ((HashMap<String,HashMap<String, Object>>) fileData.get("sieges")).values();
+        ArrayList<Siege> sieges = SiegeData.createSieges(war, siegeMaps);
+        for (Siege siege : sieges) {
+            war.addSiege(siege);
         }
 
         return war;
