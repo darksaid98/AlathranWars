@@ -102,5 +102,8 @@ public class Main extends JavaPlugin {
 	}
 
 	public void onDisable() {
+        for (War war : WarData.getWars()) {
+            war.save();
+        }
 	}
 }
