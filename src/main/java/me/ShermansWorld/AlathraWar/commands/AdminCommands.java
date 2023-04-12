@@ -185,8 +185,37 @@ public class AdminCommands implements CommandExecutor {
         return false;
     }
 
+    /**
+     * //force end a war/event, can declare winner side, or no winner
+     * -force end war [name] (side/victor)
+     * -force end siege [war] [town] (side/victor)
+     * -force end raid [war] [town] (side/victor)
+     *
+     * //force player into or out of a war/event
+     * -force join war [player] [war] [side]
+     * -force join siege [player] [war] [town] (side)
+     * -force join raid [player] [war] [town] (side)
+     * -force leave war [war] [player] (timeout)
+     * -force leave siege [war] [player] (timeout)
+     * -force leave raid  [war] [player] (timeout) //kicks from raid party
+     *
+     * @param p
+     * @param args
+     * @return
+     */
     private static boolean force(Player p, String[] args) {
-        return false;
+        if(args.length >= 2) {
+            if(args[1].equalsIgnoreCase("end")) {
+
+            } else if(args[1].equalsIgnoreCase("join")) {
+
+            } else if(args[1].equalsIgnoreCase("leave")) {
+
+            } else {
+                return fail(p, args, "syntax");
+            }
+        }
+        return fail(p, args, "syntax");
     }
 
     private static boolean help(Player p, String[] args) {
