@@ -350,7 +350,7 @@ public class AdminCommands implements CommandExecutor {
      * -modify raid townspawn [war] [town] (x) (y) (Z)
      * -modify raid gather [war] [town] [town]
      * -modify raid phase [war] [town] [phase] //"next" to move to next phase
-     * -modify raid loot [war] [town] (x) (z) [value,looted,ticks,reset] [amt] //no coords just does current chunk, reset deletes it from the list
+     * -modify raid loot [war] [town] [value,looted,ticks,reset] [amt] (x) (z)  //no coords just does current chunk, reset deletes it from the list
      * -modify raid time [war] [town] [add/set] [value]
      * -modify raid owner [war] [town] [add/set] [value]
      * -modify raid move [war] [town] [newWar] //low priority, moves raid to other war/ town
@@ -541,7 +541,75 @@ public class AdminCommands implements CommandExecutor {
                                 return false;
                         }
                     }  else if (args[2].equalsIgnoreCase("loot")) {
-
+                        if(args.length >= 5) {
+                            for (Raid r : RaidData.getRaids()) {
+                                if (r.getWar().getName().equals(args[3]) && r.getRaidedTown().getName().equals(args[4])) {
+                                    //parse phase
+                                    if(!p.getWorld().equals(r.getRaidedTown().getWorld())) {
+                                        p.sendMessage(Helper.Chatlabel() + "Error wrong world");
+                                        return false;
+                                    }
+                                    if(args.length >= 9) {
+                                        if(args[5].equalsIgnoreCase("value")) {
+                                            WorldCoord wc = WorldCoord.parseWorldCoord(p.getWorld().getName(), Integer.parseInt(args[7]), Integer.parseInt(args[8]));
+                                            Raid.LootBlock lb = r.getLootedChunks().get(wc);
+                                            lb.value = Integer.parseInt(args[6]);
+                                            return true;
+                                        } else if(args[5].equalsIgnoreCase("looted")) {
+                                            WorldCoord wc = WorldCoord.parseWorldCoord(p.getWorld().getName(), Integer.parseInt(args[7]), Integer.parseInt(args[8]));
+                                            Raid.LootBlock lb = r.getLootedChunks().get(wc);
+                                            lb.finished = Boolean.parseBoolean(args[6]);
+                                            return true;
+                                        } else if(args[5].equalsIgnoreCase("ticks")) {
+                                            WorldCoord wc = WorldCoord.parseWorldCoord(p.getWorld().getName(), Integer.parseInt(args[7]), Integer.parseInt(args[8]));
+                                            Raid.LootBlock lb = r.getLootedChunks().get(wc);
+                                            lb.ticks = Integer.parseInt(args[6]);
+                                            return true;
+                                        } else if(args[5].equalsIgnoreCase("reset")) {
+                                            WorldCoord wc = WorldCoord.parseWorldCoord(p.getWorld().getName(), Integer.parseInt(args[6]), Integer.parseInt(args[7]));
+                                            r.getLootedChunks().remove(wc);
+                                            return true;
+                                        } else {
+                                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid loot [war] [town] [value,looted,ticks,reset] [amt] (x) (z)");
+                                            return false;
+                                        }
+                                    } else if (args.length == 8) {
+                                        p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid loot [war] [town] [value,looted,ticks,reset] [amt] (x) (z)");
+                                        return false;
+                                    } else {
+                                        if(args[5].equalsIgnoreCase("value")) {
+                                            WorldCoord wc = WorldCoord.parseWorldCoord(p.getLocation());
+                                            Raid.LootBlock lb = r.getLootedChunks().get(wc);
+                                            lb.value = Integer.parseInt(args[6]);
+                                            return true;
+                                        } else if(args[5].equalsIgnoreCase("looted")) {
+                                            WorldCoord wc = WorldCoord.parseWorldCoord(p.getLocation());
+                                            Raid.LootBlock lb = r.getLootedChunks().get(wc);
+                                            lb.finished = Boolean.parseBoolean(args[6]);
+                                            return true;
+                                        } else if(args[5].equalsIgnoreCase("ticks")) {
+                                            WorldCoord wc = WorldCoord.parseWorldCoord(p.getLocation());
+                                            Raid.LootBlock lb = r.getLootedChunks().get(wc);
+                                            lb.ticks = Integer.parseInt(args[6]);
+                                            return true;
+                                        } else if(args[5].equalsIgnoreCase("reset")) {
+                                            WorldCoord wc = WorldCoord.parseWorldCoord(p.getLocation());
+                                            r.getLootedChunks().remove(wc);
+                                            return true;
+                                        } else {
+                                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid loot [war] [town] [value,looted,ticks,reset] [amt] (x) (z)");
+                                            return false;
+                                        }
+                                    }
+                                } else {
+                                    p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
+                                    return false;
+                                }
+                            }
+                        } else {
+                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid loot [war] [town] [value,looted,ticks,reset] [amt] (x) (z)");
+                            return false;
+                        }
                     }  else if (args[2].equalsIgnoreCase("time")) {
 
                     }  else if (args[2].equalsIgnoreCase("owner")) {
