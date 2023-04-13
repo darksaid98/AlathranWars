@@ -428,6 +428,8 @@ public class AdminCommands implements CommandExecutor {
                                                 if (t.hasTownBlock(tb)) {
                                                     t.setHomeBlock(tb.getTownBlock());
                                                     t.setSpawn(new Location(p.getWorld(), Integer.parseInt(args[5]), Integer.parseInt(args[6]), Integer.parseInt(args[7])));
+                                                    r.setHomeBlockRaided(tb.getTownBlock());
+                                                    r.setTownSpawnRaided(t.getSpawn());
                                                     p.sendMessage(Helper.Chatlabel() + "Set town spawn for raided town " + args[4] + " in war " + args[3] + " to " + p.getLocation().toString());
                                                     Main.warLogger.log("Set town spawn for raided town " + args[4] + " in war " + args[3] + " to [" + args[5] + "," + args[6] + "," + args[7] + "]");
                                                     return true;
@@ -435,16 +437,12 @@ public class AdminCommands implements CommandExecutor {
                                                     p.sendMessage(Helper.color("c") + "Town does not contain town block at [" + args[5] + "," + args[7] + "]");
                                                     return false;
                                                 }
-                                                r.setHomeBlockRaided(tb.getTownBlock());
-                                                r.setTownSpawnRaided(t.getSpawn());
                                             } catch (NotRegisteredException e) {
                                                 p.sendMessage(Helper.color("c") + "Error! Townblock does not exist!");
                                                 return false;
-                                                throw new RuntimeException(e);
                                             } catch (TownyException e) {
                                                 p.sendMessage(Helper.color("c") + "Error!");
                                                 return false;
-                                                throw new RuntimeException(e);
                                             }
                                         } else {
                                             p.sendMessage(Helper.color("c") + "Error! Wrong world!");
@@ -458,6 +456,8 @@ public class AdminCommands implements CommandExecutor {
                                                 if (t.hasTownBlock(tb)) {
                                                     t.setHomeBlock(tb.getTownBlock());
                                                     t.setSpawn(p.getLocation());
+                                                    r.setHomeBlockRaided(tb.getTownBlock());
+                                                    r.setTownSpawnRaided(t.getSpawn());
                                                     p.sendMessage(Helper.Chatlabel() + "Set town spawn for raided town " + args[5] + " in war " + args[4] + " to " + p.getLocation().toString());
                                                     Main.warLogger.log("Set town spawn for raided town " + args[5] + " in war " + args[4] + " to " + p.getLocation().toString());
                                                     return true;
@@ -465,16 +465,12 @@ public class AdminCommands implements CommandExecutor {
                                                     p.sendMessage(Helper.color("c") + "Town does not contain town block at your location [" + (int) p.getLocation().getX() + "," + (int) p.getLocation().getZ() + "]");
                                                     return false;
                                                 }
-                                                r.setHomeBlockRaided(tb.getTownBlock());
-                                                r.setTownSpawnRaided(t.getSpawn());
                                             } catch (NotRegisteredException e) {
                                                 p.sendMessage(Helper.color("c") + "Error! Townblock does not exist!");
                                                 return false;
-                                                throw new RuntimeException(e);
                                             } catch (TownyException e) {
                                                 p.sendMessage(Helper.color("c") + "Error!");
                                                 return false;
-                                                throw new RuntimeException(e);
                                             }
                                         } else {
                                             return false;
@@ -789,7 +785,7 @@ public class AdminCommands implements CommandExecutor {
                             return false;
                         }
                     } else if(args[2].equalsIgnoreCase("townspawn")) {
-                        if(args.length >= 8) {
+                        if(args.length >= 5) {
                             for(Siege s: SiegeData.getSieges()) {
                                 if (s.getWar().getName().equals(args[3]) && s.getTown().getName().equals(args[4])) {
                                     if (args.length == 6 || args.length == 7){
@@ -804,6 +800,8 @@ public class AdminCommands implements CommandExecutor {
                                                 if (t.hasTownBlock(tb)) {
                                                     t.setHomeBlock(tb.getTownBlock());
                                                     t.setSpawn(new Location(p.getWorld(), Integer.parseInt(args[5]), Integer.parseInt(args[6]), Integer.parseInt(args[7])));
+                                                    s.setHomeBlock(tb.getTownBlock());
+                                                    s.setTownSpawn(t.getSpawn());
                                                     p.sendMessage(Helper.Chatlabel() + "Set town spawn for sieged town " + args[4] + " in war " + args[3] + " to " + p.getLocation().toString());
                                                     Main.warLogger.log("Set town spawn for sieged town " + args[4] + " in war " + args[3] + " to [" + args[5] + "," + args[6] + "," + args[7] + "]");
                                                     return true;
@@ -811,16 +809,12 @@ public class AdminCommands implements CommandExecutor {
                                                     p.sendMessage(Helper.color("c") + "Town does not contain town block at [" + args[5] + "," + args[7] + "]");
                                                     return false;
                                                 }
-                                                s.setHomeBlock(tb.getTownBlock());
-                                                s.setTownSpawn(t.getSpawn());
                                             } catch (NotRegisteredException e) {
                                                 p.sendMessage(Helper.color("c") + "Error! Townblock does not exist!");
                                                 return false;
-                                                throw new RuntimeException(e);
                                             } catch (TownyException e) {
                                                 p.sendMessage(Helper.color("c") + "Error!");
                                                 return false;
-                                                throw new RuntimeException(e);
                                             }
                                         } else {
                                             p.sendMessage(Helper.color("c") + "Error! Wrong world!");
@@ -834,6 +828,8 @@ public class AdminCommands implements CommandExecutor {
                                                 if (t.hasTownBlock(tb)) {
                                                     t.setHomeBlock(tb.getTownBlock());
                                                     t.setSpawn(p.getLocation());
+                                                    s.setHomeBlock(tb.getTownBlock());
+                                                    s.setTownSpawn(t.getSpawn());
                                                     p.sendMessage(Helper.Chatlabel() + "Set town spawn for sieged town " + args[5] + " in war " + args[4] + " to " + p.getLocation().toString());
                                                     Main.warLogger.log("Set town spawn for sieged town " + args[5] + " in war " + args[4] + " to " + p.getLocation().toString());
                                                     return true;
@@ -841,16 +837,12 @@ public class AdminCommands implements CommandExecutor {
                                                     p.sendMessage(Helper.color("c") + "Town does not contain town block at your location [" + (int) p.getLocation().getX() + "," + (int) p.getLocation().getZ() + "]");
                                                     return false;
                                                 }
-                                                s.setHomeBlock(tb.getTownBlock());
-                                                s.setTownSpawn(t.getSpawn());
                                             } catch (NotRegisteredException e) {
                                                 p.sendMessage(Helper.color("c") + "Error! Townblock does not exist!");
                                                 return false;
-                                                throw new RuntimeException(e);
                                             } catch (TownyException e) {
                                                 p.sendMessage(Helper.color("c") + "Error!");
                                                 return false;
-                                                throw new RuntimeException(e);
                                             }
                                         } else {
                                             return false;
@@ -1124,6 +1116,7 @@ public class AdminCommands implements CommandExecutor {
         } else {
             return fail(p, args, "syntax");
         }
+        return fail(p, args, "syntax");
     }
 
 
