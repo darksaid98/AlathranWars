@@ -3,6 +3,7 @@ package me.ShermansWorld.AlathraWar.commands;
 import org.bukkit.OfflinePlayer;
 import com.palmergames.bukkit.towny.object.TownyWorld;
 import com.palmergames.bukkit.towny.object.Resident;
+import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 
@@ -10,6 +11,7 @@ import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.Siege;
 import me.ShermansWorld.AlathraWar.War;
+import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.data.WarData;
 
 import org.bukkit.Bukkit;
@@ -18,58 +20,48 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import com.palmergames.bukkit.towny.object.Town;
 import java.util.ArrayList;
+import java.util.HashSet;
+
 import org.bukkit.command.CommandExecutor;
 
-public class SiegeCommands implements CommandExecutor
-{
-    public static ArrayList<Town> towns;
-    public static int maxID;
-    
-    static {
-        SiegeCommands.towns = new ArrayList<Town>();
-        //SiegeCommands.sieges = new ArrayList<Siege>();
-        //SiegeCommands.maxID = Main.siegeData.getConfig().getInt("MaxID");
-    }
-    
+public class SiegeCommands implements CommandExecutor {    
     public SiegeCommands(final Main plugin) {
-        plugin.getCommand("siege").setExecutor((CommandExecutor)this);
+        plugin.getCommand("siege").setExecutor((CommandExecutor) this);
     }
     
     public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
-        final Player p = (Player)sender;
         if (args.length == 0) {
-            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /siege help");
-        } /*
-        else if (args.length == 1) {
-            if (args[0].equalsIgnoreCase("list")) {
-                if (SiegeCommands.sieges.isEmpty()) {
-                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "There are currently no sieges in progress");
-                    return false;
-                }
-                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Sieges currently in progress:");
-                for (final Siege siege : SiegeCommands.sieges) {
-                    p.sendMessage("ID: " + String.valueOf(siege.getID()));
-                    p.sendMessage("War: " + siege.getWar().getName());
-                    p.sendMessage("Town: " + siege.getTown().getName());
-                    p.sendMessage("Attackers: " + siege.getAttackers());
-                    p.sendMessage("Defenders: " + siege.getDefenders());
-                    p.sendMessage("Attacker Points: " + String.valueOf(siege.getAttackerPoints()));
-                    p.sendMessage("Defender Points: " + String.valueOf(siege.getDefenderPoints()));
-                    p.sendMessage("Time Left: " + String.valueOf((108000 - Main.siegeData.getConfig().getInt("Sieges." + String.valueOf(String.valueOf(siege.getID()) + ".siegeticks"))) / 1200) + " minutes");
-                    p.sendMessage("-=-=-=-=-=-=-=-=-=-=-=-");
-                }
-            } else if (args[0].equalsIgnoreCase("help")) {
-                if (p.hasPermission("!AlathraWar.admin")) {
-					p.sendMessage(Helper.Chatlabel() + "/siege stop [id]");
-				}
-				p.sendMessage(Helper.Chatlabel() + "/siege start [war] [town]");
-				p.sendMessage(Helper.Chatlabel() + "/siege abandon [id]");
-				p.sendMessage(Helper.Chatlabel() + "/siege list");
-            } else {
-            	p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /siege help");
-            }
-            
+            sender.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /siege help");
         }
+        
+        // Start
+        // Stop
+        // Abandon
+        // List
+        // Help
+
+        switch (args[0].toLowerCase()) {
+            case "start":
+                siegeStart(sender, args);
+                return true;
+            case "stop":
+                siegeStop(sender, args);
+                return true;
+            case "abandon":
+                siegeAbandon(sender, args);
+                return true;
+            case "list":
+                siegeList(sender, args);
+                return true;
+            case "help":
+                siegeHelp(sender, args);
+                return true;
+            case "debug":
+                siegeDebug(sender, args);
+                return true;
+        }
+        
+        /*
         else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("stop")) {
                 if (!p.hasPermission("AlathraWar.admin")) {
@@ -260,4 +252,87 @@ public class SiegeCommands implements CommandExecutor
         */
         return false;
     }
+
+    private static void siegeStart(CommandSender sender, String[] args) {
+
+    }
+
+    private static void siegeStop(CommandSender sender, String[] args) {
+        if (!sender.hasPermission("AlathraWar.admin")) {
+            sender.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&cYou do not have permission to do this"));
+            return;
+        }
+        HashSet<Siege> sieges = SiegeData.getSieges();
+        if (sieges.isEmpty()) {
+            sender.sendMessage(String.valueOf(Helper.Chatlabel()) + "There are currently no sieges in progress");
+            return;
+        }
+
+        for (Siege siege : sieges) {
+            if (siege.getTown().getName().equalsIgnoreCase(args[1])) {
+                sender.sendMessage(String.valueOf(Helper.Chatlabel()) + "siege cancelled");
+                Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The siege at " + siege.getTown().getName() + " has been cancelled by an admin");
+                //siege.clearBeacon();
+                siege.stop();
+                return;
+            }
+        }
+        sender.sendMessage(String.valueOf(Helper.Chatlabel()) + "A siege could not be found with this town name! Type /siege list to view current sieges");
+    }
+    
+    private static void siegeAbandon(CommandSender sender, String[] args) {
+
+    }
+
+    private static void siegeList(CommandSender sender, String[] args) {
+        HashSet<Siege> sieges = SiegeData.getSieges();
+        if (sieges.isEmpty()) {
+            sender.sendMessage(String.valueOf(Helper.Chatlabel()) + "There are currently no sieges in progress");
+            return;
+        } 
+
+        sender.sendMessage(String.valueOf(Helper.Chatlabel()) + "Sieges currently in progress:");
+        for (Siege siege : sieges) {
+            War war = siege.getWar();
+            String color = (siege.getSide1AreAttackers() && (war.getSide(siege.getTown().getName()) == 1) ) ? "§c" : "§9";
+            sender.sendMessage(war.getName() + " - " + color + siege.getTown().getName());
+            sender.sendMessage(war.getSide1() + " - " + (siege.getSide1AreAttackers() ? siege.getAttackerPoints() : siege.getDefenderPoints()));
+            sender.sendMessage(war.getSide1() + " - " + (siege.getSide1AreAttackers() ? siege.getDefenderPoints() : siege.getAttackerPoints()));
+            sender.sendMessage("Time Left: " + (Siege.maxSiegeTicks - siege.getSiegeTicks())/1200 + " minutes");
+            sender.sendMessage("-=-=-=-=-=-=-=-=-=-=-=-");
+        }
+        
+    }
+
+    private static void siegeHelp(CommandSender sender, String[] args) {
+        if (sender.hasPermission("!AlathraWar.admin")) {
+            sender.sendMessage(Helper.Chatlabel() + "/siege stop [town]");
+        }
+        sender.sendMessage(Helper.Chatlabel() + "/siege start [war] [town]");
+        sender.sendMessage(Helper.Chatlabel() + "/siege abandon [town]");
+        sender.sendMessage(Helper.Chatlabel() + "/siege list");
+    }
+
+    private static void siegeDebug(CommandSender sender, String[] args) {
+        if (!sender.isOp()) return;
+        sender.sendMessage("DEBUG");
+        sender.sendMessage(WarData.getWars().toString());
+        for (War war : WarData.getWars()) {
+            sender.sendMessage(war.getName());
+            ArrayList<Siege> sieges = war.getSieges();
+            sender.sendMessage(sieges.toString());
+        }
+
+
+        if (args.length > 1 && args[1].equalsIgnoreCase("new")) {
+            War war = WarData.getWar(args[2]);
+            Town town = TownyAPI.getInstance().getTown(args[3]);
+            Siege siege = new Siege(war, town, false);
+            SiegeData.addSiege(siege);
+            war.addSiege(siege);
+            war.save();
+            siege.start();
+        }
+    }
+
 }
