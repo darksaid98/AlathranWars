@@ -551,8 +551,44 @@ public class AdminCommands implements CommandExecutor {
                     return false;
                 }
             } else if(args[1].equalsIgnoreCase("siege")) {
-                if(args.length >= 3) {
-
+                if(args.length >= 4) {
+                    for (Siege s : SiegeData.getSieges()) {
+                        if (s.getWar().getName().equals(args[2]) && s.getTown().getName().equals(args[3])) {
+                            p.sendMessage(Helper.Chatlabel() + "Info dump for siege: " + s.getName());
+                            p.sendMessage(Helper.Chatlabel() + "oOo----------------------===----------------------oOo");
+                            p.sendMessage(Helper.Chatlabel() + "Name: " + s.getName());
+                            p.sendMessage(Helper.Chatlabel() + "Attackers: " + s.getAttackers());
+                            p.sendMessage(Helper.Chatlabel() + "Defenders: " + s.getDefenders());
+                            p.sendMessage(Helper.Chatlabel() + "Attackers points: " + s.getAttackerPoints());
+                            p.sendMessage(Helper.Chatlabel() + "Attackers points: " + s.getDefenderPoints());
+                            p.sendMessage(Helper.Chatlabel() + "War: " + s.getWar().getName());
+                            p.sendMessage(Helper.Chatlabel() + "Attacked Town: " + s.getTown().getName());
+                            p.sendMessage(Helper.Chatlabel() + "Max Ticks: " + s.getMaxSiegeTicks());
+                            p.sendMessage(Helper.Chatlabel() + "Tick progress: " + s.getSiegeTicks());
+                            p.sendMessage(Helper.Chatlabel() + "Owner: " + s.getSiegeOwner());
+                            p.sendMessage(Helper.Chatlabel() + "Homeblock: " + s.getHomeBlock().toString());
+                            p.sendMessage(Helper.Chatlabel() + "oOo----------------------===----------------------oOo");
+                            String attackers = "";
+                            for (String pl : s.getAttackerPlayers()) {
+                                attackers += pl;
+                                attackers += ", ";
+                            }
+                            //cut off last two characters
+                            attackers = attackers.substring(0, attackers.length() - 3);
+                            p.sendMessage(Helper.Chatlabel() + "Attacking Players: " + attackers);
+                            String defenders = "";
+                            for (String pl : s.getAttackerPlayers()) {
+                                defenders += pl;
+                                defenders += ", ";
+                            }
+                            //cut off last two characters
+                            defenders = defenders.substring(0, defenders.length() - 3);
+                            p.sendMessage(Helper.Chatlabel() + "Defending Players: " + defenders);
+                            return true;
+                        }
+                    }
+                    p.sendMessage(Helper.color("c") + "Error Siege not found!");
+                    return false;
                 } else {
                     p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin info [raid/siege/war]");
                     return false;

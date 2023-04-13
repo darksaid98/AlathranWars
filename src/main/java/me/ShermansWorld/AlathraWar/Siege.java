@@ -92,13 +92,13 @@ public class Siege {
 									if (WorldCoord.parseWorldCoord(Main.getInstance().getServer().getPlayer(playerName))
 											.getTownBlock().isHomeBlock()
 											&& WorldCoord
-													.parseWorldCoord(
-															Main.getInstance().getServer().getPlayer(playerName))
-													.getTownBlock().getTown().equals(town)
+											.parseWorldCoord(
+													Main.getInstance().getServer().getPlayer(playerName))
+											.getTownBlock().getTown().equals(town)
 											&& !Bukkit.getPlayer(playerName).isDead()
 											&& (Math.abs(
-													Bukkit.getServer().getPlayer(playerName).getLocation().getBlockY()
-															- townSpawn.getBlockY())) < 10) {
+											Bukkit.getServer().getPlayer(playerName).getLocation().getBlockY()
+													- townSpawn.getBlockY())) < 10) {
 										attackersAreOnHomeBlock = true;
 									}
 								} catch (NotRegisteredException ex) {
@@ -110,13 +110,13 @@ public class Siege {
 									if (WorldCoord.parseWorldCoord(Main.getInstance().getServer().getPlayer(playerName))
 											.getTownBlock().isHomeBlock()
 											&& WorldCoord
-													.parseWorldCoord(
-															Main.getInstance().getServer().getPlayer(playerName))
-													.getTownBlock().getTown().equals(town)
+											.parseWorldCoord(
+													Main.getInstance().getServer().getPlayer(playerName))
+											.getTownBlock().getTown().equals(town)
 											&& !Bukkit.getPlayer(playerName).isDead()
 											&& (Math.abs(
-													Bukkit.getServer().getPlayer(playerName).getLocation().getBlockY()
-															- townSpawn.getBlockY())) < 10) {
+											Bukkit.getServer().getPlayer(playerName).getLocation().getBlockY()
+													- townSpawn.getBlockY())) < 10) {
 										defendersAreOnHomeBlock = true;
 									}
 								} catch (NotRegisteredException ex3) {
@@ -508,4 +508,8 @@ public class Siege {
 	public void save() {
         SiegeData.saveSiege(this);
     }
+
+	public String getName() {
+		return this.getWar().getName() + "-" + this.getTown();
+	}
 }
