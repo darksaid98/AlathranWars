@@ -352,7 +352,7 @@ public class AdminCommands implements CommandExecutor {
      * -modify raid phase [war] [town] [phase] //"next" to move to next phase
      * -modify raid loot [war] [town] [value,looted,ticks,reset] [amt] (x) (z)  //no coords just does current chunk, reset deletes it from the list
      * -modify raid time [war] [town] [add/set] [value]
-     * -modify raid owner [war] [town] [add/set] [value]
+     * -modify raid owner [war] [town] [player]
      * -modify raid move [war] [town] [newWar] //low priority, moves raid to other war/ town
      * -modify raid clearActive [war] [town] //low priority
      *
@@ -661,7 +661,28 @@ public class AdminCommands implements CommandExecutor {
                             return false;
                         }
                     }  else if (args[2].equalsIgnoreCase("owner")) {
-
+                        if(args.length >= 6) {
+                            for (Raid r : RaidData.getRaids()) {
+                                if (r.getWar().getName().equals(args[3]) && r.getRaidedTown().getName().equals(args[4])) {
+                                    Player own = Bukkit.getPlayer(args[5]);
+                                    if(own != null) {
+                                        r.setOwner(own);
+                                        p.sendMessage(Helper.Chatlabel() + "Set owner of raid against " + args[4] + " in war " + args[3] + " to " + own.getName());
+                                        Main.warLogger.log("Set owner of raid against " + args[4] + " in war " + args[3] + " to " + own.getName());
+                                        return true;
+                                    } else {
+                                        p.sendMessage(Helper.color("c") + "Player not found!");
+                                        return false;
+                                    }
+                                } else {
+                                    p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
+                                    return false;
+                                }
+                            }
+                        } else {
+                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid owner [war] [town] [player]");
+                            return false;
+                        }
                     }  else if (args[2].equalsIgnoreCase("move")) {
                         //TODO later
                         p.sendMessage(Helper.color("c") + "Error!");
