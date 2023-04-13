@@ -7,6 +7,7 @@ import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
 import com.palmergames.bukkit.towny.object.WorldCoord;
+import com.palmergames.util.TimeMgmt;
 import me.ShermansWorld.AlathraWar.*;
 import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
@@ -19,6 +20,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -82,7 +85,7 @@ public class AdminCommands implements CommandExecutor {
      * -create war [name] [side1] [side2]
      *
      * //force end a war/event, can declare winner side, or no winner
-     * -force end war [name] (side/victor)
+     * -force end war [war] (side/victor)
      * -force end siege [war] [town] (side/victor)
      * -force end raid [war] [town] (side/victor)
      *
@@ -92,18 +95,17 @@ public class AdminCommands implements CommandExecutor {
      * -force join siege [player] [war] [town] (side)
      * -force join raid [player] [war] [town] (side)
      *
-     * //not done
-     * -force leave war [war] [player] (timeout)
-     * -force leave siege [war] [player] (timeout)
+     * //done
      * -force leave raid  [war] [player] (timeout) //kicks from raid party
      *
-     *
+     * //ultra low priority
      * //exclude players from join a raid or war for a time
      * //raid subcommand prevents joining or being raided
      * -exclude player war [war] (side) (timeout)
      * -exclude town war [war] (side) (timeout)
      * -exclude nation war [war] (side) (timeout)
      *
+     * //ultra low priority
      * -exclude player raid [join/target] [war] (timeout)
      * -exclude town raid [join/target] [war] (timeout)
      * -exclude nation raid [join/target] [war] (timeout)
@@ -131,8 +133,6 @@ public class AdminCommands implements CommandExecutor {
         } else if (args.length >= 1) {
             if (args[0].equalsIgnoreCase("create")) {
                 return create(p, args);
-            } else if (args[0].equalsIgnoreCase("exclude")) {
-                return exclude(p, args);
             } else if (args[0].equalsIgnoreCase("force")) {
                 return force(p, args);
             } else if (args[0].equalsIgnoreCase("help")) {
@@ -141,8 +141,6 @@ public class AdminCommands implements CommandExecutor {
                 return info(p, args);
             } else if (args[0].equalsIgnoreCase("modify")) {
                 return modify(p, args);
-            } else if (args[0].equalsIgnoreCase("rule")) {
-                return rule(p, args);
             }
         }
         return false;
@@ -208,7 +206,6 @@ public class AdminCommands implements CommandExecutor {
      * -force end raid [war] [town] (side/victor)
      *
      * //force player into or out of a war/event
-     * -force join war [player] [war] [side]
      * -force join siege [player] [war] [town] (side)
      * -force join raid [player] [war] [town] (side) //TODO time until must be in gather?
      * -force leave raid [war] [player] (timeout) //kicks from raid party
@@ -452,8 +449,88 @@ public class AdminCommands implements CommandExecutor {
         return true;
     }
 
+    /**
+     * // low priority idea
+     * -info war [war]
+     *
+     * -info raid [war] [town]
+     *
+     * -info siege [war] [town]
+     *
+      * @param p
+     * @param args
+     * @return
+     */
     private static boolean info(Player p, String[] args) {
-        return false;
+        if(args.length >= 2) {
+            if(args[1].equalsIgnoreCase("war")) {
+                if(args.length >= 3) {
+                    for (War w : WarData.getWars()) {
+                        if (w.getName().equals(args[2])) {
+                            p.sendMessage(Helper.Chatlabel() + "Info dump for war: " + w.getName());
+                            p.sendMessage(Helper.Chatlabel() + "Name: " + w.getName());
+                            p.sendMessage(Helper.Chatlabel() + "Side 1: " + w.getSide1());
+                            p.sendMessage(Helper.Chatlabel() + "Side 2: " + w.getSide2());
+                            // TODO I think this works!
+                            p.sendMessage(Helper.Chatlabel() + "Last Raid: " + TimeMgmt.getFormattedTimeValue(w.getLastRaidTime() * 1000));
+                            p.sendMessage(Helper.Chatlabel() + "oOo----------------------===----------------------oOo");
+                            String side1Towns = "";
+                            String side1Players = "";
+                            for (String t : w.getSide1Towns()) {
+                                side1Towns += t;
+                                side1Towns += ", ";
+                            }
+                            for (String pl : w.getSide1Players()) {
+                                side1Players += pl;
+                                side1Players += ", ";
+                            }
+                            //cut off last two characters
+                            side1Towns = side1Towns.substring(0, side1Towns.length() - 3);
+                            side1Players = side1Players.substring(0, side1Players.length() - 3);
+                            p.sendMessage(Helper.Chatlabel() + w.getSide1() + " Towns: " + side1Towns);
+                            p.sendMessage(Helper.Chatlabel() + w.getSide1() + " Players: " + side1Players);
+                            p.sendMessage(Helper.Chatlabel() + "oOo----------------------===----------------------oOo");
+                            String side2Towns = "";
+                            String side2Players = "";
+                            for (String t : w.getSide2Towns()) {
+                                side2Towns += t;
+                                side2Towns += ", ";
+                            }
+                            for (String pl : w.getSide2Players()) {
+                                side2Players += pl;
+                                side2Players += ", ";
+                            }
+                            //cut off last two characters
+                            side2Towns = side2Towns.substring(0, side2Towns.length() - 3);
+                            side2Players = side2Players.substring(0, side2Players.length() - 3);
+                            p.sendMessage(Helper.Chatlabel() + w.getSide2() + " Towns: " + side2Towns);
+                            p.sendMessage(Helper.Chatlabel() + w.getSide2() + " Players: " + side2Players);
+
+                        }
+                    }
+                } else {
+                    p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin info [raid/siege/war]");
+                    return false;
+                }
+            } else if(args[1].equalsIgnoreCase("raid")) {
+                if(args.length >= 3) {
+
+                } else {
+                    p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin info [raid/siege/war]");
+                    return false;
+                }
+            } else if(args[1].equalsIgnoreCase("siege")) {
+                if(args.length >= 3) {
+
+                } else {
+                    p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin info [raid/siege/war]");
+                    return false;
+                }
+            } else {
+                return fail(p, args, "syntax");
+            }
+        }
+        return fail(p, args, "syntax");
     }
 
     /**
