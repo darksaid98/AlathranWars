@@ -34,6 +34,7 @@ public class AdminCommands implements CommandExecutor {
     }
 
     /**
+     * //done
      * //edit war/event in real time, side can be "both" to effect both
      * -modify raid score [war] [town] [value]
      * -modify raid homeblock [war] [town] (x) (Z)
@@ -74,6 +75,7 @@ public class AdminCommands implements CommandExecutor {
      *
      * -info siege homeblock [war] [town]
      *
+     * //done
      * //force make event or war, if owner isnt defined, idk havent decided
      * -create siege [war] [town] (owner)
      * -create raid [war] [raidTown] (gatherTown) (owner)
@@ -84,10 +86,13 @@ public class AdminCommands implements CommandExecutor {
      * -force end siege [war] [town] (side/victor)
      * -force end raid [war] [town] (side/victor)
      *
+     * //done
      * //force player into or out of a war/event
      * -force join war [player] [war] [side]
      * -force join siege [player] [war] [town] (side)
      * -force join raid [player] [war] [town] (side)
+     *
+     * //not done
      * -force leave war [war] [player] (timeout)
      * -force leave siege [war] [player] (timeout)
      * -force leave raid  [war] [player] (timeout) //kicks from raid party
@@ -206,8 +211,6 @@ public class AdminCommands implements CommandExecutor {
      * -force join war [player] [war] [side]
      * -force join siege [player] [war] [town] (side)
      * -force join raid [player] [war] [town] (side) //TODO time until must be in gather?
-     * -force leave war [war] [player] (timeout)
-     * -force leave siege [war] [player] (timeout)
      * -force leave raid  [war] [player] (timeout) //kicks from raid party
      * -force surrender war [name] [town]
      *
@@ -220,6 +223,49 @@ public class AdminCommands implements CommandExecutor {
             if(args[1].equalsIgnoreCase("end")) {
                 if(args.length >= 3) {
                     if(args[2].equalsIgnoreCase("raid")) {
+                        for (Raid r : RaidData.getRaids()) {
+                            if(args.length >= 6) {
+                                if (r.getWar().getName().equals(args[3]) && r.getRaidedTown().getName().equals(args[4])) {
+                                    if (r.getSide1AreRaiders()) {
+                                        if (args[5].equals(r.getWar().getSide1())) {
+                                            r.raidersWin(r.getOwner(), r.getRaidScore());
+                                            p.sendMessage(Helper.Chatlabel() + "Raid forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (raiders) declared as victor.");
+                                            Main.warLogger.log("Raid forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " declared as victor.");
+                                            return true;
+                                        } else {
+                                            r.defendersWin(r.getRaidScore());
+                                            p.sendMessage(Helper.Chatlabel() + "Raid forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
+                                            Main.warLogger.log("Raid forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " declared as victor.");
+                                            return true;
+                                        }
+                                    } else {
+                                        if (args[5].equals(r.getWar().getSide1())) {
+                                            r.defendersWin(r.getRaidScore());
+                                            p.sendMessage(Helper.Chatlabel() + "Raid forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
+                                            Main.warLogger.log("Raid forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " declared as victor.");
+                                            return true;
+                                        } else {
+                                            r.raidersWin(r.getOwner(), r.getRaidScore());
+                                            p.sendMessage(Helper.Chatlabel() + "Raid forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (raiders) declared as victor.");
+                                            Main.warLogger.log("Raid forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " declared as victor.");
+                                            return true;
+                                        }
+                                    }
+                                }
+                            } else if(args.length  == 5){
+                                if (r.getWar().getName().equals(args[3]) && r.getRaidedTown().getName().equals(args[4])) {
+                                    r.noWinner();
+                                    p.sendMessage(Helper.Chatlabel() + "Raid forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " with no victor.");
+                                    Main.warLogger.log("Raid forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " with no victor.");
+                                    return true;
+                                }
+                            } else {
+                                p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin force end raid [war] [town] (side)");
+                                return false;
+                            }
+                        }
+                        p.sendMessage(Helper.color("c") + "Raid not found!");
+                        return false;
 
                     } else if(args[2].equalsIgnoreCase("siege")) {
 
@@ -252,7 +298,9 @@ public class AdminCommands implements CommandExecutor {
                             return false;
                         }
                     } else if(args[2].equalsIgnoreCase("siege")) {
+                        p.sendMessage(Helper.color("c") + "Error!");
                         //TODO when siege commands are done
+                        return false;
                     } else if(args[2].equalsIgnoreCase("war")) {
                         if(args.length >= 6) {
                             //fix args to match

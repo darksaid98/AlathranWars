@@ -47,7 +47,7 @@ public class WarCommands implements CommandExecutor {
                     warJoin(p, args, false);
                     return true;
                 case "surrender":
-                    warSurrender(p, args);
+                    warSurrender(p, args, false);
                     return true;
                 case "list":
                     warList(p, args);
@@ -187,7 +187,7 @@ public class WarCommands implements CommandExecutor {
         }
     }
 
-    private static void warSurrender(Player p, String[] args) {
+    protected static void warSurrender(Player p, String[] args, boolean admin) {
         // Sufficient args check
         if (args.length < 2) {
             p.sendMessage(Helper.Chatlabel()

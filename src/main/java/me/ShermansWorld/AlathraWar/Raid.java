@@ -566,6 +566,21 @@ public class Raid {
     }
 
     /**
+     * No winner declared
+     * @param raidScore
+     */
+    public void noWinner() {
+        //TODO finalize payout
+
+        Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The defenders from " + this.defenders
+                + " didn't push back the raiders of " + this.raiders + ". Yet no loot was taken, raid considered a draw.");
+        Main.warLogger
+                .log("No one won the raid of " + this.raidedTown.getName() + "!");
+
+        stop();
+    }
+
+    /**
      * Positively impact the raid score
      *
      * @param points
