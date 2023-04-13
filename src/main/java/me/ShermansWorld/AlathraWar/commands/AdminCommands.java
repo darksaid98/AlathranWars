@@ -3,6 +3,7 @@ package me.ShermansWorld.AlathraWar.commands;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
+import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
 import com.palmergames.bukkit.towny.object.WorldCoord;
@@ -990,25 +991,123 @@ public class AdminCommands implements CommandExecutor {
                             p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify war name [war] [name]");
                             return false;
                         }
-                    } else if(args[2].equalsIgnoreCase("add")) {
-                        if(args.length >= 8) {
-
+                    }
+                    //TODO IDK IF THIS WORKS
+                    else if(args[2].equalsIgnoreCase("add")) {
+                        if(args.length >= 7) {
+                            for (War w : WarData.getWars()) {
+                                if (w.getName().equals(args[4])) {
+                                    if(!w.getSide1().equals(args[4]) && !w.getSide1().equals(args[4])) {
+                                        p.sendMessage(Helper.color("c") + "Error: Side not found!");
+                                        return false;
+                                    }
+                                    if(args[3].equalsIgnoreCase("town")) {
+                                        Town t = TownyAPI.getInstance().getTown(args[6]);
+                                        if (t != null) {
+                                            w.addTown(t, args[5]);
+                                            p.sendMessage(Helper.Chatlabel() + "Added town " + args[6] + " war " + args[4] + " on side " + args[5]);
+                                            Main.warLogger.log(Helper.Chatlabel() + "Added town " + args[6] + " war " + args[4] + " on side " + args[5]);
+                                            return true;
+                                        } else {
+                                            p.sendMessage(Helper.color("c") + "Error: Town not found!");
+                                            return false;
+                                        }
+                                    } else if(args[3].equalsIgnoreCase("nation")) {
+                                        Nation n = TownyAPI.getInstance().getNation(args[6]);
+                                        if (n != null) {
+                                            w.addNation(n, args[5]);
+                                            p.sendMessage(Helper.Chatlabel() + "Added nation " + args[6] + " war " + args[4] + " on side " + args[5]);
+                                            Main.warLogger.log(Helper.Chatlabel() + "Added nation " + args[6] + " war " + args[4] + " on side " + args[5]);
+                                            return true;
+                                        } else {
+                                            p.sendMessage(Helper.color("c") + "Error: Nation not found!");
+                                            return false;
+                                        }
+                                    } else {
+                                        p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify war add town/nation [war] [side] [town/nation]");
+                                        return false;
+                                    }
+                                }
+                            }
+                            p.sendMessage(Helper.color("c") + "Error: War not found!");
+                            return false;
                         } else {
-                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify siege score [war] [town] [add/set] [side] [amt]");
+                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify war add town/nation [war] [town/nation]");
                             return false;
                         }
-                    } else if(args[2].equalsIgnoreCase("surrender")) {
+                    }
+                    //TODO IDK IF THIS WORKS
+                    else if(args[2].equalsIgnoreCase("surrender")) {
                         if(args.length >= 8) {
-
+                            for (War w : WarData.getWars()) {
+                                if (w.getName().equals(args[3])) {
+                                    if(!w.getSide1().equals(args[4]) && !w.getSide1().equals(args[4])) {
+                                        p.sendMessage(Helper.color("c") + "Error: Side not found!");
+                                        return false;
+                                    }
+                                    if(args[3].equalsIgnoreCase("town")) {
+                                        Town t = TownyAPI.getInstance().getTown(args[6]);
+                                        if (t != null) {
+                                            w.surrenderTown(t.getName());
+                                            p.sendMessage(Helper.Chatlabel() + "Surrendered town " + args[6] + " war " + args[4] + " on side " + args[5]);
+                                            Main.warLogger.log(Helper.Chatlabel() + "Surrendered town " + args[6] + " war " + args[4] + " on side " + args[5]);
+                                            return true;
+                                        } else {
+                                            p.sendMessage(Helper.color("c") + "Error: Town not found!");
+                                            return false;
+                                        }
+                                    } else if(args[3].equalsIgnoreCase("nation")) {
+                                        Nation n = TownyAPI.getInstance().getNation(args[6]);
+                                        if (n != null) {
+                                            w.surrenderNation(n);
+                                            p.sendMessage(Helper.Chatlabel() + "Surrendered nation " + args[6] + " war " + args[4] + " on side " + args[5]);
+                                            Main.warLogger.log(Helper.Chatlabel() + "Surrendered nation " + args[6] + " war " + args[4] + " on side " + args[5]);
+                                            return true;
+                                        } else {
+                                            p.sendMessage(Helper.color("c") + "Error: Nation not found!");
+                                            return false;
+                                        }
+                                    } else {
+                                        p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify war add town/nation [war] [side] [town/nation]");
+                                        return false;
+                                    }
+                                }
+                            }
+                            p.sendMessage(Helper.color("c") + "Error: War not found!");
+                            return false;
                         } else {
-                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify siege score [war] [town] [add/set] [side] [amt]");
+                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify war surrender town [war] [town]");
                             return false;
                         }
                     } else if(args[2].equalsIgnoreCase("raidTime")) {
-                        if(args.length >= 8) {
-
+                        if(args.length >= 7) {
+                            for (War w : WarData.getWars()) {
+                                if (w.getName().equals(args[4])) {
+                                    if(args[3].equalsIgnoreCase("add")) {
+                                        w.setLastRaidTime(w.getLastRaidTime() + Integer.parseInt(args[6]));
+                                        p.sendMessage(Helper.Chatlabel() + "Added " + args[6] + " to last raid time in war " + args[3]);
+                                        Main.warLogger.log(Helper.Chatlabel() + "Added " + args[6] + " to last raid time in war " + args[3]);
+                                        return true;
+                                    } else if(args[3].equalsIgnoreCase("set")) {
+                                        w.setLastRaidTime(Long.parseLong(args[6]));
+                                        p.sendMessage(Helper.Chatlabel() + "Set last raid time in war " + args[3] + " to " + args[6]);
+                                        Main.warLogger.log(Helper.Chatlabel() + "Set last raid time in war " + args[3] + " to " + args[6]);
+                                        return true;
+                                    } else if(args[3].equalsIgnoreCase("reset")) {
+                                        w.setLastRaidTime(0L);
+                                        p.sendMessage(Helper.Chatlabel() + "Reset last raid time in war " + args[3]);
+                                        Main.warLogger.log(Helper.Chatlabel() + "Reset last raid time in war " + args[3]);
+                                        return true;
+                                    } else {
+                                        p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify war raidTime [add,set,reset] [war] [town] [amt]");
+                                        return false;
+                                    }
+                                }
+                            }
+                            p.sendMessage(Helper.color("c") + "Error: War not found!");
+                            return false;
                         } else {
-                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify siege score [war] [town] [add/set] [side] [amt]");
+                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify war raidTime [add,set,reset] [war] [town] [amt]");
                             return false;
                         }
                     } else {
