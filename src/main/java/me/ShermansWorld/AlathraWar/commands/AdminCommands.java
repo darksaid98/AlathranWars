@@ -226,13 +226,13 @@ public class AdminCommands implements CommandExecutor {
                                     if (r.getSide1AreRaiders()) {
                                         if (args[5].equals(r.getWar().getSide1())) {
                                             r.raidersWin(r.getOwner(), r.getRaidScore());
-                                            p.sendMessage(Helper.Chatlabel() + "Raid forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (raiders) declared as victor.");
-                                            Main.warLogger.log("Raid forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (raiders) declared as victor.");
+                                            p.sendMessage(Helper.Chatlabel() + "Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (raiders) declared as victor.");
+                                            Main.warLogger.log("Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (raiders) declared as victor.");
                                             return true;
                                         } else if (args[5].equals(r.getWar().getSide2())) {
                                             r.defendersWin(r.getRaidScore());
-                                            p.sendMessage(Helper.Chatlabel() + "Raid forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
-                                            Main.warLogger.log("Raid forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
+                                            p.sendMessage(Helper.Chatlabel() + "Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
+                                            Main.warLogger.log("Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
                                             return true;
                                         } else {
                                             p.sendMessage(Helper.color("c") + "Side not found!");
@@ -241,13 +241,13 @@ public class AdminCommands implements CommandExecutor {
                                     } else {
                                         if (args[5].equals(r.getWar().getSide1())) {
                                             r.defendersWin(r.getRaidScore());
-                                            p.sendMessage(Helper.Chatlabel() + "Raid forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
-                                            Main.warLogger.log("Raid forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
+                                            p.sendMessage(Helper.Chatlabel() + "Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
+                                            Main.warLogger.log("Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
                                             return true;
                                         } else if (args[5].equals(r.getWar().getSide2())) {
                                             r.raidersWin(r.getOwner(), r.getRaidScore());
-                                            p.sendMessage(Helper.Chatlabel() + "Raid forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (raiders) declared as victor.");
-                                            Main.warLogger.log("Raid forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (raiders) declared as victor.");
+                                            p.sendMessage(Helper.Chatlabel() + "Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (raiders) declared as victor.");
+                                            Main.warLogger.log("Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (raiders) declared as victor.");
                                             return true;
                                         } else {
                                             p.sendMessage(Helper.color("c") + "Side not found!");
@@ -258,8 +258,8 @@ public class AdminCommands implements CommandExecutor {
                             } else if(args.length  == 5){
                                 if (r.getWar().getName().equals(args[3]) && r.getRaidedTown().getName().equals(args[4])) {
                                     r.noWinner();
-                                    p.sendMessage(Helper.Chatlabel() + "Raid forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " with no victor.");
-                                    Main.warLogger.log("Raid forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " with no victor.");
+                                    p.sendMessage(Helper.Chatlabel() + "Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " with no victor.");
+                                    Main.warLogger.log("Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " with no victor.");
                                     return true;
                                 }
                             } else {
@@ -277,13 +277,13 @@ public class AdminCommands implements CommandExecutor {
                                     if (s.getSide1AreAttackers()) {
                                         if (args[5].equals(s.getWar().getSide1())) {
                                             s.attackersWin(s.getSiegeOwner());
-                                            p.sendMessage(Helper.Chatlabel() + "Siege forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (attackers) declared as victor.");
-                                            Main.warLogger.log("Siege forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (attackers) declared as victor.");
+                                            p.sendMessage(Helper.Chatlabel() + "Siege forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (attackers) declared as victor.");
+                                            Main.warLogger.log("Siege forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (attackers) declared as victor.");
                                             return true;
                                         } else if (args[5].equals(s.getWar().getSide2())) {
                                             s.defendersWin();
-                                            p.sendMessage(Helper.Chatlabel() + "Siege forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
-                                            Main.warLogger.log("Siege forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
+                                            p.sendMessage(Helper.Chatlabel() + "Siege forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
+                                            Main.warLogger.log("Siege forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
                                             return true;
                                         } else {
                                             p.sendMessage(Helper.color("c") + "Side not found!");
@@ -292,13 +292,13 @@ public class AdminCommands implements CommandExecutor {
                                     } else {
                                         if (args[5].equals(s.getWar().getSide1())) {
                                             s.defendersWin();
-                                            p.sendMessage(Helper.Chatlabel() + "Siege forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
-                                            Main.warLogger.log("Siege forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
+                                            p.sendMessage(Helper.Chatlabel() + "Siege forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
+                                            Main.warLogger.log("Siege forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
                                             return true;
                                         } else if (args[5].equals(s.getWar().getSide2())) {
                                             s.attackersWin(s.getSiegeOwner());
-                                            p.sendMessage(Helper.Chatlabel() + "Siege forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (attackers) declared as victor.");
-                                            Main.warLogger.log("Siege forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (attackers) declared as victor.");
+                                            p.sendMessage(Helper.Chatlabel() + "Siege forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (attackers) declared as victor.");
+                                            Main.warLogger.log("Siege forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (attackers) declared as victor.");
                                             return true;
                                         } else {
                                             p.sendMessage(Helper.color("c") + "Side not found!");
@@ -309,8 +309,8 @@ public class AdminCommands implements CommandExecutor {
                             } else if(args.length  == 5){
                                 if (s.getWar().getName().equals(args[3]) && s.getTown().getName().equals(args[4])) {
                                     s.noWinner();
-                                    p.sendMessage(Helper.Chatlabel() + "Siege forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " with no victor.");
-                                    Main.warLogger.log("Siege forcfully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " with no victor.");
+                                    p.sendMessage(Helper.Chatlabel() + "Siege forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " with no victor.");
+                                    Main.warLogger.log("Siege forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " with no victor.");
                                     return true;
                                 }
                             } else {
@@ -440,12 +440,10 @@ public class AdminCommands implements CommandExecutor {
 
     private static boolean help(Player p, String[] args) {
         p.sendMessage(Helper.Chatlabel() + "/alathrawaradmin create");
-        p.sendMessage(Helper.Chatlabel() + "/alathrawaradmin exclude");
         p.sendMessage(Helper.Chatlabel() + "/alathrawaradmin force");
         p.sendMessage(Helper.Chatlabel() + "/alathrawaradmin help");
         p.sendMessage(Helper.Chatlabel() + "/alathrawaradmin info");
         p.sendMessage(Helper.Chatlabel() + "/alathrawaradmin modify");
-        p.sendMessage(Helper.Chatlabel() + "/alathrawaradmin rule");
         return true;
     }
 
