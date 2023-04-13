@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Town;
@@ -12,23 +16,11 @@ import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.War;
 import me.ShermansWorld.AlathraWar.Siege;
 
-import java.io.File;
-import java.io.FilenameFilter;
-
 public class SiegeData
 {
     
     // Static Siege list for all active sieges
     private static HashSet<Siege> sieges = new HashSet<Siege>();
-    private final static String dataFolderPath = "plugins" + File.separator + "AlathraWar" + File.separator + "data";
-
-    // Filter for only accessing yml files
-    private static FilenameFilter ymlFilter = new FilenameFilter() {
-        @Override
-        public boolean accept(File dir, String name) {
-            return name.endsWith(".yml");
-        }
-    };
     
     public static HashSet<Siege> getSieges() {
         return sieges;
@@ -70,17 +62,16 @@ public class SiegeData
      * @param fileData
      * @return Siege object
      */
-    @SuppressWarnings("unchecked")
-    public static Siege fromMap(War war, HashMap<String, Object> fileData) {
+    private static Siege fromMap(War war, HashMap<String, Object> fileData) {
 
         if (fileData.get("town") == null || fileData.get("side1AreAttackers") == null) {
             return null;
         }
 
         Town town = TownyAPI.getInstance().getTown((String) fileData.get("town"));
-        boolean attackBoolean = Boolean.parseBoolean((String) fileData.get("side1AreAttackers"));
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString((String) fileData.get("siegeLeader")));
 
-        Siege siege = new Siege(war, town, attackBoolean);
+        Siege siege = new Siege(war, town, offlinePlayer);
 
         return siege;
     }
@@ -93,16 +84,6 @@ public class SiegeData
     public static void saveSiege(Siege siege) {
         War war = siege.getWar();
         war.save();
-    }
-
-    private static void deleteSiege(War war) {
-        File[] files = new File(dataFolderPath + File.separator + "wars").listFiles(ymlFilter);
-
-        for (File file : files) {
-            if (file.getName().startsWith(war.getName())) {
-                file.delete();
-            }
-        }
     }
 
     /**
@@ -118,6 +99,7 @@ public class SiegeData
         returnMap.put("attackerPoints", siege.getAttackerPoints());
         returnMap.put("defenderPoints", siege.getDefenderPoints());
         returnMap.put("side1AreAttackers", Boolean.toString(siege.getSide1AreAttackers()));
+        returnMap.put("siegeLeader", siege.getSiegeLeader().getUniqueId().toString());
 
         return returnMap;
     }
@@ -141,7 +123,7 @@ public class SiegeData
             Town town = TownyAPI.getInstance().getTown((String) map.get("town"));
             if (town == null) continue;
 
-            Siege siege = new Siege(war, town, (war.getSide(town.getName()) == 2 ));
+            Siege siege = fromMap(war, map);
             siege.addPointsToAttackers((int) map.get("attackerPoints"));
             siege.addPointsToDefenders((int) map.get("defenderPoints"));
             siege.resume((int) map.get("siegeTicks"));
