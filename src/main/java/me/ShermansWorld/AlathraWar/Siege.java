@@ -39,7 +39,7 @@ public class Siege {
 	public ArrayList<String> defenderPlayers;
 	public ArrayList<Location> beaconLocs;
 
-	public Siege(final War war, final Town town, final boolean side1AreAttackers) {
+	public Siege(final War war, final Town town, OfflinePlayer siegeLeader) {
 		this.siegeTicks = 0;
 		this.bukkitId = new int[1];
 		this.attackerPlayers = new ArrayList<String>();
@@ -47,7 +47,9 @@ public class Siege {
 		this.beaconLocs = new ArrayList<Location>();
 		this.war = war;
 		this.town = town;
-		this.side1AreAttackers = side1AreAttackers;
+        this.siegeLeader = siegeLeader;
+        if (war.getSide(town.getName()) == 2) side1AreAttackers = true;
+        else side1AreAttackers = false;
 	}
 
     /** Starts a siege */
@@ -446,6 +448,10 @@ public class Siege {
 
     public int getSiegeTicks() {
         return siegeTicks;
+    }
+
+    public OfflinePlayer getSiegeLeader() {
+        return siegeLeader;
     }
 
 	public void save() {
