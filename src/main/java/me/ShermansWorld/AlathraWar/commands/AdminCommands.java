@@ -6,13 +6,11 @@ import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
 import com.palmergames.bukkit.towny.object.WorldCoord;
-import me.ShermansWorld.AlathraWar.Helper;
-import me.ShermansWorld.AlathraWar.Main;
-import me.ShermansWorld.AlathraWar.Raid;
-import me.ShermansWorld.AlathraWar.Siege;
+import me.ShermansWorld.AlathraWar.*;
 import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
+import me.ShermansWorld.AlathraWar.data.WarData;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -935,7 +933,88 @@ public class AdminCommands implements CommandExecutor {
                 }
             } else if (args[1].equalsIgnoreCase("war")) {
                 if (args.length >= 3) {
+                    if(args[2].equalsIgnoreCase("score")) {
+                        if(args.length >= 6) {
+                            for (War w : WarData.getWars()) {
+                                if(w.getName().equals(args[3])) {
+                                    //TODO war score
+                                    p.sendMessage(Helper.color("c") + "Error!");
+                                    return false;
+                                }
+                            }
+                            p.sendMessage(Helper.color("c") + "Error: War not found!");
+                            return false;
+                        } else {
+                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify war score [war] [side] [amt]");
+                            return false;
+                        }
+                    } else if(args[2].equalsIgnoreCase("side")) {
+                        if(args.length >= 6) {
+                            for (War w : WarData.getWars()) {
+                                if (w.getName().equals(args[3])) {
+                                    if(w.getSide1().equals(args[4])) {
+                                        w.setSide1(args[5]);
+                                        p.sendMessage(Helper.Chatlabel() + "Set side " + args[4] + " to " + args[5] + " in war " + args[3]);
+                                        Main.warLogger.log(Helper.Chatlabel() + "Set side " + args[4] + " to " + args[5] + " in war " + args[3]);
+                                        return true;
+                                    } else if (w.getSide2().equals(args[4])) {
+                                        w.setSide2(args[5]);
+                                        p.sendMessage(Helper.Chatlabel() + "Set side " + args[4] + " to " + args[5] + " in war " + args[3]);
+                                        Main.warLogger.log(Helper.Chatlabel() + "Set side " + args[4] + " to " + args[5] + " in war " + args[3]);
+                                        return true;
+                                    } else {
+                                        p.sendMessage(Helper.color("c") + "Error: Side not found!");
+                                        return false;
+                                    }
+                                }
+                            }
+                            p.sendMessage(Helper.color("c") + "Error: War not found!");
+                            return false;
+                        } else {
+                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify war side [war] [side] [name]");
+                            return false;
+                        }
+                    } else if(args[2].equalsIgnoreCase("name")) {
+                        if(args.length >= 5) {
+                            for (War w : WarData.getWars()) {
+                                if (w.getName().equals(args[3])) {
+                                    w.setName(args[4]);
+                                    p.sendMessage(Helper.Chatlabel() + "Set name of war " + args[3] + " to " + args[4]);
+                                    Main.warLogger.log(Helper.Chatlabel() + "Set name of war " + args[3] + " to " + args[4]);
+                                    return true;
+                                }
+                            }
+                            p.sendMessage(Helper.color("c") + "Error: War not found!");
+                            return false;
+                        } else {
+                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify war name [war] [name]");
+                            return false;
+                        }
+                    } else if(args[2].equalsIgnoreCase("add")) {
+                        if(args.length >= 8) {
 
+                        } else {
+                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify siege score [war] [town] [add/set] [side] [amt]");
+                            return false;
+                        }
+                    } else if(args[2].equalsIgnoreCase("surrender")) {
+                        if(args.length >= 8) {
+
+                        } else {
+                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify siege score [war] [town] [add/set] [side] [amt]");
+                            return false;
+                        }
+                    } else if(args[2].equalsIgnoreCase("raidTime")) {
+                        if(args.length >= 8) {
+
+                        } else {
+                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify siege score [war] [town] [add/set] [side] [amt]");
+                            return false;
+                        }
+                    } else {
+                        p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify [raid/siege/war] [propery]");
+                        return false;
+                    }
                 } else {
                     p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify [raid/siege/war] [propery]");
                     return false;

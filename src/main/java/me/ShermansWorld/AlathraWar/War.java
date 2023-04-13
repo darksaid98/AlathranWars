@@ -171,6 +171,18 @@ public class War {
         raids.add(raid);
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSide1(String side1) {
+        this.side1 = side1;
+    }
+
+    public void setSide2(String side2) {
+        this.side2 = side2;
+    }
+
     /**
      * Saves the war into .yml file folders.
      */
