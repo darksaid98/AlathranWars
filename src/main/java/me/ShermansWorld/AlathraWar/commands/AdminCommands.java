@@ -468,6 +468,7 @@ public class AdminCommands implements CommandExecutor {
                     for (War w : WarData.getWars()) {
                         if (w.getName().equals(args[2])) {
                             p.sendMessage(Helper.Chatlabel() + "Info dump for war: " + w.getName());
+                            p.sendMessage(Helper.Chatlabel() + "oOo----------------------===----------------------oOo");
                             p.sendMessage(Helper.Chatlabel() + "Name: " + w.getName());
                             p.sendMessage(Helper.Chatlabel() + "Side 1: " + w.getSide1());
                             p.sendMessage(Helper.Chatlabel() + "Side 2: " + w.getSide2());
@@ -505,16 +506,46 @@ public class AdminCommands implements CommandExecutor {
                             side2Players = side2Players.substring(0, side2Players.length() - 3);
                             p.sendMessage(Helper.Chatlabel() + w.getSide2() + " Towns: " + side2Towns);
                             p.sendMessage(Helper.Chatlabel() + w.getSide2() + " Players: " + side2Players);
-
+                            return true;
                         }
                     }
+                    p.sendMessage(Helper.color("c") + "Error Raid not found!");
                 } else {
                     p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin info [raid/siege/war]");
-                    return false;
                 }
+                return false;
             } else if(args[1].equalsIgnoreCase("raid")) {
-                if(args.length >= 3) {
-
+                if(args.length >= 4) {
+                    for (Raid r : RaidData.getRaids()) {
+                        if (r.getWar().getName().equals(args[2]) && r.getRaidedTown().getName().equals(args[3])) {
+                            p.sendMessage(Helper.Chatlabel() + "Info dump for raid: " + r.getName());
+                            p.sendMessage(Helper.Chatlabel() + "oOo----------------------===----------------------oOo");
+                            p.sendMessage(Helper.Chatlabel() + "Name: " + r.getName());
+                            p.sendMessage(Helper.Chatlabel() + "Raiders: " + r.getRaiders());
+                            p.sendMessage(Helper.Chatlabel() + "Defenders: " + r.getDefenders());
+                            p.sendMessage(Helper.Chatlabel() + "Raid Score: " + r.getRaidScore());
+                            p.sendMessage(Helper.Chatlabel() + "War: " + r.getWar().getName());
+                            p.sendMessage(Helper.Chatlabel() + "Raided Town: " + r.getRaidedTown().getName());
+                            p.sendMessage(Helper.Chatlabel() + "Gather Town: " + r.getGatherTown().getName());
+                            p.sendMessage(Helper.Chatlabel() + "Current Phase: " + r.getPhase().name());
+                            p.sendMessage(Helper.Chatlabel() + "Tick progress: " + r.getRaidTicks());
+                            p.sendMessage(Helper.Chatlabel() + "Owner: " + r.getOwner());
+                            p.sendMessage(Helper.Chatlabel() + "Gather Homeblock: " + r.getHomeBlockGather().toString());
+                            p.sendMessage(Helper.Chatlabel() + "Raided Homeblock: " + r.getHomeBlockRaided().toString());
+                            p.sendMessage(Helper.Chatlabel() + "oOo----------------------===----------------------oOo");
+                            String activeRaiders = "";
+                            for (String pl : r.getActiveRaiders()) {
+                                activeRaiders += pl;
+                                activeRaiders += ", ";
+                            }
+                            //cut off last two characters
+                            activeRaiders = activeRaiders.substring(0, activeRaiders.length() - 3);
+                            p.sendMessage(Helper.Chatlabel() + "Raiding Players: " + activeRaiders);
+                            return true;
+                        }
+                    }
+                    p.sendMessage(Helper.color("c") + "Error Raid not found!");
+                    return false;
                 } else {
                     p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin info [raid/siege/war]");
                     return false;
