@@ -211,7 +211,7 @@ public class AdminCommands implements CommandExecutor {
      * -force join war [player] [war] [side]
      * -force join siege [player] [war] [town] (side)
      * -force join raid [player] [war] [town] (side) //TODO time until must be in gather?
-     * -force leave raid  [war] [player] (timeout) //kicks from raid party
+     * -force leave raid [war] [player] (timeout) //kicks from raid party
      * -force surrender war [name] [town]
      *
      * @param p
@@ -324,13 +324,15 @@ public class AdminCommands implements CommandExecutor {
                         p.sendMessage(Helper.color("c") + "Siege not found!");
                         return false;
                     } else if(args[2].equalsIgnoreCase("war")) {
-
+                        //TODO determine if needed
+                        p.sendMessage(Helper.color("c") + "Unused! use /war delete");
+                        return false;
                     } else {
-                        p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin force end [raid/siege/war]");
+                        p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin force end [raid/siege]");
                         return false;
                     }
                 } else {
-                    p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin force end [raid/siege/war]");
+                    p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin force end [raid/siege]");
                     return false;
                 }
             } else if(args[1].equalsIgnoreCase("join")) {
@@ -390,33 +392,40 @@ public class AdminCommands implements CommandExecutor {
             } else if(args[1].equalsIgnoreCase("leave")) {
                 if(args.length >= 3) {
                     if(args[2].equalsIgnoreCase("raid")) {
-
+                        if (args.length >= 6) {
+                            for (Raid r : RaidData.getRaids()) {
+                                if (r.getWar().getName().equals(args[3]) && r.getRaidedTown().getName().equals(args[4])) {
+                                    if (Bukkit.getPlayer(args[5]) != null) {
+                                        String[] fixed = new String[] {
+                                                args[1],
+                                                args[3],
+                                                args[4],
+                                                args[5]
+                                        };
+                                        RaidCommands.leaveRaid(p, fixed, true);
+                                        p.sendMessage(Helper.Chatlabel() + "Forced player " + args[5] + " to leave raid on " + args[4] + " in war " + args[3]);
+                                        Main.warLogger.log("Forced player " + args[5] + " to leave raid on " + args[4] + " in war " + args[3]);
+                                        return true;
+                                    } else {
+                                        p.sendMessage(Helper.color("c") + "Player not found!");
+                                        return false;
+                                    }
+                                }
+                            }
+                            p.sendMessage(Helper.color("c") + "Raid not found!");
+                            return false;
+                        } else {
+                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin force leave raid [war] [town] [player] (timeout)");
+                            return false;
+                        }
                     } else if(args[2].equalsIgnoreCase("siege")) {
-
+                        //TODO determine if needed
+                        p.sendMessage(Helper.color("c") + "Unused!");
+                        return false;
                     } else if(args[2].equalsIgnoreCase("war")) {
-//                        if(args.length >= 6) {
-//                            //fix args to match
-//                            String[] adjusted = new String[] {
-//                                    args[1],
-//                                    args[4],
-//                                    args[5],
-//                                    args[3]
-//                            };
-//                            //find the player
-//                            if(Bukkit.getPlayer(args[3]) != null) {
-//                                p = Bukkit.getPlayer(args[3]);
-//                            } else {
-//                                p.sendMessage(Helper.color("c") + args[3] + " does not exist!");
-//                                p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin force leave war [player] [war] (timeout)");
-//                                return false;
-//                            }
-//                            WarCommands.warJoin(p, adjusted, true);
-//                            p.sendMessage(Helper.color("c") + "Forced " + args[3] + " to leave the war " + args[4] + " from side " + args[5]);
-//                            Main.warLogger.log("Forced " + args[3] + " to leave the war " + args[4] + " from side " + args[5]);
-//                        } else {
-//                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin force leave war [player] [war] (timeout)");
-//                            return false;
-//                        }
+                        //TODO determine if needed
+                        p.sendMessage(Helper.color("c") + "Unused! use /war surrender");
+                        return false;
                     } else {
                         p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin force leave [raid/siege/war]");
                         return false;

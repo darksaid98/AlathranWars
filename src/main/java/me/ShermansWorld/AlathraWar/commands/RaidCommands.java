@@ -318,13 +318,23 @@ public class RaidCommands implements CommandExecutor {
         }
     }
 
-    protected static void leaveRaid(Player p, String[] args, boolean admin) {
+    protected static void leaveRaid(Player player, String[] args, boolean admin) {
         //Get raid!
+        Player p = player;
+        if (admin) {
+            p = Bukkit.getPlayer(args[3]);
+            if (p == null) {
+                player.sendMessage(String.valueOf(Helper.Chatlabel()) + "Error: player not found!");
+                return;
+            }
+        }
+
         Raid raid = RaidData.getRaidOrNull(args[1] + "-" + args[2]);
         if (raid != null) {
             if (raid.getWar().getName().equalsIgnoreCase(args[1])) {
                 if (!raid.getWar().getSide1Players().contains(p.getName()) && !raid.getWar().getSide2Players().contains(p.getName())) {
                     p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You are not in this war! Type /war join [war] [side]");
+                    if (admin) player.sendMessage(String.valueOf(Helper.Chatlabel()) + "You are not in this war! Type /war join [war] [side]");
                 }
 
                 //check if gather phase
@@ -335,9 +345,11 @@ public class RaidCommands implements CommandExecutor {
                         if (cluster.contains(WorldCoord.parseWorldCoord(p))) {
                             raid.removeActiveRaider(p.getName());
                             p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You have left the raid on " + raid.getRaidedTown().getName() + "!");
+                            if (admin) player.sendMessage(String.valueOf(Helper.Chatlabel()) + "You have left the raid on " + raid.getRaidedTown().getName() + "!");
 
                         } else {
                             p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You cannot leave the raid on " + raid.getRaidedTown().getName() + "! It has already started!");
+                            if (admin) player.sendMessage(String.valueOf(Helper.Chatlabel()) + "You cannot leave the raid on " + raid.getRaidedTown().getName() + "! It has already started!");
                         }
                     } catch (TownyException e) {
                         throw new RuntimeException(e);
@@ -346,6 +358,7 @@ public class RaidCommands implements CommandExecutor {
             }
         } else {
             p.sendMessage(String.valueOf(Helper.Chatlabel()) + "No raid is gathering in this town or this town does not exist!");
+            if (admin) player.sendMessage(String.valueOf(Helper.Chatlabel()) + "No raid is gathering in this town or this town does not exist!");
         }
     }
 
