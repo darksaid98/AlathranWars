@@ -278,6 +278,18 @@ public class Siege {
 		clearBeacon();
 	}
 
+	/**
+	 * No winnder declared
+	 */
+	public void noWinner() {
+		Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The siege of " + this.town.getName() + " was a draw!");
+		Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "No money has been recovered.");
+		Main.warLogger
+				.log(war.getName() + ": No one won the siege of " + this.town.getName() + "!");
+		stop();
+		clearBeacon();
+	}
+
 	public void createBeacon() {
 		try {
 			World world = town.getWorld();
