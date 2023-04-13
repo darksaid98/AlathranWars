@@ -1,7 +1,9 @@
 package me.ShermansWorld.AlathraWar.data;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Town;
@@ -17,7 +19,7 @@ public class SiegeData
 {
     
     // Static Siege list for all active sieges
-    private static ArrayList<Siege> sieges = new ArrayList<Siege>();
+    private static HashSet<Siege> sieges = new HashSet<Siege>();
     private final static String dataFolderPath = "plugins" + File.separator + "AlathraWar" + File.separator + "data";
 
     // Filter for only accessing yml files
@@ -28,7 +30,7 @@ public class SiegeData
         }
     };
     
-    public static ArrayList<Siege> getSieges() {
+    public static HashSet<Siege> getSieges() {
         return sieges;
     }
 
@@ -39,7 +41,7 @@ public class SiegeData
      */
     public static Siege getSiege(String name) {
         for (Siege siege : sieges) {
-            
+            if (siege.getTown().getName().equalsIgnoreCase(name)) return siege;
         }
         return null;
     }
@@ -111,7 +113,7 @@ public class SiegeData
     public static HashMap<String, Object> siegeToMap(Siege siege) {
         HashMap<String, Object> returnMap = new HashMap<String, Object>();
         // Shoves everything into a map.
-        returnMap.put("town", siege.getTown());
+        returnMap.put("town", siege.getTown().getName());
         returnMap.put("siegeTicks", siege.getSiegeTicks());
         returnMap.put("attackerPoints", siege.getAttackerPoints());
         returnMap.put("defenderPoints", siege.getDefenderPoints());
@@ -131,6 +133,22 @@ public class SiegeData
             returnMap.put(siege.getTown().getName(), siegeToMap(siege));
         }
         return returnMap;
+    }
+
+    public static ArrayList<Siege> createSieges(War war, Collection<HashMap<String, Object>> siegeMaps) {
+        ArrayList<Siege> returnList = new ArrayList<Siege>();
+        for (HashMap<String, Object> map : siegeMaps) {
+            Town town = TownyAPI.getInstance().getTown((String) map.get("town"));
+            if (town == null) continue;
+
+            Siege siege = new Siege(war, town, (war.getSide(town.getName()) == 2 ));
+            siege.addPointsToAttackers((int) map.get("attackerPoints"));
+            siege.addPointsToDefenders((int) map.get("defenderPoints"));
+            siege.resume((int) map.get("siegeTicks"));
+            returnList.add(siege);
+
+        }
+        return returnList;
     }
     
 }
