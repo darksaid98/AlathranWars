@@ -44,4 +44,24 @@ public enum RaidPhase {
         }
         return null;
     }
+
+    public static RaidPhase getNext(RaidPhase phase) {
+        switch (phase) {
+            case START: {
+                return GATHER;
+            }
+            case GATHER: {
+                return TRAVEL;
+            }
+            case TRAVEL: {
+                return COMBAT;
+            }
+            case COMBAT: {
+                return END;
+            }
+            default: {
+                return null;
+            }
+        }
+    }
 }

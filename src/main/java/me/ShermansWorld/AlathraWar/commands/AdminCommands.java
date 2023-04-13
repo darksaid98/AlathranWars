@@ -1,9 +1,18 @@
 package me.ShermansWorld.AlathraWar.commands;
 
+import com.palmergames.bukkit.towny.TownyAPI;
+import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
+import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.Town;
+import com.palmergames.bukkit.towny.object.TownBlock;
+import com.palmergames.bukkit.towny.object.WorldCoord;
 import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.Main;
+import me.ShermansWorld.AlathraWar.Raid;
+import me.ShermansWorld.AlathraWar.data.RaidData;
+import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -199,6 +208,7 @@ public class AdminCommands implements CommandExecutor {
      * -force leave war [war] [player] (timeout)
      * -force leave siege [war] [player] (timeout)
      * -force leave raid  [war] [player] (timeout) //kicks from raid party
+     * -force surrender war [name] [town]
      *
      * @param p
      * @param args
@@ -281,7 +291,29 @@ public class AdminCommands implements CommandExecutor {
                     } else if(args[2].equalsIgnoreCase("siege")) {
 
                     } else if(args[2].equalsIgnoreCase("war")) {
-
+//                        if(args.length >= 6) {
+//                            //fix args to match
+//                            String[] adjusted = new String[] {
+//                                    args[1],
+//                                    args[4],
+//                                    args[5],
+//                                    args[3]
+//                            };
+//                            //find the player
+//                            if(Bukkit.getPlayer(args[3]) != null) {
+//                                p = Bukkit.getPlayer(args[3]);
+//                            } else {
+//                                p.sendMessage(Helper.color("c") + args[3] + " does not exist!");
+//                                p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin force leave war [player] [war] (timeout)");
+//                                return false;
+//                            }
+//                            WarCommands.warJoin(p, adjusted, true);
+//                            p.sendMessage(Helper.color("c") + "Forced " + args[3] + " to leave the war " + args[4] + " from side " + args[5]);
+//                            Main.warLogger.log("Forced " + args[3] + " to leave the war " + args[4] + " from side " + args[5]);
+//                        } else {
+//                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin force leave war [player] [war] (timeout)");
+//                            return false;
+//                        }
                     } else {
                         p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin force leave [raid/siege/war]");
                         return false;
@@ -312,9 +344,232 @@ public class AdminCommands implements CommandExecutor {
         return false;
     }
 
+    /**
+     * //edit war/event in real time, side can be "both" to effect both
+     * -modify raid score [add/set] [war] [town] [value]
+     * -modify raid townspawn [war] [town] (x) (y) (Z)
+     * -modify raid gather [war] [town] [town]
+     * -modify raid phase [war] [town] [phase] //"next" to move to next phase
+     * -modify raid loot [war] [town] (x) (z) [value,looted,ticks,reset] [amt] //no coords just does current chunk, reset deletes it from the list
+     * -modify raid time [war] [town] [add/set] [value]
+     * -modify raid owner [war] [town] [add/set] [value]
+     * -modify raid move [war] [town] [newWar] //low priority, moves raid to other war/ town
+     * -modify raid clearActive [war] [town] //low priority
+     *
+     * -modify siege score [war] [town] [side] [amt]
+     * -modify siege homeblock [war] [town] (x) (Z)
+     * -modify siege time [war] [town] [add/set/max] [value] //max modified the max length
+     * -modify siege owner [war] [town] [add/set] [value]
+     * -modify siege move [war] [town] [newWar] //low priority, moves siege to other war/town
+     *
+     * -modify war score [war] [side] [amt]
+     * -modify war side [war]  [side] [name]
+     * -modify war name [war] [name]
+     * -modify war add town [war] [town]
+     * -modify war add nation [war] [nation]
+     * -modify war surrender town [war] [town] //adds town to surrender list
+     * -modify war surrender nation [war] [town] //adds all towns to surrender list
+     * -modify war raidTime [add,set,reset] [war] [town] [amt] //set when last raid was
+     *
+     * @param p
+     * @param args
+     * @return
+     */
     private static boolean modify(Player p, String[] args) {
-        return false;
+        if(args.length >= 2) {
+            if (args[1].equalsIgnoreCase("raid")) {
+                if (args.length >= 3) {
+                    if (args[2].equalsIgnoreCase("score")) {
+                        if(args.length >= 7) {
+                            for(Raid r: RaidData.getRaids()) {
+                                if(r.getWar().getName().equals(args[4]) && r.getRaidedTown().getName().equals(args[5])) {
+                                    if(args[3].equalsIgnoreCase("add")) {
+                                        r.addPointsToRaidScore(Integer.parseInt(args[6]));
+                                        p.sendMessage(Helper.Chatlabel() + "Added " + args[6] + " points to the raid score in the war " + args[4] + " on town " + args[5]);
+                                        Main.warLogger.log("Added " + args[6] + " points to the raid score in the war " + args[4] + " on town " + args[5]);
+                                        return true;
+                                    } else if(args[3].equalsIgnoreCase("subtract")) {
+                                        r.subtractPointsFromRaidScore(Integer.parseInt(args[6]));
+                                        p.sendMessage(Helper.Chatlabel() + "Subtracted " + args[6] + " points to the raid score in the war " + args[4] + " on town " + args[5]);
+                                        Main.warLogger.log("Subtracted " + args[6] + " points to the raid score in the war " + args[4] + " on town " + args[5]);
+                                        return true;
+                                    } else if(args[3].equalsIgnoreCase("set")) {
+                                        r.setRaidScore(Integer.parseInt(args[6]));
+                                        p.sendMessage(Helper.Chatlabel() + "Set " + args[6] + " points as the raid score in the war " + args[4] + " on town " + args[5]);
+                                        Main.warLogger.log("Set " + args[6] + " points as the raid score in the war " + args[4] + " on town " + args[5]);
+                                        return true;
+                                    }  else {
+                                        p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid score [add/subtract/set] [war] [town] [value]");
+                                        return false;
+                                    }
+                                } else {
+                                    p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
+                                    return false;
+                                }
+                            }
+                        } else {
+                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid score [add/subtract/set] [war] [town] [value]");
+                            return false;
+                        }
+                    } else if (args[2].equalsIgnoreCase("townspawn")) {
+                        if(args.length >= 5) {
+                            for(Raid r: RaidData.getRaids()) {
+                                if(r.getWar().getName().equals(args[3]) && r.getRaidedTown().getName().equals(args[4])) {
+                                    if (args.length == 6 || args.length == 7){
+                                        p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid homeblock [war] [town] (x) (Z)");
+                                        return false;
+                                    }
+                                    if(args.length >= 8) {
+                                        Town t = r.getRaidedTown();
+                                        if(p.getWorld() == t.getWorld()) {
+                                            try {
+                                                WorldCoord tb = WorldCoord.parseWorldCoord(p.getWorld().getName(), Integer.parseInt(args[5]), Integer.parseInt(args[7]));
+                                                if (t.hasTownBlock(tb)) {
+                                                    t.setHomeBlock(tb.getTownBlock());
+                                                    t.setSpawn(new Location(p.getWorld(), Integer.parseInt(args[5]), Integer.parseInt(args[6]), Integer.parseInt(args[7])));
+                                                    p.sendMessage(Helper.Chatlabel() + "Set town spawn for raided town " + args[4] + " in war " + args[3] + " to " + p.getLocation().toString());
+                                                    Main.warLogger.log("Set town spawn for raided town " + args[4] + " in war " + args[3] + " to [" + args[5] + "," + args[6] + "," + args[7] + "]");
+                                                    return true;
+                                                } else {
+                                                    p.sendMessage(Helper.color("c") + "Town does not contain town block at [" + args[5] + "," + args[7] + "]");
+                                                    return false;
+                                                }
+                                                r.setHomeBlockRaided(tb.getTownBlock());
+                                            } catch (NotRegisteredException e) {
+                                                p.sendMessage(Helper.color("c") + "Error! Townblock does not exist!");
+                                                return false;
+                                                throw new RuntimeException(e);
+                                            }
+                                        } else {
+                                            return false;
+                                        }
+                                    } else {
+                                        Town t = r.getRaidedTown();
+                                        if(p.getWorld() == t.getWorld()) {
+                                            try {
+                                                WorldCoord tb = WorldCoord.parseWorldCoord(p.getWorld().getName(), (int) p.getLocation().getX(), (int) p.getLocation().getZ());
+                                                if (t.hasTownBlock(tb)) {
+                                                    t.setHomeBlock(tb.getTownBlock());
+                                                    t.setSpawn(p.getLocation());
+                                                    p.sendMessage(Helper.Chatlabel() + "Set town spawn for raided town " + args[5] + " in war " + args[4] + " to " + p.getLocation().toString());
+                                                    Main.warLogger.log("Set town spawn for raided town " + args[5] + " in war " + args[4] + " to " + p.getLocation().toString());
+                                                    return true;
+                                                } else {
+                                                    p.sendMessage(Helper.color("c") + "Town does not contain town block at your location [" + (int) p.getLocation().getX() + "," + (int) p.getLocation().getZ() + "]");
+                                                    return false;
+                                                }
+                                                r.setHomeBlockRaided(tb.getTownBlock());
+                                            } catch (NotRegisteredException e) {
+                                                p.sendMessage(Helper.color("c") + "Error! Townblock does not exist!");
+                                                return false;
+                                                throw new RuntimeException(e);
+                                            }
+                                        } else {
+                                            return false;
+                                        }
+                                    }
+                                } else {
+                                    p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
+                                    return false;
+                                }
+                            }
+                        } else {
+                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid homeblock [war] [town] (x) (Z)");
+                            return false;
+                        }
+                    } else if (args[2].equalsIgnoreCase("gather")) {
+                        if(args.length >= 6) {
+                            for(Raid r: RaidData.getRaids()) {
+                                if(r.getWar().getName().equals(args[3]) && r.getRaidedTown().getName().equals(args[4])) {
+                                    Town t = TownyAPI.getInstance().getTown(args[5]);
+                                    if(t != null) {
+                                        r.setRaidedTown(t);
+                                        try {
+                                            r.setTownSpawnGather(t.getSpawn());
+                                            r.setHomeBlockGather(t.getHomeBlock());
+                                        } catch (TownyException e) {
+                                            p.sendMessage(Helper.Chatlabel() + "Error!");
+                                            throw new RuntimeException(e);
+                                        }
+                                        p.sendMessage(Helper.Chatlabel() + "Set town new gather town " + t.getName() + " for raid against " + args[4] + " in war " + args[3]);
+                                        Main.warLogger.log("Set town new gather town " + t.getName() + " for raid against " + args[4] + " in war " + args[3]);
+                                        return true;
+                                    } else {
+                                        p.sendMessage(Helper.color("c") + "Town does not exists!");
+                                        return false;
+                                    }
+                                } else {
+                                    p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
+                                    return false;
+                                }
+                            }
+                        } else {
+                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid gather [war] [town] [town]");
+                            return false;
+                        }
+                    }  else if (args[2].equalsIgnoreCase("phase")) {
+                        if(args.length >= 6) {
+                            for (Raid r : RaidData.getRaids()) {
+                                if (r.getWar().getName().equals(args[3]) && r.getRaidedTown().getName().equals(args[4])) {
+                                    //parse phase
+                                    RaidPhase ph;
+                                    if (args[5].equalsIgnoreCase("next")) {
+                                        ph = RaidPhase.getNext(r.getPhase());
+                                    } else {
+                                        ph = RaidPhase.getByName(args[5]);
+                                    }
+
+                                    //if we found it
+                                    if (ph != null) {
+                                        r.setPhase(ph);
+                                        r.setRaidTicks(ph.startTick);
+
+                                        p.sendMessage(Helper.Chatlabel() + "Set phase for raid against " + args[4] + " in war " + args[3] + " to " + ph.name());
+                                        Main.warLogger.log("Set phase for raid against " + args[4] + " in war " + args[3] + " to " + ph.name());
+                                        return true;
+                                    } else {
+                                        p.sendMessage(Helper.color("c") + "Phase does not exist!");
+                                        return false;
+                                    }
+                                } else {
+                                    p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
+                                    return false;
+                                }
+                            }
+                        } else {
+                                p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid phase [war] [town] [phase]");
+                                return false;
+                        }
+                    }  else if (args[2].equalsIgnoreCase("loot")) {
+
+                    }  else if (args[2].equalsIgnoreCase("time")) {
+
+                    }  else if (args[2].equalsIgnoreCase("owner")) {
+
+                    }  else if (args[2].equalsIgnoreCase("move")) {
+                        //TODO later
+                        p.sendMessage(Helper.color("c") + "Error!");
+                        return false;
+                    }  else if (args[2].equalsIgnoreCase("clearActive")) {
+                        //TODO later
+                        p.sendMessage(Helper.color("c") + "Error!");
+                        return false;
+                    }  else {
+                        p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid [propery]");
+                        return false;
+                    }
+                } else {
+                    p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify [raid/siege/war] [propery]");
+                    return false;
+                }
+            } else {
+                return fail(p, args, "syntax");
+            }
+        } else {
+            return fail(p, args, "syntax");
+        }
     }
+
 
     private static boolean rule(Player p, String[] args) {
         return false;
