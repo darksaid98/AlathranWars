@@ -421,6 +421,14 @@ public class Siege {
 		return this.defenderPoints;
 	}
 
+	public void setAttackerPoints(int points) {
+		this.attackerPoints = points;
+	}
+
+	public void setDefenderPoints(int points) {
+		this.defenderPoints = points;
+	}
+
 	public boolean getSide1AreAttackers() {
 		return this.side1AreAttackers;
 	}

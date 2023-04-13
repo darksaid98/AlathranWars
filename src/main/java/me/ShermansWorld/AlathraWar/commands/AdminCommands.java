@@ -9,8 +9,10 @@ import com.palmergames.bukkit.towny.object.WorldCoord;
 import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.Raid;
+import me.ShermansWorld.AlathraWar.Siege;
 import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
+import me.ShermansWorld.AlathraWar.data.SiegeData;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -441,6 +443,7 @@ public class AdminCommands implements CommandExecutor {
                                                 throw new RuntimeException(e);
                                             }
                                         } else {
+                                            p.sendMessage(Helper.color("c") + "Error! Wrong world!");
                                             return false;
                                         }
                                     } else {
@@ -695,6 +698,107 @@ public class AdminCommands implements CommandExecutor {
                         p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid [propery]");
                         return false;
                     }
+                } else {
+                    p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify [raid/siege/war] [propery]");
+                    return false;
+                }
+            } else if (args[1].equalsIgnoreCase("siege")) {
+                if (args.length >= 3) {
+                    if(args[2].equalsIgnoreCase("score")) {
+                        if(args.length >= 8) {
+                            for(Siege s: SiegeData.getSieges()) {
+                                if (s.getWar().getName().equals(args[3]) && s.getTown().getName().equals(args[4])) {
+                                    if(args[5].equalsIgnoreCase("add")) {
+                                        if(s.getWar().getSide1().equals(args[6])) {
+                                            if(s.getSide1AreAttackers()) {
+                                                s.addPointsToAttackers(Integer.parseInt(args[7]));
+                                                p.sendMessage(Helper.Chatlabel() + "Added " + args[7] + " points to side " + args[6] + " in sige on " + args[4] + " in war " + args[3]);
+                                                Main.warLogger.log("Added " + args[7] + " points to side " + args[6] + " in sige on " + args[4] + " in war " + args[3]);
+                                                return true;
+                                            } else {
+                                                s.addPointsToDefenders(Integer.parseInt(args[7]));
+                                                p.sendMessage(Helper.Chatlabel() + "Added " + args[7] + " points to side " + args[6] + " in sige on " + args[4] + " in war " + args[3]);
+                                                Main.warLogger.log("Added " + args[7] + " points to side " + args[6] + " in sige on " + args[4] + " in war " + args[3]);
+                                                return true;
+                                            }
+                                        } else if(s.getWar().getSide2().equals(args[6])) {
+                                            if(s.getSide1AreAttackers()) {
+                                                s.addPointsToDefenders(Integer.parseInt(args[7]));
+                                                p.sendMessage(Helper.Chatlabel() + "Added " + args[7] + " points to side " + args[6] + " in sige on " + args[4] + " in war " + args[3]);
+                                                Main.warLogger.log("Added " + args[7] + " points to side " + args[6] + " in sige on " + args[4] + " in war " + args[3]);
+                                                return true;
+                                            } else {
+                                                s.addPointsToAttackers(Integer.parseInt(args[7]));
+                                                p.sendMessage(Helper.Chatlabel() + "Added " + args[7] + " points to side " + args[6] + " in sige on " + args[4] + " in war " + args[3]);
+                                                Main.warLogger.log("Added " + args[7] + " points to side " + args[6] + " in sige on " + args[4] + " in war " + args[3]);
+                                                return true;
+                                            }
+                                        } else {
+                                            p.sendMessage(Helper.color("c") + "Side not found");
+                                            return false;
+                                        }
+                                    } else if(args[5].equalsIgnoreCase("set")) {
+                                        if(s.getWar().getSide1().equals(args[6])) {
+                                            if(s.getSide1AreAttackers()) {
+                                                s.setAttackerPoints(Integer.parseInt(args[7]));
+                                                p.sendMessage(Helper.Chatlabel() + "Set " + args[7] + " points for side " + args[6] + " in sige on " + args[4] + " in war " + args[3]);
+                                                Main.warLogger.log("Set " + args[7] + " points for side " + args[6] + " in sige on " + args[4] + " in war " + args[3]);
+                                                return true;
+                                            } else {
+                                                s.setDefenderPoints(Integer.parseInt(args[7]));
+                                                p.sendMessage(Helper.Chatlabel() + "Set " + args[7] + " points for side " + args[6] + " in sige on " + args[4] + " in war " + args[3]);
+                                                Main.warLogger.log("Set " + args[7] + " points for side " + args[6] + " in sige on " + args[4] + " in war " + args[3]);
+                                                return true;
+                                            }
+                                        } else if(s.getWar().getSide2().equals(args[6])) {
+                                            if(s.getSide1AreAttackers()) {
+                                                s.setDefenderPoints(Integer.parseInt(args[7]));
+                                                p.sendMessage(Helper.Chatlabel() + "Set " + args[7] + " points for side " + args[6] + " in sige on " + args[4] + " in war " + args[3]);
+                                                Main.warLogger.log("Set " + args[7] + " points for side " + args[6] + " in sige on " + args[4] + " in war " + args[3]);
+                                                return true;
+                                            } else {
+                                                s.setAttackerPoints(Integer.parseInt(args[7]));
+                                                p.sendMessage(Helper.Chatlabel() + "Set " + args[7] + " points for side " + args[6] + " in sige on " + args[4] + " in war " + args[3]);
+                                                Main.warLogger.log("Set " + args[7] + " points for side " + args[6] + " in sige on " + args[4] + " in war " + args[3]);
+                                                return true;
+                                            }
+                                        } else {
+                                            p.sendMessage(Helper.color("c") + "Side not found");
+                                            return false;
+                                        }
+                                    } else {
+                                        p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify siege score [war] [town] [add/set] [side] [amt]");
+                                        return false;
+                                    }
+                                } else {
+                                    p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify siege score [war] [town] [add/set] [side] [amt]");
+                                    return false;
+                                }
+                            }
+                        } else {
+                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify siege score [war] [town] [add/set] [side] [amt]");
+                            return false;
+                        }
+                    } else if(args[2].equalsIgnoreCase("homeblock")) {
+
+                    } else if(args[2].equalsIgnoreCase("time")) {
+
+                    } else if(args[2].equalsIgnoreCase("owner")) {
+
+                    } else if(args[2].equalsIgnoreCase("move")) {
+                        //TODO later
+                        p.sendMessage(Helper.color("c") + "Error!");
+                        return false;
+                    } else {
+
+                    }
+                } else {
+                    p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify [raid/siege/war] [propery]");
+                    return false;
+                }
+            } else if (args[1].equalsIgnoreCase("war")) {
+                if (args.length >= 3) {
+
                 } else {
                     p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify [raid/siege/war] [propery]");
                     return false;
