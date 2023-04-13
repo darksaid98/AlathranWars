@@ -895,7 +895,33 @@ public class AdminCommands implements CommandExecutor {
                             return false;
                         }
                     } else if(args[2].equalsIgnoreCase("owner")) {
-
+                        if(args.length >= 7) {
+                            for (Siege s : SiegeData.getSieges()) {
+                                if (s.getWar().getName().equals(args[3]) && s.getTown().getName().equals(args[4])) {
+                                    Player own = Bukkit.getPlayer(args[5]);
+                                    if(own != null) {
+                                        if(s.attackerPlayers.contains(own.getName())) {
+                                            s.setSiegeOwner(own);
+                                            p.sendMessage(Helper.Chatlabel() + "Set owner of siege against " + args[4] + " in war " + args[3] + " to " + own.getName());
+                                            Main.warLogger.log("Set owner of siege against " + args[4] + " in war " + args[3] + " to " + own.getName());
+                                            return true;
+                                        } else {
+                                            p.sendMessage(Helper.color("c") + "Player not on attacking side!");
+                                            return false;
+                                        }
+                                    } else {
+                                        p.sendMessage(Helper.color("c") + "Player not found!");
+                                        return false;
+                                    }
+                                } else {
+                                    p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
+                                    return false;
+                                }
+                            }
+                        } else {
+                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify siege owner [war] [town] [newOwner]");
+                            return false;
+                        }
                     } else if(args[2].equalsIgnoreCase("move")) {
                         //TODO later
                         p.sendMessage(Helper.color("c") + "Error!");

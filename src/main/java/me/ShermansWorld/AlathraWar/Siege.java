@@ -395,6 +395,14 @@ public class Siege {
 		this.town = town;
 	}
 
+	public Player getSiegeOwner() {
+		return siegeOwner;
+	}
+
+	public void setSiegeOwner(Player siegeOwner) {
+		this.siegeOwner = siegeOwner;
+	}
+
     /** Gets attacker name string */
 	public String getAttackers() {
 		if (side1AreAttackers) {
