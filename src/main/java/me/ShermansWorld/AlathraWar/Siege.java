@@ -421,6 +421,34 @@ public class Siege {
 		return this.defenderPoints;
 	}
 
+	public int getMaxSiegeTicks() {
+		return maxSiegeTicks;
+	}
+
+	public void setMaxSiegeTicks(int maxSiegeTicks) {
+		this.maxSiegeTicks = maxSiegeTicks;
+	}
+
+	public void setSiegeTicks(int siegeTicks) {
+		this.siegeTicks = siegeTicks;
+	}
+
+	public TownBlock getHomeBlock() {
+		return homeBlock;
+	}
+
+	public void setHomeBlock(TownBlock homeBlock) {
+		this.homeBlock = homeBlock;
+	}
+
+	public Location getTownSpawn() {
+		return townSpawn;
+	}
+
+	public void setTownSpawn(Location townSpawn) {
+		this.townSpawn = townSpawn;
+	}
+
 	public void setAttackerPoints(int points) {
 		this.attackerPoints = points;
 	}

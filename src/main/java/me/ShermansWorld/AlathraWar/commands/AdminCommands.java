@@ -359,7 +359,7 @@ public class AdminCommands implements CommandExecutor {
      * -modify raid clearActive [war] [town] //low priority
      *
      * -modify siege score [war] [town] [side] [amt]
-     * -modify siege homeblock [war] [town] (x) (Z)
+     * -modify siege townspawn [war] [town] (x) (Z)
      * -modify siege time [war] [town] [add/set/max] [value] //max modified the max length
      * -modify siege owner [war] [town] [add/set] [value]
      * -modify siege move [war] [town] [newWar] //low priority, moves siege to other war/town
@@ -437,8 +437,13 @@ public class AdminCommands implements CommandExecutor {
                                                     return false;
                                                 }
                                                 r.setHomeBlockRaided(tb.getTownBlock());
+                                                r.setTownSpawnRaided(t.getSpawn());
                                             } catch (NotRegisteredException e) {
                                                 p.sendMessage(Helper.color("c") + "Error! Townblock does not exist!");
+                                                return false;
+                                                throw new RuntimeException(e);
+                                            } catch (TownyException e) {
+                                                p.sendMessage(Helper.color("c") + "Error!");
                                                 return false;
                                                 throw new RuntimeException(e);
                                             }
@@ -462,8 +467,13 @@ public class AdminCommands implements CommandExecutor {
                                                     return false;
                                                 }
                                                 r.setHomeBlockRaided(tb.getTownBlock());
+                                                r.setTownSpawnRaided(t.getSpawn());
                                             } catch (NotRegisteredException e) {
                                                 p.sendMessage(Helper.color("c") + "Error! Townblock does not exist!");
+                                                return false;
+                                                throw new RuntimeException(e);
+                                            } catch (TownyException e) {
+                                                p.sendMessage(Helper.color("c") + "Error!");
                                                 return false;
                                                 throw new RuntimeException(e);
                                             }
@@ -639,7 +649,7 @@ public class AdminCommands implements CommandExecutor {
                                         p.sendMessage(Helper.Chatlabel() + "Set time for raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
                                         Main.warLogger.log("Set time for raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
                                         return true;
-                                    } else if(args[5].equalsIgnoreCase("add")) {
+                                    } else if(args[5].equalsIgnoreCase("set")) {
                                         int t = Integer.parseInt(args[6]);
                                         if(t >= r.getPhase().startTick) {
                                             r.setRaidTicks(t);
@@ -779,10 +789,111 @@ public class AdminCommands implements CommandExecutor {
                             p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify siege score [war] [town] [add/set] [side] [amt]");
                             return false;
                         }
-                    } else if(args[2].equalsIgnoreCase("homeblock")) {
-
+                    } else if(args[2].equalsIgnoreCase("townspawn")) {
+                        if(args.length >= 8) {
+                            for(Siege s: SiegeData.getSieges()) {
+                                if (s.getWar().getName().equals(args[3]) && s.getTown().getName().equals(args[4])) {
+                                    if (args.length == 6 || args.length == 7){
+                                        p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify siege townspawn [war] [town] (x) (y) (Z)");
+                                        return false;
+                                    }
+                                    if(args.length >= 8) {
+                                        Town t = s.getTown();
+                                        if(p.getWorld() == t.getWorld()) {
+                                            try {
+                                                WorldCoord tb = WorldCoord.parseWorldCoord(p.getWorld().getName(), Integer.parseInt(args[5]), Integer.parseInt(args[7]));
+                                                if (t.hasTownBlock(tb)) {
+                                                    t.setHomeBlock(tb.getTownBlock());
+                                                    t.setSpawn(new Location(p.getWorld(), Integer.parseInt(args[5]), Integer.parseInt(args[6]), Integer.parseInt(args[7])));
+                                                    p.sendMessage(Helper.Chatlabel() + "Set town spawn for sieged town " + args[4] + " in war " + args[3] + " to " + p.getLocation().toString());
+                                                    Main.warLogger.log("Set town spawn for sieged town " + args[4] + " in war " + args[3] + " to [" + args[5] + "," + args[6] + "," + args[7] + "]");
+                                                    return true;
+                                                } else {
+                                                    p.sendMessage(Helper.color("c") + "Town does not contain town block at [" + args[5] + "," + args[7] + "]");
+                                                    return false;
+                                                }
+                                                s.setHomeBlock(tb.getTownBlock());
+                                                s.setTownSpawn(t.getSpawn());
+                                            } catch (NotRegisteredException e) {
+                                                p.sendMessage(Helper.color("c") + "Error! Townblock does not exist!");
+                                                return false;
+                                                throw new RuntimeException(e);
+                                            } catch (TownyException e) {
+                                                p.sendMessage(Helper.color("c") + "Error!");
+                                                return false;
+                                                throw new RuntimeException(e);
+                                            }
+                                        } else {
+                                            p.sendMessage(Helper.color("c") + "Error! Wrong world!");
+                                            return false;
+                                        }
+                                    } else {
+                                        Town t = s.getTown();
+                                        if(p.getWorld() == t.getWorld()) {
+                                            try {
+                                                WorldCoord tb = WorldCoord.parseWorldCoord(p.getWorld().getName(), (int) p.getLocation().getX(), (int) p.getLocation().getZ());
+                                                if (t.hasTownBlock(tb)) {
+                                                    t.setHomeBlock(tb.getTownBlock());
+                                                    t.setSpawn(p.getLocation());
+                                                    p.sendMessage(Helper.Chatlabel() + "Set town spawn for sieged town " + args[5] + " in war " + args[4] + " to " + p.getLocation().toString());
+                                                    Main.warLogger.log("Set town spawn for sieged town " + args[5] + " in war " + args[4] + " to " + p.getLocation().toString());
+                                                    return true;
+                                                } else {
+                                                    p.sendMessage(Helper.color("c") + "Town does not contain town block at your location [" + (int) p.getLocation().getX() + "," + (int) p.getLocation().getZ() + "]");
+                                                    return false;
+                                                }
+                                                s.setHomeBlock(tb.getTownBlock());
+                                                s.setTownSpawn(t.getSpawn());
+                                            } catch (NotRegisteredException e) {
+                                                p.sendMessage(Helper.color("c") + "Error! Townblock does not exist!");
+                                                return false;
+                                                throw new RuntimeException(e);
+                                            } catch (TownyException e) {
+                                                p.sendMessage(Helper.color("c") + "Error!");
+                                                return false;
+                                                throw new RuntimeException(e);
+                                            }
+                                        } else {
+                                            return false;
+                                        }
+                                    }
+                                } else {
+                                    p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify siege townspawn [war] [town] (x) (y) (Z)");
+                                    return false;
+                                }
+                            }
+                        } else {
+                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify siege townspawn [war] [town] (x) (y) (Z)");
+                            return false;
+                        }
                     } else if(args[2].equalsIgnoreCase("time")) {
-
+                        if(args.length >= 7) {
+                            for (Siege s : SiegeData.getSieges()) {
+                                if (s.getWar().getName().equals(args[3]) && s.getTown().getName().equals(args[4])) {
+                                    //parse phase
+                                    if(args[5].equalsIgnoreCase("add")) {
+                                        s.setSiegeTicks(s.getSiegeTicks() + Integer.parseInt(args[6]));
+                                        p.sendMessage(Helper.Chatlabel() + "Set time for siege against " + args[4] + " in war " + args[3] + " to " + args[6]);
+                                        Main.warLogger.log("Set time for siege against " + args[4] + " in war " + args[3] + " to " + args[6]);
+                                        return true;
+                                    } else if(args[5].equalsIgnoreCase("set")) {
+                                        s.setSiegeTicks(Integer.parseInt(args[6]));
+                                        p.sendMessage(Helper.Chatlabel() + "Set time for siege against " + args[4] + " in war " + args[3] + " to " + args[6]);
+                                        Main.warLogger.log("Set time for siege against " + args[4] + " in war " + args[3] + " to " + args[6]);
+                                        return true;
+                                    } else {
+                                        p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid time [war] [town] [add/set] [value]");
+                                        return false;
+                                    }
+                                } else {
+                                    p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
+                                    return false;
+                                }
+                            }
+                        } else {
+                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify siege time [war] [town] [add/set/max] [value]");
+                            return false;
+                        }
                     } else if(args[2].equalsIgnoreCase("owner")) {
 
                     } else if(args[2].equalsIgnoreCase("move")) {
