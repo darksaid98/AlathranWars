@@ -18,7 +18,6 @@ import me.ShermansWorld.AlathraWar.data.SiegeData;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import java.util.ArrayList;
-import org.bukkit.entity.Player;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
 
@@ -31,7 +30,7 @@ public class Siege {
 	private boolean side1AreAttackers; // bool of if side1 being attacker
 	private int attackerPoints;
 	private int defenderPoints;
-	private Player siegeLeader; 
+	private OfflinePlayer siegeLeader; 
 	private int siegeTicks;
 	private TownBlock homeBlock;
 	private Location townSpawn;
@@ -212,8 +211,8 @@ public class Siege {
 		SiegeData.removeSiege(this);
 	}
 
-	public void attackersWin(final Player siegeLeader) {
-		final Resident resident = TownyAPI.getInstance().getResident(siegeLeader);
+	public void attackersWin(final OfflinePlayer siegeLeader) {
+		final Resident resident = TownyAPI.getInstance().getResident(siegeLeader.getUniqueId());
 		Nation nation = null;
 		Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The attackers have won the siege of " + this.town.getName() + "!");
 		try {
@@ -240,8 +239,7 @@ public class Siege {
 			Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The town of " + this.town.getName()
 					+ " has been placed under occupation by " + nation.getName() + "!");
 		}
-		final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(siegeLeader.getUniqueId());
-		Main.econ.depositPlayer(offlinePlayer, 2500.0);
+		Main.econ.depositPlayer(siegeLeader, 2500.0);
 		double amt = 0.0;
 		if (this.town.getAccount().getHoldingBalance() > 10000.0) {
 			amt = Math.floor(this.town.getAccount().getHoldingBalance()) / 4.0;
@@ -252,7 +250,7 @@ public class Siege {
 				Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The town of " + this.town.getName()
 						+ " has been destroyed by " + this.getAttackers() + "!");
 				TownyUniverse.getInstance().getDataSource().deleteTown(this.town);
-				Main.econ.depositPlayer(offlinePlayer, amt);
+				Main.econ.depositPlayer(siegeLeader, amt);
 				return;
 			}
 			this.town.getAccount().withdraw(2500.0, "war loot");
@@ -262,7 +260,7 @@ public class Siege {
 				+ ", valuing $" + String.valueOf(amt));
 		Main.warLogger.log("The town of " + this.town.getName() + " has been sacked by " + this.getAttackers()
 				+ ", valuing $" + String.valueOf(amt));
-		Main.econ.depositPlayer(offlinePlayer, amt);
+		Main.econ.depositPlayer(siegeLeader, amt);
 
 		stop();
 		clearBeacon();
