@@ -554,20 +554,28 @@ public class AdminCommands implements CommandExecutor {
                                             WorldCoord wc = WorldCoord.parseWorldCoord(p.getWorld().getName(), Integer.parseInt(args[7]), Integer.parseInt(args[8]));
                                             Raid.LootBlock lb = r.getLootedChunks().get(wc);
                                             lb.value = Integer.parseInt(args[6]);
+                                            p.sendMessage(Helper.Chatlabel() + "Set value for a chunk [" + args[7] + "," + args[8] + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
+                                            Main.warLogger.log("Set value for a chunk [" + args[7] + "," + args[8] + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
                                             return true;
                                         } else if(args[5].equalsIgnoreCase("looted")) {
                                             WorldCoord wc = WorldCoord.parseWorldCoord(p.getWorld().getName(), Integer.parseInt(args[7]), Integer.parseInt(args[8]));
                                             Raid.LootBlock lb = r.getLootedChunks().get(wc);
                                             lb.finished = Boolean.parseBoolean(args[6]);
+                                            p.sendMessage(Helper.Chatlabel() + "Set finished flag for a chunk [" + args[7] + "," + args[8] + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
+                                            Main.warLogger.log("Set finished flag for a chunk [" + args[7] + "," + args[8] + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
                                             return true;
                                         } else if(args[5].equalsIgnoreCase("ticks")) {
                                             WorldCoord wc = WorldCoord.parseWorldCoord(p.getWorld().getName(), Integer.parseInt(args[7]), Integer.parseInt(args[8]));
                                             Raid.LootBlock lb = r.getLootedChunks().get(wc);
                                             lb.ticks = Integer.parseInt(args[6]);
+                                            p.sendMessage(Helper.Chatlabel() + "Set ticks for a chunk [" + args[7] + "," + args[8] + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
+                                            Main.warLogger.log("Set ticks for a chunk [" + args[7] + "," + args[8] + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
                                             return true;
                                         } else if(args[5].equalsIgnoreCase("reset")) {
                                             WorldCoord wc = WorldCoord.parseWorldCoord(p.getWorld().getName(), Integer.parseInt(args[6]), Integer.parseInt(args[7]));
                                             r.getLootedChunks().remove(wc);
+                                            p.sendMessage(Helper.Chatlabel() + "Reset loot for a chunk [" + args[7] + "," + args[8] + "] in raid against " + args[4] + " in war " + args[3]);
+                                            Main.warLogger.log("Reset loot for a chunk [" + args[7] + "," + args[8] + "] in raid against " + args[4] + " in war " + args[3]);
                                             return true;
                                         } else {
                                             p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid loot [war] [town] [value,looted,ticks,reset] [amt] (x) (z)");
@@ -581,20 +589,28 @@ public class AdminCommands implements CommandExecutor {
                                             WorldCoord wc = WorldCoord.parseWorldCoord(p.getLocation());
                                             Raid.LootBlock lb = r.getLootedChunks().get(wc);
                                             lb.value = Integer.parseInt(args[6]);
+                                            p.sendMessage(Helper.Chatlabel() + "Set value for a chunk [" + p.getLocation().getX() + "," + p.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
+                                            Main.warLogger.log("Set value for a chunk [" + p.getLocation().getX() + "," + p.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
                                             return true;
                                         } else if(args[5].equalsIgnoreCase("looted")) {
                                             WorldCoord wc = WorldCoord.parseWorldCoord(p.getLocation());
                                             Raid.LootBlock lb = r.getLootedChunks().get(wc);
                                             lb.finished = Boolean.parseBoolean(args[6]);
+                                            p.sendMessage(Helper.Chatlabel() + "Set looted status for a chunk [" + p.getLocation().getX() + "," + p.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
+                                            Main.warLogger.log("Set looted status for a chunk [" + p.getLocation().getX() + "," + p.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
                                             return true;
                                         } else if(args[5].equalsIgnoreCase("ticks")) {
                                             WorldCoord wc = WorldCoord.parseWorldCoord(p.getLocation());
                                             Raid.LootBlock lb = r.getLootedChunks().get(wc);
                                             lb.ticks = Integer.parseInt(args[6]);
+                                            p.sendMessage(Helper.Chatlabel() + "Set ticks for a chunk [" + p.getLocation().getX() + "," + p.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
+                                            Main.warLogger.log("Set ticks for a chunk [" + p.getLocation().getX() + "," + p.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
                                             return true;
                                         } else if(args[5].equalsIgnoreCase("reset")) {
                                             WorldCoord wc = WorldCoord.parseWorldCoord(p.getLocation());
                                             r.getLootedChunks().remove(wc);
+                                            p.sendMessage(Helper.Chatlabel() + "Reset loot for a chunk [" + p.getLocation().getX() + "," + p.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3]);
+                                            Main.warLogger.log("Reset Loot for a chunk [" + p.getLocation().getX() + "," + p.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3]);
                                             return true;
                                         } else {
                                             p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid loot [war] [town] [value,looted,ticks,reset] [amt] (x) (z)");
@@ -611,7 +627,39 @@ public class AdminCommands implements CommandExecutor {
                             return false;
                         }
                     }  else if (args[2].equalsIgnoreCase("time")) {
-
+                        if(args.length >= 7) {
+                            for (Raid r : RaidData.getRaids()) {
+                                if (r.getWar().getName().equals(args[3]) && r.getRaidedTown().getName().equals(args[4])) {
+                                    //parse phase
+                                    if(args[5].equalsIgnoreCase("add")) {
+                                        r.setRaidTicks(r.getRaidTicks() + Integer.parseInt(args[6]));
+                                        p.sendMessage(Helper.Chatlabel() + "Set time for raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
+                                        Main.warLogger.log("Set time for raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
+                                        return true;
+                                    } else if(args[5].equalsIgnoreCase("add")) {
+                                        int t = Integer.parseInt(args[6]);
+                                        if(t >= r.getPhase().startTick) {
+                                            r.setRaidTicks(t);
+                                            p.sendMessage(Helper.Chatlabel() + "Set time for raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
+                                            Main.warLogger.log("Set time for raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
+                                            return true;
+                                        } else {
+                                            p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Time set before current phase, use \"/alathrawaradmin modify raid phase\" instead");
+                                            return false;
+                                        }
+                                    } else {
+                                        p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid time [war] [town] [add/set] [value]");
+                                        return false;
+                                    }
+                                } else {
+                                    p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
+                                    return false;
+                                }
+                            }
+                        } else {
+                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid time [war] [town] [add/set] [value]");
+                            return false;
+                        }
                     }  else if (args[2].equalsIgnoreCase("owner")) {
 
                     }  else if (args[2].equalsIgnoreCase("move")) {
