@@ -31,7 +31,7 @@ public class Siege {
 	private boolean side1AreAttackers; // bool of if side1 being attacker
 	private int attackerPoints;
 	private int defenderPoints;
-	private Player siegeOwner;
+	private Player siegeLeader; 
 	private int siegeTicks;
 	private TownBlock homeBlock;
 	private Location townSpawn;
@@ -76,10 +76,11 @@ public class Siege {
                             Siege.this.attackerPlayers = Siege.this.war.getSide2Players();
 							Siege.this.defenderPlayers = Siege.this.war.getSide1Players();
 						}
-						if (Siege.this.siegeTicks >= Siege.this.maxSiegeTicks) {
+						if (Siege.this.siegeTicks >= maxSiegeTicks) {
 							Bukkit.getServer().getScheduler().cancelTask(Siege.this.bukkitId[0]);
+                            SiegeData.removeSiege(Siege.this);
 							if (Siege.this.attackerPoints > Siege.this.defenderPoints) {
-								Siege.this.attackersWin(Siege.this.siegeOwner);
+								Siege.this.attackersWin(Siege.this.siegeLeader);
 							} else {
 								Siege.this.defendersWin();
 							}
@@ -201,8 +202,8 @@ public class Siege {
 	}
 
     /** Resumes a siege (after a server restart e.t.c.)*/
-    public void resume() {
-
+    public void resume(int resumeTick) {
+        siegeTicks = resumeTick;
     }
 
     /** Stops a siege */
@@ -211,8 +212,8 @@ public class Siege {
 		SiegeData.removeSiege(this);
 	}
 
-	public void attackersWin(final Player owner) {
-		final Resident resident = TownyAPI.getInstance().getResident(owner);
+	public void attackersWin(final Player siegeLeader) {
+		final Resident resident = TownyAPI.getInstance().getResident(siegeLeader);
 		Nation nation = null;
 		Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The attackers have won the siege of " + this.town.getName() + "!");
 		try {
@@ -239,7 +240,7 @@ public class Siege {
 			Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The town of " + this.town.getName()
 					+ " has been placed under occupation by " + nation.getName() + "!");
 		}
-		final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(owner.getUniqueId());
+		final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(siegeLeader.getUniqueId());
 		Main.econ.depositPlayer(offlinePlayer, 2500.0);
 		double amt = 0.0;
 		if (this.town.getAccount().getHoldingBalance() > 10000.0) {
