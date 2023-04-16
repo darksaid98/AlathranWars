@@ -656,11 +656,10 @@ public class AdminCommands implements CommandExecutor {
                                         p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid score [add/subtract/set] [war] [town] [value]");
                                         return false;
                                     }
-                                } else {
-                                    p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
-                                    return false;
                                 }
                             }
+                            p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
+                            return false;
                         } else {
                             p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid score [add/subtract/set] [war] [town] [value]");
                             return false;
@@ -729,11 +728,10 @@ public class AdminCommands implements CommandExecutor {
                                             return false;
                                         }
                                     }
-                                } else {
-                                    p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
-                                    return false;
                                 }
                             }
+                            p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
+                            return false;
                         } else {
                             p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid homeblock [war] [town] (x) (Z)");
                             return false;
@@ -759,11 +757,10 @@ public class AdminCommands implements CommandExecutor {
                                         p.sendMessage(Helper.color("c") + "Town does not exists!");
                                         return false;
                                     }
-                                } else {
-                                    p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
-                                    return false;
                                 }
                             }
+                            p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
+                            return false;
                         } else {
                             p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid gather [war] [town] [town]");
                             return false;
@@ -792,11 +789,10 @@ public class AdminCommands implements CommandExecutor {
                                         p.sendMessage(Helper.color("c") + "Phase does not exist!");
                                         return false;
                                     }
-                                } else {
-                                    p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
-                                    return false;
                                 }
                             }
+                            p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
+                            return false;
                         } else {
                                 p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid phase [war] [town] [phase]");
                                 return false;
@@ -878,11 +874,10 @@ public class AdminCommands implements CommandExecutor {
                                             return false;
                                         }
                                     }
-                                } else {
-                                    p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
-                                    return false;
                                 }
                             }
+                            p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
+                            return false;
                         } else {
                             p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid loot [war] [town] [value,looted,ticks,reset] [amt] (x) (z)");
                             return false;
@@ -912,11 +907,10 @@ public class AdminCommands implements CommandExecutor {
                                         p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid time [war] [town] [add/set] [value]");
                                         return false;
                                     }
-                                } else {
-                                    p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
-                                    return false;
                                 }
                             }
+                            p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
+                            return false;
                         } else {
                             p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid time [war] [town] [add/set] [value]");
                             return false;
@@ -935,11 +929,10 @@ public class AdminCommands implements CommandExecutor {
                                         p.sendMessage(Helper.color("c") + "Player not found!");
                                         return false;
                                     }
-                                } else {
-                                    p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
-                                    return false;
                                 }
                             }
+                            p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
+                            return false;
                         } else {
                             p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid owner [war] [town] [player]");
                             return false;
@@ -1033,6 +1026,8 @@ public class AdminCommands implements CommandExecutor {
                                     return false;
                                 }
                             }
+                            p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Siege cannot be found.");
+                            return false;
                         } else {
                             p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify siege score [war] [town] [add/set] [side] [amt]");
                             return false;
@@ -1098,14 +1093,14 @@ public class AdminCommands implements CommandExecutor {
                                                 return false;
                                             }
                                         } else {
+                                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify siege townspawn [war] [town] (x) (y) (Z)");
                                             return false;
                                         }
                                     }
-                                } else {
-                                    p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify siege townspawn [war] [town] (x) (y) (Z)");
-                                    return false;
                                 }
                             }
+                            p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Siege cannot be found.");
+                            return false;
                         } else {
                             p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify siege townspawn [war] [town] (x) (y) (Z)");
                             return false;
@@ -1129,11 +1124,10 @@ public class AdminCommands implements CommandExecutor {
                                         p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid time [war] [town] [add/set] [value]");
                                         return false;
                                     }
-                                } else {
-                                    p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
-                                    return false;
                                 }
                             }
+                            p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Siege cannot be found.");
+                            return false;
                         } else {
                             p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify siege time [war] [town] [add/set/max] [value]");
                             return false;
@@ -1157,11 +1151,10 @@ public class AdminCommands implements CommandExecutor {
                                         p.sendMessage(Helper.color("c") + "Player not found!");
                                         return false;
                                     }
-                                } else {
-                                    p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Raid cannot be found.");
-                                    return false;
                                 }
                             }
+                            p.sendMessage(Helper.Chatlabel() + Helper.color("c") + "Siege cannot be found.");
+                            return false;
                         } else {
                             p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify siege owner [war] [town] [newOwner]");
                             return false;
@@ -1379,15 +1372,15 @@ public class AdminCommands implements CommandExecutor {
 
     private static boolean fail(Player p, String[] args, String type) {
         switch (type) {
-            case "permissions": {
+            case "permissions" -> {
                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&cYou do not have permission to do this"));
                 return false;
             }
-            case "syntax": {
+            case "syntax" -> {
                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /alathrawaradmin help");
                 return false;
             }
-            default: {
+            default -> {
                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Something wrong. /alathrawaradmin help");
                 return false;
             }
