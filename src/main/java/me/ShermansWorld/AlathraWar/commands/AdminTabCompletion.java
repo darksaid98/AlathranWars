@@ -123,7 +123,7 @@ public class AdminTabCompletion implements TabCompleter {
      * -info siege homeblock [war] [town]
      * <p>
      * //done
-     * //force make event or war, if owner isnt defined, idk havent decided
+     * //force make event or war, if owner isn't defined, IDK haven't decided
      * -create siege [war] [town] (owner)
      * -create raid [war] [raidTown] (gatherTown) (owner)
      * -create war [name] [side1] [side2]
@@ -143,13 +143,13 @@ public class AdminTabCompletion implements TabCompleter {
      * -force leave raid [war] [town] [player] (timeout) //kicks from raid party
      *
      * @param sender  Source of the command.  For players tab-completing a
-     *                command inside of a command block, this will be the player, not
+     *                command inside a command block, this will be the player, not
      *                the command block.
      * @param command Command which was executed
      * @param label   Alias of the command which was used
      * @param args    The arguments passed to the command, including final
      *                partial argument to be completed
-     * @return
+     * @return list of options
      */
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
@@ -391,53 +391,53 @@ public class AdminTabCompletion implements TabCompleter {
                                          * -modify raid move [war] [town] [newWar] //low priority, moves raid to other war/ town
                                          * -modify raid clearActive [war] [town] //low priority
                                          */
-                                        case "score", "time": {
+                                        case "score", "time" -> {
                                             if (args.length > 6) {
                                                 return null;
                                             } else {
                                                 return NameUtil.filterByStart(addSet, args[5]);
                                             }
                                         }
-                                        case "townspawn": {
+                                        case "townspawn" -> {
                                             if (args.length > 6) {
                                                 if (args.length > 7) {
                                                     if (args.length > 8) {
                                                         return null;
                                                     } else {
-                                                        return List.of(new String[] { "" + p.getLocation().getZ()});
+                                                        return List.of(new String[]{String.valueOf(p.getLocation().getZ())});
                                                     }
                                                 } else {
-                                                    return List.of(new String[] { "" + p.getLocation().getY()});
+                                                    return List.of(new String[]{String.valueOf(p.getLocation().getY())});
                                                 }
                                             } else {
-                                                return List.of(new String[] { "" + p.getLocation().getX()});
+                                                return List.of(new String[]{String.valueOf(p.getLocation().getX())});
                                             }
                                         }
-                                        case "gather" : {
+                                        case "gather" -> {
                                             if (args.length > 6) {
                                                 return null;
                                             } else {
                                                 return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[5]);
                                             }
                                         }
-                                        case "phase": {
+                                        case "phase" -> {
                                             if (args.length > 6) {
                                                 return null;
                                             } else {
                                                 return NameUtil.filterByStart(CommandHelper.getRaidPhases(), args[5]);
                                             }
                                         }
-                                        case "loot": {
+                                        case "loot" -> {
                                             if (args.length > 6) {
                                                 if (args.length > 7) {
                                                     if (args.length > 8) {
                                                         if (args.length > 9) {
                                                             return null;
                                                         } else {
-                                                            return List.of(new String[] { "" + p.getLocation().getZ()});
+                                                            return List.of(new String[]{String.valueOf(p.getLocation().getZ())});
                                                         }
                                                     } else {
-                                                        return List.of(new String[] { "" + p.getLocation().getX()});
+                                                        return List.of(new String[]{String.valueOf(p.getLocation().getX())});
                                                     }
                                                 } else {
                                                     return null;
@@ -446,17 +446,16 @@ public class AdminTabCompletion implements TabCompleter {
                                                 return NameUtil.filterByStart(lootSet, args[5]);
                                             }
                                         }
-                                        case "owner": {
+                                        case "owner" -> {
                                             if (args.length > 6) {
                                                 return null;
                                             } else {
                                                 return NameUtil.filterByStart(CommandHelper.getPlayers(), args[5]);
                                             }
                                         }
-                                        default: {
+                                        default -> {
                                             return null;
                                         }
-
                                     }
                                 } else {
                                     return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[4]);
@@ -472,39 +471,38 @@ public class AdminTabCompletion implements TabCompleter {
                             if (args.length > 4) {
                                 if (args.length > 5) {
                                     switch (args[2]) {
-                                        case "score", "time": {
+                                        case "score", "time" -> {
                                             if (args.length > 6) {
                                                 return null;
                                             } else {
                                                 return NameUtil.filterByStart(addSet, args[5]);
                                             }
                                         }
-                                        case "townspawn": {
+                                        case "townspawn" -> {
                                             if (args.length > 6) {
                                                 if (args.length > 7) {
                                                     if (args.length > 8) {
                                                         return null;
                                                     } else {
-                                                        return List.of(new String[] { "" + p.getLocation().getZ()});
+                                                        return List.of(new String[]{String.valueOf(p.getLocation().getZ())});
                                                     }
                                                 } else {
-                                                    return List.of(new String[] { "" + p.getLocation().getY()});
+                                                    return List.of(new String[]{String.valueOf(p.getLocation().getY())});
                                                 }
                                             } else {
-                                                return List.of(new String[] { "" + p.getLocation().getX()});
+                                                return List.of(new String[]{String.valueOf(p.getLocation().getX())});
                                             }
                                         }
-                                        case "owner": {
+                                        case "owner" -> {
                                             if (args.length > 6) {
                                                 return null;
                                             } else {
                                                 return NameUtil.filterByStart(CommandHelper.getPlayers(), args[5]);
                                             }
                                         }
-                                        default: {
+                                        default -> {
                                             return null;
                                         }
-
                                     }
                                 } else {
                                     return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[4]);
@@ -529,7 +527,7 @@ public class AdminTabCompletion implements TabCompleter {
                                      * -modify war surrender nation [war] [town] //adds all towns to surrender list
                                      * -modify war raidTime [add,set,reset] [war] [town] [amt] //set when last raid was
                                      */
-                                    case "score", "raidTime": {
+                                    case "score", "raidTime" -> {
                                         if (args.length > 5) {
                                             if (args.length > 6) {
                                                 return null;
@@ -540,17 +538,14 @@ public class AdminTabCompletion implements TabCompleter {
                                             return NameUtil.filterByStart(CommandHelper.getWarSides(args[3]), args[4]);
                                         }
                                     }
-                                    case "side": {
+                                    case "side" -> {
                                         if (args.length > 5) {
                                             return null;
                                         } else {
                                             return NameUtil.filterByStart(CommandHelper.getWarSides(args[3]), args[4]);
                                         }
                                     }
-                                    case "name" : {
-                                        return null;
-                                    }
-                                    case "add", "surrender": {
+                                    case "add", "surrender" -> {
                                         if (args.length > 5) {
                                             if (args.length > 6) {
                                                 if (args.length > 7) {
@@ -571,7 +566,7 @@ public class AdminTabCompletion implements TabCompleter {
                                             return NameUtil.filterByStart(CommandHelper.getWarSides(args[3]), args[4]);
                                         }
                                     }
-                                    default: {
+                                    default -> {
                                         return null;
                                     }
                                 }
