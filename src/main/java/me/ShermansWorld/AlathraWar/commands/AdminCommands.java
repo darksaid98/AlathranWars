@@ -636,21 +636,21 @@ public class AdminCommands implements CommandExecutor {
                     if (args[2].equalsIgnoreCase("score")) {
                         if(args.length >= 7) {
                             for(Raid r: RaidData.getRaids()) {
-                                if(r.getWar().getName().equals(args[4]) && r.getRaidedTown().getName().equals(args[5])) {
-                                    if(args[3].equalsIgnoreCase("add")) {
+                                if(r.getWar().getName().equals(args[3]) && r.getRaidedTown().getName().equals(args[4])) {
+                                    if(args[5].equalsIgnoreCase("add")) {
                                         r.addPointsToRaidScore(Integer.parseInt(args[6]));
-                                        p.sendMessage(Helper.Chatlabel() + "Added " + args[6] + " points to the raid score in the war " + args[4] + " on town " + args[5]);
-                                        Main.warLogger.log("Added " + args[6] + " points to the raid score in the war " + args[4] + " on town " + args[5]);
+                                        p.sendMessage(Helper.Chatlabel() + "Added " + args[6] + " points to the raid score in the war " + args[3] + " on town " + args[4]);
+                                        Main.warLogger.log("Added " + args[6] + " points to the raid score in the war " + args[3] + " on town " + args[4]);
                                         return true;
-                                    } else if(args[3].equalsIgnoreCase("subtract")) {
+                                    } else if(args[5].equalsIgnoreCase("subtract")) {
                                         r.subtractPointsFromRaidScore(Integer.parseInt(args[6]));
-                                        p.sendMessage(Helper.Chatlabel() + "Subtracted " + args[6] + " points to the raid score in the war " + args[4] + " on town " + args[5]);
-                                        Main.warLogger.log("Subtracted " + args[6] + " points to the raid score in the war " + args[4] + " on town " + args[5]);
+                                        p.sendMessage(Helper.Chatlabel() + "Subtracted " + args[6] + " points to the raid score in the war " + args[3] + " on town " + args[4]);
+                                        Main.warLogger.log("Subtracted " + args[6] + " points to the raid score in the war " + args[3] + " on town " + args[4]);
                                         return true;
-                                    } else if(args[3].equalsIgnoreCase("set")) {
+                                    } else if(args[5].equalsIgnoreCase("set")) {
                                         r.setRaidScore(Integer.parseInt(args[6]));
-                                        p.sendMessage(Helper.Chatlabel() + "Set " + args[6] + " points as the raid score in the war " + args[4] + " on town " + args[5]);
-                                        Main.warLogger.log("Set " + args[6] + " points as the raid score in the war " + args[4] + " on town " + args[5]);
+                                        p.sendMessage(Helper.Chatlabel() + "Set " + args[6] + " points as the raid score in the war " + args[3] + " on town " + args[4]);
+                                        Main.warLogger.log("Set " + args[6] + " points as the raid score in the war " + args[3] + " on town " + args[4]);
                                         return true;
                                     }  else {
                                         p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify raid score [add/subtract/set] [war] [town] [value]");

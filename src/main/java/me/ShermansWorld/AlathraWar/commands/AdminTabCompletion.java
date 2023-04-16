@@ -66,22 +66,22 @@ public class AdminTabCompletion implements TabCompleter {
     /**
      * //done
      * //edit war/event in real time, side can be "both" to effect both
-     * -modify raid score [war] [town] [value]
-     * -modify raid homeblock [war] [town] (x) (Z)
+     * -modify raid score [war] [town] [add/set] [value]
+     * -modify raid townspawn [war] [town] (x) (y) (Z)
      * -modify raid gather [war] [town] [town]
      * -modify raid phase [war] [town] [phase] //"next" to move to next phase
-     * -modify raid loot [war] [town] (x) (z) [value,looted,ticks,reset] [amt] //no coords just does current chunk, reset deletes it from the list
+     * -modify raid loot [war] [town] [value,looted,ticks,reset] [amt] (x) (z)  //no coords just does current chunk, reset deletes it from the list
      * -modify raid time [war] [town] [add/set] [value]
-     * -modify raid owner [war] [town] [add/set] [value]
-     * -modify raid move [war] [town] [newWar] //low priority, moves raid to other war
+     * -modify raid owner [war] [town] [player]
+     * -modify raid move [war] [town] [newWar] //low priority, moves raid to other war/ town
      * -modify raid clearActive [war] [town] //low priority
-     * <p>
+     *
      * -modify siege score [war] [town] [side] [amt]
-     * -modify siege homeblock [war] [town] (x) (Z)
+     * -modify siege townspawn [war] [town] (x) (Z)
      * -modify siege time [war] [town] [add/set/max] [value] //max modified the max length
      * -modify siege owner [war] [town] [add/set] [value]
-     * -modify siege move [war] [town] [newWar] //low priority, moves siege to other war
-     * <p>
+     * -modify siege move [war] [town] [newWar] //low priority, moves siege to other war/town
+     *
      * -modify war score [war] [side] [amt]
      * -modify war side [war]  [side] [name]
      * -modify war name [war] [name]
@@ -148,42 +148,44 @@ public class AdminTabCompletion implements TabCompleter {
         } else {
             if (args[0].equalsIgnoreCase("create")) {
                 if (args.length > 2) {
-                    if (args[1].equals("raid")) {
-                        if (args.length > 3) {
-                            if (args.length > 4) {
-                                if (args.length > 5) {
-                                    if (args.length > 6) {
-                                        return null;
+                    switch (args[1]) {
+                        case "raid" -> {
+                            if (args.length > 3) {
+                                if (args.length > 4) {
+                                    if (args.length > 5) {
+                                        if (args.length > 6) {
+                                            return null;
+                                        } else {
+                                            return NameUtil.filterByStart(CommandHelper.getPlayers(), args[5]);
+                                        }
                                     } else {
-                                        return NameUtil.filterByStart(CommandHelper.getPlayers(), args[5]);
+                                        return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[4]);
                                     }
                                 } else {
-                                    return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[4]);
+                                    return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[3]);
                                 }
                             } else {
-                                return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[3]);
+                                return NameUtil.filterByStart(CommandHelper.getWarNames(), args[2]);
                             }
-                        } else {
-                            return NameUtil.filterByStart(CommandHelper.getWarNames(), args[2]);
                         }
-                    } else if (args[1].equals("siege")) {
-                        if (args.length > 3) {
-                            if (args.length > 4) {
-                                if (args.length > 5) {
-                                    return null;
+                        case "siege" -> {
+                            if (args.length > 3) {
+                                if (args.length > 4) {
+                                    if (args.length > 5) {
+                                        return null;
+                                    } else {
+                                        return NameUtil.filterByStart(CommandHelper.getPlayers(), args[4]);
+                                    }
                                 } else {
-                                    return NameUtil.filterByStart(CommandHelper.getPlayers(), args[4]);
+                                    return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[3]);
                                 }
                             } else {
-                                return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[3]);
+                                return NameUtil.filterByStart(CommandHelper.getWarNames(), args[2]);
                             }
-                        } else {
-                            return NameUtil.filterByStart(CommandHelper.getWarNames(), args[2]);
                         }
-                    } else if (args[1].equals("war")) {
-                        return null;
-                    } else {
-                        return null;
+                        default -> {
+                            return null;
+                        }
                     }
                 } else {
                     return NameUtil.filterByStart(type, args[1]);
@@ -360,7 +362,33 @@ public class AdminTabCompletion implements TabCompleter {
                         if (args.length > 3) {
                             if (args.length > 4) {
                                 if (args.length > 5) {
-                                    return null;
+                                    switch (args[2]) {
+                                        case "score" : {
+
+                                        }
+                                        case "homeblock": {
+
+                                        }
+                                        case "gather" : {
+
+                                        }
+                                        case "phase": {
+
+                                        }
+                                        case "loot": {
+
+                                        }
+                                        case "time": {
+
+                                        }
+                                        case "owner": {
+
+                                        }
+                                        default: {
+
+                                        }
+
+                                    }
                                 } else {
                                     return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[4]);
                                 }
@@ -374,7 +402,24 @@ public class AdminTabCompletion implements TabCompleter {
                         if (args.length > 3) {
                             if (args.length > 4) {
                                 if (args.length > 5) {
-                                    return null;
+                                    switch (args[2]) {
+                                        case "score" : {
+
+                                        }
+                                        case "homeblock": {
+
+                                        }
+                                        case "time": {
+
+                                        }
+                                        case "owner": {
+
+                                        }
+                                        default: {
+
+                                        }
+
+                                    }
                                 } else {
                                     return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[4]);
                                 }
@@ -382,17 +427,40 @@ public class AdminTabCompletion implements TabCompleter {
                                 return NameUtil.filterByStart(CommandHelper.getWarNames(), args[3]);
                             }
                         } else {
-                            return NameUtil.filterByStart(raidModify, args[2]);
+                            return NameUtil.filterByStart(siegeModify, args[2]);
                         }
                     } else if (args[1].equalsIgnoreCase("war")) {
                         if (args.length > 3) {
                             if (args.length > 4) {
-                                return null;
+                                switch (args[2]) {
+                                    case "score" : {
+
+                                    }
+                                    case "side": {
+
+                                    }
+                                    case "name" : {
+
+                                    }
+                                    case "add": {
+
+                                    }
+                                    case "surrender": {
+
+                                    }
+                                    case "raidTime": {
+
+                                    }
+                                    default: {
+
+                                    }
+
+                                }
                             } else {
                                 return NameUtil.filterByStart(CommandHelper.getWarNames(), args[3]);
                             }
                         } else {
-                            return NameUtil.filterByStart(raidModify, args[2]);
+                            return NameUtil.filterByStart(warModify, args[2]);
                         }
                     } else {
                         return NameUtil.filterByStart(type, args[1]);
