@@ -62,6 +62,23 @@ public class AdminTabCompletion implements TabCompleter {
             "leave"
     });
 
+    List<String> addSet = List.of(new String[] {
+            "add",
+            "set"
+    });
+
+    List<String> nationTown = List.of(new String[] {
+            "town",
+            "nation"
+    });
+
+    List<String> lootSet = List.of(new String[] {
+            "value",
+            "looted",
+            "ticks",
+            "reset"
+    });
+
 
     /**
      * //done
@@ -363,29 +380,81 @@ public class AdminTabCompletion implements TabCompleter {
                             if (args.length > 4) {
                                 if (args.length > 5) {
                                     switch (args[2]) {
-                                        case "score" : {
-
+                                        /*
+                                         * -modify raid score [war] [town] [add/set] [value]
+                                         * -modify raid townspawn [war] [town] (x) (y) (Z)
+                                         * -modify raid gather [war] [town] [town]
+                                         * -modify raid phase [war] [town] [phase] //"next" to move to next phase
+                                         * -modify raid loot [war] [town] [value,looted,ticks,reset] [amt] (x) (z)  //no coords just does current chunk, reset deletes it from the list
+                                         * -modify raid time [war] [town] [add/set] [value]
+                                         * -modify raid owner [war] [town] [player]
+                                         * -modify raid move [war] [town] [newWar] //low priority, moves raid to other war/ town
+                                         * -modify raid clearActive [war] [town] //low priority
+                                         */
+                                        case "score", "time": {
+                                            if (args.length > 6) {
+                                                return null;
+                                            } else {
+                                                return NameUtil.filterByStart(addSet, args[5]);
+                                            }
                                         }
-                                        case "homeblock": {
-
+                                        case "townspawn": {
+                                            if (args.length > 6) {
+                                                if (args.length > 7) {
+                                                    if (args.length > 8) {
+                                                        return null;
+                                                    } else {
+                                                        return List.of(new String[] { "" + p.getLocation().getZ()});
+                                                    }
+                                                } else {
+                                                    return List.of(new String[] { "" + p.getLocation().getY()});
+                                                }
+                                            } else {
+                                                return List.of(new String[] { "" + p.getLocation().getX()});
+                                            }
                                         }
                                         case "gather" : {
-
+                                            if (args.length > 6) {
+                                                return null;
+                                            } else {
+                                                return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[5]);
+                                            }
                                         }
                                         case "phase": {
-
+                                            if (args.length > 6) {
+                                                return null;
+                                            } else {
+                                                return NameUtil.filterByStart(CommandHelper.getRaidPhases(), args[5]);
+                                            }
                                         }
                                         case "loot": {
-
-                                        }
-                                        case "time": {
-
+                                            if (args.length > 6) {
+                                                if (args.length > 7) {
+                                                    if (args.length > 8) {
+                                                        if (args.length > 9) {
+                                                            return null;
+                                                        } else {
+                                                            return List.of(new String[] { "" + p.getLocation().getZ()});
+                                                        }
+                                                    } else {
+                                                        return List.of(new String[] { "" + p.getLocation().getX()});
+                                                    }
+                                                } else {
+                                                    return null;
+                                                }
+                                            } else {
+                                                return NameUtil.filterByStart(lootSet, args[5]);
+                                            }
                                         }
                                         case "owner": {
-
+                                            if (args.length > 6) {
+                                                return null;
+                                            } else {
+                                                return NameUtil.filterByStart(CommandHelper.getPlayers(), args[5]);
+                                            }
                                         }
                                         default: {
-
+                                            return null;
                                         }
 
                                     }
@@ -403,20 +472,37 @@ public class AdminTabCompletion implements TabCompleter {
                             if (args.length > 4) {
                                 if (args.length > 5) {
                                     switch (args[2]) {
-                                        case "score" : {
-
+                                        case "score", "time": {
+                                            if (args.length > 6) {
+                                                return null;
+                                            } else {
+                                                return NameUtil.filterByStart(addSet, args[5]);
+                                            }
                                         }
-                                        case "homeblock": {
-
-                                        }
-                                        case "time": {
-
+                                        case "townspawn": {
+                                            if (args.length > 6) {
+                                                if (args.length > 7) {
+                                                    if (args.length > 8) {
+                                                        return null;
+                                                    } else {
+                                                        return List.of(new String[] { "" + p.getLocation().getZ()});
+                                                    }
+                                                } else {
+                                                    return List.of(new String[] { "" + p.getLocation().getY()});
+                                                }
+                                            } else {
+                                                return List.of(new String[] { "" + p.getLocation().getX()});
+                                            }
                                         }
                                         case "owner": {
-
+                                            if (args.length > 6) {
+                                                return null;
+                                            } else {
+                                                return NameUtil.filterByStart(CommandHelper.getPlayers(), args[5]);
+                                            }
                                         }
                                         default: {
-
+                                            return null;
                                         }
 
                                     }
@@ -433,28 +519,61 @@ public class AdminTabCompletion implements TabCompleter {
                         if (args.length > 3) {
                             if (args.length > 4) {
                                 switch (args[2]) {
-                                    case "score" : {
-
+                                    /*
+                                     * -modify war score [war] [side] [amt]
+                                     * -modify war side [war] [side] [name]
+                                     * -modify war name [war] [name]
+                                     * -modify war add [war] [side] [town/nation] [town/nation]
+                                     * -modify war add nation [war] [nation]
+                                     * -modify war surrender town [war] [town] //adds town to surrender list
+                                     * -modify war surrender nation [war] [town] //adds all towns to surrender list
+                                     * -modify war raidTime [add,set,reset] [war] [town] [amt] //set when last raid was
+                                     */
+                                    case "score", "raidTime": {
+                                        if (args.length > 5) {
+                                            if (args.length > 6) {
+                                                return null;
+                                            } else {
+                                                return NameUtil.filterByStart(addSet, args[4]);
+                                            }
+                                        } else {
+                                            return NameUtil.filterByStart(CommandHelper.getWarSides(args[3]), args[4]);
+                                        }
                                     }
                                     case "side": {
-
+                                        if (args.length > 5) {
+                                            return null;
+                                        } else {
+                                            return NameUtil.filterByStart(CommandHelper.getWarSides(args[3]), args[4]);
+                                        }
                                     }
                                     case "name" : {
-
+                                        return null;
                                     }
-                                    case "add": {
-
-                                    }
-                                    case "surrender": {
-
-                                    }
-                                    case "raidTime": {
-
+                                    case "add", "surrender": {
+                                        if (args.length > 5) {
+                                            if (args.length > 6) {
+                                                if (args.length > 7) {
+                                                    return null;
+                                                } else {
+                                                    if (args[5].equalsIgnoreCase("town")) {
+                                                        return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[6]);
+                                                    } else if (args[5].equalsIgnoreCase("nation")) {
+                                                        return NameUtil.filterByStart(CommandHelper.getTownyNations(), args[6]);
+                                                    } else {
+                                                        return null;
+                                                    }
+                                                }
+                                            } else {
+                                                return NameUtil.filterByStart(nationTown, args[5]);
+                                            }
+                                        } else {
+                                            return NameUtil.filterByStart(CommandHelper.getWarSides(args[3]), args[4]);
+                                        }
                                     }
                                     default: {
-
+                                        return null;
                                     }
-
                                 }
                             } else {
                                 return NameUtil.filterByStart(CommandHelper.getWarNames(), args[3]);

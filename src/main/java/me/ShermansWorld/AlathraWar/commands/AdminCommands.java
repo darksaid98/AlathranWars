@@ -1191,7 +1191,7 @@ public class AdminCommands implements CommandExecutor {
                             p.sendMessage(Helper.color("c") + "Error: War not found!");
                             return false;
                         } else {
-                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify war score [war] [side] [amt]");
+                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify war score [war] [side] [add/set] [amt]");
                             return false;
                         }
                     } else if(args[2].equalsIgnoreCase("side")) {
@@ -1241,35 +1241,35 @@ public class AdminCommands implements CommandExecutor {
                     else if(args[2].equalsIgnoreCase("add")) {
                         if(args.length >= 7) {
                             for (War w : WarData.getWars()) {
-                                if (w.getName().equals(args[4])) {
+                                if (w.getName().equals(args[3])) {
                                     if(!w.getSide1().equals(args[4]) && !w.getSide1().equals(args[4])) {
                                         p.sendMessage(Helper.color("c") + "Error: Side not found!");
                                         return false;
                                     }
-                                    if(args[3].equalsIgnoreCase("town")) {
+                                    if(args[5].equalsIgnoreCase("town")) {
                                         Town t = TownyAPI.getInstance().getTown(args[6]);
                                         if (t != null) {
                                             w.addTown(t, args[5]);
-                                            p.sendMessage(Helper.Chatlabel() + "Added town " + args[6] + " war " + args[4] + " on side " + args[5]);
-                                            Main.warLogger.log(Helper.Chatlabel() + "Added town " + args[6] + " war " + args[4] + " on side " + args[5]);
+                                            p.sendMessage(Helper.Chatlabel() + "Added town " + args[6] + " war " + args[3] + " on side " + args[4]);
+                                            Main.warLogger.log(Helper.Chatlabel() + "Added town " + args[6] + " war " + args[3] + " on side " + args[4]);
                                             return true;
                                         } else {
                                             p.sendMessage(Helper.color("c") + "Error: Town not found!");
                                             return false;
                                         }
-                                    } else if(args[3].equalsIgnoreCase("nation")) {
+                                    } else if(args[5].equalsIgnoreCase("nation")) {
                                         Nation n = TownyAPI.getInstance().getNation(args[6]);
                                         if (n != null) {
                                             w.addNation(n, args[5]);
-                                            p.sendMessage(Helper.Chatlabel() + "Added nation " + args[6] + " war " + args[4] + " on side " + args[5]);
-                                            Main.warLogger.log(Helper.Chatlabel() + "Added nation " + args[6] + " war " + args[4] + " on side " + args[5]);
+                                            p.sendMessage(Helper.Chatlabel() + "Added nation " + args[6] + " war " + args[3] + " on side " + args[4]);
+                                            Main.warLogger.log(Helper.Chatlabel() + "Added nation " + args[6] + " war " + args[3] + " on side " + args[4]);
                                             return true;
                                         } else {
                                             p.sendMessage(Helper.color("c") + "Error: Nation not found!");
                                             return false;
                                         }
                                     } else {
-                                        p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify war add town/nation [war] [side] [town/nation]");
+                                        p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify war add [war] [side] town/nation [town/nation]");
                                         return false;
                                     }
                                 }
@@ -1277,43 +1277,43 @@ public class AdminCommands implements CommandExecutor {
                             p.sendMessage(Helper.color("c") + "Error: War not found!");
                             return false;
                         } else {
-                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify war add town/nation [war] [town/nation]");
+                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify war add [war] [town/nation] town/nation ");
                             return false;
                         }
                     }
                     //TODO IDK IF THIS WORKS
                     else if(args[2].equalsIgnoreCase("surrender")) {
-                        if(args.length >= 8) {
+                        if(args.length >= 7) {
                             for (War w : WarData.getWars()) {
                                 if (w.getName().equals(args[3])) {
                                     if(!w.getSide1().equals(args[4]) && !w.getSide1().equals(args[4])) {
                                         p.sendMessage(Helper.color("c") + "Error: Side not found!");
                                         return false;
                                     }
-                                    if(args[3].equalsIgnoreCase("town")) {
+                                    if(args[5].equalsIgnoreCase("town")) {
                                         Town t = TownyAPI.getInstance().getTown(args[6]);
                                         if (t != null) {
                                             w.surrenderTown(t.getName());
-                                            p.sendMessage(Helper.Chatlabel() + "Surrendered town " + args[6] + " war " + args[4] + " on side " + args[5]);
-                                            Main.warLogger.log(Helper.Chatlabel() + "Surrendered town " + args[6] + " war " + args[4] + " on side " + args[5]);
+                                            p.sendMessage(Helper.Chatlabel() + "Surrendered town " + args[6] + " war " + args[3] + " on side " + args[4]);
+                                            Main.warLogger.log(Helper.Chatlabel() + "Surrendered town " + args[6] + " war " + args[3] + " on side " + args[4]);
                                             return true;
                                         } else {
                                             p.sendMessage(Helper.color("c") + "Error: Town not found!");
                                             return false;
                                         }
-                                    } else if(args[3].equalsIgnoreCase("nation")) {
+                                    } else if(args[5].equalsIgnoreCase("nation")) {
                                         Nation n = TownyAPI.getInstance().getNation(args[6]);
                                         if (n != null) {
                                             w.surrenderNation(n);
-                                            p.sendMessage(Helper.Chatlabel() + "Surrendered nation " + args[6] + " war " + args[4] + " on side " + args[5]);
-                                            Main.warLogger.log(Helper.Chatlabel() + "Surrendered nation " + args[6] + " war " + args[4] + " on side " + args[5]);
+                                            p.sendMessage(Helper.Chatlabel() + "Surrendered nation " + args[6] + " war " + args[3] + " on side " + args[4]);
+                                            Main.warLogger.log(Helper.Chatlabel() + "Surrendered nation " + args[6] + " war " + args[3] + " on side " + args[4]);
                                             return true;
                                         } else {
                                             p.sendMessage(Helper.color("c") + "Error: Nation not found!");
                                             return false;
                                         }
                                     } else {
-                                        p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify war add town/nation [war] [side] [town/nation]");
+                                        p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify war surrender [war] [side] town/nation [town/nation]");
                                         return false;
                                     }
                                 }

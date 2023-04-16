@@ -5,6 +5,7 @@ import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
 import me.ShermansWorld.AlathraWar.War;
+import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import me.ShermansWorld.AlathraWar.data.WarData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -84,6 +85,14 @@ public class CommandHelper {
         List<String> out = new ArrayList<>();
         for (Player p : players) {
             out.add(p.getName());
+        }
+        return out;
+    }
+
+    protected static List<String> getRaidPhases() {
+        List<String> out = new ArrayList<>();
+        for (RaidPhase ph : RaidPhase.values()) {
+            out.add(ph.name());
         }
         return out;
     }
