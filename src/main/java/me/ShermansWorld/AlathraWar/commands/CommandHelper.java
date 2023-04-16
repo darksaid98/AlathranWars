@@ -20,7 +20,7 @@ public class CommandHelper {
      * Grabs list of all war names
      * @return
      */
-    protected static List<String> getWarNames() {
+    public static List<String> getWarNames() {
         List<String> out = new ArrayList<>();
         for (War w : WarData.getWars()) {
             out.add(w.getName());
@@ -33,7 +33,7 @@ public class CommandHelper {
      * @param name
      * @return
      */
-    protected static List<String> getWarSides(String name) {
+    public static List<String> getWarSides(String name) {
         List<String> out = new ArrayList<>();
         for (War w : WarData.getWars()) {
             if(w.getName().equals(name)) {
@@ -50,7 +50,7 @@ public class CommandHelper {
      *
      * @return
      */
-    protected static List<String> getTownyTowns() {
+    public static List<String> getTownyTowns() {
         List<String> out = new ArrayList<>();
         for (Town t : TownyAPI.getInstance().getTowns()) {
             out.add(t.getName());
@@ -63,7 +63,7 @@ public class CommandHelper {
      *
      * @return
      */
-    protected static List<String> getTownyNations() {
+    public static List<String> getTownyNations() {
         List<String> out = new ArrayList<>();
         for (Town t : TownyAPI.getInstance().getTowns()) {
             try {
@@ -80,7 +80,11 @@ public class CommandHelper {
         return out;
     }
 
-    protected static List<String> getPlayers() {
+    /**
+     * get a list of all online players
+     * @return
+     */
+    public static List<String> getPlayers() {
         Collection<? extends Player> players = Bukkit.getOnlinePlayers();
         List<String> out = new ArrayList<>();
         for (Player p : players) {
@@ -89,12 +93,15 @@ public class CommandHelper {
         return out;
     }
 
-    protected static List<String> getRaidPhases() {
+    /**
+     * get a list of all raid phases
+     * @return
+     */
+    public static List<String> getRaidPhases() {
         List<String> out = new ArrayList<>();
         for (RaidPhase ph : RaidPhase.values()) {
             out.add(ph.name());
         }
         return out;
     }
-
 }
