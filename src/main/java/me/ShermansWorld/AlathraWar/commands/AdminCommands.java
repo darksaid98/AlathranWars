@@ -376,7 +376,6 @@ public class AdminCommands implements CommandExecutor {
                             p.sendMessage(Helper.color("c") + "Forced " + args[3] + " to join the war " + args[4] + " on side " + args[5]);
 
                             Main.warLogger.log("Forced " + args[3] + " to join the war " + args[4] + " on side " + args[5]);
-                            finalizeWar(w);
                         } else {
                             p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin force join war [player] [war] [side]");
                             return true;

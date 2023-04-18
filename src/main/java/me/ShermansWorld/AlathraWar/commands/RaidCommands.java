@@ -318,6 +318,8 @@ public class RaidCommands implements CommandExecutor {
                 } else {
                     joiner.sendMessage(String.valueOf(Helper.Chatlabel()) + "You cannot join the raid on " + raid.getRaidedTown().getName() + "! It has already started!");
                 }
+
+                raid.save();
             }
         } else {
             p.sendMessage(String.valueOf(Helper.Chatlabel()) + "No raid is gathering in this town or this town does not exist!");
@@ -362,6 +364,8 @@ public class RaidCommands implements CommandExecutor {
                     }
                 }
             }
+
+            raid.save();
         } else {
             p.sendMessage(String.valueOf(Helper.Chatlabel()) + "No raid is gathering in this town or this town does not exist!");
             if (admin) player.sendMessage(String.valueOf(Helper.Chatlabel()) + "No raid is gathering in this town or this town does not exist!");
