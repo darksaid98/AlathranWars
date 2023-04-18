@@ -22,7 +22,7 @@ public class War {
     // References
     private ArrayList<Siege> sieges = new ArrayList<Siege>();
     private ArrayList<Raid> raids = new ArrayList<Raid>();
-    private Long lastRaidTime;
+    private Long lastRaidTime = 0L;
 
     /**
      * War Constructor
