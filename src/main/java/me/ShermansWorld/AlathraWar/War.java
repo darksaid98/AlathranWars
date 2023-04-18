@@ -214,6 +214,9 @@ public class War {
     }
 
     public Long getLastRaidTime() {
+        if(lastRaidTime == null) {
+            lastRaidTime = 0L;
+        }
         return this.lastRaidTime;
     }
 }
