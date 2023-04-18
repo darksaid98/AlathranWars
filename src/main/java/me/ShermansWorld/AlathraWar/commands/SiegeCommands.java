@@ -171,7 +171,7 @@ public class SiegeCommands implements CommandExecutor {
             String color = (siege.getSide1AreAttackers() && (war.getSide(siege.getTown().getName()) == 1) ) ? "§c" : "§9";
             sender.sendMessage(war.getName() + " - " + color + siege.getTown().getName());
             sender.sendMessage(war.getSide1() + " - " + (siege.getSide1AreAttackers() ? siege.getAttackerPoints() : siege.getDefenderPoints()));
-            sender.sendMessage(war.getSide1() + " - " + (siege.getSide1AreAttackers() ? siege.getDefenderPoints() : siege.getAttackerPoints()));
+            sender.sendMessage(war.getSide2() + " - " + (siege.getSide1AreAttackers() ? siege.getDefenderPoints() : siege.getAttackerPoints()));
             sender.sendMessage("Time Left: " + (Siege.maxSiegeTicks - siege.getSiegeTicks())/1200 + " minutes");
             sender.sendMessage("-=-=-=-=-=-=-=-=-=-=-=-");
         }
