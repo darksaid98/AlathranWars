@@ -22,7 +22,7 @@ public class War {
     // References
     private ArrayList<Siege> sieges = new ArrayList<Siege>();
     private ArrayList<Raid> raids = new ArrayList<Raid>();
-    private Long lastRaidTime;
+    private long lastRaidTime = 0;
 
     /**
      * War Constructor
@@ -221,7 +221,7 @@ public class War {
         this.lastRaidTime = lastRaidTime;
     }
 
-    public Long getLastRaidTime() {
+    public long getLastRaidTime() {
         return this.lastRaidTime;
     }
 }
