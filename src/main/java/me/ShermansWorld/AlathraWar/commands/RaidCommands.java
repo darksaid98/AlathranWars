@@ -35,7 +35,7 @@ public class RaidCommands implements CommandExecutor {
             } else {
                 fail(p, args, "syntax");
             }
-        } else if (args.length == 3) {
+        } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("stop")) {
                 stopRaid(p, args);
             } else {
