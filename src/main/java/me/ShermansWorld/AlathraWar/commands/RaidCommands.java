@@ -72,8 +72,15 @@ public class RaidCommands implements CommandExecutor {
             //if this is run as admin, shift our check forward a slot
             if (war.getName().equalsIgnoreCase(args[1 + (admin ? 1 : 0)])) {
                 warFound = true;
-                if (!war.getSide1Players().contains(p.getName()) && !war.getSide2Players().contains(p.getName())) {
+
+                String side = "";
+                if (war.getSide1Players().contains(p.getName())) {
+                    side = war.getSide1();
+                } else if (war.getSide2Players().contains(p.getName())) {
+                    side = war.getSide2();
+                } else {
                     p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You are not in this war! Type /war join [war] [side]");
+                    return;
                 }
                 TownyWorld townyWorld;
                 townyWorld = WorldCoord.parseWorldCoord(p.getLocation()).getTownyWorld();
@@ -124,7 +131,7 @@ public class RaidCommands implements CommandExecutor {
                         Raid raid2;
                         if (war.getSide1Players().contains(p.getName())) {
                             //Time and raid activity validity check
-                            int c = RaidData.isValidRaid(war, raidedTown);
+                            int c = RaidData.isValidRaid(war, side, raidedTown);
                             if (c == 2) {
                                 //if were admin, see if an owner arg exists, and if so then use it
                                 raid2 = new Raid(war, raidedTown, gatherTown, true, raidOwner);
@@ -150,7 +157,7 @@ public class RaidCommands implements CommandExecutor {
                                 return;
                             }
                             //Time and raid activity validity check
-                            int c = RaidData.isValidRaid(war, raidedTown);
+                            int c = RaidData.isValidRaid(war, side, raidedTown);
                             if (c == 2) {
                                 raid2 = new Raid(war, raidedTown, gatherTown, false, raidOwner);
                             } else if (c == 1) {

@@ -227,7 +227,7 @@ public class RaidData {
      * @Isaac this is for getting if a town can be raided, return (-2, -1, 0, 1, 2) based on status
      * (no players online, 24 hours town cooldown, 6 hour war cooldown, town being raided already, valid time to raid)
      */
-    public static int isValidRaid(War war, @Nonnull Town town) {
+    public static int isValidRaid(War war, String side, @Nonnull Town town) {
         long townTime = whenTownLastRaided(town);
 
         //24 hours town cooldown
@@ -236,7 +236,7 @@ public class RaidData {
         }
 
         //6 hour raid cooldown for war
-        if ((System.currentTimeMillis() / 1000) - war.getLastRaidTime() <= 21600) {
+        if ((System.currentTimeMillis() / 1000) - (side.equals(war.getSide1()) ? war.getLastRaidTimeSide1() : war.getLastRaidTimeSide2()) <= 21600) {
             return 0;
         }
 

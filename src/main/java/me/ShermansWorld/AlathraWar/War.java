@@ -22,7 +22,8 @@ public class War {
     // References
     private ArrayList<Siege> sieges = new ArrayList<Siege>();
     private ArrayList<Raid> raids = new ArrayList<Raid>();
-    private long lastRaidTime = 0;
+    private long lastRaidTimeSide1 = 0;
+    private long lastRaidTimeSide2 = 0;
 
     /**
      * War Constructor
@@ -217,11 +218,19 @@ public class War {
         return returnList;
     }
 
-    public void setLastRaidTime(Long lastRaidTime) {
-        this.lastRaidTime = lastRaidTime;
+    public void setLastRaidTimeSide1(long lastRaidTime) {
+        this.lastRaidTimeSide1 = lastRaidTime;
     }
 
-    public long getLastRaidTime() {
-        return this.lastRaidTime;
+    public long getLastRaidTimeSide1() {
+        return this.lastRaidTimeSide1;
+    }
+
+    public void setLastRaidTimeSide2(long lastRaidTime) {
+        this.lastRaidTimeSide2 = lastRaidTime;
+    }
+
+    public long getLastRaidTimeSide2() {
+        return this.lastRaidTimeSide2;
     }
 }

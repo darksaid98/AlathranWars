@@ -154,7 +154,7 @@ public class AdminTabCompletion implements TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         final Player p = (Player) sender;
-        if (p.hasPermission("!AlathraWar.admin")) {
+        if (!p.hasPermission("AlathraWar.admin")) {
             return null;
         }
 
@@ -530,12 +530,17 @@ public class AdminTabCompletion implements TabCompleter {
                                     case "score", "raidTime" -> {
                                         if (args.length > 5) {
                                             if (args.length > 6) {
-                                                return null;
+                                                if (args.length > 7) {
+                                                    return null;
+                                                } else {
+                                                    return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[4]);
+                                                }
                                             } else {
-                                                return NameUtil.filterByStart(addSet, args[4]);
+                                                return NameUtil.filterByStart(CommandHelper.getWarNames(), args[5]);
                                             }
                                         } else {
-                                            return NameUtil.filterByStart(CommandHelper.getWarSides(args[3]), args[4]);
+                                            return NameUtil.filterByStart(addSet, args[4]);
+
                                         }
                                     }
                                     case "side" -> {

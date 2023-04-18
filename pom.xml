@@ -15,6 +15,14 @@
 		<maven.compiler.target>17</maven.compiler.target>
 	</properties>
 
+	<build>
+		<resources>
+			<resource>
+				<directory>resources</directory>
+			</resource>
+		</resources>
+	</build>
+
 	<repositories>
 		<!-- This adds the Spigot Maven repository to the build -->
 		<repository>
