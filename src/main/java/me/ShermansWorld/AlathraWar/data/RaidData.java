@@ -228,7 +228,7 @@ public class RaidData {
             return -1;
         }
 
-        Long lastRaidTime = war.getLastRaidTime();
+        long lastRaidTime = war.getLastRaidTime();
         //6 hour raid cooldown for war
         if ((System.currentTimeMillis() / 1000) - lastRaidTime <= 21600) {
             return 0;
