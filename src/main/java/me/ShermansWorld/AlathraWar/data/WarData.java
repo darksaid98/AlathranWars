@@ -127,14 +127,11 @@ public class WarData
         sHashMap.put("lastRaidTimeSide1", war.getLastRaidTimeSide1());
         sHashMap.put("lastRaidTimeSide2", war.getLastRaidTimeSide2());
 
-
-
         DataManager.saveData("wars" + File.separator + war.getName() + ".yml", sHashMap);
     }
 
     private static void deleteWar(War war) {
         File[] files = new File(dataFolderPath + File.separator + "wars").listFiles(ymlFilter);
-
         for (File file : files) {
             if (file.getName().startsWith(war.getName())) {
                 file.delete();

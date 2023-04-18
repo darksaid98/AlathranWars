@@ -201,7 +201,7 @@ public class Raid {
         this.bukkitId[0] = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask((Plugin) Main.getInstance(),
                 getTickLoop(), 0L, incremental);
 
-        this.getWar().addRaid(this);
+//        this.getWar().addRaid(this); todo FIX
         this.save();
 
     }
@@ -268,13 +268,13 @@ public class Raid {
                 //score for looting
                 this.addPointsToRaidScore(10);
 
-                Main.warLogger.log(String.format("A townblock has been looted for $%.2d", lb.value));
+                Main.warLogger.log(String.format("A townblock has been looted for $%.2f", lb.value));
                 //Broadcast to the whole raid
                 for (String s : activeRaiders) {
-                    Bukkit.getPlayer(s).sendMessage(Helper.Chatlabel() + String.format("A townblock has been looted for $%.2d and +10 points. (Added to pool)", lb.value));
+                    Bukkit.getPlayer(s).sendMessage(Helper.Chatlabel() + String.format("A townblock has been looted for $%.2f and +10 points. (Added to pool)", lb.value));
                 }
                 for (String s : defenderPlayers) {
-                    Bukkit.getPlayer(s).sendMessage(Helper.Chatlabel() + String.format("A townblock has been looted for $%.2d and +10 points. (Added to pool)", lb.value));
+                    Bukkit.getPlayer(s).sendMessage(Helper.Chatlabel() + String.format("A townblock has been looted for $%.2f and +10 points. (Added to pool)", lb.value));
                 }
             }
         } else {
@@ -808,7 +808,7 @@ public class Raid {
                     //Broadcast
                     if (raidTicks % 6000 == 0) {
                         Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The raid of "
-                                + Raid.this.getRaidedTown().getName() + " will begin in " + (int) (RaidPhase.TRAVEL.startTick / 20 / 60) + " minutes!");
+                                + Raid.this.getRaidedTown().getName() + " will begin in " + (int) ((RaidPhase.TRAVEL.startTick - raidTicks) / 20 / 60) + " minutes!");
                         Bukkit.broadcastMessage(
                                 "The Raiders are gathering at " + getGatherTown().getName() + " before making the journey over!");
                     }
