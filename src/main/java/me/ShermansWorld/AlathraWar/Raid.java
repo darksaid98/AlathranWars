@@ -567,7 +567,6 @@ public class Raid {
 
     /**
      * No winner declared
-     * @param raidScore
      */
     public void noWinner() {
         //TODO finalize payout
