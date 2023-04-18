@@ -26,6 +26,7 @@ public class SiegeCommands implements CommandExecutor {
     public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
         if (args.length == 0) {
             sender.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /siege help");
+            return true;
         }
         
         // Start
@@ -60,6 +61,11 @@ public class SiegeCommands implements CommandExecutor {
     private static void siegeStart(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) return;
         final Player player = (Player) sender;
+
+        if (args.length < 3) {
+            sender.sendMessage(Helper.Chatlabel() + "/war siege [war] [town]");
+            return;
+        }
 
         // War check
         War war = WarData.getWar(args[1]);
@@ -128,6 +134,11 @@ public class SiegeCommands implements CommandExecutor {
     private static void siegeAbandon(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) return;
         final Player p = (Player) sender;
+
+        if (args.length < 2) {
+            sender.sendMessage(Helper.Chatlabel() + "/war abandon [town]");
+            return;
+        }
 
         Siege siege = SiegeData.getSiege(args[1]);
         if (siege == null) {
