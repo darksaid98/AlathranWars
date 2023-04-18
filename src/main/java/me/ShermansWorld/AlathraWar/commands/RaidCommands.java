@@ -56,8 +56,7 @@ public class RaidCommands implements CommandExecutor {
         } else {
             fail(p, args, "syntax");
         }
-        return false;
-
+        return true;
     }
 
     /**
