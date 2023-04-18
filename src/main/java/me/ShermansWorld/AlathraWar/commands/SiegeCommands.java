@@ -179,7 +179,7 @@ public class SiegeCommands implements CommandExecutor {
     }
 
     private static void siegeHelp(CommandSender sender, String[] args) {
-        if (sender.hasPermission("!AlathraWar.admin")) {
+        if (sender.hasPermission("AlathraWar.admin")) {
             sender.sendMessage(Helper.Chatlabel() + "/siege stop [town]");
         }
         sender.sendMessage(Helper.Chatlabel() + "/siege start [war] [town]");
