@@ -1,5 +1,6 @@
 package me.ShermansWorld.AlathraWar;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import com.palmergames.bukkit.towny.TownyAPI;
@@ -7,6 +8,7 @@ import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 
+import me.ShermansWorld.AlathraWar.data.DataManager;
 import me.ShermansWorld.AlathraWar.data.WarData;
 
 public class War {
@@ -173,7 +175,9 @@ public class War {
     }
 
     public void setName(String name) {
+        DataManager.deleteFile("wars" + File.separator + this.getName() + ".yml");
         this.name = name;
+        this.save();
     }
 
     public void setSide1(String side1) {

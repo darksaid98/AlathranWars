@@ -53,7 +53,8 @@ public class AdminTabCompletion implements TabCompleter {
             "name",
             "add",
             "surrender",
-            "raidTime"
+            "raidTimeWar",
+            "raidTimeTown"
     });
 
     List<String> force = List.of(new String[]{
@@ -62,17 +63,24 @@ public class AdminTabCompletion implements TabCompleter {
             "leave"
     });
 
-    List<String> addSet = List.of(new String[] {
+    List<String> addSet = List.of(new String[]{
             "add",
             "set"
     });
 
-    List<String> nationTown = List.of(new String[] {
+
+    List<String> addSetReset = List.of(new String[]{
+            "add",
+            "set",
+            "reset"
+    });
+
+    List<String> nationTown = List.of(new String[]{
             "town",
             "nation"
     });
 
-    List<String> lootSet = List.of(new String[] {
+    List<String> lootSet = List.of(new String[]{
             "value",
             "looted",
             "ticks",
@@ -92,13 +100,13 @@ public class AdminTabCompletion implements TabCompleter {
      * -modify raid owner [war] [town] [player]
      * -modify raid move [war] [town] [newWar] //low priority, moves raid to other war/ town
      * -modify raid clearActive [war] [town] //low priority
-     *
+     * <p>
      * -modify siege score [war] [town] [side] [amt]
      * -modify siege townspawn [war] [town] (x) (Z)
      * -modify siege time [war] [town] [add/set/max] [value] //max modified the max length
      * -modify siege owner [war] [town] [add/set] [value]
      * -modify siege move [war] [town] [newWar] //low priority, moves siege to other war/town
-     *
+     * <p>
      * -modify war score [war] [side] [amt]
      * -modify war side [war]  [side] [name]
      * -modify war name [war] [name]
@@ -515,19 +523,19 @@ public class AdminTabCompletion implements TabCompleter {
                         }
                     } else if (args[1].equalsIgnoreCase("war")) {
                         if (args.length > 3) {
-                            if (args.length > 4) {
-                                switch (args[2]) {
-                                    /*
-                                     * -modify war score [war] [side] [amt]
-                                     * -modify war side [war] [side] [name]
-                                     * -modify war name [war] [name]
-                                     * -modify war add [war] [side] [town/nation] [town/nation]
-                                     * -modify war add nation [war] [nation]
-                                     * -modify war surrender town [war] [town] //adds town to surrender list
-                                     * -modify war surrender nation [war] [town] //adds all towns to surrender list
-                                     * -modify war raidTime [add,set,reset] [war] [town] [amt] //set when last raid was
-                                     */
-                                    case "score", "raidTime" -> {
+                            switch (args[2]) {
+                                /*
+                                 * -modify war score [war] [side] [amt]
+                                 * -modify war side [war] [side] [name]
+                                 * -modify war name [war] [name]
+                                 * -modify war add [war] [side] [town/nation] [town/nation]
+                                 * -modify war add nation [war] [nation]
+                                 * -modify war surrender town [war] [town] //adds town to surrender list
+                                 * -modify war surrender nation [war] [town] //adds all towns to surrender list
+                                 * -modify war raidTimeTown [add,set,reset] [war] [town] [amt] //set when last raid was
+                                 */
+                                case "score" -> {
+                                    if (args.length > 4) {
                                         if (args.length > 5) {
                                             if (args.length > 6) {
                                                 if (args.length > 7) {
@@ -540,17 +548,65 @@ public class AdminTabCompletion implements TabCompleter {
                                             }
                                         } else {
                                             return NameUtil.filterByStart(addSet, args[4]);
-
                                         }
+                                    } else {
+                                        return NameUtil.filterByStart(CommandHelper.getWarNames(), args[3]);
                                     }
-                                    case "side" -> {
+                                }
+                                //alathrawaradmin modify war raidTimeTown [add,set,reset] [town/war] [amt] [side]
+                                case "raidTimeTown" -> {
+                                    if (args.length > 4) {
+                                        if (args.length > 5) {
+                                            return null;
+                                        } else {
+                                            return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[4]);
+                                        }
+                                    } else {
+                                        return NameUtil.filterByStart(addSetReset, args[3]);
+                                    }
+                                }
+                                //alathrawaradmin modify war raidTimeWar [add,set,reset] [war] [amt] [side]
+                                case "raidTimeWar" -> {
+                                    if (args.length > 4) {
+                                        if (args.length > 5) {
+                                            if (args.length > 6) {
+                                                if (args.length > 7) {
+                                                    return NameUtil.filterByStart(CommandHelper.getWarSides(args[4]), args[6]);
+                                                } else {
+                                                    return null;
+                                                }
+                                            } else {
+                                                return null;
+                                            }
+                                        } else {
+                                            return NameUtil.filterByStart(CommandHelper.getWarNames(), args[4]);
+                                        }
+                                    } else {
+                                        return NameUtil.filterByStart(addSetReset, args[3]);
+
+                                    }
+                                }
+                                case "side" -> {
+
+                                    if (args.length > 4) {
                                         if (args.length > 5) {
                                             return null;
                                         } else {
                                             return NameUtil.filterByStart(CommandHelper.getWarSides(args[3]), args[4]);
                                         }
+                                    } else {
+                                        return NameUtil.filterByStart(CommandHelper.getWarNames(), args[3]);
                                     }
-                                    case "add", "surrender" -> {
+                                }
+                                case "name" -> {
+                                    if (args.length > 4) {
+                                        return null;
+                                    } else {
+                                        return NameUtil.filterByStart(CommandHelper.getWarNames(), args[3]);
+                                    }
+                                }
+                                case "add", "surrender" -> {
+                                    if (args.length > 4) {
                                         if (args.length > 5) {
                                             if (args.length > 6) {
                                                 if (args.length > 7) {
@@ -570,14 +626,15 @@ public class AdminTabCompletion implements TabCompleter {
                                         } else {
                                             return NameUtil.filterByStart(CommandHelper.getWarSides(args[3]), args[4]);
                                         }
-                                    }
-                                    default -> {
-                                        return null;
+                                    } else {
+                                        return NameUtil.filterByStart(CommandHelper.getWarNames(), args[3]);
                                     }
                                 }
-                            } else {
-                                return NameUtil.filterByStart(CommandHelper.getWarNames(), args[3]);
+                                default -> {
+                                    return null;
+                                }
                             }
+
                         } else {
                             return NameUtil.filterByStart(warModify, args[2]);
                         }

@@ -10,6 +10,7 @@ import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.palmergames.bukkit.towny.object.metadata.LongDataField;
 import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
+import me.ShermansWorld.AlathraWar.data.SiegeData;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -905,6 +906,10 @@ public class Raid {
 
             }
         };
+    }
+
+    public void save() {
+        RaidData.saveRaid(this);
     }
 
     public TownBlock getHomeBlockRaided() {

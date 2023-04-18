@@ -145,7 +145,7 @@ public class RaidCommands implements CommandExecutor {
                                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town was raided too recently!");
                                 return;
                             } else if (c == -2) {
-                                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town has no online players to defend it!");
+                                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "At least on member of the raided town must be online to defend it!");
                                 return;
                             }  else {
                                 throw new IllegalArgumentException();

@@ -128,6 +128,7 @@ public class WarData
         sHashMap.put("lastRaidTimeSide2", war.getLastRaidTimeSide2());
 
 
+
         DataManager.saveData("wars" + File.separator + war.getName() + ".yml", sHashMap);
     }
 
