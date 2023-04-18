@@ -102,7 +102,7 @@ public class Raid {
                 final boolean side1AreRaiders, final int raidTicks) {
 
         this.bukkitId = new int[1];
-        this.activeRaiders = activeRaiders == null ? new ArrayList<>() : activeRaiders;
+//        this.activeRaiders = activeRaiders == null ? new ArrayList<>() : activeRaiders;
         this.war = war;
         this.raidTicks = raidTicks;
         this.raidedTown = raidedTown;
@@ -143,10 +143,11 @@ public class Raid {
     public Raid(final War war, final Town raidedTown, final Town gatherTown,
                 final boolean side1AreRaiders) {
         this.bukkitId = new int[1];
-        this.activeRaiders = activeRaiders == null ? new ArrayList<>() : activeRaiders;
+//        this.activeRaiders = activeRaiders == null ? new ArrayList<>() : activeRaiders;
         this.war = war;
         this.raidTicks = 0;
         this.raidedTown = raidedTown;
+        this.gatherTown = gatherTown;
 
         //AttackSide-Town
         this.name = (side1AreRaiders ? war.getSide1() : war.getSide2()).toLowerCase() + "-" + raidedTown.getName().toLowerCase();
