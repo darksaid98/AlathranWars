@@ -570,6 +570,7 @@ public class AdminTabCompletion implements TabCompleter {
                                     if (args.length > 4) {
                                         if (args.length > 5) {
                                             if (args.length > 6) {
+
                                                 if (args.length > 7) {
                                                     return NameUtil.filterByStart(CommandHelper.getWarSides(args[4]), args[6]);
                                                 } else {

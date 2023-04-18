@@ -210,6 +210,7 @@ public class RaidCommands implements CommandExecutor {
 
                         //publish raid
                         Main.econ.withdrawPlayer(offlinePlayer, 1000);
+                        raid2.addActiveRaider(raidOwner.getName());
                         RaidData.addRaid(raid2);
                         raid2.start(); //funny funny method haha
                         WarData.saveWar(raid2.getWar());

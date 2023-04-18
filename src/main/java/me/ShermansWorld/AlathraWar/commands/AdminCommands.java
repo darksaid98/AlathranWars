@@ -1367,18 +1367,24 @@ public class AdminCommands implements CommandExecutor {
                                             return true;
                                         }
                                     } else if (args[3].equalsIgnoreCase("reset")) {
-                                        if (args[6].equals(w.getSide1())) {
-                                            w.setLastRaidTimeSide1(0L);
-                                            p.sendMessage(Helper.Chatlabel() + "Reset last raid time in war " + args[4]);
-                                            Main.warLogger.log(Helper.Chatlabel() + "Reset last raid time in war " + args[4]);
-                                            return finalizeWar(w);
-                                        } else if (args[6].equals(w.getSide2())) {
-                                            w.setLastRaidTimeSide2(0L);
-                                            p.sendMessage(Helper.Chatlabel() + "Reset last raid time in war " + args[4]);
-                                            Main.warLogger.log(Helper.Chatlabel() + "Reset last raid time in war " + args[4]);
-                                            return finalizeWar(w);
+
+                                        if (args.length >= 6) {
+                                            if (args[5].equals(w.getSide1())) {
+                                                w.setLastRaidTimeSide1(0L);
+                                                p.sendMessage(Helper.Chatlabel() + "Reset last raid time in war " + args[4]);
+                                                Main.warLogger.log(Helper.Chatlabel() + "Reset last raid time in war " + args[4]);
+                                                return finalizeWar(w);
+                                            } else if (args[5].equals(w.getSide2())) {
+                                                w.setLastRaidTimeSide2(0L);
+                                                p.sendMessage(Helper.Chatlabel() + "Reset last raid time in war " + args[4]);
+                                                Main.warLogger.log(Helper.Chatlabel() + "Reset last raid time in war " + args[4]);
+                                                return finalizeWar(w);
+                                            } else {
+                                                p.sendMessage(Helper.color("c") + "Side not found!");
+                                                return true;
+                                            }
                                         } else {
-                                            p.sendMessage(Helper.color("c") + "Side not found!");
+                                            p.sendMessage(Helper.color("c") + "Usage: /alathrawaradmin modify war raidTimeWar [add,set,reset] [town/war] [amt] [side]");
                                             return true;
                                         }
                                     } else {

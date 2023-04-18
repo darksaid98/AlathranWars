@@ -103,7 +103,7 @@ public class Raid {
                 final boolean side1AreRaiders, final int raidTicks, Player owner) {
 
         this.bukkitId = new int[1];
-//        this.activeRaiders = activeRaiders == null ? new ArrayList<>() : activeRaiders;
+        this.activeRaiders = activeRaiders == null ? new ArrayList<>() : activeRaiders;
         this.war = war;
         this.raidTicks = raidTicks;
         this.raidedTown = raidedTown;
@@ -145,7 +145,7 @@ public class Raid {
     public Raid(final War war, final Town raidedTown, final Town gatherTown,
                 final boolean side1AreRaiders, Player owner) {
         this.bukkitId = new int[1];
-//        this.activeRaiders = activeRaiders == null ? new ArrayList<>() : activeRaiders;
+        this.activeRaiders = activeRaiders == null ? new ArrayList<>() : activeRaiders;
         this.war = war;
         this.raidTicks = 0;
         this.raidedTown = raidedTown;
@@ -198,6 +198,7 @@ public class Raid {
         this.bukkitId[0] = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask((Plugin) Main.getInstance(),
                 getTickLoop(), 0L, incremental);
 
+        this.save();
     }
 
 
@@ -767,6 +768,7 @@ public class Raid {
                 }
                 raidTicks += incremental;
 
+                //check for end
                 if (Raid.this.raidTicks >= RaidPhase.END.startTick && Raid.this.phase == RaidPhase.COMBAT) {
                     Raid.this.phase = RaidPhase.END;
                 }
@@ -779,6 +781,11 @@ public class Raid {
                 //check and start combat phase
                 if (Raid.this.raidTicks >= RaidPhase.COMBAT.startTick && Raid.this.phase == RaidPhase.TRAVEL) {
                     startCombat();
+                }
+
+                //check and start gather phase
+                if (Raid.this.raidTicks >= RaidPhase.GATHER.startTick && Raid.this.phase == RaidPhase.GATHER) {
+                    startGather();
                 }
 
                 if (Raid.this.phase == RaidPhase.END) {
