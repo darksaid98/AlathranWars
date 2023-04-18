@@ -121,6 +121,10 @@ public class War {
         }
         return 0;
     }
+
+    public int getSide(Town town) {
+        return getSide(town.getName());
+    }
 	
 	public String getName() {
 		return this.name;

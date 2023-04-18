@@ -14,14 +14,19 @@ import com.palmergames.bukkit.towny.object.Town;
 
 import me.ShermansWorld.AlathraWar.Siege;
 import me.ShermansWorld.AlathraWar.War;
+import me.ShermansWorld.AlathraWar.data.SiegeData;
+import me.ShermansWorld.AlathraWar.data.WarData;
 
 public class SiegeTabCompletion implements TabCompleter {
 
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+
+        if (!(sender instanceof Player)) return consoleTabComplete(sender, args);
+
 		List<String> completions = new ArrayList<>();
-		Player p = (Player)sender;
-        /*
+		Player p = (Player) sender;
+
 		if (args.length == 1) {
 			if (p.hasPermission("AlathraWar.admin")) {
 				completions.add("stop");
@@ -33,18 +38,18 @@ public class SiegeTabCompletion implements TabCompleter {
 			return completions;
 		} else if (args.length == 2) {
 			if (args[0].equalsIgnoreCase("start")) {
-				if (!WarCommands.wars.isEmpty()) {
-					for (War war : WarCommands.wars) {
+				if (!WarData.getWars().isEmpty()) {
+					for (War war : WarData.getWars()) {
 						completions.add(war.getName());
 					}
-					return completions;
+					return startList(args[1], completions);
 				}
 			} else if (args[0].equalsIgnoreCase("stop") || args[0].equalsIgnoreCase("abandon")) {
-				if (!SiegeCommands.sieges.isEmpty()) {
-					for (Siege siege : SiegeCommands.sieges) {
-						completions.add(String.valueOf(siege.getID()));
+				if (!SiegeData.getSieges().isEmpty()) {
+					for (Siege siege : SiegeData.getSieges()) {
+						completions.add(String.valueOf(siege.getTown().getName()));
 					}
-					return completions;
+					return startList(args[1], completions);
 				}
 			}
 		} else if (args.length == 3) {
@@ -53,11 +58,23 @@ public class SiegeTabCompletion implements TabCompleter {
 					for (Town town : TownyAPI.getInstance().getTowns()) {
 						completions.add(town.getName());
 					}
-					return completions;
+                    return startList(args[2], completions);
 				}
 			}
-		}*/
+		} //*/
 		return Collections.emptyList();
 	}
+
+    private List<String> consoleTabComplete(CommandSender sender, String[] args) {
+        return Collections.emptyList();
+    }
+
+    private List<String> startList(String start, List<String> list) {
+        ArrayList<String> returnList = new ArrayList<String>();
+        for (String str : list) {
+            if (str.startsWith(start)) returnList.add(str);
+        }
+        return returnList;
+    }
 }
 
