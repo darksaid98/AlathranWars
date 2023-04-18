@@ -82,7 +82,7 @@ public class Main extends JavaPlugin {
         initLogs();
 
 		new WarData(this);
-		new TimeoutData(this);
+//		new TimeoutData(this);
 		new WarCommands(this);
 		new SiegeCommands(this);
 		new RaidCommands(this);
