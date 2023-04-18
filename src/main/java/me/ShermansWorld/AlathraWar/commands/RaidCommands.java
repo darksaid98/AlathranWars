@@ -388,7 +388,7 @@ public class RaidCommands implements CommandExecutor {
                     p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You are not in this war! Type /war join [war] [side]");
                 }
 
-                if (!raid.getOwner().getName().equals(p.getName())) {
+                if (raid.getOwner().getName().equals(p.getName())) {
                     //check if gather phase
                     if (raid.getPhase() == RaidPhase.GATHER || raid.getPhase() == RaidPhase.START || raid.getPhase() == RaidPhase.TRAVEL || raid.getPhase() == RaidPhase.COMBAT) {
                         if (raid.getGatherTown().hasTownBlock(WorldCoord.parseWorldCoord(p))) {
@@ -445,7 +445,7 @@ public class RaidCommands implements CommandExecutor {
     private static void fail(Player p, String[] args, String type) {
         switch (type) {
             case "permissions": {
-                p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&cYou do not have permission to do this"));
+                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "&cYou do not have permission to do this");
                 return;
             }
             case "syntax": {

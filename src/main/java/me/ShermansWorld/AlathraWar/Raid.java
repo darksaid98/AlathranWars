@@ -85,9 +85,9 @@ public class Raid {
     private Location townSpawnRaided;
     private Location townSpawnGather;
     int[] bukkitId;
-    public ArrayList<String> activeRaiders;
-    public ArrayList<String> raiderPlayers;
-    public ArrayList<String> defenderPlayers;
+    public ArrayList<String> activeRaiders = new ArrayList<>();
+    public ArrayList<String> raiderPlayers = new ArrayList<>();
+    public ArrayList<String> defenderPlayers = new ArrayList<>();
     public Map<WorldCoord, LootBlock> lootedChunks;
 
     /**
@@ -103,15 +103,16 @@ public class Raid {
                 final boolean side1AreRaiders, final int raidTicks, Player owner) {
 
         this.bukkitId = new int[1];
-        this.activeRaiders = activeRaiders == null ? new ArrayList<>() : activeRaiders;
         this.war = war;
         this.raidTicks = raidTicks;
         this.raidedTown = raidedTown;
         this.gatherTown = gatherTown;
         this.owner = owner;
+        this.raiders = side1AreRaiders ? war.getSide1() : war.getSide2();
+        this.defenders = !side1AreRaiders ? war.getSide1() : war.getSide2();
 
         //AttackSide-Town
-        this.name = (side1AreRaiders ? war.getSide1() : war.getSide2()).toLowerCase() + "-" + raidedTown.getName().toLowerCase();
+        this.name = war.getName() + "-" + raidedTown.getName().toLowerCase();
         this.lootedChunks = new HashMap<>();
 
     }
@@ -151,9 +152,11 @@ public class Raid {
         this.raidedTown = raidedTown;
         this.gatherTown = gatherTown;
         this.owner = owner;
+        this.raiders = side1AreRaiders ? war.getSide1() : war.getSide2();
+        this.defenders = !side1AreRaiders ? war.getSide1() : war.getSide2();
 
         //AttackSide-Town
-        this.name = (side1AreRaiders ? war.getSide1() : war.getSide2()).toLowerCase() + "-" + raidedTown.getName().toLowerCase();
+        this.name = war.getName() + "-" + raidedTown.getName().toLowerCase();
         this.lootedChunks = new HashMap<>();
     }
 
@@ -784,7 +787,7 @@ public class Raid {
                 }
 
                 //check and start gather phase
-                if (Raid.this.raidTicks >= RaidPhase.GATHER.startTick && Raid.this.phase == RaidPhase.GATHER) {
+                if (Raid.this.raidTicks >= RaidPhase.GATHER.startTick && Raid.this.phase == RaidPhase.START) {
                     startGather();
                 }
 
