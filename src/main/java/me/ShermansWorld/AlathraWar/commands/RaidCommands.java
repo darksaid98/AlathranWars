@@ -128,6 +128,8 @@ public class RaidCommands implements CommandExecutor {
                     if (raidedTown.getName().equalsIgnoreCase(args[2 + (admin ? 1 : 0)]) && gatherTown != null) {
                         townExists = true;
                         boolean attackingOwnSide = false;
+
+
                         Raid raid2;
                         if (war.getSide1Players().contains(p.getName())) {
                             //Time and raid activity validity check
