@@ -1,6 +1,7 @@
 package me.ShermansWorld.AlathraWar.commands;
 
 import com.palmergames.bukkit.towny.TownyAPI;
+import com.palmergames.bukkit.towny.command.TownyCommand;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.Nation;
@@ -132,6 +133,8 @@ public class AdminCommands implements CommandExecutor {
                 return info(p, args);
             } else if (args[0].equalsIgnoreCase("modify")) {
                 return modify(p, args);
+            } else if (args[0].equalsIgnoreCase("awa")) {
+                return awa(p, args);
             }
         }
         return true;
@@ -197,7 +200,7 @@ public class AdminCommands implements CommandExecutor {
      * <p>
      * //force player into or out of a war/event
      * -force join siege [player] [war] [town] (side)
-     * -force join raid [player] [war] [town] (side) //TODO time until must be in gather?
+     * -force join raid [player] [war] [town] (side)
      * -force leave raid [war] [player] (timeout) //kicks from raid party
      * -force surrender war [name] [town]
      *
@@ -335,6 +338,7 @@ public class AdminCommands implements CommandExecutor {
                                     args.length >= 7 ? args[6] : null //side
                             };
                             RaidCommands.joinRaid(p, adjusted, true);
+                            return true;
                         } else {
                             p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force join raid [player] [war] [town] (side)"));
                         }
@@ -362,8 +366,8 @@ public class AdminCommands implements CommandExecutor {
                             }
                             WarCommands.warJoin(p, adjusted, true);
                             p.sendMessage(Helper.color("&cForced " + args[3] + " to join the war " + args[4] + " on side " + args[5]));
-
                             Main.warLogger.log("Forced " + args[3] + " to join the war " + args[4] + " on side " + args[5]);
+                            return true;
                         } else {
                             p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force join war [player] [war] [side]"));
                             return true;
@@ -459,7 +463,7 @@ public class AdminCommands implements CommandExecutor {
                             p.sendMessage(Helper.Chatlabel() + "Name: " + w.getName());
                             p.sendMessage(Helper.Chatlabel() + "Side 1: " + w.getSide1());
                             p.sendMessage(Helper.Chatlabel() + "Side 2: " + w.getSide2());
-                            // TODO I think this works!
+                            // TODO output as date/time
                             p.sendMessage(Helper.Chatlabel() + "Last Raid for Side 1: " + TimeMgmt.getFormattedTimeValue(w.getLastRaidTimeSide1() * 1000));
                             p.sendMessage(Helper.Chatlabel() + "Last Raid for Side 2: " + TimeMgmt.getFormattedTimeValue(w.getLastRaidTimeSide2() * 1000));
                             p.sendMessage(Helper.Chatlabel() + "oOo-----------------===-----------------oOo");
@@ -1426,6 +1430,11 @@ public class AdminCommands implements CommandExecutor {
 
 
     private static boolean rule(Player p, String[] args) {
+        return true;
+    }
+
+    private static boolean awa(Player p, String[] args) {
+        p.chat("awa awa! ^.^ UwU");
         return true;
     }
 

@@ -203,7 +203,7 @@ public class Raid {
         this.bukkitId[0] = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask((Plugin) Main.getInstance(),
                 getTickLoop(), 0L, incremental);
 
-        this.getWar().addRaid(this); //todo FIX
+        this.getWar().addRaid(this);
         this.save();
 
     }
