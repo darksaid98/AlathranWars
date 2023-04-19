@@ -2,7 +2,7 @@ package me.ShermansWorld.AlathraWar.data;
 
 public enum RaidPhase {
     START(0, 0),
-    GATHER(1, 1),
+    GATHER(1, 0),
     TRAVEL(2, 18000),
     COMBAT(3, 24000),
     END(4, 72000);

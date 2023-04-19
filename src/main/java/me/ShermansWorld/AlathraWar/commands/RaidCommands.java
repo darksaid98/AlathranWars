@@ -105,6 +105,7 @@ public class RaidCommands implements CommandExecutor {
                         } else if(TownyAPI.getInstance().getTown(args[4]) != null) {
                             gatherTown = TownyAPI.getInstance().getTown(args[4]);
                         } else {
+                            if (admin) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "No valid town set for gather town, defaulting to current location");
                             raidOwner.sendMessage(String.valueOf(Helper.Chatlabel()) + "No valid town set for gather town, defaulting to current location");
                             gatherTown = TownyAPI.getInstance().getTownOrNull(WorldCoord.parseWorldCoord(raidOwner.getLocation()).getTownBlock());
                         }
@@ -112,10 +113,12 @@ public class RaidCommands implements CommandExecutor {
                         gatherTown = TownyAPI.getInstance().getTownOrNull(WorldCoord.parseWorldCoord(raidOwner.getLocation()).getTownBlock());
                     }
                 } catch (NotRegisteredException e2) {
+                    if (admin) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must be within a town's claim to begin a raid. That town you are in will be the gathering town.");
                     raidOwner.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must be within a town's claim to begin a raid. That town you are in will be the gathering town.");
                     return;
                 }
                 if (gatherTown == null) {
+                    if (admin) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must be within a town's claim to begin a raid. That town you are in will be the gathering town.");
                     raidOwner.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must be within a town's claim to begin a raid. That town you are in will be the gathering town.");
                     return;
                 }
@@ -136,15 +139,19 @@ public class RaidCommands implements CommandExecutor {
                                 //if were admin, see if an owner arg exists, and if so then use it
                                 raid2 = new Raid(war, raidedTown, gatherTown, true, raidOwner);
                             } else if (c == 1) {
+                                if (admin) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town is already being raided at this time!");
                                 raidOwner.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town is already being raided at this time!");
                                 return;
                             } else if (c == 0) {
+                                if (admin) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Your side has raided too recently!");
                                 raidOwner.sendMessage(String.valueOf(Helper.Chatlabel()) + "Your side has raided too recently!");
                                 return;
                             } else if (c == -1) {
+                                if (admin) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town was raided too recently!");
                                 raidOwner.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town was raided too recently!");
                                 return;
                             } else if (c == -2) {
+                                if (admin) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "At least on member of the raided town must be online to defend it!");
                                 raidOwner.sendMessage(String.valueOf(Helper.Chatlabel()) + "At least on member of the raided town must be online to defend it!");
                                 return;
                             }  else {
@@ -161,15 +168,19 @@ public class RaidCommands implements CommandExecutor {
                             if (c == 2) {
                                 raid2 = new Raid(war, raidedTown, gatherTown, false, raidOwner);
                             } else if (c == 1) {
+                                if (admin) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town is already being raided at this time!");
                                 raidOwner.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town is already being raided at this time!");
                                 return;
                             } else if (c == 0) {
+                                if (admin) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Your side has raided too recently!");
                                 raidOwner.sendMessage(String.valueOf(Helper.Chatlabel()) + "Your side has raided too recently!");
                                 return;
                             } else if (c == -1) {
+                                if (admin) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town was raided too recently!");
                                 raidOwner.sendMessage(String.valueOf(Helper.Chatlabel()) + "This town was raided too recently!");
                                 return;
                             } else if (c == -2) {
+                                if (admin) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "At least on member of the raided town must be online to defend it!");
                                 raidOwner.sendMessage(String.valueOf(Helper.Chatlabel()) + "At least on member of the raided town must be online to defend it!");
                                 return;
                             }  else {
@@ -181,15 +192,18 @@ public class RaidCommands implements CommandExecutor {
                         Town leaderTown = TownyAPI.getInstance().getResident(raidOwner).getTownOrNull();
                         int sideR = war.getSide(leaderTown.getName());
                         if (sideR == 0) {
+                            if (admin) p.sendMessage(Helper.Chatlabel() + "You are not in this war.");
                             raidOwner.sendMessage(Helper.Chatlabel() + "You are not in this war.");
                             return;
                         } else if (sideR == -1) {
+                            if (admin) p.sendMessage(Helper.Chatlabel() + "You have surrendered.");
                             raidOwner.sendMessage(Helper.Chatlabel() + "You have surrendered.");
                             return;
                         }
 
                         // Attacking own side
                         if (war.getSide(raidedTown) == sideR) {
+                            if (admin) p.sendMessage(Helper.Chatlabel() + "You cannot attack your own towns.");
                             raidOwner.sendMessage(Helper.Chatlabel() + "You cannot attack your own towns.");
                             return;
                         }
@@ -197,6 +211,7 @@ public class RaidCommands implements CommandExecutor {
                         //check player balance
                         final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(p.getUniqueId());
                         if (Main.econ.getBalance(offlinePlayer) <= 1000.0) {
+                            if (admin) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must have at least $1000 to put up to start a raid.");
                             raidOwner.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must have at least $1000 to put up to start a raid.");
                             return;
                         }

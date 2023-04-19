@@ -253,7 +253,7 @@ public class Raid {
      * @param p
      * @param wc
      */
-    private synchronized void doLootAt(Player p, WorldCoord wc) {
+    public synchronized void doLootAt(Player p, WorldCoord wc) {
         p.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 60, 0, true, false, true));
 
         //check if this loot is in progress

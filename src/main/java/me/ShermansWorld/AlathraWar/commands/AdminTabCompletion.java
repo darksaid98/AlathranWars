@@ -87,6 +87,10 @@ public class AdminTabCompletion implements TabCompleter {
             "reset"
     });
 
+    List<String> empty = List.of(new String[]{
+            ""
+    });
+
 
     /**
      * //done
@@ -163,7 +167,7 @@ public class AdminTabCompletion implements TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         final Player p = (Player) sender;
         if (!p.hasPermission("AlathraWar.admin")) {
-            return null;
+            return empty;
         }
 
         if (args.length == 0) {
@@ -179,7 +183,7 @@ public class AdminTabCompletion implements TabCompleter {
                                 if (args.length > 4) {
                                     if (args.length > 5) {
                                         if (args.length > 6) {
-                                            return null;
+                                            return empty;
                                         } else {
                                             return NameUtil.filterByStart(CommandHelper.getPlayers(), args[5]);
                                         }
@@ -197,7 +201,7 @@ public class AdminTabCompletion implements TabCompleter {
                             if (args.length > 3) {
                                 if (args.length > 4) {
                                     if (args.length > 5) {
-                                        return null;
+                                        return empty;
                                     } else {
                                         return NameUtil.filterByStart(CommandHelper.getPlayers(), args[4]);
                                     }
@@ -209,7 +213,7 @@ public class AdminTabCompletion implements TabCompleter {
                             }
                         }
                         default -> {
-                            return null;
+                            return empty;
                         }
                     }
                 } else {
@@ -223,7 +227,7 @@ public class AdminTabCompletion implements TabCompleter {
                                 if (args.length > 4) {
                                     if (args.length > 5) {
                                         if (args.length > 6) {
-                                            return null;
+                                            return empty;
                                         } else {
                                             return NameUtil.filterByStart(CommandHelper.getWarSides(args[3]), args[5]);
                                         }
@@ -237,7 +241,7 @@ public class AdminTabCompletion implements TabCompleter {
                                 if (args.length > 4) {
                                     if (args.length > 5) {
                                         if (args.length > 6) {
-                                            return null;
+                                            return empty;
                                         } else {
                                             return NameUtil.filterByStart(CommandHelper.getWarSides(args[3]), args[5]);
                                         }
@@ -250,7 +254,7 @@ public class AdminTabCompletion implements TabCompleter {
                             } else if (args[2].equalsIgnoreCase("war")) {
                                 if (args.length > 4) {
                                     if (args.length > 5) {
-                                        return null;
+                                        return empty;
                                     } else {
                                         return NameUtil.filterByStart(CommandHelper.getWarSides(args[3]), args[4]);
                                     }
@@ -268,7 +272,7 @@ public class AdminTabCompletion implements TabCompleter {
                                     if (args.length > 5) {
                                         if (args.length > 6) {
                                             if (args.length > 7) {
-                                                return null;
+                                                return empty;
                                             } else {
                                                 return NameUtil.filterByStart(CommandHelper.getWarSides(args[4]), args[6]);
                                             }
@@ -286,7 +290,7 @@ public class AdminTabCompletion implements TabCompleter {
                                     if (args.length > 5) {
                                         if (args.length > 6) {
                                             if (args.length > 7) {
-                                                return null;
+                                                return empty;
                                             } else {
                                                 return NameUtil.filterByStart(CommandHelper.getWarSides(args[4]), args[6]);
                                             }
@@ -303,7 +307,7 @@ public class AdminTabCompletion implements TabCompleter {
                                 if (args.length > 4) {
                                     if (args.length > 5) {
                                         if (args.length > 6) {
-                                            return null;
+                                            return empty;
                                         } else {
                                             return NameUtil.filterByStart(CommandHelper.getWarSides(args[4]), args[5]);
                                         }
@@ -323,7 +327,7 @@ public class AdminTabCompletion implements TabCompleter {
                                 if (args.length > 4) {
                                     if (args.length > 5) {
                                         if (args.length > 6) {
-                                            return null;
+                                            return empty;
                                         } else {
                                             return NameUtil.filterByStart(CommandHelper.getPlayers(), args[5]);
                                         }
@@ -346,13 +350,13 @@ public class AdminTabCompletion implements TabCompleter {
                     return NameUtil.filterByStart(force, args[1]);
                 }
             } else if (args[0].equalsIgnoreCase("help")) {
-                return null;
+                return empty;
             } else if (args[0].equalsIgnoreCase("info")) {
                 if (args.length > 2) {
                     if (args[1].equalsIgnoreCase("raid")) {
                         if (args.length > 3) {
                             if (args.length > 4) {
-                                return null;
+                                return empty;
                             } else {
                                 return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[3]);
                             }
@@ -362,7 +366,7 @@ public class AdminTabCompletion implements TabCompleter {
                     } else if (args[1].equalsIgnoreCase("siege")) {
                         if (args.length > 3) {
                             if (args.length > 4) {
-                                return null;
+                                return empty;
                             } else {
                                 return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[3]);
                             }
@@ -371,7 +375,7 @@ public class AdminTabCompletion implements TabCompleter {
                         }
                     } else if (args[1].equalsIgnoreCase("war")) {
                         if (args.length > 3) {
-                            return null;
+                            return empty;
                         } else {
                             return NameUtil.filterByStart(CommandHelper.getWarNames(), args[2]);
                         }
@@ -401,7 +405,7 @@ public class AdminTabCompletion implements TabCompleter {
                                          */
                                         case "score", "time" -> {
                                             if (args.length > 6) {
-                                                return null;
+                                                return empty;
                                             } else {
                                                 return NameUtil.filterByStart(addSet, args[5]);
                                             }
@@ -410,7 +414,7 @@ public class AdminTabCompletion implements TabCompleter {
                                             if (args.length > 6) {
                                                 if (args.length > 7) {
                                                     if (args.length > 8) {
-                                                        return null;
+                                                        return empty;
                                                     } else {
                                                         return List.of(new String[]{String.valueOf(p.getLocation().getZ())});
                                                     }
@@ -423,14 +427,14 @@ public class AdminTabCompletion implements TabCompleter {
                                         }
                                         case "gather" -> {
                                             if (args.length > 6) {
-                                                return null;
+                                                return empty;
                                             } else {
                                                 return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[5]);
                                             }
                                         }
                                         case "phase" -> {
                                             if (args.length > 6) {
-                                                return null;
+                                                return empty;
                                             } else {
                                                 return NameUtil.filterByStart(CommandHelper.getRaidPhases(), args[5]);
                                             }
@@ -440,7 +444,7 @@ public class AdminTabCompletion implements TabCompleter {
                                                 if (args.length > 7) {
                                                     if (args.length > 8) {
                                                         if (args.length > 9) {
-                                                            return null;
+                                                            return empty;
                                                         } else {
                                                             return List.of(new String[]{String.valueOf(p.getLocation().getZ())});
                                                         }
@@ -448,7 +452,7 @@ public class AdminTabCompletion implements TabCompleter {
                                                         return List.of(new String[]{String.valueOf(p.getLocation().getX())});
                                                     }
                                                 } else {
-                                                    return null;
+                                                    return empty;
                                                 }
                                             } else {
                                                 return NameUtil.filterByStart(lootSet, args[5]);
@@ -456,13 +460,13 @@ public class AdminTabCompletion implements TabCompleter {
                                         }
                                         case "owner" -> {
                                             if (args.length > 6) {
-                                                return null;
+                                                return empty;
                                             } else {
                                                 return NameUtil.filterByStart(CommandHelper.getPlayers(), args[5]);
                                             }
                                         }
                                         default -> {
-                                            return null;
+                                            return empty;
                                         }
                                     }
                                 } else {
@@ -481,7 +485,7 @@ public class AdminTabCompletion implements TabCompleter {
                                     switch (args[2]) {
                                         case "score", "time" -> {
                                             if (args.length > 6) {
-                                                return null;
+                                                return empty;
                                             } else {
                                                 return NameUtil.filterByStart(addSet, args[5]);
                                             }
@@ -490,7 +494,7 @@ public class AdminTabCompletion implements TabCompleter {
                                             if (args.length > 6) {
                                                 if (args.length > 7) {
                                                     if (args.length > 8) {
-                                                        return null;
+                                                        return empty;
                                                     } else {
                                                         return List.of(new String[]{String.valueOf(p.getLocation().getZ())});
                                                     }
@@ -503,13 +507,13 @@ public class AdminTabCompletion implements TabCompleter {
                                         }
                                         case "owner" -> {
                                             if (args.length > 6) {
-                                                return null;
+                                                return empty;
                                             } else {
                                                 return NameUtil.filterByStart(CommandHelper.getPlayers(), args[5]);
                                             }
                                         }
                                         default -> {
-                                            return null;
+                                            return empty;
                                         }
                                     }
                                 } else {
@@ -539,7 +543,7 @@ public class AdminTabCompletion implements TabCompleter {
                                         if (args.length > 5) {
                                             if (args.length > 6) {
                                                 if (args.length > 7) {
-                                                    return null;
+                                                    return empty;
                                                 } else {
                                                     return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[4]);
                                                 }
@@ -557,7 +561,7 @@ public class AdminTabCompletion implements TabCompleter {
                                 case "raidTimeTown" -> {
                                     if (args.length > 4) {
                                         if (args.length > 5) {
-                                            return null;
+                                            return empty;
                                         } else {
                                             return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[4]);
                                         }
@@ -569,15 +573,22 @@ public class AdminTabCompletion implements TabCompleter {
                                 case "raidTimeWar" -> {
                                     if (args.length > 4) {
                                         if (args.length > 5) {
-                                            if (args.length > 6) {
-
-                                                if (args.length > 7) {
-                                                    return NameUtil.filterByStart(CommandHelper.getWarSides(args[4]), args[6]);
+                                            if(args[3].equalsIgnoreCase("reset")) {
+                                                if (args.length > 6) {
+                                                    return empty;
                                                 } else {
-                                                    return null;
+                                                    return NameUtil.filterByStart(CommandHelper.getWarSides(args[4]), args[6]);
                                                 }
                                             } else {
-                                                return null;
+                                                if (args.length > 6) {
+                                                    if (args.length > 7) {
+                                                        return empty;
+                                                    } else {
+                                                        return NameUtil.filterByStart(CommandHelper.getWarSides(args[4]), args[6]);
+                                                    }
+                                                } else {
+                                                    return empty;
+                                                }
                                             }
                                         } else {
                                             return NameUtil.filterByStart(CommandHelper.getWarNames(), args[4]);
@@ -591,7 +602,7 @@ public class AdminTabCompletion implements TabCompleter {
 
                                     if (args.length > 4) {
                                         if (args.length > 5) {
-                                            return null;
+                                            return empty;
                                         } else {
                                             return NameUtil.filterByStart(CommandHelper.getWarSides(args[3]), args[4]);
                                         }
@@ -601,7 +612,7 @@ public class AdminTabCompletion implements TabCompleter {
                                 }
                                 case "name" -> {
                                     if (args.length > 4) {
-                                        return null;
+                                        return empty;
                                     } else {
                                         return NameUtil.filterByStart(CommandHelper.getWarNames(), args[3]);
                                     }
@@ -611,14 +622,14 @@ public class AdminTabCompletion implements TabCompleter {
                                         if (args.length > 5) {
                                             if (args.length > 6) {
                                                 if (args.length > 7) {
-                                                    return null;
+                                                    return empty;
                                                 } else {
                                                     if (args[5].equalsIgnoreCase("town")) {
                                                         return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[6]);
                                                     } else if (args[5].equalsIgnoreCase("nation")) {
                                                         return NameUtil.filterByStart(CommandHelper.getTownyNations(), args[6]);
                                                     } else {
-                                                        return null;
+                                                        return empty;
                                                     }
                                                 }
                                             } else {
@@ -632,7 +643,7 @@ public class AdminTabCompletion implements TabCompleter {
                                     }
                                 }
                                 default -> {
-                                    return null;
+                                    return empty;
                                 }
                             }
 

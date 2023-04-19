@@ -474,8 +474,8 @@ public class AdminCommands implements CommandExecutor {
                                 side1Players.append(", ");
                             }
                             //cut off last two characters
-                            side1Towns = new StringBuilder(side1Towns.substring(0, side1Towns.length() - 2));
-                            side1Players = new StringBuilder(side1Players.substring(0, side1Players.length() - 2));
+                            if(side1Towns.length() > 2) side1Towns = new StringBuilder(side1Towns.substring(0, side1Towns.length() - 2));
+                            if(side1Players.length() > 2) side1Players = new StringBuilder(side1Players.substring(0, side1Players.length() - 2));
                             p.sendMessage(Helper.Chatlabel() + w.getSide1() + " Towns: " + side1Towns);
                             p.sendMessage(Helper.Chatlabel() + w.getSide1() + " Players: " + side1Players);
                             p.sendMessage(Helper.Chatlabel() + "oOo-----------------===-----------------oOo");
@@ -490,10 +490,19 @@ public class AdminCommands implements CommandExecutor {
                                 side2Players.append(", ");
                             }
                             //cut off last two characters
-                            side2Towns = new StringBuilder(side2Towns.substring(0, side2Towns.length() - 2));
-                            side2Players = new StringBuilder(side2Players.substring(0, side2Players.length() - 2));
+                            if(side2Towns.length() > 2) side2Towns = new StringBuilder(side2Towns.substring(0, side2Towns.length() - 2));
+                            if(side2Players.length() > 2) side2Players = new StringBuilder(side2Players.substring(0, side2Players.length() - 2));
                             p.sendMessage(Helper.Chatlabel() + w.getSide2() + " Towns: " + side2Towns);
                             p.sendMessage(Helper.Chatlabel() + w.getSide2() + " Players: " + side2Players);
+                            p.sendMessage(Helper.Chatlabel() + "oOo-----------------===-----------------oOo");
+                            StringBuilder surrenderedTowns = new StringBuilder();
+                            for (String t : w.getSurrenderedTowns()) {
+                                surrenderedTowns.append(t);
+                                surrenderedTowns.append(", ");
+                            }
+                            //cut off last two characters
+                            if(surrenderedTowns.length() > 2) surrenderedTowns = new StringBuilder(surrenderedTowns.substring(0, surrenderedTowns.length() - 2));
+                            p.sendMessage(Helper.Chatlabel() + w.getSide2() + " Towns: " + surrenderedTowns);
                             return true;
                         }
                     }
@@ -527,7 +536,7 @@ public class AdminCommands implements CommandExecutor {
                                 activeRaiders.append(", ");
                             }
                             //cut off last two characters
-                            activeRaiders = new StringBuilder(activeRaiders.substring(0, activeRaiders.length() - 2));
+                            if(activeRaiders.length() > 2) activeRaiders = new StringBuilder(activeRaiders.substring(0, activeRaiders.length() - 2));
                             p.sendMessage(Helper.Chatlabel() + "Raiding Players: " + activeRaiders);
                             return true;
                         }
@@ -561,7 +570,7 @@ public class AdminCommands implements CommandExecutor {
                                 attackers.append(", ");
                             }
                             //cut off last two characters
-                            attackers = new StringBuilder(attackers.substring(0, attackers.length() - 2));
+                            if(attackers.length() > 2) attackers = new StringBuilder(attackers.substring(0, attackers.length() - 2));
                             p.sendMessage(Helper.Chatlabel() + "Attacking Players: " + attackers);
                             StringBuilder defenders = new StringBuilder();
                             for (String pl : s.getAttackerPlayers()) {
@@ -569,7 +578,7 @@ public class AdminCommands implements CommandExecutor {
                                 defenders.append(", ");
                             }
                             //cut off last two characters
-                            defenders = new StringBuilder(defenders.substring(0, defenders.length() - 2));
+                            if(defenders.length() > 2) defenders = new StringBuilder(defenders.substring(0, defenders.length() - 2));
                             p.sendMessage(Helper.Chatlabel() + "Defending Players: " + defenders);
                             return true;
                         }
@@ -793,6 +802,11 @@ public class AdminCommands implements CommandExecutor {
                                         if (args[5].equalsIgnoreCase("value")) {
                                             WorldCoord wc = WorldCoord.parseWorldCoord(p.getWorld().getName(), (int) Double.parseDouble(args[7]), (int) Double.parseDouble(args[8]));
                                             Raid.LootBlock lb = r.getLootedChunks().get(wc);
+                                            if(lb == null) {
+                                                r.addLootedChunk(wc);
+                                                lb = r.getLootedChunks().get(wc);
+                                                p.sendMessage(Helper.Chatlabel() + "Created empty loot chunk data to modify");
+                                            }
                                             lb.value = Double.parseDouble(args[6]);
                                             p.sendMessage(Helper.Chatlabel() + "Set value for a chunk [" + args[7] + "," + args[8] + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
                                             Main.warLogger.log("Set value for a chunk [" + args[7] + "," + args[8] + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
