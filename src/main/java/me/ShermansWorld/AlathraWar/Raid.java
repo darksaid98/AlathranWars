@@ -201,7 +201,7 @@ public class Raid {
         this.bukkitId[0] = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask((Plugin) Main.getInstance(),
                 getTickLoop(), 0L, incremental);
 
-//        this.getWar().addRaid(this); todo FIX
+        this.getWar().addRaid(this); //todo FIX
         this.save();
 
     }
@@ -446,7 +446,7 @@ public class Raid {
 //             killed.sendMessage(String.valueOf(Helper.Chatlabel()) + "You died before being raided and have been teleported back to the defending town's spawn.");
         }
 
-        //teleport the killer back to the raided towns spawn
+        //teleport the killer back to the gather towns spawn
         if (killed.getKiller() instanceof Player) {
             if (this.getActiveRaiders().contains(killed.getKiller().getName())) {
                 try {
@@ -554,7 +554,7 @@ public class Raid {
             Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The defenders from " + this.defenders
                     + " have barely pushed back the raiders of " + this.raiders + ". More has been lost than gained.");
             Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + this.raidedTown.getName()
-                    + " has recovered part of the attackers' raid chest, valued at $625");
+                    + " has recovered part of the attackers' raid chest, valued at $500");
             Main.warLogger
                     .log("The defenders from " + this.defenders + " have won the raid of " + this.raidedTown.getName() + "!");
             this.raidedTown.getAccount().deposit(500, "Raid chest");
@@ -562,7 +562,7 @@ public class Raid {
             Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The defenders from " + this.defenders
                     + " have fended off the raiders of " + this.raiders + "!");
             Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + this.raidedTown.getName()
-                    + " has recovered the attackers' raid chest, valued at $1,250");
+                    + " has recovered the attackers' raid chest, valued at $1000");
             Main.warLogger
                     .log("The defenders from " + this.defenders + " have won the raid of " + this.raidedTown.getName() + "!");
             this.raidedTown.getAccount().deposit(1000, "Raid chest");
@@ -570,7 +570,7 @@ public class Raid {
             Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The defenders from " + this.defenders
                     + " have wholly defeated the raiders of " + this.raiders + "! They barely broke the walls.");
             Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + this.raidedTown.getName()
-                    + " has recovered the attackers' raid chest, valued at $1,250.");
+                    + " has recovered the attackers' raid chest, valued at $1000.");
             Main.warLogger
                     .log("The defenders from " + this.defenders + " have won the raid of " + this.raidedTown.getName() + "!");
             this.raidedTown.getAccount().deposit(1000, "Raid chest");

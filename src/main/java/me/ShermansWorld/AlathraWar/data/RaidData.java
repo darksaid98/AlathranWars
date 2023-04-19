@@ -157,8 +157,8 @@ public class RaidData {
         HashMap<String, Object> returnMap = new HashMap<String, Object>();
         // Shoves everything into a map.
         returnMap.put("name", raid.getName());
-        returnMap.put("raidedTown", raid.getRaidedTown());
-        returnMap.put("gatherTown", raid.getRaidedTown());
+        returnMap.put("raidedTown", raid.getRaidedTown().getName());
+        returnMap.put("gatherTown", raid.getGatherTown().getName());
         returnMap.put("raidTicks", raid.getRaidTicks());
         returnMap.put("raidPhase", raid.getPhase().name());
         returnMap.put("raidScore", raid.getRaidScore());
@@ -211,8 +211,8 @@ public class RaidData {
         if (town.hasMeta("lastRaided")) {
             CustomDataField field = town.getMetadata("lastRaided");
             if (field != null) {
-                if (field instanceof IntegerDataField) {
-                    return ((IntegerDataField) field).getValue();
+                if (field instanceof LongDataField) {
+                    return ((LongDataField) field).getValue();
                 }
             }
             return -1L;

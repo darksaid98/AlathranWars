@@ -487,8 +487,8 @@ public class AdminCommands implements CommandExecutor {
                                 side1Players += ", ";
                             }
                             //cut off last two characters
-                            side1Towns = side1Towns.substring(0, side1Towns.length() - 3);
-                            side1Players = side1Players.substring(0, side1Players.length() - 3);
+                            side1Towns = side1Towns.substring(0, side1Towns.length() - 2);
+                            side1Players = side1Players.substring(0, side1Players.length() - 2);
                             p.sendMessage(Helper.Chatlabel() + w.getSide1() + " Towns: " + side1Towns);
                             p.sendMessage(Helper.Chatlabel() + w.getSide1() + " Players: " + side1Players);
                             p.sendMessage(Helper.Chatlabel() + "oOo-----------------===-----------------oOo");
@@ -503,8 +503,8 @@ public class AdminCommands implements CommandExecutor {
                                 side2Players += ", ";
                             }
                             //cut off last two characters
-                            side2Towns = side2Towns.substring(0, side2Towns.length() - 3);
-                            side2Players = side2Players.substring(0, side2Players.length() - 3);
+                            side2Towns = side2Towns.substring(0, side2Towns.length() - 2);
+                            side2Players = side2Players.substring(0, side2Players.length() - 2);
                             p.sendMessage(Helper.Chatlabel() + w.getSide2() + " Towns: " + side2Towns);
                             p.sendMessage(Helper.Chatlabel() + w.getSide2() + " Players: " + side2Players);
                             return true;
@@ -575,7 +575,7 @@ public class AdminCommands implements CommandExecutor {
                                 attackers += ", ";
                             }
                             //cut off last two characters
-                            attackers = attackers.substring(0, attackers.length() - 3);
+                            attackers = attackers.substring(0, attackers.length() - 2);
                             p.sendMessage(Helper.Chatlabel() + "Attacking Players: " + attackers);
                             String defenders = "";
                             for (String pl : s.getAttackerPlayers()) {
@@ -583,7 +583,7 @@ public class AdminCommands implements CommandExecutor {
                                 defenders += ", ";
                             }
                             //cut off last two characters
-                            defenders = defenders.substring(0, defenders.length() - 3);
+                            defenders = defenders.substring(0, defenders.length() - 2);
                             p.sendMessage(Helper.Chatlabel() + "Defending Players: " + defenders);
                             return true;
                         }
