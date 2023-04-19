@@ -110,6 +110,7 @@ public class Raid {
         this.owner = owner;
         this.raiders = side1AreRaiders ? war.getSide1() : war.getSide2();
         this.defenders = !side1AreRaiders ? war.getSide1() : war.getSide2();
+        this.raidScore = 500;
 
         //AttackSide-Town
         this.name = war.getName() + "-" + raidedTown.getName().toLowerCase();
@@ -154,6 +155,7 @@ public class Raid {
         this.owner = owner;
         this.raiders = side1AreRaiders ? war.getSide1() : war.getSide2();
         this.defenders = !side1AreRaiders ? war.getSide1() : war.getSide2();
+        this.raidScore = 500;
 
         //AttackSide-Town
         this.name = war.getName() + "-" + raidedTown.getName().toLowerCase();
@@ -276,6 +278,8 @@ public class Raid {
                 for (String s : defenderPlayers) {
                     Bukkit.getPlayer(s).sendMessage(Helper.Chatlabel() + String.format("A townblock has been looted for $%.2f and +10 points. (Added to pool)", lb.value));
                 }
+
+                this.save();
             }
         } else {
             //if not make a new property for it
@@ -602,6 +606,7 @@ public class Raid {
         this.raidScore += points;
         //cap
         if (raidScore > 1200) this.raidScore = 1200;
+        if (raidScore < 0) this.raidScore = 0;
     }
 
     /**
@@ -612,6 +617,7 @@ public class Raid {
     public void subtractPointsFromRaidScore(final int points) {
         this.raidScore -= points;
         //cap
+        if (raidScore > 1200) this.raidScore = 1200;
         if (raidScore < 0) this.raidScore = 0;
     }
 
@@ -942,6 +948,13 @@ public class Raid {
 
     public void setPhase(RaidPhase phase) {
         this.phase = phase;
+        if(phase == RaidPhase.GATHER) {
+            startGather();
+        } else if(phase == RaidPhase.TRAVEL) {
+            startTravel();
+        } else if(phase == RaidPhase.COMBAT) {
+            startCombat();
+        }
     }
 
     public Location getTownSpawnRaided() {

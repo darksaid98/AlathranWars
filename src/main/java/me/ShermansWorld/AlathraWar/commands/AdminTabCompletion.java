@@ -26,7 +26,7 @@ public class AdminTabCompletion implements TabCompleter {
 
     List<String> raidModify = List.of(new String[]{
             "score",
-            "homeblock",
+            "townspawn",
             "gather",
             "phase",
             "loot",
@@ -40,7 +40,7 @@ public class AdminTabCompletion implements TabCompleter {
 
     List<String> siegeModify = List.of(new String[]{
             "score",
-            "homeblock",
+            "townspawn",
             "time",
             "owner"
 //            ,
