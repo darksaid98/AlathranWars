@@ -107,8 +107,8 @@ public class WarData
 
 
         if(fileData.get("lastRaidTimeSide1") != null && fileData.get("lastRaidTimeSide2") != null) {
-            war.setLastRaidTimeSide1((long) fileData.get("lastRaidTimeSide1"));
-            war.setLastRaidTimeSide2((long) fileData.get("lastRaidTimeSide2"));
+            war.setLastRaidTimeSide1((long)((int) fileData.get("lastRaidTimeSide1")));
+            war.setLastRaidTimeSide2((long)((int) fileData.get("lastRaidTimeSide2")));
         }
 
 
