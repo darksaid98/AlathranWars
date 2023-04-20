@@ -21,6 +21,10 @@ public class CommandsListener implements Listener {
             "n spawn", "nat spawn", "nation spawn",
             "t spawn", "town spawn"
     };
+    final static String[] payment = new String[]{
+            "n withdraw", "nat withdraw", "nation withdraw",
+            "t withdraw", "town withdraw"
+    };
     final static String[] blacklistedShort = new String[]{
             "home", "homes", "warp", "warps",
             "wild", "rtp", "spawn", "wilderness", "wildtp",
@@ -57,6 +61,15 @@ public class CommandsListener implements Listener {
                             //parse what we have, remove the starting sslash
                             String parse = (args[0].charAt(0) == '/' ? args[0].substring(1, args[0].length() - 1) : args[0]) + " " + args[1];
                             for (String prefix : prefixes) {
+                                //payment check
+                                for (String cmd : payment) {
+                                    //check for each prefix
+                                    if (parse.equals(prefix + ":" + cmd)) {
+                                        p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("c") + "You cannot withdraw money during a raid!");
+                                        event.setCancelled(true);
+                                        return;
+                                    }
+                                }
                                 for (String cmd : blacklistedLong) {
                                     //check for each prefix
                                     if (parse.equals(prefix + ":" + cmd)) {
@@ -85,7 +98,7 @@ public class CommandsListener implements Listener {
                             //parse what we have, remove the starting slash
                             String parse = args[0].charAt(0) == '/' ? args[0].substring(1, args[0].length() - 1) : args[0];
                             for (String prefix : prefixes) {
-                                for (String cmd : blacklistedLong) {
+                                for (String cmd : blacklistedShort) {
                                     //check for each prefix
                                     if (parse.equals(prefix + ":" + cmd)) {
                                         p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("c") + "You cannot teleport whilst in a raid!");
@@ -112,6 +125,15 @@ public class CommandsListener implements Listener {
                             //parse what we have, remove the starting sslash
                             String parse = (args[0].charAt(0) == '/' ? args[0].substring(1, args[0].length() - 1) : args[0]) + " " + args[1];
                             for (String prefix : prefixes) {
+                                for (String cmd : payment) {
+                                    //check for each prefix
+                                    if (parse.equals(prefix + ":" + cmd)) {
+                                        p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("c") + "You cannot withdraw money during a siege!");
+                                        event.setCancelled(true);
+                                        return;
+                                    }
+                                }
+
                                 for (String cmd : blacklistedLong) {
                                     //check for each prefix
                                     if (parse.equals(prefix + ":" + cmd)) {
@@ -137,7 +159,7 @@ public class CommandsListener implements Listener {
                             //parse what we have, remove the starting slash
                             String parse = (args[0].charAt(0) == '/' ? args[0].substring(1, args[0].length() - 1) : args[0]) + " " + args[1];
                             for (String prefix : prefixes) {
-                                for (String cmd : blacklistedLong) {
+                                for (String cmd : blacklistedShort) {
                                     //check for each prefix
                                     if (parse.equals(prefix + ":" + cmd)) {
                                         p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("c") + "You cannot teleport whilst in a raid!");
