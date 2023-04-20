@@ -9,6 +9,7 @@ import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.TownyAPI;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.WorldCoord;
@@ -408,12 +409,12 @@ public class Siege {
 		this.town = town;
 	}
 
-	public Player getSiegeOwner() {
-		return siegeOwner;
+	public OfflinePlayer getSiegeOwner() {
+		return siegeLeader;
 	}
 
-	public void setSiegeOwner(Player siegeOwner) {
-		this.siegeOwner = siegeOwner;
+	public void setSiegeOwner(OfflinePlayer siegeOwner) {
+		this.siegeLeader = siegeOwner;
 	}
 
     /** Gets attacker name string */
@@ -444,10 +445,6 @@ public class Siege {
 
 	public int getMaxSiegeTicks() {
 		return maxSiegeTicks;
-	}
-
-	public void setMaxSiegeTicks(int maxSiegeTicks) {
-		this.maxSiegeTicks = maxSiegeTicks;
 	}
 
 	public void setSiegeTicks(int siegeTicks) {

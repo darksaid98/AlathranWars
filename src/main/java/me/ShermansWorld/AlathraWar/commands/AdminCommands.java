@@ -21,6 +21,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.sql.Timestamp;
+
 public class AdminCommands implements CommandExecutor {
 
     public AdminCommands(final Main plugin) {
@@ -159,8 +161,15 @@ public class AdminCommands implements CommandExecutor {
                 }
                 return true;
             } else if (args[1].equalsIgnoreCase("siege")) {
+                //this exists to force a seige with a new owner
                 if (args.length >= 4) {
-                    //TODO once siege command is done
+                    String[] adjusted = new String[]{
+                            "start",
+                            args[2],
+                            args[3],
+                            args[4]
+                    };
+                    SiegeCommands.siegeStart(p, adjusted, true);
                     p.sendMessage(Helper.Chatlabel() + "Try again later!");
                 } else {
                     p.sendMessage(Helper.color("&cUsage: /alathrawaradmin create siege [war] [town] (owner)"));
@@ -344,8 +353,11 @@ public class AdminCommands implements CommandExecutor {
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("siege")) {
-                        p.sendMessage(Helper.color("&cError!"));
-                        //TODO when siege commands are done
+                        if (args.length >= 6) {
+                            p.sendMessage(Helper.color("&cError! Unimplemented!"));
+                        } else {
+                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force join siege [player] [war] [town] (side)"));
+                        }
                         return true;
                     } else if (args[2].equalsIgnoreCase("war")) {
                         if (args.length >= 6) {
@@ -410,7 +422,7 @@ public class AdminCommands implements CommandExecutor {
                         return true;
                     } else if (args[2].equalsIgnoreCase("siege")) {
                         //TODO determine if needed
-                        p.sendMessage(Helper.color("&cUnused!"));
+                        p.sendMessage(Helper.color("&cUnused! use /siege abandon or /war surrender"));
                         return true;
                     } else if (args[2].equalsIgnoreCase("war")) {
                         //TODO determine if needed
@@ -463,9 +475,8 @@ public class AdminCommands implements CommandExecutor {
                             p.sendMessage(Helper.Chatlabel() + "Name: " + w.getName());
                             p.sendMessage(Helper.Chatlabel() + "Side 1: " + w.getSide1());
                             p.sendMessage(Helper.Chatlabel() + "Side 2: " + w.getSide2());
-                            // TODO output as date/time
-                            p.sendMessage(Helper.Chatlabel() + "Last Raid for Side 1: " + TimeMgmt.getFormattedTimeValue(w.getLastRaidTimeSide1() * 1000));
-                            p.sendMessage(Helper.Chatlabel() + "Last Raid for Side 2: " + TimeMgmt.getFormattedTimeValue(w.getLastRaidTimeSide2() * 1000));
+                            p.sendMessage(Helper.Chatlabel() + "Last Raid for Side 1: " + new Timestamp(w.getLastRaidTimeSide1() * 1000));
+                            p.sendMessage(Helper.Chatlabel() + "Last Raid for Side 2: " + new Timestamp(w.getLastRaidTimeSide2() * 1000));
                             p.sendMessage(Helper.Chatlabel() + "oOo-----------------===-----------------oOo");
                             StringBuilder side1Towns = new StringBuilder();
                             StringBuilder side1Players = new StringBuilder();
@@ -920,10 +931,15 @@ public class AdminCommands implements CommandExecutor {
                                 if (r.getWar().getName().equals(args[3]) && r.getRaidedTown().getName().equals(args[4])) {
                                     Player own = Bukkit.getPlayer(args[5]);
                                     if (own != null) {
-                                        r.setOwner(own);
-                                        p.sendMessage(Helper.Chatlabel() + "Set owner of raid against " + args[4] + " in war " + args[3] + " to " + own.getName());
-                                        Main.warLogger.log("Set owner of raid against " + args[4] + " in war " + args[3] + " to " + own.getName());
-                                        return finalizeRaid(r);
+                                        if(r.getActiveRaiders().contains(own.getName())) {
+                                            r.setOwner(own);
+                                            p.sendMessage(Helper.Chatlabel() + "Set owner of raid against " + args[4] + " in war " + args[3] + " to " + own.getName());
+                                            Main.warLogger.log("Set owner of raid against " + args[4] + " in war " + args[3] + " to " + own.getName());
+                                            return finalizeRaid(r);
+                                        } else {
+                                            p.sendMessage(Helper.Chatlabel() + "Player is not an active raider!");
+                                            return true;
+                                        }
                                     } else {
                                         p.sendMessage(Helper.color("&cPlayer not found!"));
                                         return true;
@@ -937,11 +953,11 @@ public class AdminCommands implements CommandExecutor {
                         return true;
                     } else if (args[2].equalsIgnoreCase("move")) {
                         //TODO later
-                        p.sendMessage(Helper.color("&cError!"));
+                        p.sendMessage(Helper.color("&cError! Not implemented!"));
                         return true;
                     } else if (args[2].equalsIgnoreCase("clearActive")) {
                         //TODO later
-                        p.sendMessage(Helper.color("&cError!"));
+                        p.sendMessage(Helper.color("&cError! Not implemented!"));
                         return true;
                     } else {
                         p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid [propery]"));
