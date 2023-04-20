@@ -50,6 +50,15 @@ public class BlockBreakListener implements Listener {
 				if (siege.getTown() == WorldCoord.parseWorldCoord(block).getTownOrNull()) {
 					p.sendMessage(Helper.color("&cYou can not break blocks during sieges"));
 					event.setCancelled(true);
+					return;
+				}
+			}
+
+			for (final Raid raid : RaidData.getRaids()) {
+				if (raid.getRaidedTown() == WorldCoord.parseWorldCoord(block).getTownOrNull()) {
+					p.sendMessage(Helper.color("&cYou can not break blocks during raids"));
+					event.setCancelled(true);
+					return;
 				}
 			}
 		}
