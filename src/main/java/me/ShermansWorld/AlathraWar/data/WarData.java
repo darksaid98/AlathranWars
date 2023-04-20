@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import me.ShermansWorld.AlathraWar.Main;
+import me.ShermansWorld.AlathraWar.Raid;
 import me.ShermansWorld.AlathraWar.Siege;
 import me.ShermansWorld.AlathraWar.War;
 
@@ -116,6 +117,13 @@ public class WarData
         ArrayList<Siege> sieges = SiegeData.createSieges(war, siegeMaps);
         for (Siege siege : sieges) {
             war.addSiege(siege);
+        }
+
+        // Raid adding from map.
+        Collection<HashMap<String, Object>> raidMaps = ((HashMap<String,HashMap<String, Object>>) fileData.get("raids")).values();
+        ArrayList<Raid> raids = RaidData.createRaids(war, raidMaps);
+        for (Raid raid : raids) {
+            war.addRaid(raid);
         }
 
         return war;

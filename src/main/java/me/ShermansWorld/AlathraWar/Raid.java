@@ -77,7 +77,7 @@ public class Raid {
     private String defenders;
     private boolean side1AreRaiders;
     private int raidScore;
-    private Player owner;
+    private OfflinePlayer owner;
     private int raidTicks;
     private TownBlock homeBlockRaided;
     private TownBlock homeBlockGather;
@@ -469,7 +469,7 @@ public class Raid {
      * @param owner
      * @param raidScore
      */
-    public void raidersWin(final Player owner, int raidScore) {
+    public void raidersWin(final OfflinePlayer owner, int raidScore) {
         //TODO finalize payout
 
         //Calc win factor
@@ -479,7 +479,7 @@ public class Raid {
         double factor = ((raidScore - 800.0) / 100) + 0.5;
         if (factor > 3.0) factor = 3.0;
 
-        final Resident resident = TownyAPI.getInstance().getResident(owner);
+        final Resident resident = TownyAPI.getInstance().getResident(owner.getUniqueId());
         Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The raiders from " + this.raiders
                 + " have successfully raided " + this.raidedTown.getName() + "!");
 
@@ -650,11 +650,11 @@ public class Raid {
         this.gatherTown = town;
     }
 
-    public Player getOwner() {
+    public OfflinePlayer getOwner() {
         return this.owner;
     }
 
-    public void setOwner(Player owner) {
+    public void setOwner(OfflinePlayer owner) {
         this.owner = owner;
     }
 

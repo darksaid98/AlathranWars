@@ -9,6 +9,7 @@ import com.palmergames.bukkit.towny.object.metadata.IntegerDataField;
 import com.palmergames.bukkit.towny.object.metadata.LongDataField;
 import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.Raid;
+import me.ShermansWorld.AlathraWar.Siege;
 import me.ShermansWorld.AlathraWar.War;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -18,6 +19,7 @@ import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -121,6 +123,19 @@ public class RaidData {
         }
 
         return raid;
+    }
+
+    public static ArrayList<Raid> createRaids(War war, Collection<HashMap<String, Object>> raidMaps) {
+        ArrayList<Raid> returnList = new ArrayList<Raid>();
+        for (HashMap<String, Object> map : raidMaps) {
+            Town town = TownyAPI.getInstance().getTown((String) map.get("raidedTown"));
+            if (town == null) continue;
+
+            Raid raid = fromMap(war, map);
+            returnList.add(raid);
+
+        }
+        return returnList;
     }
 
 
