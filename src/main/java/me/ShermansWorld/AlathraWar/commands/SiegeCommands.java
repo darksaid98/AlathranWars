@@ -112,6 +112,9 @@ public class SiegeCommands implements CommandExecutor {
         Siege siege = new Siege(war, town, player);
         SiegeData.addSiege(siege);
         war.addSiege(siege);
+
+        Bukkit.broadcastMessage(Helper.Chatlabel() + "A siege has been laid on " + siege.getTown() + " by " + siege.getAttackers() + "!");
+
         war.save();
         siege.start();
     }
