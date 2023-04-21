@@ -852,14 +852,16 @@ public class Raid {
                             final int homeBlockXCoordRaided = Raid.this.getRaidedTown().getHomeBlock().getCoord().getX() * 16;
                             final int homeBlockZCoordRaided = Raid.this.getRaidedTown().getHomeBlock().getCoord().getZ() * 16;
                             Player p = Bukkit.getPlayer(player);
-                            //Carryover from sieges
-                            if (Math.abs(p.getLocation().getBlockX() - homeBlockXCoordRaided) <= 200 && Math.abs(p.getLocation().getBlockZ() - homeBlockZCoordRaided) <= 200) {
-                                playerCloseToHomeBlockRaid = true;
-                            }
+                            if(p != null) {
+                                //Carryover from sieges
+                                if (Math.abs(p.getLocation().getBlockX() - homeBlockXCoordRaided) <= 200 && Math.abs(p.getLocation().getBlockZ() - homeBlockZCoordRaided) <= 200) {
+                                    playerCloseToHomeBlockRaid = true;
+                                }
 
-                            WorldCoord playercoord = WorldCoord.parseWorldCoord(Bukkit.getPlayer(player));
-                            if (Raid.this.getRaidedTown().hasTownBlock(playercoord) || playerCloseToHomeBlockRaid) {
-                                startCombat();
+                                WorldCoord playercoord = WorldCoord.parseWorldCoord(Bukkit.getPlayer(player));
+                                if (Raid.this.getRaidedTown().hasTownBlock(playercoord) || playerCloseToHomeBlockRaid) {
+                                    startCombat();
+                                }
                             }
                         } catch (TownyException e) {
                             e.printStackTrace();
