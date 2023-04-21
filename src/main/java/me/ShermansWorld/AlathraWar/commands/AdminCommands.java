@@ -1338,12 +1338,12 @@ public class AdminCommands implements CommandExecutor {
                                     } else if (args[3].equalsIgnoreCase("set")) {
                                         if (args.length >= 7) {
                                             if (args[6].equals(w.getSide1())) {
-                                                w.setLastRaidTimeSide1(Long.parseLong(args[6]));
+                                                w.setLastRaidTimeSide1(Integer.parseInt(args[6]));
                                                 p.sendMessage(Helper.Chatlabel() + "Set last raid time in war " + args[4] + " to " + args[6]);
                                                 Main.warLogger.log(Helper.Chatlabel() + "Set last raid time in war " + args[4] + " to " + args[6]);
                                                 return finalizeWar(w);
                                             } else if (args[6].equals(w.getSide2())) {
-                                                w.setLastRaidTimeSide2(Long.parseLong(args[6]));
+                                                w.setLastRaidTimeSide2(Integer.parseInt(args[6]));
                                                 p.sendMessage(Helper.Chatlabel() + "Set last raid time in war " + args[4] + " to " + args[6]);
                                                 Main.warLogger.log(Helper.Chatlabel() + "Set last raid time in war " + args[4] + " to " + args[6]);
                                                 return finalizeWar(w);
@@ -1359,12 +1359,12 @@ public class AdminCommands implements CommandExecutor {
 
                                         if (args.length >= 6) {
                                             if (args[5].equals(w.getSide1())) {
-                                                w.setLastRaidTimeSide1(0L);
+                                                w.setLastRaidTimeSide1(0);
                                                 p.sendMessage(Helper.Chatlabel() + "Reset last raid time in war " + args[4]);
                                                 Main.warLogger.log(Helper.Chatlabel() + "Reset last raid time in war " + args[4]);
                                                 return finalizeWar(w);
                                             } else if (args[5].equals(w.getSide2())) {
-                                                w.setLastRaidTimeSide2(0L);
+                                                w.setLastRaidTimeSide2(0);
                                                 p.sendMessage(Helper.Chatlabel() + "Reset last raid time in war " + args[4]);
                                                 Main.warLogger.log(Helper.Chatlabel() + "Reset last raid time in war " + args[4]);
                                                 return finalizeWar(w);

@@ -129,6 +129,14 @@ public class RaidCommands implements CommandExecutor {
 
                     //if this is run as admin, shift our check forward a slot
                     if (raidedTown.getName().equalsIgnoreCase(args[2 + (admin ? 1 : 0)]) && gatherTown != null) {
+
+                        //check if the town were attempting to raid is in the war
+                        if(!war.getSide1Towns().contains(raidedTown.getName()) && !war.getSide2Towns().contains(raidedTown.getName())) {
+                            if (admin) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "The town you are trying to raid is not part of the war!");
+                            raidOwner.sendMessage(String.valueOf(Helper.Chatlabel()) + "The town you are trying to raid is not part of the war!");
+                            return;
+                        }
+
                         townExists = true;
 
                         Raid raid2;

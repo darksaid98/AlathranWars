@@ -83,6 +83,7 @@ public class WarData
                 returnList.add(fileWar); 
             } catch (Exception e) {
                 Main.warLogger.log("Failed to load " + file.getName());
+                e.printStackTrace();
             }
         }
 
@@ -107,8 +108,8 @@ public class WarData
 
 
         if(fileData.get("lastRaidTimeSide1") != null && fileData.get("lastRaidTimeSide2") != null) {
-            war.setLastRaidTimeSide1((long) fileData.get("lastRaidTimeSide1"));
-            war.setLastRaidTimeSide2((long) fileData.get("lastRaidTimeSide2"));
+            war.setLastRaidTimeSide1((int) fileData.get("lastRaidTimeSide1"));
+            war.setLastRaidTimeSide2((int) fileData.get("lastRaidTimeSide2"));
         }
 
 
