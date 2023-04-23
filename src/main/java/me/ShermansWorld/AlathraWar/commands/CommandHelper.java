@@ -66,15 +66,11 @@ public class CommandHelper {
     public static List<String> getTownyNations() {
         List<String> out = new ArrayList<>();
         for (Town t : TownyAPI.getInstance().getTowns()) {
-            try {
-                Nation n = t.getNation();
-                if(n != null) {
-                    if(!out.contains(n.getName())) {
-                        out.add(n.getName());
-                    }
+            Nation n = t.getNationOrNull();
+            if(n != null) {
+                if(!out.contains(n.getName())) {
+                    out.add(n.getName());
                 }
-            } catch (NotRegisteredException e) {
-                throw new RuntimeException(e);
             }
         }
         return out;

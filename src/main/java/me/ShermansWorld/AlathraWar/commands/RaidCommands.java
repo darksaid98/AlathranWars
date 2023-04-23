@@ -234,9 +234,9 @@ public class RaidCommands implements CommandExecutor {
                         //broadcast
                         Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "As part of " + war.getName() + ", forces from " + raid2.getRaiders() + " are gathering to raid the town of " + raidedTown.getName() + "!");
                         Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "All players from the defending side have been drafted for the town's defense.");
-                        Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The raid of "
+                        Bukkit.broadcastMessage(Helper.Chatlabel() + "The raid of "
                                 + raidedTown.getName() + " will begin in " + (int) (RaidPhase.TRAVEL.startTick / 20 / 60) + " minutes!");
-                        Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) +
+                        Bukkit.broadcastMessage(Helper.Chatlabel() +
                                 "The Raiders are gathering at " + gatherTown.getName() + " before making the journey over!");
 
                         Main.warLogger.log(raidOwner.getName() + " started a raid.");
@@ -248,11 +248,11 @@ public class RaidCommands implements CommandExecutor {
             }
         }
         if (!warFound) {
-            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "That war does not exist! /raid start [war] [town]");
+            p.sendMessage(Helper.Chatlabel() + "That war does not exist! /raid start [war] [town]");
             return;
         }
         if (!townExists) {
-            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "That town does not exist! /raid start [war] [town]");
+            p.sendMessage(Helper.Chatlabel() + "That town does not exist! /raid start [war] [town]");
         }
     }
 
@@ -294,23 +294,28 @@ public class RaidCommands implements CommandExecutor {
             if (raid.getWar().getName().equalsIgnoreCase(args[1])) {
                 Player joiner = p;
                 if (admin) {
-                    joiner = Bukkit.getOfflinePlayer(args[3]).getPlayer();
+                    joiner = Bukkit.getPlayer(args[3]);
 
-                    if(args[4] != null) {
-                        if(args[4].equals(raid.getDefenders())) {
-                            if(!raid.getDefenderPlayers().contains(joiner.getName()))
-                                raid.getDefenderPlayers().add(joiner.getName());
-                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Player " + joiner.getName() + " added to defender side.");
-                            Main.warLogger.log("Player " + joiner.getName() + " added to defender side.");
-                            joiner.sendMessage(String.valueOf(Helper.Chatlabel()) + "You were forcefully added to the defender side against the raid party on " + raid.getRaidedTown() + " by an admin.");
-                            return;
-                        } else {
-                            if(!raid.getRaiderPlayers().contains(joiner.getName()))
-                                raid.getRaiderPlayers().add(joiner.getName());
-                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Player " + joiner.getName() + " added to raider side.");
-                            Main.warLogger.log("Player " + joiner.getName() + " added to raider side.");
-                            joiner.sendMessage(String.valueOf(Helper.Chatlabel()) + "You were forcefully added to the raid party on " + raid.getRaidedTown() + " by an admin. Leaving the gather town will remove you from the raid party.");
+                    if(joiner != null) {
+                        if (args[4] != null) {
+                            if (args[4].equals(raid.getDefenders())) {
+                                if (!raid.getDefenderPlayers().contains(joiner.getName()))
+                                    raid.getDefenderPlayers().add(joiner.getName());
+                                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Player " + joiner.getName() + " added to defender side.");
+                                Main.warLogger.log("Player " + joiner.getName() + " added to defender side.");
+                                joiner.sendMessage(String.valueOf(Helper.Chatlabel()) + "You were forcefully added to the defender side against the raid party on " + raid.getRaidedTown() + " by an admin.");
+                                return;
+                            } else {
+                                if (!raid.getRaiderPlayers().contains(joiner.getName()))
+                                    raid.getRaiderPlayers().add(joiner.getName());
+                                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Player " + joiner.getName() + " added to raider side.");
+                                Main.warLogger.log("Player " + joiner.getName() + " added to raider side.");
+                                joiner.sendMessage(String.valueOf(Helper.Chatlabel()) + "You were forcefully added to the raid party on " + raid.getRaidedTown() + " by an admin. Leaving the gather town will remove you from the raid party.");
+                            }
                         }
+                    } else {
+                        p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Player " + args[3] + " not found!");
+                        return;
                     }
                 }
                 if (!raid.getWar().getSide1Players().contains(joiner.getName()) && !raid.getWar().getSide2Players().contains(joiner.getName())) {
@@ -460,30 +465,12 @@ public class RaidCommands implements CommandExecutor {
 
     private static void fail(Player p, String[] args, String type) {
         switch (type) {
-            case "permissions": {
-                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "&cYou do not have permission to do this");
-                return;
-            }
-            case "syntax": {
-                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /raid help");
-                return;
-            }
-            case "noRaids": {
-                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "There are currently no Raids in progress");
-                return;
-            }
-            case "badName": {
-                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "A raid could not be found with this Name! Type /raid list to view current raids");
-                return;
-            }
-            case "owner": {
-                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Only the player who started the raid can abandon it.");
-                return;
-            }
-            default: {
-                p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /raid help");
-
-            }
+            case "permissions" -> p.sendMessage(String.valueOf(Helper.Chatlabel()) + "&cYou do not have permission to do this");
+            case "syntax" -> p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Syntax. /raid help");
+            case "noRaids" -> p.sendMessage(String.valueOf(Helper.Chatlabel()) + "There are currently no Raids in progress");
+            case "badName" -> p.sendMessage(String.valueOf(Helper.Chatlabel()) + "A raid could not be found with this Name! Type /raid list to view current raids");
+            case "owner" -> p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Only the player who started the raid can abandon it.");
+            default -> p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /raid help");
         }
     }
 }

@@ -471,13 +471,13 @@ public class AdminCommands implements CommandExecutor {
                     for (War w : WarData.getWars()) {
                         if (w.getName().equals(args[2])) {
                             p.sendMessage(Helper.Chatlabel() + "Info dump for war: " + w.getName());
-                            p.sendMessage(Helper.Chatlabel() + "oOo-----------------===-----------------oOo");
+                            p.sendMessage(Helper.Chatlabel() + "oOo------------===------------oOo");
                             p.sendMessage(Helper.Chatlabel() + "Name: " + w.getName());
                             p.sendMessage(Helper.Chatlabel() + "Side 1: " + w.getSide1());
                             p.sendMessage(Helper.Chatlabel() + "Side 2: " + w.getSide2());
-                            p.sendMessage(Helper.Chatlabel() + "Last Raid for Side 1: " + new Timestamp(w.getLastRaidTimeSide1() * 1000));
-                            p.sendMessage(Helper.Chatlabel() + "Last Raid for Side 2: " + new Timestamp(w.getLastRaidTimeSide2() * 1000));
-                            p.sendMessage(Helper.Chatlabel() + "oOo-----------------===-----------------oOo");
+                            p.sendMessage(Helper.Chatlabel() + "Last Raid for Side 1: " + new Timestamp(((long) w.getLastRaidTimeSide1()) * 1000L));
+                            p.sendMessage(Helper.Chatlabel() + "Last Raid for Side 2: " + new Timestamp(((long) w.getLastRaidTimeSide2()) * 1000L));
+                            p.sendMessage(Helper.Chatlabel() + "oOo------------===------------oOo");
                             StringBuilder side1Towns = new StringBuilder();
                             StringBuilder side1Players = new StringBuilder();
                             for (String t : w.getSide1Towns()) {
@@ -493,7 +493,8 @@ public class AdminCommands implements CommandExecutor {
                             if(side1Players.length() > 2) side1Players = new StringBuilder(side1Players.substring(0, side1Players.length() - 2));
                             p.sendMessage(Helper.Chatlabel() + w.getSide1() + " Towns: " + side1Towns);
                             p.sendMessage(Helper.Chatlabel() + w.getSide1() + " Players: " + side1Players);
-                            p.sendMessage(Helper.Chatlabel() + "oOo-----------------===-----------------oOo");
+
+                            p.sendMessage(Helper.Chatlabel() + "oOo------------===------------oOo");
                             StringBuilder side2Towns = new StringBuilder();
                             StringBuilder side2Players = new StringBuilder();
                             for (String t : w.getSide2Towns()) {
@@ -509,7 +510,8 @@ public class AdminCommands implements CommandExecutor {
                             if(side2Players.length() > 2) side2Players = new StringBuilder(side2Players.substring(0, side2Players.length() - 2));
                             p.sendMessage(Helper.Chatlabel() + w.getSide2() + " Towns: " + side2Towns);
                             p.sendMessage(Helper.Chatlabel() + w.getSide2() + " Players: " + side2Players);
-                            p.sendMessage(Helper.Chatlabel() + "oOo-----------------===-----------------oOo");
+
+                            p.sendMessage(Helper.Chatlabel() + "oOo------------===------------oOo");
                             StringBuilder surrenderedTowns = new StringBuilder();
                             for (String t : w.getSurrenderedTowns()) {
                                 surrenderedTowns.append(t);
@@ -517,7 +519,7 @@ public class AdminCommands implements CommandExecutor {
                             }
                             //cut off last two characters
                             if(surrenderedTowns.length() > 2) surrenderedTowns = new StringBuilder(surrenderedTowns.substring(0, surrenderedTowns.length() - 2));
-                            p.sendMessage(Helper.Chatlabel() + w.getSide2() + " Towns: " + surrenderedTowns);
+                            p.sendMessage(Helper.Chatlabel() + "Surrendered Towns: " + surrenderedTowns);
                             return true;
                         }
                     }
@@ -531,7 +533,7 @@ public class AdminCommands implements CommandExecutor {
                     for (Raid r : RaidData.getRaids()) {
                         if (r.getWar().getName().equals(args[2]) && r.getRaidedTown().getName().equals(args[3])) {
                             p.sendMessage(Helper.Chatlabel() + "Info dump for raid: " + r.getName());
-                            p.sendMessage(Helper.Chatlabel() + "oOo-----------------===-----------------oOo");
+                            p.sendMessage(Helper.Chatlabel() + "oOo------------===------------oOo");
                             p.sendMessage(Helper.Chatlabel() + "Name: " + r.getName());
                             p.sendMessage(Helper.Chatlabel() + "Raiders: " + r.getRaiders());
                             p.sendMessage(Helper.Chatlabel() + "Defenders: " + r.getDefenders());
@@ -544,7 +546,7 @@ public class AdminCommands implements CommandExecutor {
                             p.sendMessage(Helper.Chatlabel() + "Owner: " + r.getOwner().getName());
                             p.sendMessage(Helper.Chatlabel() + "Gather Homeblock: " + r.getHomeBlockGather().toString());
                             p.sendMessage(Helper.Chatlabel() + "Raided Homeblock: " + r.getHomeBlockRaided().toString());
-                            p.sendMessage(Helper.Chatlabel() + "oOo-----------------===-----------------oOo");
+                            p.sendMessage(Helper.Chatlabel() + "oOo------------===------------oOo");
                             StringBuilder activeRaiders = new StringBuilder();
                             for (String pl : r.getActiveRaiders()) {
                                 activeRaiders.append(pl);
@@ -566,7 +568,7 @@ public class AdminCommands implements CommandExecutor {
                     for (Siege s : SiegeData.getSieges()) {
                         if (s.getWar().getName().equals(args[2]) && s.getTown().getName().equals(args[3])) {
                             p.sendMessage(Helper.Chatlabel() + "Info dump for siege: " + s.getName());
-                            p.sendMessage(Helper.Chatlabel() + "oOo-----------------===-----------------oOo");
+                            p.sendMessage(Helper.Chatlabel() + "oOo------------===------------oOo");
                             p.sendMessage(Helper.Chatlabel() + "Name: " + s.getName());
                             p.sendMessage(Helper.Chatlabel() + "Attackers: " + s.getAttackers());
                             p.sendMessage(Helper.Chatlabel() + "Defenders: " + s.getDefenders());
@@ -578,7 +580,7 @@ public class AdminCommands implements CommandExecutor {
                             p.sendMessage(Helper.Chatlabel() + "Tick progress: " + s.getSiegeTicks());
                             p.sendMessage(Helper.Chatlabel() + "Owner: " + s.getSiegeOwner());
                             p.sendMessage(Helper.Chatlabel() + "Homeblock: " + s.getHomeBlock().toString());
-                            p.sendMessage(Helper.Chatlabel() + "oOo-----------------===-----------------oOo");
+                            p.sendMessage(Helper.Chatlabel() + "oOo------------===------------oOo");
                             StringBuilder attackers = new StringBuilder();
                             for (String pl : s.getAttackerPlayers()) {
                                 attackers.append(pl);
@@ -1227,12 +1229,12 @@ public class AdminCommands implements CommandExecutor {
                         }
                         return true;
                     }
-                    //TODO If a town is surrendered, use last arg as flag to force unsurrende  r
+                    //TODO If a town is surrendered, use last arg as flag to force unsurrender
                     else if (args[2].equalsIgnoreCase("add")) {
                         if (args.length >= 7) {
                             for (War w : WarData.getWars()) {
                                 if (w.getName().equals(args[3])) {
-                                    if (!w.getSide1().equals(args[4]) && !w.getSide1().equals(args[4])) {
+                                    if (!w.getSide1().equals(args[4]) && !w.getSide2().equals(args[4])) {
                                         p.sendMessage(Helper.color("&cError: Side not found!"));
                                         return true;
                                     }
@@ -1245,8 +1247,19 @@ public class AdminCommands implements CommandExecutor {
                                                     //if we already have surrendered
                                                     if(w.getSurrenderedTowns().contains(args[6])) {
                                                         w.unSurrenderTown(args[6]);
-                                                        p.sendMessage(Helper.Chatlabel() + "Unsurrendered town " + args[6]);
-                                                        Main.warLogger.log(Helper.Chatlabel() + "Unsurrendered town " + args[6]);
+                                                        p.sendMessage(Helper.Chatlabel() + "Un-surrendered town " + args[6]);
+                                                        Main.warLogger.log(Helper.Chatlabel() + "Un-surrendered town " + args[6]);
+                                                    }
+                                                    if(w.getSide1().equals(args[4])) {
+                                                        if(w.getSide2Towns().remove(args[6])) {
+                                                            p.sendMessage(Helper.Chatlabel() + "Removed town " + args[6] + " from side " + w.getSide2());
+                                                            Main.warLogger.log(Helper.Chatlabel() + "Un-surrendered town " + args[6]);
+                                                        }
+                                                    } else if(w.getSide2().equals(args[4])) {
+                                                        if(w.getSide1Towns().remove(args[6])) {
+                                                            p.sendMessage(Helper.Chatlabel() + "Removed town " + args[6] + " from side " + w.getSide2());
+                                                            Main.warLogger.log(Helper.Chatlabel() + "Un-surrendered town " + args[6]);
+                                                        }
                                                     }
                                                 }
                                             }
@@ -1280,6 +1293,17 @@ public class AdminCommands implements CommandExecutor {
                                                             w.unSurrenderTown(t.getName());
                                                             p.sendMessage(Helper.Chatlabel() + "Unsurrendered town " + t.getName());
                                                             Main.warLogger.log(Helper.Chatlabel() + "Unsurrendered town " + t.getName());
+                                                        }
+                                                        if(w.getSide1().equals(args[4])) {
+                                                            if(w.getSide2Towns().remove(t.getName())) {
+                                                                p.sendMessage(Helper.Chatlabel() + "Removed town " + t.getName() + " from side " + w.getSide2());
+                                                                Main.warLogger.log(Helper.Chatlabel() + "Un-surrendered town " + t.getName());
+                                                            }
+                                                        } else if(w.getSide2().equals(args[4])) {
+                                                            if(w.getSide1Towns().remove(t.getName())) {
+                                                                p.sendMessage(Helper.Chatlabel() + "Removed town " + t.getName() + " from side " + w.getSide2());
+                                                                Main.warLogger.log(Helper.Chatlabel() + "Un-surrendered town " + t.getName());
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -1319,28 +1343,28 @@ public class AdminCommands implements CommandExecutor {
                     }
                     //TODO do
                     else if (args[2].equalsIgnoreCase("unsurrender")) {
-                        if (args.length >= 7) {
+                        if (args.length >= 6) {
                             for (War w : WarData.getWars()) {
                                 if (w.getName().equals(args[3])) {
                                     if (args[4].equalsIgnoreCase("town")) {
-                                        Town t = TownyAPI.getInstance().getTown(args[6]);
+                                        Town t = TownyAPI.getInstance().getTown(args[5]);
                                         if (t != null) {
-                                            if(w.getSurrenderedTowns().contains(args[6])) {
-                                                w.unSurrenderTown(args[6]);
-                                                p.sendMessage(Helper.Chatlabel() + "Un-surrendered town " + args[6]);
-                                                Main.warLogger.log(Helper.Chatlabel() + "Un-surrendered town " + args[6]);
+                                            if(w.getSurrenderedTowns().contains(args[5])) {
+                                                w.unSurrenderTown(args[5]);
+                                                p.sendMessage(Helper.Chatlabel() + "Un-surrendered town " + args[5]);
+                                                Main.warLogger.log(Helper.Chatlabel() + "Un-surrendered town " + args[5]);
                                                 p.sendMessage(Helper.color("&cTo re-add, use: /alathrawaradmin modify war add, or have the town loader join."));
                                                 return true;
                                             }
-                                            p.sendMessage(Helper.Chatlabel() + "Town " + args[6] + " not already surrendered, ignoring.");
-                                            Main.warLogger.log(Helper.Chatlabel() + "Town " + args[6] + " not already surrendered, ignoring.");
+                                            p.sendMessage(Helper.Chatlabel() + "Town " + args[5] + " not already surrendered, ignoring.");
+                                            Main.warLogger.log(Helper.Chatlabel() + "Town " + args[5] + " not already surrendered, ignoring.");
                                             return true;
                                         } else {
                                             p.sendMessage(Helper.color("&cError: Town not found!"));
                                         }
                                         return finalizeWar(w);
                                     } else if (args[4].equalsIgnoreCase("nation")) {
-                                        Nation n = TownyAPI.getInstance().getNation(args[6]);
+                                        Nation n = TownyAPI.getInstance().getNation(args[5]);
                                         if (n != null) {
                                             for(Town t : n.getTowns()) {
                                                 if (w.getSurrenderedTowns().contains(t.getName())) {
@@ -1350,8 +1374,8 @@ public class AdminCommands implements CommandExecutor {
                                                 }
                                             }
 
-                                            p.sendMessage(Helper.Chatlabel() + "Un-surrendered nation " + args[6] + " in war " + args[3]);
-                                            Main.warLogger.log(Helper.Chatlabel() + "Un-surrendered nation " + args[6] + " in war " + args[3]);
+                                            p.sendMessage(Helper.Chatlabel() + "Un-surrendered nation " + args[5] + " in war " + args[3]);
+                                            Main.warLogger.log(Helper.Chatlabel() + "Un-surrendered nation " + args[5] + " in war " + args[3]);
                                             p.sendMessage(Helper.color("&cTo re-add, use: /alathrawaradmin modify war add, or have the nation loader join."));
                                             return finalizeWar(w);
                                         } else {
@@ -1376,7 +1400,7 @@ public class AdminCommands implements CommandExecutor {
                         if (args.length >= 7) {
                             for (War w : WarData.getWars()) {
                                 if (w.getName().equals(args[3])) {
-                                    if (!w.getSide1().equals(args[4]) && !w.getSide1().equals(args[4])) {
+                                    if (!w.getSide1().equals(args[4]) && !w.getSide2().equals(args[4])) {
                                         p.sendMessage(Helper.color("&cError: Side not found!"));
                                         return true;
                                     }
@@ -1394,8 +1418,13 @@ public class AdminCommands implements CommandExecutor {
                                                 Main.warLogger.log(Helper.Chatlabel() + "Forcefully surrendered town " + args[6] + " war " + args[3] + " on side " + args[4]);
                                                 return finalizeWar(w);
                                             } else {
-                                                p.sendMessage(Helper.Chatlabel() + "Town " + args[5] + " is not on either side of the war!");
-                                                Main.warLogger.log(Helper.Chatlabel() + "Town " + args[5] + " is not on either side of the war!");
+                                                if (w.getSide1().equals(args[4]) || w.getSide2().equals(args[4])) {
+                                                    p.sendMessage(Helper.Chatlabel() + "Town " + args[5] + " is not on either side of the war!");
+                                                    Main.warLogger.log(Helper.Chatlabel() + "Town " + args[5] + " is not on either side of the war!");
+                                                    return true;
+                                                }
+                                                p.sendMessage(Helper.Chatlabel() + "Town " + args[5] + " is on a side but side not correct! ERROR!");
+                                                Main.warLogger.log(Helper.Chatlabel() + "Town " + args[5] + " is on a side but side not correct! ERROR!");
                                                 return true;
                                             }
                                         } else {
@@ -1408,17 +1437,23 @@ public class AdminCommands implements CommandExecutor {
                                             for (Town t : n.getTowns()) {
                                                 if(w.getSide1Towns().contains(t.getName()) && w.getSide1().equals(args[4])) {
                                                     w.surrenderTown(t.getName());
-                                                    p.sendMessage(Helper.Chatlabel() + "Forcefully surrendered town " + args[6] + " war " + args[3] + " on side " + args[4]);
-                                                    Main.warLogger.log(Helper.Chatlabel() + "Forcefully surrendered town " + args[6] + " war " + args[3] + " on side " + args[4]);
+                                                    p.sendMessage(Helper.Chatlabel() + "Forcefully surrendered town " + t.getName() + " war " + args[3] + " on side " + args[4]);
+                                                    Main.warLogger.log(Helper.Chatlabel() + "Forcefully surrendered town " + t.getName() + " war " + args[3] + " on side " + args[4]);
 
                                                 } else if(w.getSide2Towns().contains(t.getName()) && w.getSide2().equals(args[4])) {
                                                     w.surrenderTown(t.getName());
-                                                    p.sendMessage(Helper.Chatlabel() + "Forcefully surrendered town " + args[6] + " war " + args[3] + " on side " + args[4]);
-                                                    Main.warLogger.log(Helper.Chatlabel() + "Forcefully surrendered town " + args[6] + " war " + args[3] + " on side " + args[4]);
+                                                    p.sendMessage(Helper.Chatlabel() + "Forcefully surrendered town " + t.getName() + " war " + args[3] + " on side " + args[4]);
+                                                    Main.warLogger.log(Helper.Chatlabel() + "Forcefully surrendered town " + t.getName() + " war " + args[3] + " on side " + args[4]);
 
                                                 } else {
-                                                    p.sendMessage(Helper.Chatlabel() + "Town " + args[5] + " is not on either side of the war!");
-                                                    Main.warLogger.log(Helper.Chatlabel() + "Town " + args[5] + " is not on either side of the war!");
+                                                    if (w.getSide1().equals(args[4]) || w.getSide2().equals(args[4])) {
+                                                        p.sendMessage(Helper.Chatlabel() + "Town " + t.getName() + " is not on either side of the war!");
+                                                        Main.warLogger.log(Helper.Chatlabel() + "Town " + t.getName() + " is not on either side of the war!");
+                                                        return true;
+                                                    }
+                                                    p.sendMessage(Helper.Chatlabel() + "Town " + t.getName() + " is on a side but side not correct! ERROR!");
+                                                    Main.warLogger.log(Helper.Chatlabel() + "Town " + t.getName() + " is on a side but side not correct! ERROR!");
+                                                    return true;
                                                 }
                                             }
                                             p.sendMessage(Helper.Chatlabel() + "Surrendered nation " + args[6] + " war " + args[3] + " on side " + args[4]);
@@ -1446,12 +1481,12 @@ public class AdminCommands implements CommandExecutor {
                                     if (args[3].equalsIgnoreCase("add")) {
                                         if (args.length >= 7) {
                                             if (args[6].equals(w.getSide1())) {
-                                                w.setLastRaidTimeSide1(w.getLastRaidTimeSide1() + Integer.parseInt(args[6]));
+                                                w.setLastRaidTimeSide1(w.getLastRaidTimeSide1() + Integer.parseInt(args[5]));
                                                 p.sendMessage(Helper.Chatlabel() + "Added " + args[6] + " to last raid time in war " + args[4]);
                                                 Main.warLogger.log(Helper.Chatlabel() + "Added " + args[6] + " to last raid time in war " + args[4]);
                                                 return finalizeWar(w);
                                             } else if (args[6].equals(w.getSide2())) {
-                                                w.setLastRaidTimeSide2(w.getLastRaidTimeSide2() + Integer.parseInt(args[6]));
+                                                w.setLastRaidTimeSide2(w.getLastRaidTimeSide2() + Integer.parseInt(args[5]));
                                                 p.sendMessage(Helper.Chatlabel() + "Added " + args[6] + " to last raid time in war " + args[4]);
                                                 Main.warLogger.log(Helper.Chatlabel() + "Added " + args[6] + " to last raid time in war " + args[4]);
                                                 return finalizeWar(w);
@@ -1466,12 +1501,12 @@ public class AdminCommands implements CommandExecutor {
                                     } else if (args[3].equalsIgnoreCase("set")) {
                                         if (args.length >= 7) {
                                             if (args[6].equals(w.getSide1())) {
-                                                w.setLastRaidTimeSide1(Integer.parseInt(args[6]));
+                                                w.setLastRaidTimeSide1(Integer.parseInt(args[5]));
                                                 p.sendMessage(Helper.Chatlabel() + "Set last raid time in war " + args[4] + " to " + args[6]);
                                                 Main.warLogger.log(Helper.Chatlabel() + "Set last raid time in war " + args[4] + " to " + args[6]);
                                                 return finalizeWar(w);
                                             } else if (args[6].equals(w.getSide2())) {
-                                                w.setLastRaidTimeSide2(Integer.parseInt(args[6]));
+                                                w.setLastRaidTimeSide2(Integer.parseInt(args[5]));
                                                 p.sendMessage(Helper.Chatlabel() + "Set last raid time in war " + args[4] + " to " + args[6]);
                                                 Main.warLogger.log(Helper.Chatlabel() + "Set last raid time in war " + args[4] + " to " + args[6]);
                                                 return finalizeWar(w);

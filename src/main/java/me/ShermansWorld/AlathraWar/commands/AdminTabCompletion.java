@@ -686,9 +686,9 @@ public class AdminTabCompletion implements TabCompleter {
                                             if (args.length > 6) {
                                                 return empty;
                                             } else {
-                                                if (args[5].equalsIgnoreCase("town")) {
+                                                if (args[4].equalsIgnoreCase("town")) {
                                                     return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[5]);
-                                                } else if (args[5].equalsIgnoreCase("nation")) {
+                                                } else if (args[4].equalsIgnoreCase("nation")) {
                                                     return NameUtil.filterByStart(CommandHelper.getTownyNations(), args[5]);
                                                 } else {
                                                     return empty;
