@@ -182,7 +182,7 @@ public class Raid {
 
         //set the last raided time to now
         raidedTown.addMetaData(new LongDataField("lastRaided", (System.currentTimeMillis() / 1000)));
-        war.setLastRaidTime((System.currentTimeMillis() / 1000));
+        war.setLastRaidTime((int) (System.currentTimeMillis() / 1000));
 
         // Creates 10 second looping function for Raid
 

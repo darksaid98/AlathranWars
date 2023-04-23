@@ -104,7 +104,7 @@ public class WarData
         war.setSide1Towns((ArrayList<String>) fileData.get("side1Towns"));
         war.setSide2Towns((ArrayList<String>) fileData.get("side2Towns"));
 
-        war.setLastRaidTime((long) ((int) fileData.get("lastRaidTime")));
+        war.setLastRaidTime((int) fileData.get("lastRaidTime"));
 
 
         // Siege adding from map.
