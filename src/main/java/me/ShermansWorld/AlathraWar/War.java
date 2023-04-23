@@ -86,8 +86,10 @@ public class War {
      * @param nation - Nation to surrender
      */
     public void surrenderNation(Nation nation) {
-        for (Town town : nation.getTowns()) {
-            surrenderTown(town.getName());
+        if(nation != null) {
+            for (Town town : nation.getTowns()) {
+                surrenderTown(town.getName());
+            }
         }
     }
 
@@ -146,7 +148,7 @@ public class War {
     public int getSide(Town town) {
         return getSide(town.getName());
     }
-	
+
 	public String getName() {
 		return this.name;
 	}
