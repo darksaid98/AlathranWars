@@ -105,7 +105,7 @@ public class WarData
         
         war.setSide1Towns((ArrayList<String>) fileData.get("side1Towns"));
         war.setSide2Towns((ArrayList<String>) fileData.get("side2Towns"));
-
+        war.setSurrenderedTowns((ArrayList<String>) fileData.get("surrenderedTowns"));
 
         if(fileData.get("lastRaidTimeSide1") != null && fileData.get("lastRaidTimeSide2") != null) {
             war.setLastRaidTimeSide1((int) fileData.get("lastRaidTimeSide1"));

@@ -181,6 +181,9 @@ public class War {
         return surrenderedTowns;
     }
 
+    public void setSurrenderedTowns(ArrayList<String> towns) {
+        surrenderedTowns = towns;
+    }
 
     public ArrayList<Siege> getSieges() {
         return sieges;
