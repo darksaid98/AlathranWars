@@ -53,6 +53,7 @@ public class AdminTabCompletion implements TabCompleter {
             "name",
             "add",
             "surrender",
+            "unsurrender",
             "raidTimeWar",
             "raidTimeTown"
     });
@@ -542,6 +543,8 @@ public class AdminTabCompletion implements TabCompleter {
                                  * -modify war add nation [war] [nation]
                                  * -modify war surrender town [war] [town] //adds town to surrender list
                                  * -modify war surrender nation [war] [town] //adds all towns to surrender list
+                                 * -modify war unsurrender [war] town/nation [town/nation]
+                                 * -modify war unsurrender [war] town/nation [town/nation]
                                  * -modify war raidTimeTown [add,set,reset] [war] [town] [amt] //set when last raid was
                                  */
                                 case "score" -> {
@@ -647,6 +650,52 @@ public class AdminTabCompletion implements TabCompleter {
                                             }
                                         } else {
                                             return NameUtil.filterByStart(CommandHelper.getWarSides(args[3]), args[4]);
+                                        }
+                                    } else {
+                                        return NameUtil.filterByStart(CommandHelper.getWarNames(), args[3]);
+                                    }
+                                }
+                                case "surrender" -> {
+                                    if (args.length > 4) {
+                                        if (args.length > 5) {
+                                            if (args.length > 6) {
+                                                if (args.length > 7) {
+                                                    return empty;
+                                                } else {
+                                                    if (args[5].equalsIgnoreCase("town")) {
+                                                        return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[6]);
+                                                    } else if (args[5].equalsIgnoreCase("nation")) {
+                                                        return NameUtil.filterByStart(CommandHelper.getTownyNations(), args[6]);
+                                                    } else {
+                                                        return empty;
+                                                    }
+                                                }
+                                            } else {
+                                                return NameUtil.filterByStart(nationTown, args[5]);
+                                            }
+                                        } else {
+                                            return NameUtil.filterByStart(CommandHelper.getWarSides(args[3]), args[4]);
+                                        }
+                                    } else {
+                                        return NameUtil.filterByStart(CommandHelper.getWarNames(), args[3]);
+                                    }
+                                }
+                                case "unsurrender" -> {
+                                    if (args.length > 4) {
+                                        if (args.length > 5) {
+                                            if (args.length > 6) {
+                                                return empty;
+                                            } else {
+                                                if (args[5].equalsIgnoreCase("town")) {
+                                                    return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[5]);
+                                                } else if (args[5].equalsIgnoreCase("nation")) {
+                                                    return NameUtil.filterByStart(CommandHelper.getTownyNations(), args[5]);
+                                                } else {
+                                                    return empty;
+                                                }
+                                            }
+                                        } else {
+                                            return NameUtil.filterByStart(nationTown, args[4]);
                                         }
                                     } else {
                                         return NameUtil.filterByStart(CommandHelper.getWarNames(), args[3]);

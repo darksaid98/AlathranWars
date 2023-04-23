@@ -1296,7 +1296,7 @@ public class AdminCommands implements CommandExecutor {
                                                     continue;
                                                 }
 
-                                                w.addTown(t, args[5]);
+                                                w.addTown(t, args[4]);
                                             }
                                             p.sendMessage(Helper.Chatlabel() + "Forcefully added nation " + args[6] + " war " + args[3] + " on side " + args[4]);
                                             Main.warLogger.log(Helper.Chatlabel() + "Forcefully added nation " + args[6] + " war " + args[3] + " on side " + args[4]);
@@ -1313,7 +1313,61 @@ public class AdminCommands implements CommandExecutor {
                             }
                             p.sendMessage(Helper.color("&cError: War not found!"));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war add [war] town/nation [town/nation] [force] "));
+                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war add [war] [side] town/nation [town/nation] [force] "));
+                        }
+                        return true;
+                    }
+                    //TODO do
+                    else if (args[2].equalsIgnoreCase("unsurrender")) {
+                        if (args.length >= 7) {
+                            for (War w : WarData.getWars()) {
+                                if (w.getName().equals(args[3])) {
+                                    if (args[4].equalsIgnoreCase("town")) {
+                                        Town t = TownyAPI.getInstance().getTown(args[6]);
+                                        if (t != null) {
+                                            if(w.getSurrenderedTowns().contains(args[6])) {
+                                                w.unSurrenderTown(args[6]);
+                                                p.sendMessage(Helper.Chatlabel() + "Un-surrendered town " + args[6]);
+                                                Main.warLogger.log(Helper.Chatlabel() + "Un-surrendered town " + args[6]);
+                                                p.sendMessage(Helper.color("&cTo re-add, use: /alathrawaradmin modify war add, or have the town loader join."));
+                                                return true;
+                                            }
+                                            p.sendMessage(Helper.Chatlabel() + "Town " + args[6] + " not already surrendered, ignoring.");
+                                            Main.warLogger.log(Helper.Chatlabel() + "Town " + args[6] + " not already surrendered, ignoring.");
+                                            return true;
+                                        } else {
+                                            p.sendMessage(Helper.color("&cError: Town not found!"));
+                                        }
+                                        return finalizeWar(w);
+                                    } else if (args[4].equalsIgnoreCase("nation")) {
+                                        Nation n = TownyAPI.getInstance().getNation(args[6]);
+                                        if (n != null) {
+                                            for(Town t : n.getTowns()) {
+                                                if (w.getSurrenderedTowns().contains(t.getName())) {
+                                                    w.unSurrenderTown(t.getName());
+                                                    p.sendMessage(Helper.Chatlabel() + "Un-surrendered town " + t.getName());
+                                                    Main.warLogger.log(Helper.Chatlabel() + "Un-surrendered town " + t.getName());
+                                                }
+                                            }
+
+                                            p.sendMessage(Helper.Chatlabel() + "Un-surrendered nation " + args[6] + " in war " + args[3]);
+                                            Main.warLogger.log(Helper.Chatlabel() + "Un-surrendered nation " + args[6] + " in war " + args[3]);
+                                            p.sendMessage(Helper.color("&cTo re-add, use: /alathrawaradmin modify war add, or have the nation loader join."));
+                                            return finalizeWar(w);
+                                        } else {
+                                            p.sendMessage(Helper.color("&cError: Nation not found!"));
+                                            return true;
+                                        }
+                                    } else {
+                                        p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war unsurrender [war] town/nation [town/nation]"));
+                                        p.sendMessage(Helper.color("&cTo re-add, use: /alathrawaradmin modify war add, or have the town/nation loader join."));
+                                        return true;
+                                    }
+                                }
+                            }
+                            p.sendMessage(Helper.color("&cError: War not found!"));
+                        } else {
+                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war unsurrender [war] town/nation [town/nation]"));
                         }
                         return true;
                     }
