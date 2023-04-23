@@ -1,44 +1,35 @@
 package me.ShermansWorld.AlathraWar.listeners;
 
+import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
+import com.palmergames.bukkit.towny.exceptions.TownyException;
+import com.palmergames.bukkit.towny.object.Town;
+import com.palmergames.bukkit.towny.object.WorldCoord;
+import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.Raid;
-import me.ShermansWorld.AlathraWar.commands.RaidCommands;
+import me.ShermansWorld.AlathraWar.Siege;
 import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.command.CommandSender;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.Material;
-import org.bukkit.event.EventHandler;
-import com.palmergames.bukkit.towny.object.Town;
-import com.palmergames.bukkit.towny.exceptions.TownyException;
-import org.bukkit.Bukkit;
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
-import org.bukkit.entity.Entity;
-import com.palmergames.bukkit.towny.object.WorldCoord;
-
-import me.ShermansWorld.AlathraWar.Helper;
-import me.ShermansWorld.AlathraWar.Siege;
-import me.ShermansWorld.AlathraWar.commands.SiegeCommands;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
-
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 
 public final class KillsListener implements Listener
 {
     @EventHandler
     public void onPlayerKilled(final PlayerDeathEvent event) {
-        if (event.getEntity().getPlayer() == null || !(event.getEntity().getKiller() instanceof Player)) {
-            return;
-        }
+
         final Player killed = event.getEntity();
         final Player killer = event.getEntity().getKiller();
+        if (killed == null || killer == null) {
+            return;
+        }
         Town town = null;
         try {
-            town = WorldCoord.parseWorldCoord((Entity)killed).getTownBlock().getTown();
+            town = WorldCoord.parseWorldCoord(killed).getTownBlock().getTown();
         }
         catch (NotRegisteredException ex2) {}
         boolean playerCloseToHomeBlockSiege = false;
@@ -106,34 +97,32 @@ public final class KillsListener implements Listener
                 }
                 if (raid.getActiveRaiders().contains(killer.getName()) && ((town != null && town.equals(raid.getRaidedTown())) || playerCloseToHomeBlockRaid)) {
                     //There is seperate behavior if combat hasnt started
-                    if(raid.getPhase() == RaidPhase.COMBAT) {
-                        this.siegeKill(killed, event);
+                    if (raid.getPhase() == RaidPhase.COMBAT) {
+                        this.raidKill(killed, event);
                         if (raid.getDefenderPlayers().contains(killed.getName())) {
                             raid.defenderKilledInCombat(event);
                         }
-                        return;
                     } else {
                         //teleport back to raided spawn, without damaged gear
                         this.oocKill(killed, event);
                         raid.defenderKilledOutofCombat(event);
-                        return;
                     }
+                    return;
                 }
                 if (raid.getDefenderPlayers().contains(killer.getName()) && ((town != null && town.equals(raid.getRaidedTown())) || playerCloseToHomeBlockRaid)) {
                     //There is seperate behavior if combat hasnt started
-                    if(raid.getPhase() == RaidPhase.COMBAT) {
-                        this.siegeKill(killed, event);
+                    if (raid.getPhase() == RaidPhase.COMBAT) {
+                        this.raidKill(killed, event);
                         if (raid.getActiveRaiders().contains(killed.getName())) {
                             raid.raiderKilledInCombat(event);
                         }
-                        return;
                     } else {
                         //teleport back to gather town spawn, without damaged gear
                         //this is to disincentive people prekilling
                         this.oocKill(killed, event);
                         raid.raiderKilledOutofCombat(event);
-                        return;
                     }
+                    return;
 
                 }
                 if ( (town != null && town.equals(raid.getRaidedTown()) || playerCloseToHomeBlockRaid) ) {
@@ -149,15 +138,33 @@ public final class KillsListener implements Listener
     /**
      * Damage all gear held by the player (and then send them to spawn?)
      * They don't lose items from death.
-     * @param killed
-     * @param event
+     * @param killed killed player
+     * @param event event
      */
     private void siegeKill(final Player killed, final PlayerDeathEvent event) {
         //Helper
         Helper.damageAllGear(killed);
 
         //Siege specific
-        Bukkit.dispatchCommand((CommandSender)Bukkit.getConsoleSender(), "spawn " + killed.getName());
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "spawn " + killed.getName());
+        event.setKeepInventory(true);
+        event.getDrops().clear();
+        event.setKeepLevel(true);
+    }
+
+    /**
+     * Damage all gear held by the player (and then send them to spawn?)
+     * They don't lose items from death.
+     *
+     * @param killed killed player
+     * @param event event
+     */
+    private void raidKill(final Player killed, final PlayerDeathEvent event) {
+        //Helper
+        Helper.damageAllGear(killed);
+
+        //Siege specific
+//        Bukkit.dispatchCommand((CommandSender)Bukkit.getConsoleSender(), "spawn " + killed.getName());
         event.setKeepInventory(true);
         event.getDrops().clear();
         event.setKeepLevel(true);
@@ -166,12 +173,13 @@ public final class KillsListener implements Listener
     /**
      * Dont damage items held by the player
      * They don't lose items from death.
-     * @param killed
-     * @param event
+     *
+     * @param killed killed player
+     * @param event event
      */
     private void oocKill(final Player killed, final PlayerDeathEvent event) {
         //Siege specific
-        Bukkit.dispatchCommand((CommandSender)Bukkit.getConsoleSender(), "spawn " + killed.getName());
+//        Bukkit.dispatchCommand((CommandSender)Bukkit.getConsoleSender(), "spawn " + killed.getName());
         event.setKeepInventory(true);
         event.getDrops().clear();
         event.setKeepLevel(true);
