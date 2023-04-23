@@ -102,6 +102,24 @@ public class War {
     }
 
     /**
+     * unsurrender town, perfidy time
+     * @param nation - Nation to unsurrender
+     */
+    public void unSurrenderNation(Nation nation) {
+        for (Town town : nation.getTowns()) {
+            unSurrenderTown(town.getName());
+        }
+    }
+
+    /**
+     * unsurrender town, perfidy time
+     * @param town - Town to unsurrender
+     */
+    public void unSurrenderTown(String town) {
+        surrenderedTowns.remove(town);
+    }
+
+    /**
      * Gets side of town
      * -1 - Surrendered
      * 0 - None

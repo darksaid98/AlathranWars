@@ -69,6 +69,12 @@ public class AdminTabCompletion implements TabCompleter {
     });
 
 
+    List<String> boolSet = List.of(new String[]{
+            "true",
+            "false"
+    });
+
+
     List<String> addSetReset = List.of(new String[]{
             "add",
             "set",
@@ -617,12 +623,16 @@ public class AdminTabCompletion implements TabCompleter {
                                         return NameUtil.filterByStart(CommandHelper.getWarNames(), args[3]);
                                     }
                                 }
-                                case "add", "surrender" -> {
+                                case "add" -> {
                                     if (args.length > 4) {
                                         if (args.length > 5) {
                                             if (args.length > 6) {
                                                 if (args.length > 7) {
-                                                    return empty;
+                                                    if (args.length > 8) {
+                                                        return empty;
+                                                    } else {
+                                                        return boolSet;
+                                                    }
                                                 } else {
                                                     if (args[5].equalsIgnoreCase("town")) {
                                                         return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[6]);

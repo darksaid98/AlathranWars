@@ -570,8 +570,8 @@ public class AdminCommands implements CommandExecutor {
                             p.sendMessage(Helper.Chatlabel() + "Name: " + s.getName());
                             p.sendMessage(Helper.Chatlabel() + "Attackers: " + s.getAttackers());
                             p.sendMessage(Helper.Chatlabel() + "Defenders: " + s.getDefenders());
-                            p.sendMessage(Helper.Chatlabel() + "Attackers points: " + s.getAttackerPoints());
-                            p.sendMessage(Helper.Chatlabel() + "Attackers points: " + s.getDefenderPoints());
+                            p.sendMessage(Helper.Chatlabel() + "Attacker points: " + s.getAttackerPoints());
+                            p.sendMessage(Helper.Chatlabel() + "Defender points: " + s.getDefenderPoints());
                             p.sendMessage(Helper.Chatlabel() + "War: " + s.getWar().getName());
                             p.sendMessage(Helper.Chatlabel() + "Attacked Town: " + s.getTown().getName());
                             p.sendMessage(Helper.Chatlabel() + "Max Ticks: " + s.getMaxSiegeTicks());
@@ -1175,7 +1175,7 @@ public class AdminCommands implements CommandExecutor {
                             for (War w : WarData.getWars()) {
                                 if (w.getName().equals(args[3])) {
                                     //TODO war score
-                                    p.sendMessage(Helper.color("&cError!"));
+                                    p.sendMessage(Helper.color("&cError! Feature unimplemented!"));
                                     return true;
                                 }
                             }
@@ -1227,7 +1227,7 @@ public class AdminCommands implements CommandExecutor {
                         }
                         return true;
                     }
-                    //TODO IDK IF THIS WORKS
+                    //TODO If a town is surrendered, use last arg as flag to force unsurrende  r
                     else if (args[2].equalsIgnoreCase("add")) {
                         if (args.length >= 7) {
                             for (War w : WarData.getWars()) {
@@ -1239,9 +1239,31 @@ public class AdminCommands implements CommandExecutor {
                                     if (args[5].equalsIgnoreCase("town")) {
                                         Town t = TownyAPI.getInstance().getTown(args[6]);
                                         if (t != null) {
-                                            w.addTown(t, args[5]);
-                                            p.sendMessage(Helper.Chatlabel() + "Added town " + args[6] + " war " + args[3] + " on side " + args[4]);
-                                            Main.warLogger.log(Helper.Chatlabel() + "Added town " + args[6] + " war " + args[3] + " on side " + args[4]);
+                                            if(args.length >= 8) {
+                                                //forceful add, ignore surrender and override it if the town is
+                                                if(Boolean.parseBoolean(args[7])) {
+                                                    //if we already have surrendered
+                                                    if(w.getSurrenderedTowns().contains(args[6])) {
+                                                        w.unSurrenderTown(args[6]);
+                                                        p.sendMessage(Helper.Chatlabel() + "Unsurrendered town " + args[6]);
+                                                        Main.warLogger.log(Helper.Chatlabel() + "Unsurrendered town " + args[6]);
+                                                    }
+                                                }
+                                            }
+                                            // Side checks
+                                            int side = w.getSide(t.getName().toLowerCase());
+                                            if (side == -1) {
+                                                p.sendMessage(Helper.Chatlabel() + "Town already surrendered!");
+                                                return true;
+                                            } else if (side > 0) {
+                                                p.sendMessage(Helper.Chatlabel() + "Town already in this war!");
+                                                return true;
+                                            }
+
+                                            w.addTown(t, args[4]);
+                                            p.sendMessage(Helper.Chatlabel() + "Forcefully added town " + args[6] + " war " + args[3] + " on side " + args[4]);
+                                            Main.warLogger.log(Helper.Chatlabel() + "Forcefully added town " + args[6] + " war " + args[3] + " on side " + args[4]);
+                                            return true;
                                         } else {
                                             p.sendMessage(Helper.color("&cError: Town not found!"));
                                         }
@@ -1249,16 +1271,42 @@ public class AdminCommands implements CommandExecutor {
                                     } else if (args[5].equalsIgnoreCase("nation")) {
                                         Nation n = TownyAPI.getInstance().getNation(args[6]);
                                         if (n != null) {
-                                            w.addNation(n, args[5]);
-                                            p.sendMessage(Helper.Chatlabel() + "Added nation " + args[6] + " war " + args[3] + " on side " + args[4]);
-                                            Main.warLogger.log(Helper.Chatlabel() + "Added nation " + args[6] + " war " + args[3] + " on side " + args[4]);
+                                            if(args.length >= 8) {
+                                                //forceful add, ignore surrender and override it if the town is
+                                                if(Boolean.parseBoolean(args[7])) {
+                                                    //if we already have surrendered
+                                                    for(Town t : n.getTowns()) {
+                                                        if(w.getSurrenderedTowns().contains(t.getName())) {
+                                                            w.unSurrenderTown(t.getName());
+                                                            p.sendMessage(Helper.Chatlabel() + "Unsurrendered town " + t.getName());
+                                                            Main.warLogger.log(Helper.Chatlabel() + "Unsurrendered town " + t.getName());
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            for(Town t : n.getTowns()) {
+                                                // Side checks
+                                                int side = w.getSide(t.getName().toLowerCase());
+                                                if (side == -1) {
+                                                    p.sendMessage(Helper.Chatlabel() + "Town " + t.getName() + " already surrendered!");
+                                                    return true;
+                                                } else if (side > 0) {
+                                                    p.sendMessage(Helper.Chatlabel() + "Town " + t.getName() + " already in this war!");
+                                                    return true;
+                                                }
+
+                                                w.addTown(t, args[5]);
+                                            }
+                                            p.sendMessage(Helper.Chatlabel() + "Forcefully added nation " + args[6] + " war " + args[3] + " on side " + args[4]);
+                                            Main.warLogger.log(Helper.Chatlabel() + "Forcefully added nation " + args[6] + " war " + args[3] + " on side " + args[4]);
                                             return finalizeWar(w);
                                         } else {
                                             p.sendMessage(Helper.color("&cError: Nation not found!"));
                                             return true;
                                         }
                                     } else {
-                                        p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war add [war] [side] town/nation [town/nation]"));
+                                        p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war add [war] [side] town/nation [town/nation] [force]"));
                                         return true;
                                     }
                                 }
