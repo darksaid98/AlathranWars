@@ -81,7 +81,7 @@ public class WarData
                 War fileWar = fromMap(fileData);
                 returnList.add(fileWar); 
             } catch (Exception e) {
-                Main.warLogger.log("Failed to load " + file.getName());
+                Main.warLogger.log("Failed to load " + file.getName() + " " + e.getMessage());
             }
         }
 
@@ -104,7 +104,7 @@ public class WarData
         war.setSide1Towns((ArrayList<String>) fileData.get("side1Towns"));
         war.setSide2Towns((ArrayList<String>) fileData.get("side2Towns"));
 
-        war.setLastRaidTime((Long) fileData.get("lastRaidTime"));
+        war.setLastRaidTime((long) ((int) fileData.get("lastRaidTime")));
 
 
         // Siege adding from map.
