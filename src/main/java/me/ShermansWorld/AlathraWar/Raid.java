@@ -455,6 +455,7 @@ public class Raid {
         //factor is 0.5 -> 3
         double factor = ((raidScore - 800.0) / 100) + 0.5;
         if (factor > 3.0) factor = 3.0;
+        if (factor < 0) factor = 0.0;
 
         final Resident resident = TownyAPI.getInstance().getResident(owner.getUniqueId());
         Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The raiders from " + this.raiders
@@ -529,6 +530,7 @@ public class Raid {
 
         double factor = (3 - ((raidScore) / 200.0) - 0.5);
         if (factor > 3.0) factor = 3.0;
+        if (factor < 0) factor = 0.0;
 
         String statement = "raided";
         if (factor <= 0.5) {

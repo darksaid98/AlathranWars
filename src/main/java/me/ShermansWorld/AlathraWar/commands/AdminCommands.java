@@ -20,6 +20,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.sql.Timestamp;
+import java.util.Random;
 
 public class AdminCommands implements CommandExecutor {
 
@@ -368,8 +369,9 @@ public class AdminCommands implements CommandExecutor {
                                     args[3]
                             };
                             //find the player
+                            Player target = p;
                             if (Bukkit.getPlayer(args[3]) != null) {
-                                p = Bukkit.getPlayer(args[3]);
+                                target = Bukkit.getPlayer(args[3]);
                             } else {
                                 p.sendMessage(Helper.color("c") + args[3] + " does not exist!");
                                 p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force join war [player] [war] [side]"));
@@ -830,6 +832,15 @@ public class AdminCommands implements CommandExecutor {
                                         } else if (args[5].equalsIgnoreCase("looted")) {
                                             WorldCoord wc = WorldCoord.parseWorldCoord(p.getWorld().getName(), (int) Double.parseDouble(args[7]), (int) Double.parseDouble(args[8]));
                                             Raid.LootBlock lb = r.getLootedChunks().get(wc);
+                                            //The base value can be abjusted
+                                            if(!lb.finished && Boolean.parseBoolean(args[6])) {
+                                                lb.value = new Random().nextDouble() * 100;
+                                                //score for looting
+                                                r.addPointsToRaidScore(10);
+                                                p.sendMessage(Helper.Chatlabel() + "Gave value and score because flag was false before.");
+                                                Main.warLogger.log("Gave value and score because flag was false before.");
+                                            }
+
                                             lb.finished = Boolean.parseBoolean(args[6]);
                                             p.sendMessage(Helper.Chatlabel() + "Set finished flag for a chunk [" + args[7] + "," + args[8] + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
                                             Main.warLogger.log("Set finished flag for a chunk [" + args[7] + "," + args[8] + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);

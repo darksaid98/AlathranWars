@@ -407,17 +407,16 @@ public class RaidCommands implements CommandExecutor {
             if (raid.getWar().getName().equalsIgnoreCase(args[1])) {
                 if (!raid.getWar().getSide1Players().contains(p.getName()) && !raid.getWar().getSide2Players().contains(p.getName())) {
                     p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You are not in this war! Type /war join [war] [side]");
+                    return;
                 }
 
                 if (raid.getOwner().getName().equals(p.getName())) {
                     //check if gather phase
                     if (raid.getPhase() == RaidPhase.GATHER || raid.getPhase() == RaidPhase.START || raid.getPhase() == RaidPhase.TRAVEL || raid.getPhase() == RaidPhase.COMBAT) {
-                        if (raid.getGatherTown().hasTownBlock(WorldCoord.parseWorldCoord(p))) {
-                            //force defender victory
-                            Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The raid on " + raid.getRaidedTown().getName() + " has been abandoned by " + raid.getRaiders());
-                            Main.warLogger.log(p.getName() + " abandoned the raid on " + raid.getRaidedTown().getName() + " they started at " + raid.getGatherTown().getName());
-                            raid.defendersWin(raid.getRaidScore());
-                        }
+                        //force defender victory
+                        Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The raid on " + raid.getRaidedTown().getName() + " has been abandoned by " + raid.getRaiders());
+                        Main.warLogger.log(p.getName() + " abandoned the raid on " + raid.getRaidedTown().getName() + " they started at " + raid.getGatherTown().getName());
+                        raid.defendersWin(raid.getRaidScore());
                     } else {
                         p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You cannot abandon the raid on " + raid.getRaidedTown().getName() + "! It has a problem!");
                     }
@@ -426,9 +425,8 @@ public class RaidCommands implements CommandExecutor {
                 }
 
             }
-        } else {
-            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This raid does not exist!");
         }
+        p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This raid does not exist!");
     }
 
     private static void listRaids(Player p, String[] args) {
