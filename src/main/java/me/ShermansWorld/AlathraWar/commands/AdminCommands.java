@@ -1,14 +1,12 @@
 package me.ShermansWorld.AlathraWar.commands;
 
 import com.palmergames.bukkit.towny.TownyAPI;
-import com.palmergames.bukkit.towny.command.TownyCommand;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.palmergames.bukkit.towny.object.metadata.LongDataField;
-import com.palmergames.util.TimeMgmt;
 import me.ShermansWorld.AlathraWar.*;
 import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
@@ -142,8 +140,9 @@ public class AdminCommands implements CommandExecutor {
         return true;
     }
 
+
     /**
-     * //force make event or war, if owner isnt defined, idk havent decided
+     * //force make event or war, if owner isn't defined, idk haven't decided
      * -create siege [war] [town] (owner)
      * -create raid [war] [raidTown] [gatherTown] (owner)
      * -create war [name] [side1] [side2]
@@ -1611,6 +1610,7 @@ public class AdminCommands implements CommandExecutor {
     private static boolean rule(Player p, String[] args) {
         return true;
     }
+
 
     private static boolean awa(Player p, String[] args) {
         p.chat("awa awa! ^.^ UwU");

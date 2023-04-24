@@ -25,7 +25,8 @@ public class CommandsListener implements Listener {
             "n set spawn", "nat set spawn", "nation set spawn",
             "t set spawn", "town set spawn",
             "t set homeblock", "town set homeblock",
-            "t set name", "town set name"
+            "t set name", "town set name",
+            "n set name", "nat set name", "nation set name"
     };
     final static String[] blacklistedLong = new String[]{
             "n spawn", "nat spawn", "nation spawn",
@@ -46,7 +47,7 @@ public class CommandsListener implements Listener {
     };
 
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onCommandSend(final PlayerCommandPreprocessEvent event) {
 
         Player p = event.getPlayer();
