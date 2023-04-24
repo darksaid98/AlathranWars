@@ -13,22 +13,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import javax.annotation.Nonnull;
-import java.io.File;
-import java.io.FilenameFilter;
 import java.util.*;
 
 public class RaidData {
     // Static Raid list for all active raids
     private static ArrayList<Raid> raids = new ArrayList<Raid>();
-    private final static String dataFolderPath = "plugins" + File.separator + "AlathraWar" + File.separator + "data";
-
-    // Filter for only accessing yml files
-    private static FilenameFilter ymlFilter = new FilenameFilter() {
-        @Override
-        public boolean accept(File dir, String name) {
-            return name.endsWith(".yml");
-        }
-    };
 
     public static ArrayList<Raid> getRaids() {
         return raids;
@@ -220,9 +209,10 @@ public class RaidData {
      * @return
      * @Isaac this is for getting when the last raid was on a town
      */
+    @SuppressWarnings("rawtypes")
     public static long whenTownLastRaided(Town town) {
-        if (town.hasMeta("lastRaided")) {
-            CustomDataField field = town.getMetadata("lastRaided");
+        if (town.hasMeta("AlathraWar-lastRaided")) {
+            CustomDataField field = town.getMetadata("AlathraWar-lastRaided");
             if (field != null) {
                 if (field instanceof LongDataField) {
                     return ((LongDataField) field).getValue();
@@ -230,7 +220,7 @@ public class RaidData {
             }
             return -1L;
         } else {
-            town.addMetaData(new LongDataField("lastRaided", 0L));
+            town.addMetaData(new LongDataField("AlathraWar-lastRaided", 0L));
         }
         return -1L;
     }

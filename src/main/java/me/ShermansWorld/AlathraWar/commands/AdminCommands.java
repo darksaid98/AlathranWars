@@ -197,10 +197,6 @@ public class AdminCommands implements CommandExecutor {
         return fail(p, args, "syntax");
     }
 
-    private static boolean exclude(Player p, String[] args) {
-        return true;
-    }
-
     /**
      * //force end a war/event, can declare winner side, or no winner
      * -force end war [name] (side/victor)
@@ -368,10 +364,7 @@ public class AdminCommands implements CommandExecutor {
                                     args[5],
                                     args[3]
                             };
-                            //find the player
-                            Player target = p;
                             if (Bukkit.getPlayer(args[3]) != null) {
-                                target = Bukkit.getPlayer(args[3]);
                             } else {
                                 p.sendMessage(Helper.color("c") + args[3] + " does not exist!");
                                 p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force join war [player] [war] [side]"));
@@ -1616,12 +1609,6 @@ public class AdminCommands implements CommandExecutor {
         }
         return true;
     }
-
-
-    private static boolean rule(Player p, String[] args) {
-        return true;
-    }
-
 
     private static boolean awa(Player p, String[] args) {
         p.chat("awa awa! ^.^ UwU");
