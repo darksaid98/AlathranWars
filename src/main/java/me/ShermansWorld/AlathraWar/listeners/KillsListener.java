@@ -7,6 +7,7 @@ import com.palmergames.bukkit.towny.object.WorldCoord;
 import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.Raid;
 import me.ShermansWorld.AlathraWar.Siege;
+import me.ShermansWorld.AlathraWar.UUIDFetcher;
 import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
@@ -14,19 +15,25 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.UUID;
 
 public final class KillsListener implements Listener
 {
+
+    public static final HashMap<UUID, Raid> respawnqueue = new HashMap<>();
+
     @EventHandler
     public void onPlayerKilled(final PlayerDeathEvent event) {
 
         final Player killed = event.getEntity();
         final Player killer = event.getEntity().getKiller();
-        if (killed == null || killer == null) {
-            return;
-        }
         Town town = null;
         try {
             town = WorldCoord.parseWorldCoord(killed).getTownBlock().getTown();
@@ -46,15 +53,17 @@ public final class KillsListener implements Listener
                         siege.addPointsToAttackers(20);
                         for (final String playerName : siege.getAttackerPlayers()) {
                             try {
-                                Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.Chatlabel()) + "Defender killed! + 20 Attacker Points");
+                                Player p = Bukkit.getPlayer(playerName);
+                                if (p != null) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Defender killed! + 20 Attacker Points");
                             }
-                            catch (NullPointerException ex5) {}
+                            catch (NullPointerException ignored) {}
                         }
                         for (final String playerName : siege.getDefenderPlayers()) {
                             try {
-                                Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.Chatlabel()) + "Defender killed! + 20 Attacker Points");
+                                Player p = Bukkit.getPlayer(playerName);
+                                if (p != null) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Defender killed! + 20 Attacker Points");
                             }
-                            catch (NullPointerException ex6) {}
+                            catch (NullPointerException ignored) {}
                         }
                     }
                     this.siegeKill(killed, event);
@@ -65,13 +74,15 @@ public final class KillsListener implements Listener
                         siege.addPointsToDefenders(20);
                         for (final String playerName : siege.getAttackerPlayers()) {
                             try {
-                                Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.Chatlabel()) + "Attacker killed! + 20 Defender Points");
+                                Player p = Bukkit.getPlayer(playerName);
+                                if (p != null) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Attacker killed! + 20 Defender Points");
                             }
                             catch (NullPointerException ex3) {}
                         }
                         for (final String playerName : siege.getDefenderPlayers()) {
                             try {
-                                Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.Chatlabel()) + "Attacker killed! + 20 Defender Points");
+                                Player p = Bukkit.getPlayer(playerName);
+                                if (p != null) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Attacker killed! + 20 Defender Points");
                             }
                             catch (NullPointerException ex4) {}
                         }
@@ -98,8 +109,8 @@ public final class KillsListener implements Listener
                 if (raid.getActiveRaiders().contains(killer.getName()) && ((town != null && town.equals(raid.getRaidedTown())) || playerCloseToHomeBlockRaid)) {
                     //There is seperate behavior if combat hasnt started
                     if (raid.getPhase() == RaidPhase.COMBAT) {
-                        this.raidKill(killed, event);
                         if (raid.getDefenderPlayers().contains(killed.getName())) {
+                            this.raidKill(killed, event);
                             raid.defenderKilledInCombat(event);
                         }
                     } else {
@@ -112,15 +123,17 @@ public final class KillsListener implements Listener
                 if (raid.getDefenderPlayers().contains(killer.getName()) && ((town != null && town.equals(raid.getRaidedTown())) || playerCloseToHomeBlockRaid)) {
                     //There is seperate behavior if combat hasnt started
                     if (raid.getPhase() == RaidPhase.COMBAT) {
-                        this.raidKill(killed, event);
                         if (raid.getActiveRaiders().contains(killed.getName())) {
+                            this.raidKill(killed, event);
                             raid.raiderKilledInCombat(event);
+                            respawnqueue.put(killed.getUniqueId(), raid);
                         }
                     } else {
                         //teleport back to gather town spawn, without damaged gear
                         //this is to disincentive people prekilling
                         this.oocKill(killed, event);
                         raid.raiderKilledOutofCombat(event);
+                        respawnqueue.put(killed.getUniqueId(), raid);
                     }
                     return;
 
@@ -130,10 +143,38 @@ public final class KillsListener implements Listener
                 }
             }
         }
-        catch (NullPointerException | TownyException ex7) {
+        catch (NullPointerException | TownyException ignored) {
 
         }
     }
+
+    /**
+     * Runs last so that it overrides everyone else!
+     *
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onRespawn(PlayerRespawnEvent event) {
+        if(respawnqueue.containsKey(event.getPlayer().getUniqueId())) {
+            Raid raid = respawnqueue.get(event.getPlayer().getUniqueId());
+            if (raid == null) return;
+            if(raid.getActiveRaiders().contains(event.getPlayer().getName())) {
+                //do raider respawn
+                try {
+                    event.setRespawnLocation(raid.getGatherTown().getSpawn());
+                    event.getPlayer().sendMessage(String.valueOf(Helper.Chatlabel()) + "You died " + (raid.getPhase().equals(RaidPhase.COMBAT) ? "raiding" : "before combat") + " and have been teleported back to the gather point.");
+                } catch (TownyException e) {
+                    throw new RuntimeException(e);
+                }
+            } else if(raid.getDefenders().contains(event.getPlayer().getName())) {
+                //do defender respawn ?
+            } else {
+                //invalid code
+            }
+            respawnqueue.remove(event.getPlayer().getUniqueId());
+        }
+    }
+
 
     /**
      * Damage all gear held by the player (and then send them to spawn?)
