@@ -147,7 +147,7 @@ public class Raid {
     public Raid(final War war, final Town raidedTown, final Town gatherTown,
                 final boolean side1AreRaiders, OfflinePlayer owner) {
         this.bukkitId = new int[1];
-        this.activeRaiders = activeRaiders == null ? new ArrayList<>() : activeRaiders;
+//        this.activeRaiders = activeRaiders == null ? new ArrayList<>() : activeRaiders;
         this.war = war;
         this.raidTicks = 0;
         this.raidedTown = raidedTown;
