@@ -7,12 +7,10 @@ import com.palmergames.bukkit.towny.object.WorldCoord;
 import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.Raid;
 import me.ShermansWorld.AlathraWar.Siege;
-import me.ShermansWorld.AlathraWar.UUIDFetcher;
 import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -20,7 +18,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 

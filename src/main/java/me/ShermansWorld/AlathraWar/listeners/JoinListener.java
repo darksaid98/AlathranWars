@@ -10,7 +10,6 @@ import com.palmergames.bukkit.towny.object.Town;
 
 import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.War;
-import me.ShermansWorld.AlathraWar.commands.WarCommands;
 import me.ShermansWorld.AlathraWar.data.WarData;
 import me.ShermansWorld.AlathraWar.hooks.TABHook;
 

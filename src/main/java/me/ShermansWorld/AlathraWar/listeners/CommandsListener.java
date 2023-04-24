@@ -6,7 +6,6 @@ import me.ShermansWorld.AlathraWar.Siege;
 import me.ShermansWorld.AlathraWar.War;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import me.ShermansWorld.AlathraWar.data.WarData;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

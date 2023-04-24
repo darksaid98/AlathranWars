@@ -1,7 +1,6 @@
 package me.ShermansWorld.AlathraWar.commands;
 
 import com.palmergames.bukkit.towny.TownyAPI;
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
 import me.ShermansWorld.AlathraWar.War;

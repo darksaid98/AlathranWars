@@ -274,8 +274,6 @@ public class RaidCommands implements CommandExecutor {
             fail(p, args, "noRaids");
             return;
         }
-        boolean found = false;
-
         //find our desired raid and stop it
         Raid raid = RaidData.getRaidOrNull(args[1]);
         if (raid != null) {
