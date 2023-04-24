@@ -1,7 +1,6 @@
 package me.ShermansWorld.AlathraWar;
 
 import com.palmergames.bukkit.towny.TownyAPI;
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
@@ -10,7 +9,6 @@ import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.palmergames.bukkit.towny.object.metadata.LongDataField;
 import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
-import me.ShermansWorld.AlathraWar.data.SiegeData;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
