@@ -1,5 +1,7 @@
 package me.ShermansWorld.AlathraWar.listeners;
 
+import me.ShermansWorld.AlathraWar.Raid;
+import me.ShermansWorld.AlathraWar.data.RaidData;
 import org.bukkit.event.EventHandler;
 
 import java.util.HashSet;
@@ -48,6 +50,15 @@ public class BlockBreakListener implements Listener {
 				if (siege.getTown() == WorldCoord.parseWorldCoord(block).getTownOrNull()) {
 					p.sendMessage(Helper.color("&cYou can not break blocks during sieges"));
 					event.setCancelled(true);
+					return;
+				}
+			}
+
+			for (final Raid raid : RaidData.getRaids()) {
+				if (raid.getRaidedTown() == WorldCoord.parseWorldCoord(block).getTownOrNull()) {
+					p.sendMessage(Helper.color("&cYou can not break blocks during raids"));
+					event.setCancelled(true);
+					return;
 				}
 			}
 		}
@@ -68,6 +79,15 @@ public class BlockBreakListener implements Listener {
 				if (siege.getTown() == WorldCoord.parseWorldCoord(block).getTownOrNull()) {
 					p.sendMessage(Helper.color("&cYou can not place blocks during sieges"));
 					event.setCancelled(true);
+					return;
+				}
+			}
+
+			for (final Raid raid : RaidData.getRaids()) {
+				if (raid.getRaidedTown() == WorldCoord.parseWorldCoord(block).getTownOrNull()) {
+					p.sendMessage(Helper.color("&cYou can not place blocks during raids"));
+					event.setCancelled(true);
+					return;
 				}
 			}
 		}

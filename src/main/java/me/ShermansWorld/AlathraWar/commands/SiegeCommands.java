@@ -37,7 +37,7 @@ public class SiegeCommands implements CommandExecutor {
 
         switch (args[0].toLowerCase()) {
             case "start":
-                siegeStart(sender, args);
+                siegeStart(sender, args, false);
                 return true;
             case "stop":
                 siegeStop(sender, args);
@@ -58,9 +58,15 @@ public class SiegeCommands implements CommandExecutor {
         return false;
     }
 
-    private static void siegeStart(CommandSender sender, String[] args) {
+    protected static void siegeStart(CommandSender sender, String[] args, boolean admin) {
         if (!(sender instanceof Player)) return;
-        final Player player = (Player) sender;
+        //if this is admin mode use the forth arg instad of sender.
+        //if player is null after this then force end
+        Player player = !admin ? (Player) sender : args.length >= 4 ? Bukkit.getPlayer(args[3]) : null;
+        if(player == null) {
+            sender.sendMessage("Forced owner not found!");
+            return;
+        }
 
         if (args.length < 3) {
             sender.sendMessage(Helper.Chatlabel() + "/war siege [war] [town]");
@@ -71,6 +77,7 @@ public class SiegeCommands implements CommandExecutor {
         War war = WarData.getWar(args[1]);
         if (war == null) {
             player.sendMessage(String.valueOf(Helper.Chatlabel()) + "That war does not exist! /siege start [war] [town]");
+            if(admin) sender.sendMessage(String.valueOf(Helper.Chatlabel()) + "That war does not exist! /siege start [war] [town]");
             return;
         }
 
@@ -79,9 +86,11 @@ public class SiegeCommands implements CommandExecutor {
         int side = war.getSide(leaderTown.getName());
         if (side == 0) {
             player.sendMessage(Helper.Chatlabel() + "You are not in this war.");
+            if(admin) sender.sendMessage(Helper.Chatlabel() + "You are not in this war.");
             return;
         } else if (side == -1) {
             player.sendMessage(Helper.Chatlabel() + "You have surrendered.");
+            if(admin) sender.sendMessage(Helper.Chatlabel() + "You have surrendered.");
             return;
         }
 
@@ -89,18 +98,23 @@ public class SiegeCommands implements CommandExecutor {
         Town town = TownyAPI.getInstance().getTown(args[2]);
         if (town == null) {
             player.sendMessage(String.valueOf(Helper.Chatlabel()) + "That town does not exist! /siege start [war] [town]");
+            if(admin) sender.sendMessage(String.valueOf(Helper.Chatlabel()) + "That town does not exist! /siege start [war] [town]");
             return;
         }
         
         // Attacking own side
         if (war.getSide(town) == side) {
             player.sendMessage(Helper.Chatlabel() + "You cannot attack your own towns.");
+            if(admin) sender.sendMessage(Helper.Chatlabel() + "You cannot attack your own towns.");
             return;
         }
 
         Siege siege = new Siege(war, town, player);
         SiegeData.addSiege(siege);
         war.addSiege(siege);
+
+        Bukkit.broadcastMessage(Helper.Chatlabel() + "A siege has been laid on " + siege.getTown() + " by " + siege.getAttackers() + "!");
+
         war.save();
         siege.start();
     }

@@ -9,6 +9,7 @@ import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.TownyAPI;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.WorldCoord;
@@ -94,13 +95,13 @@ public class Siege {
 									if (WorldCoord.parseWorldCoord(Main.getInstance().getServer().getPlayer(playerName))
 											.getTownBlock().isHomeBlock()
 											&& WorldCoord
-													.parseWorldCoord(
-															Main.getInstance().getServer().getPlayer(playerName))
-													.getTownBlock().getTown().equals(town)
+											.parseWorldCoord(
+													Main.getInstance().getServer().getPlayer(playerName))
+											.getTownBlock().getTown().equals(town)
 											&& !Bukkit.getPlayer(playerName).isDead()
 											&& (Math.abs(
-													Bukkit.getServer().getPlayer(playerName).getLocation().getBlockY()
-															- townSpawn.getBlockY())) < 10) {
+											Bukkit.getServer().getPlayer(playerName).getLocation().getBlockY()
+													- townSpawn.getBlockY())) < 10) {
 										attackersAreOnHomeBlock = true;
 									}
 								} catch (NotRegisteredException ex) {
@@ -112,13 +113,13 @@ public class Siege {
 									if (WorldCoord.parseWorldCoord(Main.getInstance().getServer().getPlayer(playerName))
 											.getTownBlock().isHomeBlock()
 											&& WorldCoord
-													.parseWorldCoord(
-															Main.getInstance().getServer().getPlayer(playerName))
-													.getTownBlock().getTown().equals(town)
+											.parseWorldCoord(
+													Main.getInstance().getServer().getPlayer(playerName))
+											.getTownBlock().getTown().equals(town)
 											&& !Bukkit.getPlayer(playerName).isDead()
 											&& (Math.abs(
-													Bukkit.getServer().getPlayer(playerName).getLocation().getBlockY()
-															- townSpawn.getBlockY())) < 10) {
+											Bukkit.getServer().getPlayer(playerName).getLocation().getBlockY()
+													- townSpawn.getBlockY())) < 10) {
 										defendersAreOnHomeBlock = true;
 									}
 								} catch (NotRegisteredException ex3) {
@@ -279,6 +280,18 @@ public class Siege {
 		clearBeacon();
 	}
 
+	/**
+	 * No winnder declared
+	 */
+	public void noWinner() {
+		Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The siege of " + this.town.getName() + " was a draw!");
+		Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "No money has been recovered.");
+		Main.warLogger
+				.log(war.getName() + ": No one won the siege of " + this.town.getName() + "!");
+		stop();
+		clearBeacon();
+	}
+
 	public void createBeacon() {
 		try {
 			World world = town.getWorld();
@@ -396,6 +409,14 @@ public class Siege {
 		this.town = town;
 	}
 
+	public OfflinePlayer getSiegeOwner() {
+		return siegeLeader;
+	}
+
+	public void setSiegeOwner(OfflinePlayer siegeOwner) {
+		this.siegeLeader = siegeOwner;
+	}
+
     /** Gets attacker name string */
 	public String getAttackers() {
 		if (side1AreAttackers) {
@@ -420,6 +441,38 @@ public class Siege {
 
 	public int getDefenderPoints() {
 		return this.defenderPoints;
+	}
+
+	public int getMaxSiegeTicks() {
+		return maxSiegeTicks;
+	}
+
+	public void setSiegeTicks(int siegeTicks) {
+		this.siegeTicks = siegeTicks;
+	}
+
+	public TownBlock getHomeBlock() {
+		return homeBlock;
+	}
+
+	public void setHomeBlock(TownBlock homeBlock) {
+		this.homeBlock = homeBlock;
+	}
+
+	public Location getTownSpawn() {
+		return townSpawn;
+	}
+
+	public void setTownSpawn(Location townSpawn) {
+		this.townSpawn = townSpawn;
+	}
+
+	public void setAttackerPoints(int points) {
+		this.attackerPoints = points;
+	}
+
+	public void setDefenderPoints(int points) {
+		this.defenderPoints = points;
 	}
 
 	public boolean getSide1AreAttackers() {
@@ -457,4 +510,8 @@ public class Siege {
 	public void save() {
         SiegeData.saveSiege(this);
     }
+
+	public String getName() {
+		return this.getWar().getName() + "-" + this.getTown();
+	}
 }

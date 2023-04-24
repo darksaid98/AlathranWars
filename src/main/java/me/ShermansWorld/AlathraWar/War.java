@@ -1,5 +1,6 @@
 package me.ShermansWorld.AlathraWar;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import com.palmergames.bukkit.towny.TownyAPI;
@@ -7,6 +8,7 @@ import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 
+import me.ShermansWorld.AlathraWar.data.DataManager;
 import me.ShermansWorld.AlathraWar.data.WarData;
 
 public class War {
@@ -22,7 +24,8 @@ public class War {
     // References
     private ArrayList<Siege> sieges = new ArrayList<Siege>();
     private ArrayList<Raid> raids = new ArrayList<Raid>();
-    private int lastRaidTime = 0;
+    private int lastRaidTimeSide1 = 0;
+    private int lastRaidTimeSide2 = 0;
 
     /**
      * War Constructor
@@ -83,8 +86,10 @@ public class War {
      * @param nation - Nation to surrender
      */
     public void surrenderNation(Nation nation) {
-        for (Town town : nation.getTowns()) {
-            surrenderTown(town.getName());
+        if(nation != null) {
+            for (Town town : nation.getTowns()) {
+                surrenderTown(town.getName());
+            }
         }
     }
 
@@ -96,6 +101,24 @@ public class War {
         side1Towns.remove(town);
         side2Towns.remove(town);
         surrenderedTowns.add(town);
+    }
+
+    /**
+     * unsurrender town, perfidy time
+     * @param nation - Nation to unsurrender
+     */
+    public void unSurrenderNation(Nation nation) {
+        for (Town town : nation.getTowns()) {
+            unSurrenderTown(town.getName());
+        }
+    }
+
+    /**
+     * unsurrender town, perfidy time
+     * @param town - Town to unsurrender
+     */
+    public void unSurrenderTown(String town) {
+        surrenderedTowns.remove(town);
     }
 
     /**
@@ -125,7 +148,7 @@ public class War {
     public int getSide(Town town) {
         return getSide(town.getName());
     }
-	
+
 	public String getName() {
 		return this.name;
 	}
@@ -158,6 +181,9 @@ public class War {
         return surrenderedTowns;
     }
 
+    public void setSurrenderedTowns(ArrayList<String> towns) {
+        surrenderedTowns = towns;
+    }
 
     public ArrayList<Siege> getSieges() {
         return sieges;
@@ -173,6 +199,20 @@ public class War {
 
     public void addRaid(Raid raid) {
         raids.add(raid);
+    }
+
+    public void setName(String name) {
+        DataManager.deleteFile("wars" + File.separator + this.getName() + ".yml");
+        this.name = name;
+        this.save();
+    }
+
+    public void setSide1(String side1) {
+        this.side1 = side1;
+    }
+
+    public void setSide2(String side2) {
+        this.side2 = side2;
     }
 
     /**
@@ -209,11 +249,19 @@ public class War {
         return returnList;
     }
 
-    public void setLastRaidTime(int lastRaidTime) {
-        this.lastRaidTime = lastRaidTime;
+    public void setLastRaidTimeSide1(int lastRaidTime) {
+        this.lastRaidTimeSide1 = lastRaidTime;
     }
 
-    public int getLastRaidTime() {
-        return this.lastRaidTime;
+    public int getLastRaidTimeSide1() {
+        return this.lastRaidTimeSide1;
+    }
+
+    public void setLastRaidTimeSide2(int lastRaidTime) {
+        this.lastRaidTimeSide2 = lastRaidTime;
+    }
+
+    public int getLastRaidTimeSide2() {
+        return this.lastRaidTimeSide2;
     }
 }

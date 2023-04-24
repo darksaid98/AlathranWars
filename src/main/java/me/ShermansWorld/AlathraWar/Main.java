@@ -1,6 +1,7 @@
 package me.ShermansWorld.AlathraWar;
 
 import me.ShermansWorld.AlathraWar.commands.*;
+import me.ShermansWorld.AlathraWar.data.TimeoutData;
 import me.ShermansWorld.AlathraWar.listeners.CommandsListener;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -81,12 +82,15 @@ public class Main extends JavaPlugin {
         initLogs();
 
 		new WarData(this);
+//		new TimeoutData(this);
 		new WarCommands(this);
 		new SiegeCommands(this);
 		new RaidCommands(this);
+		new AdminCommands(this);
 		getCommand("war").setTabCompleter(new WarTabCompletion());
 		getCommand("siege").setTabCompleter(new SiegeTabCompletion());
 		getCommand("raid").setTabCompleter(new RaidTabCompletion());
+		getCommand("alathrawaradmin").setTabCompleter(new AdminTabCompletion());
 		getServer().getPluginManager().registerEvents((Listener) new KillsListener(), (Plugin) this);
 		getServer().getPluginManager().registerEvents((Listener) new CommandsListener(), (Plugin) this);
 		getServer().getPluginManager().registerEvents((Listener) new JoinListener(), (Plugin) this);

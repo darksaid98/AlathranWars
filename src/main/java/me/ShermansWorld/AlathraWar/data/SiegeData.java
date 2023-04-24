@@ -54,7 +54,7 @@ public class SiegeData
 
     public static void removeSiege(Siege siege) {
         sieges.remove(siege);
-        //deleteSiege(siege);
+        //deleteSiege(siege);d
     }
 
     /**

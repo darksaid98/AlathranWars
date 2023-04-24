@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import me.ShermansWorld.AlathraWar.Main;
+import me.ShermansWorld.AlathraWar.Raid;
 import me.ShermansWorld.AlathraWar.Siege;
 import me.ShermansWorld.AlathraWar.War;
 
@@ -81,7 +82,8 @@ public class WarData
                 War fileWar = fromMap(fileData);
                 returnList.add(fileWar); 
             } catch (Exception e) {
-                Main.warLogger.log("Failed to load " + file.getName() + " " + e.getMessage());
+                Main.warLogger.log("Failed to load " + file.getName());
+                e.printStackTrace();
             }
         }
 
@@ -103,8 +105,12 @@ public class WarData
         
         war.setSide1Towns((ArrayList<String>) fileData.get("side1Towns"));
         war.setSide2Towns((ArrayList<String>) fileData.get("side2Towns"));
+        war.setSurrenderedTowns((ArrayList<String>) fileData.get("surrenderedTowns"));
 
-        war.setLastRaidTime((int) fileData.get("lastRaidTime"));
+        if(fileData.get("lastRaidTimeSide1") != null && fileData.get("lastRaidTimeSide2") != null) {
+            war.setLastRaidTimeSide1((int) fileData.get("lastRaidTimeSide1"));
+            war.setLastRaidTimeSide2((int) fileData.get("lastRaidTimeSide2"));
+        }
 
 
         // Siege adding from map.
@@ -112,6 +118,13 @@ public class WarData
         ArrayList<Siege> sieges = SiegeData.createSieges(war, siegeMaps);
         for (Siege siege : sieges) {
             war.addSiege(siege);
+        }
+
+        // Raid adding from map.
+        Collection<HashMap<String, Object>> raidMaps = ((HashMap<String,HashMap<String, Object>>) fileData.get("raids")).values();
+        ArrayList<Raid> raids = RaidData.createRaids(war, raidMaps);
+        for (Raid raid : raids) {
+            war.addRaid(raid);
         }
 
         return war;
@@ -134,15 +147,14 @@ public class WarData
 
         sHashMap.put("sieges", SiegeData.getSiegeMap(war));
         sHashMap.put("raids", RaidData.getRaidMap(war));
-        sHashMap.put("lastRaidTime", war.getLastRaidTime());
-
+        sHashMap.put("lastRaidTimeSide1", war.getLastRaidTimeSide1());
+        sHashMap.put("lastRaidTimeSide2", war.getLastRaidTimeSide2());
 
         DataManager.saveData("wars" + File.separator + war.getName() + ".yml", sHashMap);
     }
 
     private static void deleteWar(War war) {
         File[] files = new File(dataFolderPath + File.separator + "wars").listFiles(ymlFilter);
-
         for (File file : files) {
             if (file.getName().startsWith(war.getName())) {
                 file.delete();

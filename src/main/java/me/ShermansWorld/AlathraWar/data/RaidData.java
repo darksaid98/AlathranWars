@@ -5,18 +5,17 @@ import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.palmergames.bukkit.towny.object.metadata.CustomDataField;
-import com.palmergames.bukkit.towny.object.metadata.IntegerDataField;
 import com.palmergames.bukkit.towny.object.metadata.LongDataField;
 import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.Raid;
 import me.ShermansWorld.AlathraWar.War;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class RaidData {
     // Static Raid list for all active raids
@@ -85,26 +84,31 @@ public class RaidData {
         Town raidedTown = TownyAPI.getInstance().getTown((String) fileData.get("raidedTown"));
         Town gatherTown = TownyAPI.getInstance().getTown((String) fileData.get("gatherTown"));
         boolean attackBoolean = Boolean.parseBoolean((String) fileData.get("side1AreRaiders"));
+        //THIS MAY OR MAY NOT WORK
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString((String) fileData.get("owner")));
 
-        Raid raid = new Raid(war, raidedTown, gatherTown, attackBoolean);
+        if(raidedTown == null || gatherTown == null) {
+            return null;
+        }
+        Raid raid = new Raid(war, raidedTown, gatherTown, attackBoolean, offlinePlayer);
 
         //Extra properties, if any are missing the raid doesnt exist yet
         if (fileData.get("raidTicks") != null && fileData.get("raidPhase") != null && fileData.get("activeRaiders") != null && fileData.get("lootedChunks") != null) {
             //active properties
             raid.setRaidPhase(RaidPhase.getByName((String) fileData.get("raidPhase")));
-            raid.setRaidTicks((Integer) fileData.get("raidTicks"));
+            raid.setRaidTicks((int) fileData.get("raidTicks"));
             raid.setActiveRaiders((ArrayList<String>) fileData.get("activeRaiders"));
 
             //looted chunks
-            HashMap<String, Object> o = (HashMap<String, Object>) fileData.get("lootedChunks");
-            for (String s : o.keySet()) {
+            ArrayList<Object> o = (ArrayList<Object>) fileData.get("lootedChunks");
+            for (Object hm : o) {
                 //grab the chunk
-                HashMap<String, Object> chunk = (HashMap<String, Object>) o.get(s);
+                HashMap<String, Object> chunk = (HashMap<String, Object>) hm;
 
                 //grab data for this chunk
                 //worldcoord is its own map
                 HashMap<String, Object> wc = (HashMap<String, Object>) chunk.get("worldCoord");
-                WorldCoord worldCoordc = WorldCoord.parseWorldCoord((String) wc.get("world"), ((Integer) wc.get("x")), ((Integer) wc.get("z")));
+                WorldCoord worldCoordc = WorldCoord.parseWorldCoord((String) wc.get("world"), ((int) wc.get("x")), ((int) wc.get("z")));
                 int ticks = (int) chunk.get("ticks");
                 double value = (double) chunk.get("value");
                 boolean finished = (boolean) chunk.get("finished");
@@ -116,6 +120,20 @@ public class RaidData {
         }
 
         return raid;
+    }
+
+    public static ArrayList<Raid> createRaids(War war, Collection<HashMap<String, Object>> raidMaps) {
+        ArrayList<Raid> returnList = new ArrayList<Raid>();
+        for (HashMap<String, Object> map : raidMaps) {
+            Town town = TownyAPI.getInstance().getTown((String) map.get("raidedTown"));
+            if (town == null) continue;
+
+            Raid raid = fromMap(war, map);
+            returnList.add(raid);
+            RaidData.addRaid(raid);
+            raid.resume();
+        }
+        return returnList;
     }
 
 
@@ -152,13 +170,15 @@ public class RaidData {
         HashMap<String, Object> returnMap = new HashMap<String, Object>();
         // Shoves everything into a map.
         returnMap.put("name", raid.getName());
-        returnMap.put("raidedTown", raid.getRaidedTown());
-        returnMap.put("gatherTown", raid.getRaidedTown());
+        returnMap.put("raidedTown", raid.getRaidedTown().getName());
+        returnMap.put("gatherTown", raid.getGatherTown().getName());
         returnMap.put("raidTicks", raid.getRaidTicks());
         returnMap.put("raidPhase", raid.getPhase().name());
         returnMap.put("raidScore", raid.getRaidScore());
         returnMap.put("side1AreRaiders", Boolean.toString(raid.getSide1AreRaiders()));
         returnMap.put("activeRaiders", raid.getActiveRaiders());
+        //THIS MAY OR MAY NOT WORK
+        returnMap.put("owner", raid.getOwner().getUniqueId().toString());
 
         //create a list from the looted chunks
         List<Object> chunkList = new ArrayList<Object>();
@@ -204,8 +224,8 @@ public class RaidData {
         if (town.hasMeta("lastRaided")) {
             CustomDataField field = town.getMetadata("lastRaided");
             if (field != null) {
-                if (field instanceof IntegerDataField) {
-                    return ((IntegerDataField) field).getValue();
+                if (field instanceof LongDataField) {
+                    return ((LongDataField) field).getValue();
                 }
             }
             return -1L;
@@ -220,7 +240,7 @@ public class RaidData {
      * @Isaac this is for getting if a town can be raided, return (-2, -1, 0, 1, 2) based on status
      * (no players online, 24 hours town cooldown, 6 hour war cooldown, town being raided already, valid time to raid)
      */
-    public static int isValidRaid(War war, @Nonnull Town town) {
+    public static int isValidRaid(War war, String side, @Nonnull Town town) {
         long townTime = whenTownLastRaided(town);
 
         //24 hours town cooldown
@@ -230,7 +250,7 @@ public class RaidData {
 
         long lastRaidTime = war.getLastRaidTime();
         //6 hour raid cooldown for war
-        if ((System.currentTimeMillis() / 1000) - lastRaidTime <= 21600) {
+        if ((System.currentTimeMillis() / 1000) - (side.equals(war.getSide1()) ? war.getLastRaidTimeSide1() : war.getLastRaidTimeSide2()) <= 21600) {
             return 0;
         }
 
