@@ -32,7 +32,7 @@ public class BlockBreakListener implements Listener {
 	@EventHandler
 	public void onBlockBreak(final BlockBreakEvent event) {
 		final Block block = event.getBlock();
-		if (SiegeData.getSieges().isEmpty()) {
+		if (SiegeData.getSieges().isEmpty() && RaidData.getRaids().isEmpty()) {
 			return;
 		}
 		for (final Siege siege : SiegeData.getSieges()) {
@@ -65,9 +65,9 @@ public class BlockBreakListener implements Listener {
 	}
 
 	@EventHandler
-	public void onBlockBreak(final BlockPlaceEvent event) {
+	public void onBlockPlace(final BlockPlaceEvent event) {
 		final Block block = event.getBlock();
-		if (SiegeData.getSieges().isEmpty()) {
+		if (SiegeData.getSieges().isEmpty() && RaidData.getRaids().isEmpty()) {
 			return;
 		}
 		if (allowedBlocks.contains(block.getType())) {

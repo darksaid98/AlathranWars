@@ -89,19 +89,7 @@ public class AdminCommands implements CommandExecutor {
      * -force join raid [player] [war] [town] (side)
      * <p>
      * //done
-     * -force leave raid  [war] [player] (timeout) //kicks from raid party
-     * <p>
-     * //ultra low priority
-     * //exclude players from join a raid or war for a time
-     * //raid subcommand prevents joining or being raided
-     * -exclude player war [war] (side) (timeout)
-     * -exclude town war [war] (side) (timeout)
-     * -exclude nation war [war] (side) (timeout)
-     * <p>
-     * //ultra low priority
-     * -exclude player raid [join/target] [war] (timeout)
-     * -exclude town raid [join/target] [war] (timeout)
-     * -exclude nation raid [join/target] [war] (timeout)
+     * -force leave raid [war] [player] (timeout) //kicks from raid party
      * <p>
      * // Ultra low priority idea
      * -rule raidersRespawnAtGatherTown [true/false]

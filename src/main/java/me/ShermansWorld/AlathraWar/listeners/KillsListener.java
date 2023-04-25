@@ -72,8 +72,13 @@ public final class KillsListener implements Listener
                             raid.raiderKilledInCombat(event);
                             respawnqueue.put(killed.getUniqueId(), raid);
                         }
+                    } else if (raid.getPhase() != RaidPhase.COMBAT && killer != null) {
+                        this.oocKill(killed, event);
+                        raid.raiderKilledOutofCombat(event);
+                        respawnqueue.put(killed.getUniqueId(), raid);
+                        return;
                     }
-                    //teleport back to gather town spawn, without damaged gear
+                     //teleport back to gather town spawn, without damaged gear
                     //this is to disincentive people prekilling
                     this.oocKill(killed, event);
                     raid.raiderKilledOutofCombat(event);
