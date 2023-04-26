@@ -1,16 +1,22 @@
 package me.ShermansWorld.AlathraWar.commands;
 
 import com.palmergames.bukkit.towny.TownyAPI;
+import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
+import me.ShermansWorld.AlathraWar.Raid;
+import me.ShermansWorld.AlathraWar.Siege;
 import me.ShermansWorld.AlathraWar.War;
+import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
+import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.data.WarData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class CommandHelper {
@@ -53,6 +59,93 @@ public class CommandHelper {
         List<String> out = new ArrayList<>();
         for (Town t : TownyAPI.getInstance().getTowns()) {
             out.add(t.getName());
+        }
+        return out;
+    }
+
+    /**
+     * get list of all towny towns in a war
+     *
+     * @return
+     */
+    public static List<String> getTownyWarTowns(String war) {
+        List<String> out = new ArrayList<>();
+        War w = WarData.getWar(war);
+        if(w == null) return Collections.emptyList();
+        for (Town t : TownyAPI.getInstance().getTowns()) {
+            if(w.getSide2Towns().contains(t.getName()) || w.getSide1Towns().contains(t.getName())) {
+                out.add(t.getName());
+            }
+        }
+        return out;
+    }
+
+    /**
+     * get list of all towny towns in a war
+     *
+     * @return
+     */
+    public static List<String> getTownyWarNations(String war) {
+        List<String> out = new ArrayList<>();
+        War w = WarData.getWar(war);
+        if(w == null) return Collections.emptyList();
+        for (Town t : TownyAPI.getInstance().getTowns()) {
+            if(w.getSide2Towns().contains(t.getName()) || w.getSide1Towns().contains(t.getName())) {
+                if(t.hasNation()) {
+                    try {
+                        out.add(t.getNation().getName());
+                    } catch (NotRegisteredException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+        return out;
+    }
+
+    /**
+     * get list of all towny towns on a side in a war
+     *
+     * @return
+     */
+    public static List<String> getTownyWarTowns(String war, String side) {
+        List<String> out = new ArrayList<>();
+        War w = WarData.getWar(war);
+        if(w == null) return Collections.emptyList();
+        for (Town t : TownyAPI.getInstance().getTowns()) {
+            if(side.equals(w.getSide1())) {
+                if(w.getSide1Towns().contains(t.getName())) {
+                    out.add(t.getName());
+                }
+            } else if(side.equals(w.getSide2())) {
+                if(w.getSide2Towns().contains(t.getName())) {
+                    out.add(t.getName());
+                }
+            }
+        }
+        return out;
+    }
+
+    /**
+     * return list of all towns in a raid
+     * @return
+     */
+    public static List<String> getRaidTowns() {
+        List<String> out = new ArrayList<>();
+        for (Raid r : RaidData.getRaids()) {
+            out.add(r.getRaidedTown().getName());
+        }
+        return out;
+    }
+
+    /**
+     * return list of all towns in a raid
+     * @return
+     */
+    public static List<String> getSiegeTowns() {
+        List<String> out = new ArrayList<>();
+        for (Siege r : SiegeData.getSieges()) {
+            out.add(r.getTown().getName());
         }
         return out;
     }

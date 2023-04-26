@@ -36,24 +36,26 @@ public class SiegeCommands implements CommandExecutor {
         // Help
 
         switch (args[0].toLowerCase()) {
-            case "start":
+            case "start" -> {
                 siegeStart(sender, args, false);
                 return true;
-            case "stop":
+            }
+            case "stop" -> {
                 siegeStop(sender, args);
                 return true;
-            case "abandon":
+            }
+            case "abandon" -> {
                 siegeAbandon(sender, args);
                 return true;
-            case "list":
+            }
+            case "list" -> {
                 siegeList(sender, args);
                 return true;
-            case "help":
+            }
+            case "help" -> {
                 siegeHelp(sender, args);
                 return true;
-            case "debug":
-                siegeDebug(sender, args);
-                return true;
+            }
         }
         return false;
     }
@@ -129,12 +131,21 @@ public class SiegeCommands implements CommandExecutor {
             sender.sendMessage(String.valueOf(Helper.Chatlabel()) + "There are currently no sieges in progress");
             return;
         }
-        if (args.length < 2) {
-            sender.sendMessage(Helper.Chatlabel() + "/war stop [town]");
+
+        if (args.length < 3) {
+            sender.sendMessage(Helper.Chatlabel() + "/siege stop [town]");
             return;
         }
+
+        // War check
+        War war = WarData.getWar(args[1]);
+        if (war == null) {
+            sender.sendMessage(String.valueOf(Helper.Chatlabel()) + "That war does not exist! /siege stop [war] [town]");
+            return;
+        }
+
         for (Siege siege : sieges) {
-            if (siege.getTown().getName().equalsIgnoreCase(args[1])) {
+            if (siege.getTown().getName().equalsIgnoreCase(args[2])) {
                 sender.sendMessage(String.valueOf(Helper.Chatlabel()) + "siege cancelled");
                 Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The siege at " + siege.getTown().getName() + " has been cancelled by an admin");
                 //siege.clearBeacon();
@@ -149,12 +160,19 @@ public class SiegeCommands implements CommandExecutor {
         if (!(sender instanceof Player)) return;
         final Player p = (Player) sender;
 
-        if (args.length < 2) {
-            sender.sendMessage(Helper.Chatlabel() + "/war abandon [town]");
+        if (args.length < 3) {
+            sender.sendMessage(Helper.Chatlabel() + "/siege abandon [town]");
             return;
         }
 
-        Siege siege = SiegeData.getSiege(args[1]);
+        // War check
+        War war = WarData.getWar(args[1]);
+        if (war == null) {
+            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "That war does not exist! /siege abandon [war] [town]");
+            return;
+        }
+
+        Siege siege = SiegeData.getSiege(args[2]);
         if (siege == null) {
             p.sendMessage(Helper.Chatlabel() + "Invalid siege");
             return;
@@ -200,29 +218,4 @@ public class SiegeCommands implements CommandExecutor {
         sender.sendMessage(Helper.Chatlabel() + "/siege abandon [town]");
         sender.sendMessage(Helper.Chatlabel() + "/siege list");
     }
-
-    private static void siegeDebug(CommandSender sender, String[] args) {
-        if (!(sender instanceof OfflinePlayer)) return;
-        final Player player = (Player) sender;
-        if (!sender.isOp()) return;
-        sender.sendMessage("DEBUG");
-        sender.sendMessage(WarData.getWars().toString());
-        for (War war : WarData.getWars()) {
-            sender.sendMessage(war.getName());
-            ArrayList<Siege> sieges = war.getSieges();
-            sender.sendMessage(sieges.toString());
-        }
-
-
-        if (args.length > 1 && args[1].equalsIgnoreCase("new")) {
-            War war = WarData.getWar(args[2]);
-            Town town = TownyAPI.getInstance().getTown(args[3]);
-            Siege siege = new Siege(war, town, (OfflinePlayer) player);
-            SiegeData.addSiege(siege);
-            war.addSiege(siege);
-            war.save();
-            siege.start();
-        }
-    }
-
 }

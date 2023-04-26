@@ -2,6 +2,7 @@ package me.ShermansWorld.AlathraWar.commands;
 
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Town;
+import com.palmergames.bukkit.towny.utils.NameUtil;
 import me.ShermansWorld.AlathraWar.Raid;
 import me.ShermansWorld.AlathraWar.War;
 import me.ShermansWorld.AlathraWar.data.RaidData;
@@ -17,89 +18,49 @@ import java.util.List;
 
 public class RaidTabCompletion implements TabCompleter {
 
+    private static final List<String> base = List.of(new String[] {
+            "abandon",
+            "help",
+            "join",
+            "leave",
+            "list",
+            "start"
+    });
+
+    private static final List<String> baseAdmin = List.of(new String[] {
+            "abandon",
+            "help",
+            "join",
+            "leave",
+            "list",
+            "start",
+            "stop"
+    });
+
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-        List<String> completions = new ArrayList<>();
-        Player p = (Player)sender;
-        if (args.length == 1) {
-            if (p.hasPermission("AlathraWar.admin")) {
-                completions.add("stop");
+        boolean flag = sender.hasPermission("AlathraWar.admin");
+
+        if (args.length > 0) {
+            if(args.length > 1) {
+                switch (args[0]) {
+                    case "abandon", "join", "leave", "start" -> {
+                        if (args.length > 2) {
+                            return NameUtil.filterByStart(CommandHelper.getTownyWarTowns(args[1]), args[2]);
+                        } else {
+                            return NameUtil.filterByStart(CommandHelper.getWarNames(), args[1]);
+                        }
+                    }
+                    //help, list
+                    default -> {
+                        return Collections.emptyList();
+                    }
+                }
+            } else {
+                return NameUtil.filterByStart(flag ? baseAdmin : base, args[0]);
             }
-            completions.add("start");
-            completions.add("abandon");
-            completions.add("list");
-            completions.add("help");
-            completions.add("join");
-            completions.add("leave");
-            return completions;
-        } else if (args.length == 2) {
-            if (args[0].equalsIgnoreCase("start")) {
-                if (!WarData.getWars().isEmpty()) {
-                    for (War war : WarData.getWars()) {
-                        completions.add(war.getName());
-                    }
-                    return completions;
-                }
-            } else if (args[0].equalsIgnoreCase("stop")) {
-                if (!RaidData.getRaids().isEmpty()) {
-                    for (Raid raid : RaidData.getRaids()) {
-                        completions.add(String.valueOf(raid.getName()));
-                    }
-                    return completions;
-                }
-            } else if (args[0].equalsIgnoreCase("join")) {
-                if (!WarData.getWars().isEmpty()) {
-                    for (War war : WarData.getWars()) {
-                        completions.add(war.getName());
-                    }
-                    return completions;
-                }
-            } else if (args[0].equalsIgnoreCase("abandon")) {
-                if (!WarData.getWars().isEmpty()) {
-                    for (War war : WarData.getWars()) {
-                        completions.add(war.getName());
-                    }
-                    return completions;
-                }
-            } else if (args[0].equalsIgnoreCase("leave")) {
-                if (!WarData.getWars().isEmpty()) {
-                    for (War war : WarData.getWars()) {
-                        completions.add(war.getName());
-                    }
-                    return completions;
-                }
-            }
-        } else if (args.length == 3) {
-            if (args[0].equalsIgnoreCase("start")) {
-                if (!TownyAPI.getInstance().getTowns().isEmpty()) {
-                    for (Town town : TownyAPI.getInstance().getTowns()) {
-                        completions.add(town.getName());
-                    }
-                    return completions;
-                }
-            } else if (args[0].equalsIgnoreCase("join")) {
-                if (!TownyAPI.getInstance().getTowns().isEmpty()) {
-                    for (Town town : TownyAPI.getInstance().getTowns()) {
-                        completions.add(town.getName());
-                    }
-                    return completions;
-                }
-            } else if (args[0].equalsIgnoreCase("abandon")) {
-                if (!TownyAPI.getInstance().getTowns().isEmpty()) {
-                    for (Town town : TownyAPI.getInstance().getTowns()) {
-                        completions.add(town.getName());
-                    }
-                    return completions;
-                }
-            } else if (args[0].equalsIgnoreCase("leave")) {
-                if (!TownyAPI.getInstance().getTowns().isEmpty()) {
-                    for (Town town : TownyAPI.getInstance().getTowns()) {
-                        completions.add(town.getName());
-                    }
-                    return completions;
-                }
-            }
+        } else {
+            return flag ? baseAdmin : base;
         }
-        return Collections.emptyList();
     }
 }

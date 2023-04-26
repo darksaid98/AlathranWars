@@ -172,8 +172,7 @@ public class AdminTabCompletion implements TabCompleter {
      */
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        final Player p = (Player) sender;
-        if (!p.hasPermission("AlathraWar.admin")) {
+        if (!sender.hasPermission("AlathraWar.admin")) {
             return empty;
         }
 
@@ -195,10 +194,10 @@ public class AdminTabCompletion implements TabCompleter {
                                             return NameUtil.filterByStart(CommandHelper.getPlayers(), args[5]);
                                         }
                                     } else {
-                                        return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[4]);
+                                        return NameUtil.filterByStart(CommandHelper.getTownyWarTowns(args[2]), args[4]);
                                     }
                                 } else {
-                                    return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[3]);
+                                    return NameUtil.filterByStart(CommandHelper.getTownyWarTowns(args[2]), args[3]);
                                 }
                             } else {
                                 return NameUtil.filterByStart(CommandHelper.getWarNames(), args[2]);
@@ -213,7 +212,7 @@ public class AdminTabCompletion implements TabCompleter {
                                         return NameUtil.filterByStart(CommandHelper.getPlayers(), args[4]);
                                     }
                                 } else {
-                                    return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[3]);
+                                    return NameUtil.filterByStart(CommandHelper.getTownyWarTowns(args[2]), args[3]);
                                 }
                             } else {
                                 return NameUtil.filterByStart(CommandHelper.getWarNames(), args[2]);
@@ -239,7 +238,7 @@ public class AdminTabCompletion implements TabCompleter {
                                             return NameUtil.filterByStart(CommandHelper.getWarSides(args[3]), args[5]);
                                         }
                                     } else {
-                                        return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[4]);
+                                        return NameUtil.filterByStart(CommandHelper.getRaidTowns(), args[4]);
                                     }
                                 } else {
                                     return NameUtil.filterByStart(CommandHelper.getWarNames(), args[3]);
@@ -253,7 +252,7 @@ public class AdminTabCompletion implements TabCompleter {
                                             return NameUtil.filterByStart(CommandHelper.getWarSides(args[3]), args[5]);
                                         }
                                     } else {
-                                        return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[4]);
+                                        return NameUtil.filterByStart(CommandHelper.getSiegeTowns(), args[4]);
                                     }
                                 } else {
                                     return NameUtil.filterByStart(CommandHelper.getWarNames(), args[3]);
@@ -284,7 +283,7 @@ public class AdminTabCompletion implements TabCompleter {
                                                 return NameUtil.filterByStart(CommandHelper.getWarSides(args[4]), args[6]);
                                             }
                                         } else {
-                                            return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[5]);
+                                            return NameUtil.filterByStart(CommandHelper.getRaidTowns(), args[5]);
                                         }
                                     } else {
                                         return NameUtil.filterByStart(CommandHelper.getWarNames(), args[4]);
@@ -302,7 +301,7 @@ public class AdminTabCompletion implements TabCompleter {
                                                 return NameUtil.filterByStart(CommandHelper.getWarSides(args[4]), args[6]);
                                             }
                                         } else {
-                                            return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[5]);
+                                            return NameUtil.filterByStart(CommandHelper.getSiegeTowns(), args[5]);
                                         }
                                     } else {
                                         return NameUtil.filterByStart(CommandHelper.getWarNames(), args[4]);
@@ -339,7 +338,7 @@ public class AdminTabCompletion implements TabCompleter {
                                             return NameUtil.filterByStart(CommandHelper.getPlayers(), args[5]);
                                         }
                                     } else {
-                                        return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[4]);
+                                        return NameUtil.filterByStart(CommandHelper.getRaidTowns(), args[4]);
                                     }
                                 } else {
                                     return NameUtil.filterByStart(CommandHelper.getWarNames(), args[3]);
@@ -365,7 +364,7 @@ public class AdminTabCompletion implements TabCompleter {
                             if (args.length > 4) {
                                 return empty;
                             } else {
-                                return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[3]);
+                                return NameUtil.filterByStart(CommandHelper.getRaidTowns(), args[3]);
                             }
                         } else {
                             return NameUtil.filterByStart(CommandHelper.getWarNames(), args[2]);
@@ -375,7 +374,7 @@ public class AdminTabCompletion implements TabCompleter {
                             if (args.length > 4) {
                                 return empty;
                             } else {
-                                return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[3]);
+                                return NameUtil.filterByStart(CommandHelper.getSiegeTowns(), args[3]);
                             }
                         } else {
                             return NameUtil.filterByStart(CommandHelper.getWarNames(), args[2]);
@@ -418,25 +417,27 @@ public class AdminTabCompletion implements TabCompleter {
                                             }
                                         }
                                         case "townspawn" -> {
-                                            if (args.length > 6) {
-                                                if (args.length > 7) {
-                                                    if (args.length > 8) {
-                                                        return empty;
+                                            if(sender instanceof Player) {
+                                                if (args.length > 6) {
+                                                    if (args.length > 7) {
+                                                        if (args.length > 8) {
+                                                            return empty;
+                                                        } else {
+                                                            return List.of(new String[]{String.valueOf(((Player)sender).getLocation().getZ())});
+                                                        }
                                                     } else {
-                                                        return List.of(new String[]{String.valueOf(p.getLocation().getZ())});
+                                                        return List.of(new String[]{String.valueOf(((Player)sender).getLocation().getY())});
                                                     }
                                                 } else {
-                                                    return List.of(new String[]{String.valueOf(p.getLocation().getY())});
+                                                    return List.of(new String[]{String.valueOf(((Player)sender).getLocation().getX())});
                                                 }
-                                            } else {
-                                                return List.of(new String[]{String.valueOf(p.getLocation().getX())});
                                             }
                                         }
                                         case "gather" -> {
                                             if (args.length > 6) {
                                                 return empty;
                                             } else {
-                                                return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[5]);
+                                                return NameUtil.filterByStart(CommandHelper.getRaidTowns(), args[5]);
                                             }
                                         }
                                         case "phase" -> {
@@ -453,10 +454,10 @@ public class AdminTabCompletion implements TabCompleter {
                                                         if (args.length > 9) {
                                                             return empty;
                                                         } else {
-                                                            return List.of(new String[]{String.valueOf(p.getLocation().getZ())});
+                                                            return List.of(new String[]{String.valueOf(((Player)sender).getLocation().getZ())});
                                                         }
                                                     } else {
-                                                        return List.of(new String[]{String.valueOf(p.getLocation().getX())});
+                                                        return List.of(new String[]{String.valueOf(((Player)sender).getLocation().getX())});
                                                     }
                                                 } else {
                                                     return empty;
@@ -477,7 +478,7 @@ public class AdminTabCompletion implements TabCompleter {
                                         }
                                     }
                                 } else {
-                                    return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[4]);
+                                    return NameUtil.filterByStart(CommandHelper.getRaidTowns(), args[4]);
                                 }
                             } else {
                                 return NameUtil.filterByStart(CommandHelper.getWarNames(), args[3]);
@@ -503,13 +504,13 @@ public class AdminTabCompletion implements TabCompleter {
                                                     if (args.length > 8) {
                                                         return empty;
                                                     } else {
-                                                        return List.of(new String[]{String.valueOf(p.getLocation().getZ())});
+                                                        return List.of(new String[]{String.valueOf(((Player)sender).getLocation().getZ())});
                                                     }
                                                 } else {
-                                                    return List.of(new String[]{String.valueOf(p.getLocation().getY())});
+                                                    return List.of(new String[]{String.valueOf(((Player)sender).getLocation().getY())});
                                                 }
                                             } else {
-                                                return List.of(new String[]{String.valueOf(p.getLocation().getX())});
+                                                return List.of(new String[]{String.valueOf(((Player)sender).getLocation().getX())});
                                             }
                                         }
                                         case "owner" -> {
@@ -524,7 +525,7 @@ public class AdminTabCompletion implements TabCompleter {
                                         }
                                     }
                                 } else {
-                                    return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[4]);
+                                    return NameUtil.filterByStart(CommandHelper.getSiegeTowns(), args[4]);
                                 }
                             } else {
                                 return NameUtil.filterByStart(CommandHelper.getWarNames(), args[3]);
@@ -554,10 +555,10 @@ public class AdminTabCompletion implements TabCompleter {
                                                 if (args.length > 7) {
                                                     return empty;
                                                 } else {
-                                                    return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[4]);
+                                                    return NameUtil.filterByStart(CommandHelper.getTownyWarTowns(args[3]), args[4]);
                                                 }
                                             } else {
-                                                return NameUtil.filterByStart(CommandHelper.getWarNames(), args[5]);
+                                                return NameUtil.filterByStart(CommandHelper.getWarSides(args[3]), args[5]);
                                             }
                                         } else {
                                             return NameUtil.filterByStart(addSet, args[4]);
@@ -608,7 +609,6 @@ public class AdminTabCompletion implements TabCompleter {
                                     }
                                 }
                                 case "side" -> {
-
                                     if (args.length > 4) {
                                         if (args.length > 5) {
                                             return empty;
@@ -663,9 +663,9 @@ public class AdminTabCompletion implements TabCompleter {
                                                     return empty;
                                                 } else {
                                                     if (args[5].equalsIgnoreCase("town")) {
-                                                        return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[6]);
+                                                        return NameUtil.filterByStart(CommandHelper.getTownyWarTowns(args[3]), args[6]);
                                                     } else if (args[5].equalsIgnoreCase("nation")) {
-                                                        return NameUtil.filterByStart(CommandHelper.getTownyNations(), args[6]);
+                                                        return NameUtil.filterByStart(CommandHelper.getTownyWarNations(args[3]), args[6]);
                                                     } else {
                                                         return empty;
                                                     }
@@ -687,9 +687,9 @@ public class AdminTabCompletion implements TabCompleter {
                                                 return empty;
                                             } else {
                                                 if (args[4].equalsIgnoreCase("town")) {
-                                                    return NameUtil.filterByStart(CommandHelper.getTownyTowns(), args[5]);
+                                                    return NameUtil.filterByStart(CommandHelper.getTownyWarTowns(args[3]), args[5]);
                                                 } else if (args[4].equalsIgnoreCase("nation")) {
-                                                    return NameUtil.filterByStart(CommandHelper.getTownyNations(), args[5]);
+                                                    return NameUtil.filterByStart(CommandHelper.getTownyWarNations(args[3]), args[5]);
                                                 } else {
                                                     return empty;
                                                 }
