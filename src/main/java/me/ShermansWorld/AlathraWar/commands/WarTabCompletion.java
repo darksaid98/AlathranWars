@@ -43,15 +43,24 @@ public class WarTabCompletion implements TabCompleter{
 				switch (args[0]) {
 					case "join" -> {
 						if (args.length > 2) {
+							if (args.length > 3) {
+								return Collections.emptyList();
+							}
 							return NameUtil.filterByStart(CommandHelper.getWarSides(args[1]), args[2]);
 						} else {
 							return NameUtil.filterByStart(CommandHelper.getWarNames(), args[1]);
 						}
 					}
 					case "info" -> {
+						if (args.length > 2) {
+							return Collections.emptyList();
+						}
 						return NameUtil.filterByStart(CommandHelper.getPlayers(), args[1]);
 					}
 					case "delete", "surrender" -> {
+						if (args.length > 2) {
+							return Collections.emptyList();
+						}
 						return NameUtil.filterByStart(CommandHelper.getWarNames(), args[1]);
 					}
 					//create, list, help

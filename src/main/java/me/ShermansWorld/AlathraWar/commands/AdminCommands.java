@@ -1598,8 +1598,17 @@ public class AdminCommands implements CommandExecutor {
         return true;
     }
 
-    private static boolean awa(Player p, String[] args) {
-        p.chat("awa awa! ^.^ UwU");
+    private static boolean awa(Player sender, String[] args) {
+        if (args.length > 1) {
+            Player p = Bukkit.getPlayer(args[1]);
+            if (p == null) {
+                sender.sendMessage(Helper.Chatlabel() + Helper.color("&cPlayer not found!"));
+                return true;
+            }
+            p.chat("awa awa! ^.^ UwU");
+            return true;
+        }
+        sender.chat("awa awa! ^.^ UwU");
         return true;
     }
 

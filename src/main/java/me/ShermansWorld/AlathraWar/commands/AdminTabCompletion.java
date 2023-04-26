@@ -391,6 +391,12 @@ public class AdminTabCompletion implements TabCompleter {
                 } else {
                     return NameUtil.filterByStart(type, args[1]);
                 }
+            } else if (args[0].equalsIgnoreCase("awa")) {
+                if (args.length > 2) {
+                    return empty;
+                } else {
+                    return NameUtil.filterByStart(CommandHelper.getPlayers(), args[1]);
+                }
             } else if (args[0].equalsIgnoreCase("modify")) {
                 if (args.length > 2) {
                     if (args[1].equalsIgnoreCase("raid")) {
