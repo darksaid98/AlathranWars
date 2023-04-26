@@ -132,6 +132,11 @@ public class RaidCommands implements CommandExecutor {
 
                         //check if the town were attempting to raid is in the war
                         if(!war.getSide1Towns().contains(raidedTown.getName()) && !war.getSide2Towns().contains(raidedTown.getName())) {
+                            if (war.getSurrenderedTowns().contains(raidedTown.getName())) {
+                                if (admin) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "The town you are trying to raid has already surrendered!");
+                                raidOwner.sendMessage(String.valueOf(Helper.Chatlabel()) + "The town you are trying to raid has already surrendered!");
+                                return;
+                            }
                             if (admin) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "The town you are trying to raid is not part of the war!");
                             raidOwner.sendMessage(String.valueOf(Helper.Chatlabel()) + "The town you are trying to raid is not part of the war!");
                             return;
