@@ -278,7 +278,11 @@ public class AdminTabCompletion implements TabCompleter {
                                     if (args.length > 5) {
                                         if (args.length > 6) {
                                             if (args.length > 7) {
-                                                return empty;
+                                                if (args.length > 8) {
+                                                    return empty;
+                                                } else {
+                                                    return NameUtil.filterByStart(List.of(new String[] { "true","false" }), args[6]);
+                                                }
                                             } else {
                                                 return NameUtil.filterByStart(CommandHelper.getWarSides(args[4]), args[6]);
                                             }
@@ -296,7 +300,11 @@ public class AdminTabCompletion implements TabCompleter {
                                     if (args.length > 5) {
                                         if (args.length > 6) {
                                             if (args.length > 7) {
-                                                return empty;
+                                                if (args.length > 8) {
+                                                    return empty;
+                                                } else {
+                                                    return NameUtil.filterByStart(List.of(new String[] { "true","false" }), args[6]);
+                                                }
                                             } else {
                                                 return NameUtil.filterByStart(CommandHelper.getWarSides(args[4]), args[6]);
                                             }
@@ -313,7 +321,11 @@ public class AdminTabCompletion implements TabCompleter {
                                 if (args.length > 4) {
                                     if (args.length > 5) {
                                         if (args.length > 6) {
-                                            return empty;
+                                            if (args.length > 7) {
+                                                return empty;
+                                            } else {
+                                                return NameUtil.filterByStart(List.of(new String[] { "true","false" }), args[6]);
+                                            }
                                         } else {
                                             return NameUtil.filterByStart(CommandHelper.getWarSides(args[4]), args[5]);
                                         }

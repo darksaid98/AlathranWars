@@ -3,6 +3,7 @@ package me.ShermansWorld.AlathraWar.commands;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
+import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 import me.ShermansWorld.AlathraWar.Raid;
 import me.ShermansWorld.AlathraWar.Siege;
@@ -191,5 +192,10 @@ public class CommandHelper {
             out.add(ph.name());
         }
         return out;
+    }
+
+    public static long getPlayerJoinDate(String player) {
+        Resident res = TownyAPI.getInstance().getResident(player);
+        return res.getRegistered();
     }
 }

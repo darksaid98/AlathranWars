@@ -20,6 +20,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class AdminCommands implements CommandExecutor {
@@ -321,16 +323,17 @@ public class AdminCommands implements CommandExecutor {
             } else if (args[1].equalsIgnoreCase("join")) {
                 if (args.length >= 3) {
                     if (args[2].equalsIgnoreCase("raid")) {
-                        if (args.length >= 6) {
+                        if (args.length >= 8) {
                             //fix args
-                            String[] adjusted = new String[]{
+                            List<String> adjusted = List.of(new String[]{
                                     args[1], //join
                                     args[4], //war
                                     args[5], //town
-                                    args[3], //player
-                                    args.length >= 7 ? args[6] : null //side
-                            };
-                            RaidCommands.joinRaid(p, adjusted, true);
+                                    args[3], //player // override
+                            });
+                            adjusted.add(args[6]);
+                            adjusted.add(args[7]);
+                            RaidCommands.joinRaid(p, (String[]) adjusted.toArray(), true);
                             return true;
                         } else {
                             p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force join raid [player] [war] [town] (side)"));
@@ -338,19 +341,21 @@ public class AdminCommands implements CommandExecutor {
                         return true;
                     } else if (args[2].equalsIgnoreCase("siege")) {
                         if (args.length >= 6) {
+                            //TODO
                             p.sendMessage(Helper.color("&cError! Unimplemented!"));
                         } else {
                             p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force join siege [player] [war] [town] (side)"));
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("war")) {
-                        if (args.length >= 6) {
+                        if (args.length >= 7) {
                             //fix args to match
                             String[] adjusted = new String[]{
                                     args[1],
                                     args[4],
                                     args[5],
-                                    args[3]
+                                    args[3],
+                                    args[6]
                             };
                             if (Bukkit.getPlayer(args[3]) != null) {
                             } else {

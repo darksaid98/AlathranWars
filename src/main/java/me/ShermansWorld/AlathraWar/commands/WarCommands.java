@@ -148,6 +148,34 @@ public class WarCommands implements CommandExecutor {
             return;
         }
 
+        //Minutemen countermeasures, 86400 * 4 time. 86400 seconds in a day, 4 days min playtime
+        if (admin) {
+            if (System.currentTimeMillis() - CommandHelper.getPlayerJoinDate(args[3]) < 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge") ) {
+                if(args.length >= 5) {
+                    if (Boolean.parseBoolean(args[4])) {
+                        //player has joined to recently
+                        p.sendMessage(ChatColor.RED + "Warning! Ignoring Minuteman Countermeasure!");
+                    } else {
+                        //player has joined to recently
+                        p.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
+                        res.getPlayer().sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
+                        return;
+                    }
+                } else {
+                    //player has joined to recently
+                    p.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
+                    res.getPlayer().sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
+                    return;
+                }
+            }
+        } else {
+            if (System.currentTimeMillis() - CommandHelper.getPlayerJoinDate(p.getName()) < 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge") ) {
+                //player has joined to recently
+                p.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
+                return;
+            }
+        }
+
         // Side checks
         int side = war.getSide(town.getName().toLowerCase());
         if (side == -1) {

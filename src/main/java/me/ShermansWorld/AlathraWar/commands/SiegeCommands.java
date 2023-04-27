@@ -1,5 +1,6 @@
 package me.ShermansWorld.AlathraWar.commands;
 
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.OfflinePlayer;
 import com.palmergames.bukkit.towny.TownyAPI;
 import me.ShermansWorld.AlathraWar.Helper;
@@ -94,6 +95,34 @@ public class SiegeCommands implements CommandExecutor {
             player.sendMessage(Helper.Chatlabel() + "You have surrendered.");
             if(admin) sender.sendMessage(Helper.Chatlabel() + "You have surrendered.");
             return;
+        }
+
+        //Minutemen countermeasures, 86400 * 4 time. 86400 seconds in a day, 4 days min playtime
+        if (admin) {
+            if (System.currentTimeMillis() - CommandHelper.getPlayerJoinDate(args[3]) < 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge") ) {
+                if(args.length >= 5) {
+                    if (Boolean.parseBoolean(args[4])) {
+                        //player has joined to recently
+                        sender.sendMessage(ChatColor.RED + "Warning! Ignoring Minuteman Countermeasure!");
+                    } else {
+                        //player has joined to recently
+                        sender.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
+                        player.getPlayer().sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
+                        return;
+                    }
+                } else {
+                    //player has joined to recently
+                    sender.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
+                    player.getPlayer().sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
+                    return;
+                }
+            }
+        } else {
+            if (System.currentTimeMillis() - CommandHelper.getPlayerJoinDate(player.getName()) < 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge") ) {
+                //player has joined to recently
+                player.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
+                return;
+            }
         }
 
         // Town check
