@@ -525,6 +525,11 @@ public class Raid {
                 + " in a raid for $" + amt);
         Main.econ.depositPlayer(offlinePlayer, amt);
 
+        if (this.side1AreRaiders) {
+            war.addSide1Points(15);
+        } else {
+            war.addSide2Points(15);
+        }
 
         stop();
     }
@@ -572,6 +577,12 @@ public class Raid {
             Main.warLogger
                     .log("The defenders from " + this.defenders + " have won the raid of " + this.raidedTown.getName() + "!");
             this.raidedTown.getAccount().deposit(1000, "Raid chest");
+        }
+
+        if (this.side1AreRaiders) {
+            war.addSide2Points(15);
+        } else {
+            war.addSide1Points(15);
         }
 
         stop();
