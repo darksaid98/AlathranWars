@@ -464,7 +464,9 @@ public class Raid {
          */
         final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(owner.getUniqueId());
 
-        //raid chest
+        //TODO cap based on the town balance
+
+        //raid chest TODO REMOVE THIS
         Main.econ.depositPlayer(offlinePlayer, 1000);
         double amt = 0.0;
         if (this.raidedTown.getAccount().getHoldingBalance() > 10000) {
