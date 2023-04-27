@@ -82,11 +82,14 @@ public class RaidData {
         Raid raid = new Raid(war, raidedTown, gatherTown, attackBoolean, offlinePlayer);
 
         //Extra properties, if any are missing the raid doesnt exist yet
-        if (fileData.get("raidTicks") != null && fileData.get("raidPhase") != null && fileData.get("activeRaiders") != null && fileData.get("lootedChunks") != null) {
+        if (fileData.get("raiderScore") != null && fileData.get("defenderScore") != null && fileData.get("raidTicks") != null && fileData.get("raidPhase") != null && fileData.get("activeRaiders") != null && fileData.get("lootedChunks") != null && fileData.get("side1AreRaiders") != null) {
             //active properties
             raid.setRaidPhase(RaidPhase.getByName((String) fileData.get("raidPhase")));
             raid.setRaidTicks((int) fileData.get("raidTicks"));
             raid.setActiveRaiders((ArrayList<String>) fileData.get("activeRaiders"));
+            raid.setRaiderScore((int) fileData.get("raiderScore"));
+            raid.setDefenderScore((int) fileData.get("defenderScore"));
+            raid.setSide1AreRaiders(Boolean.parseBoolean((String) fileData.get("side1AreRaiders")));
 
             //looted chunks
             ArrayList<Object> o = (ArrayList<Object>) fileData.get("lootedChunks");
@@ -163,7 +166,8 @@ public class RaidData {
         returnMap.put("gatherTown", raid.getGatherTown().getName());
         returnMap.put("raidTicks", raid.getRaidTicks());
         returnMap.put("raidPhase", raid.getPhase().name());
-        returnMap.put("raidScore", raid.getRaidScore());
+        returnMap.put("raiderScore", raid.getRaiderScore());
+        returnMap.put("defenderScore", raid.getDefenderScore());
         returnMap.put("side1AreRaiders", Boolean.toString(raid.getSide1AreRaiders()));
         returnMap.put("activeRaiders", raid.getActiveRaiders());
         //THIS MAY OR MAY NOT WORK

@@ -46,7 +46,7 @@ public class CommandsListener implements Listener {
     };
 
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler
     public void onCommandSend(final PlayerCommandPreprocessEvent event) {
 
         Player p = event.getPlayer();

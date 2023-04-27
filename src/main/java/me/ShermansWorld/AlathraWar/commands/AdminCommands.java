@@ -214,13 +214,13 @@ public class AdminCommands implements CommandExecutor {
                                     if (r.getSide1AreRaiders()) {
                                         if (args[5].equals(r.getWar().getSide1())) {
                                             r.raidersWin(r.getOwner(), r.getRaiderScore(), r.getDefenderScore());
-                                            p.sendMessage(Helper.Chatlabel() + "Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (raiders) declared as victor.");
-                                            Main.warLogger.log("Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (raiders) declared as victor.");
+                                            p.sendMessage(Helper.Chatlabel() + "Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[5] + " (raiders) declared as victor.");
+                                            Main.warLogger.log("Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[5] + " (raiders) declared as victor.");
                                             return true;
                                         } else if (args[5].equals(r.getWar().getSide2())) {
                                             r.defendersWin(r.getRaiderScore(), r.getDefenderScore());
-                                            p.sendMessage(Helper.Chatlabel() + "Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
-                                            Main.warLogger.log("Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
+                                            p.sendMessage(Helper.Chatlabel() + "Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[5] + " (defenders) declared as victor.");
+                                            Main.warLogger.log("Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[5] + " (defenders) declared as victor.");
                                             return true;
                                         } else {
                                             p.sendMessage(Helper.color("&cSide not found!"));
@@ -229,13 +229,13 @@ public class AdminCommands implements CommandExecutor {
                                     } else {
                                         if (args[5].equals(r.getWar().getSide1())) {
                                             r.defendersWin(r.getRaiderScore(), r.getDefenderScore());
-                                            p.sendMessage(Helper.Chatlabel() + "Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
-                                            Main.warLogger.log("Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
+                                            p.sendMessage(Helper.Chatlabel() + "Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[5] + " (defenders) declared as victor.");
+                                            Main.warLogger.log("Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[5] + " (defenders) declared as victor.");
                                             return true;
                                         } else if (args[5].equals(r.getWar().getSide2())) {
                                             r.raidersWin(r.getOwner(), r.getRaiderScore(), r.getDefenderScore());
-                                            p.sendMessage(Helper.Chatlabel() + "Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (raiders) declared as victor.");
-                                            Main.warLogger.log("Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (raiders) declared as victor.");
+                                            p.sendMessage(Helper.Chatlabel() + "Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[5] + " (raiders) declared as victor.");
+                                            Main.warLogger.log("Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[5] + " (raiders) declared as victor.");
                                             return true;
                                         } else {
                                             p.sendMessage(Helper.color("&cSide not found!"));
@@ -325,18 +325,17 @@ public class AdminCommands implements CommandExecutor {
                     if (args[2].equalsIgnoreCase("raid")) {
                         if (args.length >= 8) {
                             //fix args
-                            List<String> adjusted = List.of(new String[]{
-                                    args[1], //join
-                                    args[4], //war
-                                    args[5], //town
-                                    args[3], //player // override
-                            });
+                            List<String> adjusted = new ArrayList<>();
+                            adjusted.add(args[1]);
+                            adjusted.add(args[4]);
+                            adjusted.add(args[5]);
+                            adjusted.add(args[3]);
                             adjusted.add(args[6]);
                             adjusted.add(args[7]);
-                            RaidCommands.joinRaid(p, (String[]) adjusted.toArray(), true);
+                            RaidCommands.joinRaid(p, adjusted.toArray(new String[6]), true);
                             return true;
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force join raid [player] [war] [town] (side)"));
+                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force join raid [player] [war] [town] [side] (ignoreIssues)"));
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("siege")) {
@@ -510,7 +509,7 @@ public class AdminCommands implements CommandExecutor {
                             return true;
                         }
                     }
-                    p.sendMessage(Helper.color("&cError Raid not found!"));
+                    p.sendMessage(Helper.color("&cError war not found!"));
                 } else {
                     p.sendMessage(Helper.color("&cUsage: /alathrawaradmin info [raid/siege/war]"));
                 }
@@ -524,6 +523,7 @@ public class AdminCommands implements CommandExecutor {
                             p.sendMessage(Helper.Chatlabel() + "Name: " + r.getName());
                             p.sendMessage(Helper.Chatlabel() + "Raiders: " + r.getRaiders());
                             p.sendMessage(Helper.Chatlabel() + "Defenders: " + r.getDefenders());
+                            p.sendMessage(Helper.Chatlabel() + "Side1Raiders: " + r.getSide1AreRaiders());
                             p.sendMessage(Helper.Chatlabel() + "Raider Score: " + r.getRaiderScore());
                             p.sendMessage(Helper.Chatlabel() + "Defender Score: " + r.getDefenderScore());
                             p.sendMessage(Helper.Chatlabel() + "War: " + r.getWar().getName());
@@ -532,8 +532,8 @@ public class AdminCommands implements CommandExecutor {
                             p.sendMessage(Helper.Chatlabel() + "Current Phase: " + r.getPhase().name());
                             p.sendMessage(Helper.Chatlabel() + "Tick progress: " + r.getRaidTicks());
                             p.sendMessage(Helper.Chatlabel() + "Owner: " + r.getOwner().getName());
-                            p.sendMessage(Helper.Chatlabel() + "Gather Homeblock: " + r.getHomeBlockGather().toString());
-                            p.sendMessage(Helper.Chatlabel() + "Raided Homeblock: " + r.getHomeBlockRaided().toString());
+                            p.sendMessage(Helper.Chatlabel() + "Gather Homeblock: " + (r.getHomeBlockGather() == null ? "NONE" : r.getHomeBlockGather().toString()));
+                            p.sendMessage(Helper.Chatlabel() + "Raided Homeblock: " + (r.getHomeBlockRaided() == null ? "NONE" : r.getHomeBlockRaided().toString()));
                             p.sendMessage(Helper.Chatlabel() + "oOo------------===------------oOo");
                             StringBuilder activeRaiders = new StringBuilder();
                             for (String pl : r.getActiveRaiders()) {
@@ -543,6 +543,16 @@ public class AdminCommands implements CommandExecutor {
                             //cut off last two characters
                             if(activeRaiders.length() > 2) activeRaiders = new StringBuilder(activeRaiders.substring(0, activeRaiders.length() - 2));
                             p.sendMessage(Helper.Chatlabel() + "Raiding Players: " + activeRaiders);
+
+                            p.sendMessage(Helper.Chatlabel() + "oOo------------===------------oOo");
+                            StringBuilder defenderPlayers = new StringBuilder();
+                            for (String pl : r.getDefenderPlayers()) {
+                                defenderPlayers.append(pl);
+                                defenderPlayers.append(", ");
+                            }
+                            //cut off last two characters
+                            if(defenderPlayers.length() > 2) defenderPlayers = new StringBuilder(defenderPlayers.substring(0, defenderPlayers.length() - 2));
+                            p.sendMessage(Helper.Chatlabel() + "Defending Players: " + defenderPlayers);
                             return true;
                         }
                     }

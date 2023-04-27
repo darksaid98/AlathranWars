@@ -35,7 +35,9 @@ public final class KillsListener implements Listener
         try {
             town = WorldCoord.parseWorldCoord(killed).getTownBlock().getTown();
         }
-        catch (NotRegisteredException ex2) {}
+        catch (NotRegisteredException ex2) {
+            ex2.printStackTrace();
+        }
         boolean playerCloseToHomeBlockSiege = false;
         boolean playerCloseToHomeBlockRaid = false;
 
@@ -57,6 +59,7 @@ public final class KillsListener implements Listener
                         if (raid.getActiveRaiders().contains(killer.getName())) {
                             this.raidKill(killed, event);
                             raid.defenderKilledInCombat(event);
+                            return;
                         }
                     }
                     //teleport back to raided spawn, without damaged gear
@@ -71,6 +74,7 @@ public final class KillsListener implements Listener
                             this.raidKill(killed, event);
                             raid.raiderKilledInCombat(event);
                             respawnqueue.put(killed.getUniqueId(), raid);
+                            return;
                         }
                     } else if (raid.getPhase() != RaidPhase.COMBAT && killer != null) {
                         this.oocKill(killed, event);
@@ -86,7 +90,8 @@ public final class KillsListener implements Listener
                     return;
                 }
                 if ( (town != null && town.equals(raid.getRaidedTown()) || playerCloseToHomeBlockRaid) ) {
-                    this.siegeKill(killed, event);
+                    this.raidKill(killed, event);
+                    return;
                 }
             }
 
@@ -107,14 +112,18 @@ public final class KillsListener implements Listener
                                 Player p = Bukkit.getPlayer(playerName);
                                 if (p != null) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Defender killed! + 20 Attacker Points");
                             }
-                            catch (NullPointerException ignored) {}
+                            catch (NullPointerException ignored) {
+                                ignored.printStackTrace();
+                            }
                         }
                         for (final String playerName : siege.getDefenderPlayers()) {
                             try {
                                 Player p = Bukkit.getPlayer(playerName);
                                 if (p != null) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Defender killed! + 20 Attacker Points");
                             }
-                            catch (NullPointerException ignored) {}
+                            catch (NullPointerException ignored) {
+                                ignored.printStackTrace();
+                            }
                         }
                     }
                     this.siegeKill(killed, event);
@@ -128,14 +137,18 @@ public final class KillsListener implements Listener
                                 Player p = Bukkit.getPlayer(playerName);
                                 if (p != null) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Attacker killed! + 20 Defender Points");
                             }
-                            catch (NullPointerException ex3) {}
+                            catch (NullPointerException ex3) {
+                                ex3.printStackTrace();
+                            }
                         }
                         for (final String playerName : siege.getDefenderPlayers()) {
                             try {
                                 Player p = Bukkit.getPlayer(playerName);
                                 if (p != null) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Attacker killed! + 20 Defender Points");
                             }
-                            catch (NullPointerException ex4) {}
+                            catch (NullPointerException ex4) {
+                                ex4.printStackTrace();
+                            }
                         }
                     }
                     this.siegeKill(killed, event);
@@ -148,7 +161,7 @@ public final class KillsListener implements Listener
 
         }
         catch (NullPointerException | TownyException ignored) {
-
+            ignored.printStackTrace();
         }
     }
 

@@ -286,7 +286,7 @@ public class AdminTabCompletion implements TabCompleter {
                                                 if (args.length > 8) {
                                                     return empty;
                                                 } else {
-                                                    return NameUtil.filterByStart(List.of(new String[] { "true","false" }), args[6]);
+                                                    return NameUtil.filterByStart(List.of(new String[] { "true","false" }), args[7]);
                                                 }
                                             } else {
                                                 return NameUtil.filterByStart(CommandHelper.getWarSides(args[4]), args[6]);
@@ -308,7 +308,7 @@ public class AdminTabCompletion implements TabCompleter {
                                                 if (args.length > 8) {
                                                     return empty;
                                                 } else {
-                                                    return NameUtil.filterByStart(List.of(new String[] { "true","false" }), args[6]);
+                                                    return NameUtil.filterByStart(List.of(new String[] { "true","false" }), args[7]);
                                                 }
                                             } else {
                                                 return NameUtil.filterByStart(CommandHelper.getWarSides(args[4]), args[6]);

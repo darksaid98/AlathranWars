@@ -9,6 +9,7 @@ import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
@@ -90,6 +91,7 @@ public class Raid {
     public ArrayList<String> raiderPlayers = new ArrayList<>();
     public ArrayList<String> defenderPlayers = new ArrayList<>();
     public Map<WorldCoord, LootBlock> lootedChunks;
+    public final NamespacedKey bossBarKey = new NamespacedKey(Main.getInstance(), "raidBar." + Raid.this.getName());
 
     /**
      * Constructs raid for staging phase
@@ -109,6 +111,7 @@ public class Raid {
         this.raidedTown = raidedTown;
         this.gatherTown = gatherTown;
         this.owner = owner;
+        this.side1AreRaiders = side1AreRaiders;
         this.raiders = side1AreRaiders ? war.getSide1() : war.getSide2();
         this.defenders = !side1AreRaiders ? war.getSide1() : war.getSide2();
         this.raiderScore = 0;
@@ -155,6 +158,7 @@ public class Raid {
         this.raidedTown = raidedTown;
         this.gatherTown = gatherTown;
         this.owner = owner;
+        this.side1AreRaiders = side1AreRaiders;
         this.raiders = side1AreRaiders ? war.getSide1() : war.getSide2();
         this.defenders = !side1AreRaiders ? war.getSide1() : war.getSide2();
         this.raiderScore = 0;
@@ -201,6 +205,8 @@ public class Raid {
 
         }
 
+        setupDisplayBar();
+
         // Creates 10 second looping function for Raid
 
         this.bukkitId[0] = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask((Plugin) Main.getInstance(),
@@ -234,6 +240,8 @@ public class Raid {
             e.printStackTrace();
         }
 
+        setupDisplayBar();
+
         // Creates 2 second looping function for Raid, restarting this!
         this.bukkitId[0] = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask((Plugin) Main.getInstance(),
                 getTickLoop(), 0L, incremental);
@@ -245,6 +253,7 @@ public class Raid {
      * End of raid
      */
     public void stop() {
+        deleteDisplayBar();
         Bukkit.getScheduler().cancelTask(this.bukkitId[0]);
         RaidData.removeRaid(this);
     }
@@ -923,19 +932,59 @@ public class Raid {
                             }
                         }
                     }
-                    BossBar bossBar = Bukkit.createBossBar(String.format("%d --  Raiders  -- Raid Score -- Defenders -- %d", Raid.this.raiderScore, Raid.this.defenderScore), BarColor.RED, BarStyle.SOLID, BarFlag.CREATE_FOG);
-                    for (String s : Raid.this.getActiveRaiders()) {
-                        Player p = Bukkit.getPlayer(s);
-                        if (p != null) bossBar.addPlayer(p);
-                    }
 
-                    for (String s : Raid.this.getDefenderPlayers()) {
-                        Player p = Bukkit.getPlayer(s);
-                        if (p != null) bossBar.addPlayer(p);
-                    }
+                    //refresh the existing display bar
+                    refreshDisplayBar();
                 }
             }
         };
+    }
+
+    public void refreshDisplayBar() {
+        BossBar bossBar = Bukkit.getBossBar(bossBarKey);
+        if(bossBar == null) bossBar = createNewDisplayBar();
+
+        bossBar.setTitle(String.format("%d --  Raiders  -Raid Score- Defenders -- %d", Raid.this.raiderScore, Raid.this.defenderScore));
+        bossBar.setProgress((double) (Raid.this.raiderScore + 0.5D) / ((Raid.this.raiderScore + Raid.this.defenderScore) + 1.0D));
+
+        for (String s : Raid.this.getActiveRaiders()) {
+            Player p = Bukkit.getPlayer(s);
+            if (p != null) {
+                if(!bossBar.getPlayers().contains(p)) bossBar.addPlayer(p);
+            }
+        }
+
+        for (String s : Raid.this.getDefenderPlayers()) {
+            Player p = Bukkit.getPlayer(s);
+            if (p != null) {
+                if(!bossBar.getPlayers().contains(p)) bossBar.addPlayer(p);
+            }
+        }
+    }
+
+    public void setupDisplayBar() {
+        BossBar bossBar = Bukkit.getBossBar(bossBarKey);
+        if(bossBar == null) bossBar = createNewDisplayBar();
+
+        for (String s : Raid.this.getActiveRaiders()) {
+            Player p = Bukkit.getPlayer(s);
+            if (p != null) {
+                bossBar.addPlayer(p);
+            }
+        }
+
+        for (String s : Raid.this.getDefenderPlayers()) {
+            Player p = Bukkit.getPlayer(s);
+            if (p != null) bossBar.addPlayer(p);
+        }
+    }
+
+    public void deleteDisplayBar() {
+        Bukkit.removeBossBar(bossBarKey);
+    }
+
+    public BossBar createNewDisplayBar() {
+        return Bukkit.createBossBar(bossBarKey, String.format("%d --  Raiders  -Raid Score- Defenders -- %d", Raid.this.raiderScore, Raid.this.defenderScore), BarColor.RED, BarStyle.SOLID);
     }
 
     public void save() {
