@@ -8,6 +8,7 @@ import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 
+import me.ShermansWorld.AlathraWar.commands.CommandHelper;
 import me.ShermansWorld.AlathraWar.data.DataManager;
 import me.ShermansWorld.AlathraWar.data.WarData;
 
@@ -242,7 +243,10 @@ public class War {
             Town town = TownyAPI.getInstance().getTown(townString);
             if (town != null) {
                 for (Resident res : town.getResidents()) {
-                    returnList.add(res.getName());
+                    //Minuteman countermeasure!
+                    if (System.currentTimeMillis() - CommandHelper.getPlayerJoinDate(res.getName()) > 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge") ) {
+                        returnList.add(res.getName());
+                    }
                 }
             }
         }
