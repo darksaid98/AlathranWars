@@ -1,12 +1,10 @@
 package me.ShermansWorld.AlathraWar.commands;
 
+import me.ShermansWorld.AlathraWar.*;
+import me.ShermansWorld.AlathraWar.data.RaidData;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.OfflinePlayer;
 import com.palmergames.bukkit.towny.TownyAPI;
-import me.ShermansWorld.AlathraWar.Helper;
-import me.ShermansWorld.AlathraWar.Main;
-import me.ShermansWorld.AlathraWar.Siege;
-import me.ShermansWorld.AlathraWar.War;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.data.WarData;
 
@@ -131,6 +129,14 @@ public class SiegeCommands implements CommandExecutor {
             player.sendMessage(String.valueOf(Helper.Chatlabel()) + "That town does not exist! /siege start [war] [town]");
             if(admin) sender.sendMessage(String.valueOf(Helper.Chatlabel()) + "That town does not exist! /siege start [war] [town]");
             return;
+        }
+
+        // Is being raided check
+        for ( Raid r : RaidData.getRaids()) {
+            if(r.getRaidedTown().getName().equals(town.getName())) {
+                player.sendMessage(String.valueOf(Helper.Chatlabel()) + "That town is already currently being raided! Cannot siege at this time!");
+                if(admin) sender.sendMessage(String.valueOf(Helper.Chatlabel()) + "That town is already currently being raided! Cannot siege at this time!");
+            }
         }
         
         // Attacking own side

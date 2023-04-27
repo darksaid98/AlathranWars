@@ -6,6 +6,7 @@ import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.*;
 import me.ShermansWorld.AlathraWar.*;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
+import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.data.WarData;
 import me.ShermansWorld.AlathraWar.data.RaidData;
 import net.md_5.bungee.api.ChatColor;
@@ -162,6 +163,14 @@ public class RaidCommands implements CommandExecutor {
                             if (admin) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "The town you are trying to raid is not part of the war!");
                             raidOwner.sendMessage(String.valueOf(Helper.Chatlabel()) + "The town you are trying to raid is not part of the war!");
                             return;
+                        }
+
+                        // Is being sieged check
+                        for ( Siege s : SiegeData.getSieges()) {
+                            if(s.getTown().getName().equals(raidedTown.getName())) {
+                                raidOwner.sendMessage(String.valueOf(Helper.Chatlabel()) + "That town is already currently being sieged! Cannot raid at this time!");
+                                if(admin) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "That town is already currently being sieged! Cannot raid at this time!");
+                            }
                         }
 
                         townExists = true;
