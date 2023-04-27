@@ -261,7 +261,7 @@ public class Raid {
                 lb.finished = true;
                 Random r = new Random();
                 //The base value can be abjusted
-                lb.value = r.nextDouble() * 100;
+                lb.value = r.nextDouble() * 30;
 
                 //score for looting
                 this.addPointsToRaidScore(10);
@@ -857,12 +857,12 @@ public class Raid {
 
                     //Report
                     if (Raid.this.raidTicks % 6000 == 0) {
-                        Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "Report on the raid of "
+                        Bukkit.broadcastMessage(Helper.Chatlabel() + "Report on the raid of "
                                 + Raid.this.getRaidedTown().getName() + ":");
                         Bukkit.broadcastMessage(
-                                "Raid Score - " + String.valueOf(Raid.this.raidScore));
+                                "Raid Score - " + Raid.this.raidScore);
                         Bukkit.broadcastMessage(
-                                "Chunks Looted - " + String.valueOf(Raid.this.lootedChunks.size()) + "/" + raidedTown.getTownBlocks().size());
+                                "Chunks Looted - " + Raid.this.lootedChunks.size() + "/" + raidedTown.getTownBlocks().size());
                     }
 
                     //Looting chunks

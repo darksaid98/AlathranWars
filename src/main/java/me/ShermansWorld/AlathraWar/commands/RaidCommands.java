@@ -166,7 +166,7 @@ public class RaidCommands implements CommandExecutor {
                         }
 
                         // Is being sieged check
-                        for ( Siege s : SiegeData.getSieges()) {
+                        for (Siege s : SiegeData.getSieges()) {
                             if(s.getTown().getName().equals(raidedTown.getName())) {
                                 raidOwner.sendMessage(String.valueOf(Helper.Chatlabel()) + "That town is already currently being sieged! Cannot raid at this time!");
                                 if(admin) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "That town is already currently being sieged! Cannot raid at this time!");
