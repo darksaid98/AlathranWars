@@ -67,7 +67,7 @@ public class WarCommands implements CommandExecutor {
         return false;
     }
 
-    protected static void warCreate(Player p, String[] args) {
+    protected static void warCreate(CommandSender p, String[] args) {
         if (!p.hasPermission("AlathraWar.admin")) {
             p.sendMessage("You do not have permission to run this command.");
             return;
@@ -122,7 +122,7 @@ public class WarCommands implements CommandExecutor {
      * @param args
      * @param admin - admin behavior
      */
-    protected static void warJoin(Player p, String[] args, boolean admin) {
+    protected static void warJoin(CommandSender p, String[] args, boolean admin) {
         // Sufficient args check
         if (args.length < 3) {
             p.sendMessage(Helper.Chatlabel()
@@ -138,8 +138,21 @@ public class WarCommands implements CommandExecutor {
             return;
         }
 
+        Player player = null;
+        if (admin){
+            player = Bukkit.getPlayer(args[3]);
+            if(player == null) {
+                p.sendMessage(Helper.Chatlabel() + "Player " + args[3] + " not found!");
+                return;
+            }
+        }
+        if(player == null) {
+            player = (Player) p;
+        }
+
+
         // Towny Resident Object, if admin then dont use command runner, use declared player
-        Resident res = TownyAPI.getInstance().getResident(admin ? Bukkit.getPlayer(args[3]) : p);
+        Resident res = TownyAPI.getInstance().getResident(player);
 
         // Town check
         Town town = res.getTownOrNull();

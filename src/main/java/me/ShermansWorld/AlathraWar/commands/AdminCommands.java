@@ -106,26 +106,25 @@ public class AdminCommands implements CommandExecutor {
      */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        final Player p = (Player) sender;
-        if (!p.hasPermission("AlathraWar.admin")) {
-            return fail(p, args, "permissions");
+        if (!sender.hasPermission("AlathraWar.admin")) {
+            return fail(sender, args, "permissions");
         }
 
         if (args.length == 0) {
-            return fail(p, args, "syntax");
+            return fail(sender, args, "syntax");
         } else if (args.length >= 1) {
             if (args[0].equalsIgnoreCase("create")) {
-                return create(p, args);
+                return create(sender, args);
             } else if (args[0].equalsIgnoreCase("force")) {
-                return force(p, args);
+                return force(sender, args);
             } else if (args[0].equalsIgnoreCase("help")) {
-                return help(p, args);
+                return help(sender, args);
             } else if (args[0].equalsIgnoreCase("info")) {
-                return info(p, args);
+                return info(sender, args);
             } else if (args[0].equalsIgnoreCase("modify")) {
-                return modify(p, args);
+                return modify(sender, args);
             } else if (args[0].equalsIgnoreCase("awa")) {
-                return awa(p, args);
+                return awa(sender, args);
             }
         }
         return true;
@@ -138,18 +137,19 @@ public class AdminCommands implements CommandExecutor {
      * -create raid [war] [raidTown] [gatherTown] (owner)
      * -create war [name] [side1] [side2]
      */
-    private static boolean create(Player p, String[] args) {
+    private static boolean create(CommandSender p, String[] args) {
         if (args.length >= 2) {
             if (args[1].equalsIgnoreCase("raid")) {
                 if (args.length >= 4) {
                     //specific behavior exists if an admin ran this
                     //using same method so that this doesnt get fucked up if we go back and change original implementation
                     RaidCommands.startRaid(p, args, true);
+                    return true;
                 } else {
                     //defaultCode will bypass the custom gather town to force set owner
                     p.sendMessage(Helper.color("&cUsage: /alathrawaradmin create raid [war] [raidTown] (gatherTown/\"defaultCode\") (owner)"));
+                    return true;
                 }
-                return true;
             } else if (args[1].equalsIgnoreCase("siege")) {
                 //this exists to force a seige with a new owner
                 if (args.length >= 4) {
@@ -161,6 +161,7 @@ public class AdminCommands implements CommandExecutor {
                     };
                     SiegeCommands.siegeStart(p, adjusted, true);
                     p.sendMessage(Helper.Chatlabel() + "Try again later!");
+                    return true;
                 } else {
                     p.sendMessage(Helper.color("&cUsage: /alathrawaradmin create siege [war] [town] (owner)"));
                     return true;
@@ -176,6 +177,7 @@ public class AdminCommands implements CommandExecutor {
                             args[4]
                     };
                     WarCommands.warCreate(p, adjusted);
+                    return true;
                 } else {
                     p.sendMessage(Helper.color("&cUsage: /alathrawaradmin create war [name] [side1] [side2]"));
                     return true;
@@ -203,7 +205,7 @@ public class AdminCommands implements CommandExecutor {
      * @param args args
      * @return result
      */
-    private static boolean force(Player p, String[] args) {
+    private static boolean force(CommandSender p, String[] args) {
         if (args.length >= 2) {
             if (args[1].equalsIgnoreCase("end")) {
                 if (args.length >= 3) {
@@ -429,7 +431,7 @@ public class AdminCommands implements CommandExecutor {
         return fail(p, args, "syntax");
     }
 
-    private static boolean help(Player p, String[] args) {
+    private static boolean help(CommandSender p, String[] args) {
         p.sendMessage(Helper.Chatlabel() + "/alathrawaradmin create");
         p.sendMessage(Helper.Chatlabel() + "/alathrawaradmin force");
         p.sendMessage(Helper.Chatlabel() + "/alathrawaradmin help");
@@ -450,7 +452,7 @@ public class AdminCommands implements CommandExecutor {
      * @param args args
      * @return result
      */
-    private static boolean info(Player p, String[] args) {
+    private static boolean info(CommandSender p, String[] args) {
         if (args.length >= 2) {
             if (args[1].equalsIgnoreCase("war")) {
                 if (args.length >= 3) {
@@ -643,7 +645,7 @@ public class AdminCommands implements CommandExecutor {
      * @param args args
      * @return result
      */
-    private static boolean modify(Player p, String[] args) {
+    private static boolean modify(CommandSender p, String[] args) {
         if (args.length >= 2) {
             if (args[1].equalsIgnoreCase("raid")) {
                 if (args.length >= 3) {
@@ -756,15 +758,19 @@ public class AdminCommands implements CommandExecutor {
                                     }
                                     Town t = r.getRaidedTown();
                                     if (args.length >= 8) {
-                                        if (p.getWorld() == t.getWorld()) {
+                                        if(!(p instanceof Player runner)) {
+                                            p.sendMessage(Helper.Chatlabel() + "This command cannot be run through console!");
+                                            return true;
+                                        }
+                                        if (runner.getWorld() == t.getWorld()) {
                                             try {
-                                                WorldCoord tb = WorldCoord.parseWorldCoord(p.getWorld().getName(), (int) Double.parseDouble(args[5]), (int) Double.parseDouble(args[7]));
+                                                WorldCoord tb = WorldCoord.parseWorldCoord(runner.getWorld().getName(), (int) Double.parseDouble(args[5]), (int) Double.parseDouble(args[7]));
                                                 if (t.hasTownBlock(tb)) {
                                                     t.setHomeBlock(tb.getTownBlock());
-                                                    t.setSpawn(new Location(p.getWorld(), Double.parseDouble(args[5]), Double.parseDouble(args[6]), Double.parseDouble(args[7])));
+                                                    t.setSpawn(new Location(runner.getWorld(), Double.parseDouble(args[5]), Double.parseDouble(args[6]), Double.parseDouble(args[7])));
                                                     r.setHomeBlockRaided(tb.getTownBlock());
                                                     r.setTownSpawnRaided(t.getSpawn());
-                                                    p.sendMessage(Helper.Chatlabel() + "Set town spawn for raided town " + args[4] + " in war " + args[3] + " to " + p.getLocation().toString());
+                                                    p.sendMessage(Helper.Chatlabel() + "Set town spawn for raided town " + args[4] + " in war " + args[3] + " to " + runner.getLocation().toString());
                                                     Main.warLogger.log("Set town spawn for raided town " + args[4] + " in war " + args[3] + " to [" + args[5] + "," + args[6] + "," + args[7] + "]");
                                                     return finalizeRaid(r);
                                                 } else {
@@ -783,19 +789,23 @@ public class AdminCommands implements CommandExecutor {
                                             return true;
                                         }
                                     } else {
-                                        if (p.getWorld() == t.getWorld()) {
+                                        if(!(p instanceof Player runner)) {
+                                            p.sendMessage(Helper.Chatlabel() + "This command cannot be run through console!");
+                                            return true;
+                                        }
+                                        if (runner.getWorld() == t.getWorld()) {
                                             try {
-                                                WorldCoord tb = WorldCoord.parseWorldCoord(p.getWorld().getName(), (int) p.getLocation().getX(), (int) p.getLocation().getZ());
+                                                WorldCoord tb = WorldCoord.parseWorldCoord(runner.getWorld().getName(), (int) runner.getLocation().getX(), (int) runner.getLocation().getZ());
                                                 if (t.hasTownBlock(tb)) {
                                                     t.setHomeBlock(tb.getTownBlock());
-                                                    t.setSpawn(p.getLocation());
+                                                    t.setSpawn(runner.getLocation());
                                                     r.setHomeBlockRaided(tb.getTownBlock());
                                                     r.setTownSpawnRaided(t.getSpawn());
-                                                    p.sendMessage(Helper.Chatlabel() + "Set town spawn for raided town " + args[4] + " in war " + args[3] + " to " + p.getLocation().toString());
-                                                    Main.warLogger.log("Set town spawn for raided town " + args[4] + " in war " + args[3] + " to " + p.getLocation().toString());
+                                                    p.sendMessage(Helper.Chatlabel() + "Set town spawn for raided town " + args[4] + " in war " + args[3] + " to " + runner.getLocation().toString());
+                                                    Main.warLogger.log("Set town spawn for raided town " + args[4] + " in war " + args[3] + " to " + runner.getLocation().toString());
                                                     return finalizeRaid(r);
                                                 } else {
-                                                    p.sendMessage(Helper.color("&cTown does not contain town block at your location [" + (int) p.getLocation().getX() + "," + (int) p.getLocation().getZ() + "]"));
+                                                    p.sendMessage(Helper.color("&cTown does not contain town block at your location [" + (int) runner.getLocation().getX() + "," + (int) runner.getLocation().getZ() + "]"));
                                                     return true;
                                                 }
                                             } catch (NotRegisteredException e) {
@@ -880,13 +890,18 @@ public class AdminCommands implements CommandExecutor {
                             for (Raid r : RaidData.getRaids()) {
                                 if (r.getWar().getName().equals(args[3]) && r.getRaidedTown().getName().equals(args[4])) {
                                     //parse phase
-                                    if (!p.getWorld().equals(r.getRaidedTown().getWorld())) {
+                                    if(!(p instanceof Player runner)) {
+                                        p.sendMessage(Helper.Chatlabel() + "This command cannot be run through console!");
+                                        return true;
+                                    }
+
+                                    if (!runner.getWorld().equals(r.getRaidedTown().getWorld())) {
                                         p.sendMessage(Helper.Chatlabel() + "Error wrong world");
                                         return true;
                                     }
                                     if (args.length >= 9) {
                                         if (args[5].equalsIgnoreCase("value")) {
-                                            WorldCoord wc = WorldCoord.parseWorldCoord(p.getWorld().getName(), (int) Double.parseDouble(args[7]), (int) Double.parseDouble(args[8]));
+                                            WorldCoord wc = WorldCoord.parseWorldCoord(runner.getWorld().getName(), (int) Double.parseDouble(args[7]), (int) Double.parseDouble(args[8]));
                                             Raid.LootBlock lb = r.getLootedChunks().get(wc);
                                             if(lb == null) {
                                                 r.addLootedChunk(wc);
@@ -898,7 +913,7 @@ public class AdminCommands implements CommandExecutor {
                                             Main.warLogger.log("Set value for a chunk [" + args[7] + "," + args[8] + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
                                             return finalizeRaid(r);
                                         } else if (args[5].equalsIgnoreCase("looted")) {
-                                            WorldCoord wc = WorldCoord.parseWorldCoord(p.getWorld().getName(), (int) Double.parseDouble(args[7]), (int) Double.parseDouble(args[8]));
+                                            WorldCoord wc = WorldCoord.parseWorldCoord(runner.getWorld().getName(), (int) Double.parseDouble(args[7]), (int) Double.parseDouble(args[8]));
                                             Raid.LootBlock lb = r.getLootedChunks().get(wc);
                                             //The base value can be abjusted
                                             if(!lb.finished && Boolean.parseBoolean(args[6])) {
@@ -914,14 +929,14 @@ public class AdminCommands implements CommandExecutor {
                                             Main.warLogger.log("Set finished flag for a chunk [" + args[7] + "," + args[8] + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
                                             return finalizeRaid(r);
                                         } else if (args[5].equalsIgnoreCase("ticks")) {
-                                            WorldCoord wc = WorldCoord.parseWorldCoord(p.getWorld().getName(), (int) Double.parseDouble(args[7]), (int) Double.parseDouble(args[8]));
+                                            WorldCoord wc = WorldCoord.parseWorldCoord(runner.getWorld().getName(), (int) Double.parseDouble(args[7]), (int) Double.parseDouble(args[8]));
                                             Raid.LootBlock lb = r.getLootedChunks().get(wc);
                                             lb.ticks = Integer.parseInt(args[6]);
                                             p.sendMessage(Helper.Chatlabel() + "Set ticks for a chunk [" + args[7] + "," + args[8] + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
                                             Main.warLogger.log("Set ticks for a chunk [" + args[7] + "," + args[8] + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
                                             return finalizeRaid(r);
                                         } else if (args[5].equalsIgnoreCase("reset")) {
-                                            WorldCoord wc = WorldCoord.parseWorldCoord(p.getWorld().getName(), (int) Double.parseDouble(args[6]), (int) Double.parseDouble(args[7]));
+                                            WorldCoord wc = WorldCoord.parseWorldCoord(runner.getWorld().getName(), (int) Double.parseDouble(args[6]), (int) Double.parseDouble(args[7]));
                                             r.getLootedChunks().remove(wc);
                                             p.sendMessage(Helper.Chatlabel() + "Reset loot for a chunk [" + args[7] + "," + args[8] + "] in raid against " + args[4] + " in war " + args[3]);
                                             Main.warLogger.log("Reset loot for a chunk [" + args[7] + "," + args[8] + "] in raid against " + args[4] + " in war " + args[3]);
@@ -935,31 +950,31 @@ public class AdminCommands implements CommandExecutor {
                                         return true;
                                     } else {
                                         if (args[5].equalsIgnoreCase("value")) {
-                                            WorldCoord wc = WorldCoord.parseWorldCoord(p.getLocation());
+                                            WorldCoord wc = WorldCoord.parseWorldCoord(runner.getLocation());
                                             Raid.LootBlock lb = r.getLootedChunks().get(wc);
                                             lb.value = Integer.parseInt(args[6]);
-                                            p.sendMessage(Helper.Chatlabel() + "Set value for a chunk [" + p.getLocation().getX() + "," + p.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
-                                            Main.warLogger.log("Set value for a chunk [" + p.getLocation().getX() + "," + p.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
+                                            p.sendMessage(Helper.Chatlabel() + "Set value for a chunk [" + runner.getLocation().getX() + "," + runner.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
+                                            Main.warLogger.log("Set value for a chunk [" + runner.getLocation().getX() + "," + runner.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
                                             return finalizeRaid(r);
                                         } else if (args[5].equalsIgnoreCase("looted")) {
-                                            WorldCoord wc = WorldCoord.parseWorldCoord(p.getLocation());
+                                            WorldCoord wc = WorldCoord.parseWorldCoord(runner.getLocation());
                                             Raid.LootBlock lb = r.getLootedChunks().get(wc);
                                             lb.finished = Boolean.parseBoolean(args[6]);
-                                            p.sendMessage(Helper.Chatlabel() + "Set looted status for a chunk [" + p.getLocation().getX() + "," + p.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
-                                            Main.warLogger.log("Set looted status for a chunk [" + p.getLocation().getX() + "," + p.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
+                                            p.sendMessage(Helper.Chatlabel() + "Set looted status for a chunk [" + runner.getLocation().getX() + "," + runner.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
+                                            Main.warLogger.log("Set looted status for a chunk [" + runner.getLocation().getX() + "," + runner.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
                                             return finalizeRaid(r);
                                         } else if (args[5].equalsIgnoreCase("ticks")) {
-                                            WorldCoord wc = WorldCoord.parseWorldCoord(p.getLocation());
+                                            WorldCoord wc = WorldCoord.parseWorldCoord(runner.getLocation());
                                             Raid.LootBlock lb = r.getLootedChunks().get(wc);
                                             lb.ticks = Integer.parseInt(args[6]);
-                                            p.sendMessage(Helper.Chatlabel() + "Set ticks for a chunk [" + p.getLocation().getX() + "," + p.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
-                                            Main.warLogger.log("Set ticks for a chunk [" + p.getLocation().getX() + "," + p.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
+                                            p.sendMessage(Helper.Chatlabel() + "Set ticks for a chunk [" + runner.getLocation().getX() + "," + runner.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
+                                            Main.warLogger.log("Set ticks for a chunk [" + runner.getLocation().getX() + "," + runner.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
                                             return finalizeRaid(r);
                                         } else if (args[5].equalsIgnoreCase("reset")) {
-                                            WorldCoord wc = WorldCoord.parseWorldCoord(p.getLocation());
+                                            WorldCoord wc = WorldCoord.parseWorldCoord(runner.getLocation());
                                             r.getLootedChunks().remove(wc);
-                                            p.sendMessage(Helper.Chatlabel() + "Reset loot for a chunk [" + p.getLocation().getX() + "," + p.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3]);
-                                            Main.warLogger.log("Reset Loot for a chunk [" + p.getLocation().getX() + "," + p.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3]);
+                                            p.sendMessage(Helper.Chatlabel() + "Reset loot for a chunk [" + runner.getLocation().getX() + "," + runner.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3]);
+                                            Main.warLogger.log("Reset Loot for a chunk [" + runner.getLocation().getX() + "," + runner.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3]);
                                             return finalizeRaid(r);
                                         } else {
                                             p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid loot [war] [town] [value,looted,ticks,reset] [amt] (x) (z)"));
@@ -1123,15 +1138,19 @@ public class AdminCommands implements CommandExecutor {
                                     }
                                     Town t = s.getTown();
                                     if (args.length >= 8) {
-                                        if (p.getWorld() == t.getWorld()) {
+                                        if(!(p instanceof Player runner)) {
+                                            p.sendMessage(Helper.Chatlabel() + "This command cannot be run through console!");
+                                            return true;
+                                        }
+                                        if (runner.getWorld() == t.getWorld()) {
                                             try {
-                                                WorldCoord tb = WorldCoord.parseWorldCoord(p.getWorld().getName(), (int) Double.parseDouble(args[5]), (int) Double.parseDouble(args[7]));
+                                                WorldCoord tb = WorldCoord.parseWorldCoord(runner.getWorld().getName(), (int) Double.parseDouble(args[5]), (int) Double.parseDouble(args[7]));
                                                 if (t.hasTownBlock(tb)) {
                                                     t.setHomeBlock(tb.getTownBlock());
-                                                    t.setSpawn(new Location(p.getWorld(), (int) Double.parseDouble(args[5]), (int) Double.parseDouble(args[6]), (int) Double.parseDouble(args[7])));
+                                                    t.setSpawn(new Location(runner.getWorld(), (int) Double.parseDouble(args[5]), (int) Double.parseDouble(args[6]), (int) Double.parseDouble(args[7])));
                                                     s.setHomeBlock(tb.getTownBlock());
                                                     s.setTownSpawn(t.getSpawn());
-                                                    p.sendMessage(Helper.Chatlabel() + "Set town spawn for sieged town " + args[4] + " in war " + args[3] + " to " + p.getLocation().toString());
+                                                    p.sendMessage(Helper.Chatlabel() + "Set town spawn for sieged town " + args[4] + " in war " + args[3] + " to " + runner.getLocation().toString());
                                                     Main.warLogger.log("Set town spawn for sieged town " + args[4] + " in war " + args[3] + " to [" + args[5] + "," + args[6] + "," + args[7] + "]");
                                                     return finalizeSiege(s);
                                                 } else {
@@ -1150,19 +1169,24 @@ public class AdminCommands implements CommandExecutor {
                                             return true;
                                         }
                                     } else {
-                                        if (p.getWorld() == t.getWorld()) {
+
+                                        if(!(p instanceof Player runner)) {
+                                            p.sendMessage(Helper.Chatlabel() + "This command cannot be run through console!");
+                                            return true;
+                                        }
+                                        if (runner.getWorld() == t.getWorld()) {
                                             try {
-                                                WorldCoord tb = WorldCoord.parseWorldCoord(p.getWorld().getName(), (int) p.getLocation().getX(), (int) p.getLocation().getZ());
+                                                WorldCoord tb = WorldCoord.parseWorldCoord(runner.getWorld().getName(), (int) runner.getLocation().getX(), (int) runner.getLocation().getZ());
                                                 if (t.hasTownBlock(tb)) {
                                                     t.setHomeBlock(tb.getTownBlock());
-                                                    t.setSpawn(p.getLocation());
+                                                    t.setSpawn(runner.getLocation());
                                                     s.setHomeBlock(tb.getTownBlock());
                                                     s.setTownSpawn(t.getSpawn());
-                                                    p.sendMessage(Helper.Chatlabel() + "Set town spawn for sieged town " + args[4] + " in war " + args[3] + " to " + p.getLocation().toString());
-                                                    Main.warLogger.log("Set town spawn for sieged town " + args[4] + " in war " + args[3] + " to " + p.getLocation().toString());
+                                                    p.sendMessage(Helper.Chatlabel() + "Set town spawn for sieged town " + args[4] + " in war " + args[3] + " to " + runner.getLocation().toString());
+                                                    Main.warLogger.log("Set town spawn for sieged town " + args[4] + " in war " + args[3] + " to " + runner.getLocation().toString());
                                                     return finalizeSiege(s);
                                                 } else {
-                                                    p.sendMessage(Helper.color("&cTown does not contain town block at your location [" + (int) p.getLocation().getX() + "," + (int) p.getLocation().getZ() + "]"));
+                                                    p.sendMessage(Helper.color("&cTown does not contain town block at your location [" + (int) runner.getLocation().getX() + "," + (int) runner.getLocation().getZ() + "]"));
                                                     return true;
                                                 }
                                             } catch (NotRegisteredException e) {
@@ -1726,7 +1750,8 @@ public class AdminCommands implements CommandExecutor {
         return true;
     }
 
-    private static boolean awa(Player sender, String[] args) {
+    private static boolean awa(CommandSender sender, String[] args) {
+
         if (args.length > 1) {
             Player p = Bukkit.getPlayer(args[1]);
             if (p == null) {
@@ -1736,11 +1761,12 @@ public class AdminCommands implements CommandExecutor {
             p.chat("awa awa! ^.^ UwU");
             return true;
         }
-        sender.chat("awa awa! ^.^ UwU");
+        if(sender instanceof Player)
+            ((Player) sender).chat("awa awa! ^.^ UwU");
         return true;
     }
 
-    private static boolean fail(Player p, String[] args, String type) {
+    private static boolean fail(CommandSender p, String[] args, String type) {
         switch (type) {
             case "permissions" -> {
                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&cYou do not have permission to do this."));

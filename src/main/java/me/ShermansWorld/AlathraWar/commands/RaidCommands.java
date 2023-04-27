@@ -63,7 +63,7 @@ public class RaidCommands implements CommandExecutor {
      * @param p
      * @param args
      */
-    protected static void startRaid(Player p, String[] args, boolean admin) {
+    protected static void startRaid(CommandSender p, String[] args, boolean admin) {
         boolean warFound = false;
         boolean townExists = false;
         for (final War war : WarData.getWars()) {
@@ -71,13 +71,20 @@ public class RaidCommands implements CommandExecutor {
             if (war.getName().equalsIgnoreCase(args[1 + (admin ? 1 : 0)])) {
                 warFound = true;
 
-                Player raidOwner = p;
+                Player raidOwner = null;
+                if(p instanceof Player) {
+                    raidOwner = (Player) p;
+                } else {
+                    p.sendMessage("Running this from the console requires a Player Argument!");
+                    return;
+                }
                 TownyWorld townyWorld;
                 townyWorld = WorldCoord.parseWorldCoord(raidOwner.getLocation()).getTownyWorld();
                 if(admin && args.length >= 6) {
                     raidOwner = Bukkit.getPlayer(args[5]);
                     if(raidOwner == null) {
-                        raidOwner = p;
+                        p.sendMessage("Player Does not exist");
+                        return;
                     }
                 }
 
@@ -249,7 +256,7 @@ public class RaidCommands implements CommandExecutor {
                         }
 
                         //check player balance
-                        final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(p.getUniqueId());
+                        final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(raidOwner.getUniqueId());
                         if (Main.econ.getBalance(offlinePlayer) <= 1000.0) {
                             if (admin) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must have at least $1000 to put up to start a raid.");
                             raidOwner.sendMessage(String.valueOf(Helper.Chatlabel()) + "You must have at least $1000 to put up to start a raid.");
@@ -294,7 +301,7 @@ public class RaidCommands implements CommandExecutor {
      * @param p
      * @param args
      */
-    private static void stopRaid(Player p, String[] args) {
+    private static void stopRaid(CommandSender p, String[] args) {
         //admin check
         if (!p.hasPermission("AlathraWar.admin")) {
             fail(p, args, "permission");
@@ -319,12 +326,16 @@ public class RaidCommands implements CommandExecutor {
         }
     }
 
-    protected static void joinRaid(Player p, String[] args, boolean admin) {
+    protected static void joinRaid(CommandSender p, String[] args, boolean admin) {
         //Grab raid!
         Raid raid = RaidData.getRaidOrNull(args[1] + "-" + args[2]);
         if (raid != null) {
             if (raid.getWar().getName().equalsIgnoreCase(args[1])) {
-                Player joiner = p;
+                Player joiner = null;
+                if(p instanceof Player) {
+                    joiner = (Player) p;
+                }
+
                 if (admin) {
                     joiner = Bukkit.getPlayer(args[3]);
 
@@ -349,6 +360,11 @@ public class RaidCommands implements CommandExecutor {
                         p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Player " + args[3] + " not found!");
                         return;
                     }
+                }
+
+                if(joiner == null) {
+                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Player not found! Is something broken?");
+                    return;
                 }
 
                 if (!raid.getWar().getSide1Players().contains(joiner.getName()) && !raid.getWar().getSide2Players().contains(joiner.getName())) {
@@ -425,15 +441,18 @@ public class RaidCommands implements CommandExecutor {
         }
     }
 
-    protected static void leaveRaid(Player player, String[] args, boolean admin) {
+    protected static void leaveRaid(CommandSender player, String[] args, boolean admin) {
         //Get raid!
-        Player p = player;
+        Player p = null;
         if (admin) {
             p = Bukkit.getPlayer(args[3]);
             if (p == null) {
                 player.sendMessage(String.valueOf(Helper.Chatlabel()) + "Error: player not found!");
                 return;
             }
+        }
+        if(p == null) {
+            p = (Player) player;
         }
 
         Raid raid = RaidData.getRaidOrNull(args[1] + "-" + args[2]);
@@ -477,7 +496,7 @@ public class RaidCommands implements CommandExecutor {
      * @param p
      * @param args
      */
-    private static void abandonRaid(Player p, String[] args) {
+    private static void abandonRaid(CommandSender p, String[] args) {
         //Get raid
         Raid raid = RaidData.getRaidOrNull(args[1] + "-" + args[2]);
         if (raid != null) {
@@ -506,7 +525,7 @@ public class RaidCommands implements CommandExecutor {
         p.sendMessage(String.valueOf(Helper.Chatlabel()) + "This raid does not exist!");
     }
 
-    private static void listRaids(Player p, String[] args) {
+    private static void listRaids(CommandSender p, String[] args) {
         if (RaidData.getRaids().isEmpty()) {
             p.sendMessage(String.valueOf(Helper.Chatlabel()) + "There are currently no Raids in progress");
             return;
@@ -528,7 +547,7 @@ public class RaidCommands implements CommandExecutor {
         }
     }
 
-    private static void raidHelp(Player p, String[] args) {
+    private static void raidHelp(CommandSender p, String[] args) {
         if (p.hasPermission("!AlathraWar.admin")) {
             p.sendMessage(Helper.Chatlabel() + "/raid stop [name]");
         }
@@ -539,7 +558,7 @@ public class RaidCommands implements CommandExecutor {
         p.sendMessage(Helper.Chatlabel() + "/raid list");
     }
 
-    private static void fail(Player p, String[] args, String type) {
+    private static void fail(CommandSender p, String[] args, String type) {
         switch (type) {
             case "permissions" -> p.sendMessage(String.valueOf(Helper.Chatlabel()) + "&cYou do not have permission to do this");
             case "syntax" -> p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Syntax. /raid help");
