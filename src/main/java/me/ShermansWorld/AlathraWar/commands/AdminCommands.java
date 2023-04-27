@@ -461,6 +461,8 @@ public class AdminCommands implements CommandExecutor {
                             p.sendMessage(Helper.Chatlabel() + "Name: " + w.getName());
                             p.sendMessage(Helper.Chatlabel() + "Side 1: " + w.getSide1());
                             p.sendMessage(Helper.Chatlabel() + "Side 2: " + w.getSide2());
+                            p.sendMessage(Helper.Chatlabel() + "Side 1 Score: " + w.getSide1Points());
+                            p.sendMessage(Helper.Chatlabel() + "Side 2 Score: " + w.getSide2Points());
                             p.sendMessage(Helper.Chatlabel() + "Last Raid for Side 1: " + new Timestamp(((long) w.getLastRaidTimeSide1()) * 1000L));
                             p.sendMessage(Helper.Chatlabel() + "Last Raid for Side 2: " + new Timestamp(((long) w.getLastRaidTimeSide2()) * 1000L));
                             p.sendMessage(Helper.Chatlabel() + "oOo------------===------------oOo");
@@ -1249,17 +1251,58 @@ public class AdminCommands implements CommandExecutor {
             } else if (args[1].equalsIgnoreCase("war")) {
                 if (args.length >= 3) {
                     if (args[2].equalsIgnoreCase("score")) {
-                        if (args.length >= 6) {
+                        if (args.length >= 7) {
                             for (War w : WarData.getWars()) {
                                 if (w.getName().equals(args[3])) {
-                                    //TODO war score
-                                    p.sendMessage(Helper.color("&cError! Feature unimplemented!"));
-                                    return true;
+                                    if(args[4].equals(w.getSide1())) {
+                                        if (args[5].equalsIgnoreCase("add")) {
+                                            w.addSide1Points(Integer.parseInt(args[6]));
+                                            p.sendMessage(Helper.Chatlabel() + "Added " + args[6] + " points to the raid war in the war " + args[3] + " on side " + args[4]);
+                                            Main.warLogger.log("Added " + args[6] + " points to the raid war in the war " + args[3] + " on side " + args[4]);
+                                            return finalizeWar(w);
+                                        } else if (args[5].equalsIgnoreCase("subtract")) {
+                                            w.addSide1Points(- Integer.parseInt(args[6]));
+                                            p.sendMessage(Helper.Chatlabel() + "Subtracted " + args[6] + " points to the war score in the war " + args[3] + " on side " + args[4]);
+                                            Main.warLogger.log("Subtracted " + args[6] + " points to the raid war in the war " + args[3] + " on side " + args[4]);
+                                            return finalizeWar(w);
+                                        } else if (args[5].equalsIgnoreCase("set")) {
+                                            w.setSide1Points(Integer.parseInt(args[6]));
+                                            p.sendMessage(Helper.Chatlabel() + "Set " + args[6] + " points as the war score in the war " + args[3] + " on side " + args[4]);
+                                            Main.warLogger.log("Set " + args[6] + " points as the war score in the war " + args[3] + " on side " + args[4]);
+                                            return finalizeWar(w);
+                                        } else {
+                                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war score [war] [side] [add/subtract/set] [amt]"));
+                                            return true;
+                                        }
+                                    } else if(args[4].equals(w.getSide2())) {
+                                        if (args[5].equalsIgnoreCase("add")) {
+                                            w.addSide2Points(Integer.parseInt(args[6]));
+                                            p.sendMessage(Helper.Chatlabel() + "Added " + args[6] + " points to the war score in the war " + args[3] + " on side " + args[4]);
+                                            Main.warLogger.log("Added " + args[6] + " points to the war score in the war " + args[3] + " on side " + args[4]);
+                                            return finalizeWar(w);
+                                        } else if (args[5].equalsIgnoreCase("subtract")) {
+                                            w.addSide2Points(- Integer.parseInt(args[6]));
+                                            p.sendMessage(Helper.Chatlabel() + "Subtracted " + args[6] + " points to the war score in the war " + args[3] + " on side " + args[4]);
+                                            Main.warLogger.log("Subtracted " + args[6] + " points to the war score in the war " + args[3] + " on side " + args[4]);
+                                            return finalizeWar(w);
+                                        } else if (args[5].equalsIgnoreCase("set")) {
+                                            w.setSide2Points(Integer.parseInt(args[6]));
+                                            p.sendMessage(Helper.Chatlabel() + "Set " + args[6] + " points as the war score in the war " + args[3] + " on side " + args[4]);
+                                            Main.warLogger.log("Set " + args[6] + " points as the war score in the war " + args[3] + " on side " + args[4]);
+                                            return finalizeWar(w);
+                                        } else {
+                                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war score [war] [side] [add/subtract/set] [amt]"));
+                                            return true;
+                                        }
+                                    } else {
+                                        p.sendMessage(Helper.color("&cSide not found!"));
+                                        return true;
+                                    }
                                 }
                             }
                             p.sendMessage(Helper.color("&cError: War not found!"));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war score [war] [side] [add/set] [amt]"));
+                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war score [war] [side] [add/subtract/set] [amt]"));
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("side")) {

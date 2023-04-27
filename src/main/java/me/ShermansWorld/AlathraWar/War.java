@@ -286,4 +286,12 @@ public class War {
     public void addSide2Points(int points){
         side2Points += points;
     }
+
+    public void setSide1Points(int side1Points) {
+        this.side1Points = side1Points;
+    }
+
+    public void setSide2Points(int side2Points) {
+        this.side2Points = side2Points;
+    }
 }

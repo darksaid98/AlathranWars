@@ -571,7 +571,7 @@ public class AdminTabCompletion implements TabCompleter {
                         if (args.length > 3) {
                             switch (args[2]) {
                                 /*
-                                 * -modify war score [war] [side] [amt]
+                                 * -modify war score [war] [side] [add/subtract/set] [amt]
                                  * -modify war side [war] [side] [name]
                                  * -modify war name [war] [name]
                                  * -modify war add [war] [side] [town/nation] [town/nation]
@@ -586,16 +586,12 @@ public class AdminTabCompletion implements TabCompleter {
                                     if (args.length > 4) {
                                         if (args.length > 5) {
                                             if (args.length > 6) {
-                                                if (args.length > 7) {
-                                                    return empty;
-                                                } else {
-                                                    return NameUtil.filterByStart(CommandHelper.getTownyWarTowns(args[3]), args[4]);
-                                                }
+                                                return empty;
                                             } else {
-                                                return NameUtil.filterByStart(CommandHelper.getWarSides(args[3]), args[5]);
+                                                return NameUtil.filterByStart(addSubSet, args[5]);
                                             }
                                         } else {
-                                            return NameUtil.filterByStart(addSet, args[4]);
+                                            return NameUtil.filterByStart(CommandHelper.getWarSides(args[3]), args[4]);
                                         }
                                     } else {
                                         return NameUtil.filterByStart(CommandHelper.getWarNames(), args[3]);
