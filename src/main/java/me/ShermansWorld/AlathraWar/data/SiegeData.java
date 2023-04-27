@@ -127,6 +127,7 @@ public class SiegeData
             siege.addPointsToAttackers((int) map.get("attackerPoints"));
             siege.addPointsToDefenders((int) map.get("defenderPoints"));
             siege.resume((int) map.get("siegeTicks"));
+            siege.setWar(war);
             returnList.add(siege);
 
         }

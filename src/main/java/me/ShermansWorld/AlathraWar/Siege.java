@@ -1,22 +1,22 @@
 package me.ShermansWorld.AlathraWar;
 
 import com.palmergames.bukkit.towny.exceptions.TownyException;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
+import org.bukkit.*;
 
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.TownyAPI;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import java.util.ArrayList;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
@@ -38,6 +38,8 @@ public class Siege {
 	public ArrayList<String> attackerPlayers;
 	public ArrayList<String> defenderPlayers;
 	public ArrayList<Location> beaconLocs;
+	public final NamespacedKey bossBarKey;
+
 
 	public Siege(final War war, final Town town, OfflinePlayer siegeLeader) {
 		this.siegeTicks = 0;
@@ -48,6 +50,9 @@ public class Siege {
 		this.war = war;
 		this.town = town;
         this.siegeLeader = siegeLeader;
+
+		bossBarKey = new NamespacedKey(Main.getInstance(), "siegeBar." + this.getName());
+
         if (war.getSide(town.getName()) == 2) side1AreAttackers = true;
         else side1AreAttackers = false;
 	}
@@ -198,19 +203,30 @@ public class Siege {
                                 save();
                             }
 						}
+
+						refreshDisplayBar();
 					}
+
+
 				}, 0L, 200L);
+
+		setupDisplayBar();
 	}
 
     /** Resumes a siege (after a server restart e.t.c.)*/
     public void resume(int resumeTick) {
-        siegeTicks = resumeTick;
+
+		siegeTicks = resumeTick;
+
+		setupDisplayBar();
     }
 
     /** Stops a siege */
 	public void stop() {
+		deleteDisplayBar();
 		Bukkit.getScheduler().cancelTask(this.bukkitId[0]);
 		SiegeData.removeSiege(this);
+
 	}
 
 	public void attackersWin(final OfflinePlayer siegeLeader) {
@@ -432,6 +448,59 @@ public class Siege {
         } else {
             return war.getSide1();
         }
+	}
+
+	public void refreshDisplayBar() {
+		BossBar bossBar = Bukkit.getBossBar(bossBarKey);
+		if(bossBar == null) bossBar = createNewDisplayBar();
+
+		bossBar.setTitle(String.format("%d -- Attackers -Siege Score- Defenders -- %d", this.attackerPoints, this.defenderPoints));
+		bossBar.setProgress((double) (this.attackerPoints + 0.5D) / ((this.attackerPoints + this.defenderPoints) + 1.0D));
+
+		for (String s : this.getAttackerPlayers()) {
+			Player p = Bukkit.getPlayer(s);
+			if (p != null) {
+				if(!bossBar.getPlayers().contains(p)) bossBar.addPlayer(p);
+			}
+		}
+
+		for (String s : this.getDefenderPlayers()) {
+			Player p = Bukkit.getPlayer(s);
+			if (p != null) {
+				if(!bossBar.getPlayers().contains(p)) bossBar.addPlayer(p);
+			}
+		}
+	}
+
+	public void setupDisplayBar() {
+		BossBar bossBar = Bukkit.getBossBar(bossBarKey);
+		if(bossBar == null) bossBar = createNewDisplayBar();
+
+		for (String s : this.getAttackerPlayers()) {
+			Player p = Bukkit.getPlayer(s);
+			if (p != null) {
+				bossBar.addPlayer(p);
+			}
+		}
+
+		for (String s : this.getDefenderPlayers()) {
+			Player p = Bukkit.getPlayer(s);
+			if (p != null) bossBar.addPlayer(p);
+		}
+	}
+
+	public void deleteDisplayBar() {
+		BossBar bossBar = Bukkit.getBossBar(bossBarKey);
+		if (bossBar != null) {
+			bossBar.removeAll();
+		}
+		Bukkit.removeBossBar(bossBarKey);
+
+	}
+
+
+	public BossBar createNewDisplayBar() {
+		return Bukkit.createBossBar(bossBarKey, String.format("%d -- Attackers -Siege Score- Defenders -- %d", this.attackerPoints, this.defenderPoints), BarColor.YELLOW, BarStyle.SOLID);
 	}
 
 	public int getAttackerPoints() {

@@ -588,7 +588,7 @@ public class AdminCommands implements CommandExecutor {
                             if(attackers.length() > 2) attackers = new StringBuilder(attackers.substring(0, attackers.length() - 2));
                             p.sendMessage(Helper.Chatlabel() + "Attacking Players: " + attackers);
                             StringBuilder defenders = new StringBuilder();
-                            for (String pl : s.getAttackerPlayers()) {
+                            for (String pl : s.getDefenderPlayers()) {
                                 defenders.append(pl);
                                 defenders.append(", ");
                             }

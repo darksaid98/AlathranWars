@@ -979,7 +979,12 @@ public class Raid {
     }
 
     public void deleteDisplayBar() {
+        BossBar bossBar = Bukkit.getBossBar(bossBarKey);
+        if (bossBar != null) {
+            bossBar.removeAll();
+        }
         Bukkit.removeBossBar(bossBarKey);
+
     }
 
     public BossBar createNewDisplayBar() {
