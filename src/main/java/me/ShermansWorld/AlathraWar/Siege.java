@@ -250,7 +250,7 @@ public class Siege {
 			if (this.town.getAccount().getHoldingBalance() < 2500.0) {
 				amt = this.town.getAccount().getHoldingBalance();
 				Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The town of " + this.town.getName()
-						+ " has been destroyed by " + this.getAttackers() + "!");
+						+ " has been destroyed by " + this.getAttackerSide() + "!");
 				TownyUniverse.getInstance().getDataSource().deleteTown(this.town);
 				Main.econ.depositPlayer(siegeLeader, amt);
 				return;
@@ -258,9 +258,9 @@ public class Siege {
 			this.town.getAccount().withdraw(2500.0, "war loot");
 			amt = 2500.0;
 		}
-		Bukkit.broadcastMessage("The town of " + this.town.getName() + " has been sacked by " + this.getAttackers()
+		Bukkit.broadcastMessage("The town of " + this.town.getName() + " has been sacked by " + this.getAttackerSide()
 				+ ", valuing $" + String.valueOf(amt));
-		Main.warLogger.log("The town of " + this.town.getName() + " has been sacked by " + this.getAttackers()
+		Main.warLogger.log("The town of " + this.town.getName() + " has been sacked by " + this.getAttackerSide()
 				+ ", valuing $" + String.valueOf(amt));
 		Main.econ.depositPlayer(siegeLeader, amt);
 
@@ -417,7 +417,7 @@ public class Siege {
 	}
 
     /** Gets attacker name string */
-	public String getAttackers() {
+	public String getAttackerSide() {
 		if (side1AreAttackers) {
             return war.getSide1();
         } else {
@@ -426,7 +426,7 @@ public class Siege {
 	}
 
     /** Gets defender name string */
-	public String getDefenders() {
+	public String getDefenderSide() {
 		if (side1AreAttackers) {
             return war.getSide2();
         } else {

@@ -521,8 +521,8 @@ public class AdminCommands implements CommandExecutor {
                             p.sendMessage(Helper.Chatlabel() + "Info dump for raid: " + r.getName());
                             p.sendMessage(Helper.Chatlabel() + "oOo------------===------------oOo");
                             p.sendMessage(Helper.Chatlabel() + "Name: " + r.getName());
-                            p.sendMessage(Helper.Chatlabel() + "Raiders: " + r.getRaiders());
-                            p.sendMessage(Helper.Chatlabel() + "Defenders: " + r.getDefenders());
+                            p.sendMessage(Helper.Chatlabel() + "Raiders: " + r.getRaiderSide());
+                            p.sendMessage(Helper.Chatlabel() + "Defenders: " + r.getDefenderSide());
                             p.sendMessage(Helper.Chatlabel() + "Side1Raiders: " + r.getSide1AreRaiders());
                             p.sendMessage(Helper.Chatlabel() + "Raider Score: " + r.getRaiderScore());
                             p.sendMessage(Helper.Chatlabel() + "Defender Score: " + r.getDefenderScore());
@@ -568,8 +568,8 @@ public class AdminCommands implements CommandExecutor {
                             p.sendMessage(Helper.Chatlabel() + "Info dump for siege: " + s.getName());
                             p.sendMessage(Helper.Chatlabel() + "oOo------------===------------oOo");
                             p.sendMessage(Helper.Chatlabel() + "Name: " + s.getName());
-                            p.sendMessage(Helper.Chatlabel() + "Attackers: " + s.getAttackers());
-                            p.sendMessage(Helper.Chatlabel() + "Defenders: " + s.getDefenders());
+                            p.sendMessage(Helper.Chatlabel() + "Attackers: " + s.getAttackerSide());
+                            p.sendMessage(Helper.Chatlabel() + "Defenders: " + s.getDefenderSide());
                             p.sendMessage(Helper.Chatlabel() + "Attacker points: " + s.getAttackerPoints());
                             p.sendMessage(Helper.Chatlabel() + "Defender points: " + s.getDefenderPoints());
                             p.sendMessage(Helper.Chatlabel() + "War: " + s.getWar().getName());

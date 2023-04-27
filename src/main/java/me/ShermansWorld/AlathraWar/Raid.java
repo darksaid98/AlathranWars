@@ -12,7 +12,6 @@ import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
@@ -408,7 +407,7 @@ public class Raid {
 
         //teleport the killer back to the raided towns spawn
         if(killed.getKiller() != null) {
-            if (this.getDefenders().contains(killed.getKiller().getName())) {
+            if (this.getDefenderSide().contains(killed.getKiller().getName())) {
                 try {
                     killed.getKiller().teleport(this.getRaidedTown().getSpawn());
                     killed.getKiller().sendMessage(String.valueOf(Helper.Chatlabel()) + "You killed a raider before the raid began and have been teleported back to the defending town.");
@@ -520,9 +519,9 @@ public class Raid {
             statement = "emptied";
         }
 
-        Bukkit.broadcastMessage("The town of " + this.raidedTown.getName() + " has been " + statement + " by " + this.getRaiders()
+        Bukkit.broadcastMessage("The town of " + this.raidedTown.getName() + " has been " + statement + " by " + this.getRaiderSide()
                 + " in a raid for $" + amt);
-        Main.warLogger.log("The town of " + this.raidedTown.getName() + " has been " + statement + " by " + this.getRaiders()
+        Main.warLogger.log("The town of " + this.raidedTown.getName() + " has been " + statement + " by " + this.getRaiderSide()
                 + " in a raid for $" + amt);
         Main.econ.depositPlayer(offlinePlayer, amt);
 
@@ -664,7 +663,7 @@ public class Raid {
         this.owner = owner;
     }
 
-    public String getRaiders() {
+    public String getRaiderSide() {
         return this.raiders;
     }
 
@@ -672,7 +671,7 @@ public class Raid {
         this.raiders = raiders;
     }
 
-    public String getDefenders() {
+    public String getDefenderSide() {
         return this.defenders;
     }
 

@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import com.palmergames.bukkit.towny.object.Town;
-import java.util.ArrayList;
+
 import java.util.HashSet;
 import org.bukkit.command.CommandExecutor;
 
@@ -150,7 +150,7 @@ public class SiegeCommands implements CommandExecutor {
         SiegeData.addSiege(siege);
         war.addSiege(siege);
 
-        Bukkit.broadcastMessage(Helper.Chatlabel() + "A siege has been laid on " + siege.getTown() + " by " + siege.getAttackers() + "!");
+        Bukkit.broadcastMessage(Helper.Chatlabel() + "A siege has been laid on " + siege.getTown() + " by " + siege.getAttackerSide() + "!");
 
         war.save();
         siege.start();

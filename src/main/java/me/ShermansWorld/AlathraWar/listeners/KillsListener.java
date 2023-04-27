@@ -53,7 +53,7 @@ public final class KillsListener implements Listener
                     playerCloseToHomeBlockRaid = true;
                 }
 
-                if (raid.getDefenders().contains(killed.getName()) && ((town != null && town.equals(raid.getRaidedTown())) || playerCloseToHomeBlockRaid)) {
+                if (raid.getDefenderPlayers().contains(killed.getName()) && ((town != null && town.equals(raid.getRaidedTown())) || playerCloseToHomeBlockRaid)) {
                     //There is seperate behavior if combat hasnt started
                     if (raid.getPhase() == RaidPhase.COMBAT && killer != null) {
                         if (raid.getActiveRaiders().contains(killer.getName())) {
@@ -70,7 +70,7 @@ public final class KillsListener implements Listener
                 if (raid.getActiveRaiders().contains(killed.getName()) && ((town != null && town.equals(raid.getRaidedTown())) || playerCloseToHomeBlockRaid)) {
                     //There is seperate behavior if combat hasnt started
                     if (raid.getPhase() == RaidPhase.COMBAT && killer != null) {
-                        if (raid.getDefenders().contains(killer.getName())) {
+                        if (raid.getDefenderPlayers().contains(killer.getName())) {
                             this.raidKill(killed, event);
                             raid.raiderKilledInCombat(event);
                             respawnqueue.put(killed.getUniqueId(), raid);
@@ -89,7 +89,7 @@ public final class KillsListener implements Listener
                     respawnqueue.put(killed.getUniqueId(), raid);
                     return;
                 }
-                if ( (town != null && town.equals(raid.getRaidedTown()) || playerCloseToHomeBlockRaid) ) {
+                if ((town != null && town.equals(raid.getRaidedTown()) || playerCloseToHomeBlockRaid)) {
                     this.raidKill(killed, event);
                     return;
                 }
@@ -183,7 +183,7 @@ public final class KillsListener implements Listener
                 } catch (TownyException e) {
                     throw new RuntimeException(e);
                 }
-            } else if(raid.getDefenders().contains(event.getPlayer().getName())) {
+            } else if(raid.getDefenderSide().contains(event.getPlayer().getName())) {
                 //do defender respawn ?
             } else {
                 //invalid code

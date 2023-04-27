@@ -264,7 +264,7 @@ public class RaidCommands implements CommandExecutor {
                         WarData.saveWar(raid2.getWar());
 
                         //broadcast
-                        Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "As part of " + war.getName() + ", forces from " + raid2.getRaiders() + " are gathering to raid the town of " + raidedTown.getName() + "!");
+                        Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "As part of " + war.getName() + ", forces from " + raid2.getRaiderSide() + " are gathering to raid the town of " + raidedTown.getName() + "!");
                         Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "All players from the defending side have been drafted for the town's defense.");
                         Bukkit.broadcastMessage(Helper.Chatlabel() + "The raid of "
                                 + raidedTown.getName() + " will begin in " + (int) (RaidPhase.TRAVEL.startTick / 20 / 60) + " minutes!");
@@ -273,7 +273,7 @@ public class RaidCommands implements CommandExecutor {
 
                         Main.warLogger.log(raidOwner.getName() + " started a raid.");
                         if(admin) Main.warLogger.log(raidOwner.getName() + " started a raid from admin interference.");
-                        Main.warLogger.log("As part of " + war.getName() + ", forces from " + raid2.getRaiders() + " are raiding the town of " + raidedTown.getName() + "!");
+                        Main.warLogger.log("As part of " + war.getName() + ", forces from " + raid2.getRaiderSide() + " are raiding the town of " + raidedTown.getName() + "!");
                         Main.warLogger.log("The Raiders are gathering at " + gatherTown.getName() + " before making the journey over!");
                     }
                 }
@@ -330,7 +330,7 @@ public class RaidCommands implements CommandExecutor {
 
                     if(joiner != null) {
                         if (args[4] != null) {
-                            if (args[4].equals(raid.getDefenders())) {
+                            if (args[4].equals(raid.getDefenderSide())) {
                                 if (!raid.getDefenderPlayers().contains(joiner.getName()))
                                     raid.getDefenderPlayers().add(joiner.getName());
                                 p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Player " + joiner.getName() + " added to defender side.");
@@ -491,7 +491,7 @@ public class RaidCommands implements CommandExecutor {
                     //check if gather phase
                     if (raid.getPhase() == RaidPhase.GATHER || raid.getPhase() == RaidPhase.START || raid.getPhase() == RaidPhase.TRAVEL || raid.getPhase() == RaidPhase.COMBAT) {
                         //force defender victory
-                        Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The raid on " + raid.getRaidedTown().getName() + " has been abandoned by " + raid.getRaiders());
+                        Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The raid on " + raid.getRaidedTown().getName() + " has been abandoned by " + raid.getRaiderSide());
                         Main.warLogger.log(p.getName() + " abandoned the raid on " + raid.getRaidedTown().getName() + " they started at " + raid.getGatherTown().getName());
                         raid.defendersWin(raid.getRaiderScore(), raid.getDefenderScore());
                     } else {
@@ -518,8 +518,8 @@ public class RaidCommands implements CommandExecutor {
             p.sendMessage("Owner: " + raid.getOwner().getName());
             p.sendMessage("Raiding: " + raid.getRaidedTown().getName());
             p.sendMessage("Gathering In: " + raid.getGatherTown().getName());
-            p.sendMessage("Raiders: " + raid.getRaiders());
-            p.sendMessage("Defenders: " + raid.getDefenders());
+            p.sendMessage("Raiders: " + raid.getRaiderSide());
+            p.sendMessage("Defenders: " + raid.getDefenderSide());
             p.sendMessage("Raider Score: " + raid.getRaiderScore());
             p.sendMessage("Defender Score: " + raid.getDefenderScore());
             p.sendMessage("Raid Phase: " + raid.getPhase().name());

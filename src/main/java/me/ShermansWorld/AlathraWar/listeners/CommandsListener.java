@@ -8,7 +8,6 @@ import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import me.ShermansWorld.AlathraWar.data.WarData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
@@ -67,7 +66,7 @@ public class CommandsListener implements Listener {
                 //Only do this during regular phases, start and end ignored in case something breaks
                 if (raid.getPhase() == RaidPhase.COMBAT || raid.getPhase() == RaidPhase.TRAVEL || raid.getPhase() == RaidPhase.GATHER) {
                     //only do for active raiders and any defenders
-                    if (raid.getActiveRaiders().contains(p.getName()) || raid.getDefenders().contains(p.getName())) {
+                    if (raid.getActiveRaiders().contains(p.getName()) || raid.getDefenderPlayers().contains(p.getName())) {
                         //set spawn and properties
                         if (args.length >= 3) {
                             String parse = (args[0].charAt(0) == '/' ? args[0].substring(1) : args[0]) + " " + args[1] + " " + args[2];
@@ -157,7 +156,7 @@ public class CommandsListener implements Listener {
                 //Only do this during regular phases, start and end ignored in case something breaks
                 if (siege.getSiegeTicks() > 0) {
                     //only do for active raiders and any defenders
-                    if (siege.getAttackerPlayers().contains(p.getName()) || siege.getDefenders().contains(p.getName())) {
+                    if (siege.getAttackerPlayers().contains(p.getName()) || siege.getDefenderPlayers().contains(p.getName())) {
                         //set spawn and properties
                         if (args.length >= 3) {
                             String parse = (args[0].charAt(0) == '/' ? args[0].substring(1) : args[0]) + " " + args[1] + " " + args[2];
