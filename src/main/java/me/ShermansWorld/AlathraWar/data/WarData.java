@@ -107,6 +107,9 @@ public class WarData
         war.setSide2Towns((ArrayList<String>) fileData.get("side2Towns"));
         war.setSurrenderedTowns((ArrayList<String>) fileData.get("surrenderedTowns"));
 
+        war.addSide1Points((int) fileData.get("side1Points"));
+        war.addSide2Points((int) fileData.get("side2Points"));
+
         if(fileData.get("lastRaidTimeSide1") != null && fileData.get("lastRaidTimeSide2") != null) {
             war.setLastRaidTimeSide1((int) fileData.get("lastRaidTimeSide1"));
             war.setLastRaidTimeSide2((int) fileData.get("lastRaidTimeSide2"));
@@ -144,6 +147,8 @@ public class WarData
         sHashMap.put("side1Towns", (List<String>) war.getSide1Towns());
         sHashMap.put("side2Towns", (List<String>) war.getSide2Towns());
         sHashMap.put("surrenderedTowns", (List<String>) war.getSurrenderedTowns());
+        sHashMap.put("side1Points", war.getSide1Points());
+        sHashMap.put("side2Points", war.getSide2Points());
 
         sHashMap.put("sieges", SiegeData.getSiegeMap(war));
         sHashMap.put("raids", RaidData.getRaidMap(war));

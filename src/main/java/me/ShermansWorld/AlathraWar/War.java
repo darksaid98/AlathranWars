@@ -21,6 +21,8 @@ public class War {
 	private ArrayList<String> side1Towns = new ArrayList<String>();
 	private ArrayList<String> side2Towns = new ArrayList<String>();
     private ArrayList<String> surrenderedTowns = new ArrayList<String>();
+    private int side1Points = 0;
+    private int side2Points = 0;
 
     // References
     private ArrayList<Siege> sieges = new ArrayList<Siege>();
@@ -267,5 +269,21 @@ public class War {
 
     public int getLastRaidTimeSide2() {
         return this.lastRaidTimeSide2;
+    }
+
+    public int getSide1Points() {
+        return this.side1Points;
+    }
+
+    public int getSide2Points() {
+        return this.side2Points;
+    }
+
+    public void addSide1Points(int points) {
+        side1Points += points;
+    }
+
+    public void addSide2Points(int points){
+        side2Points += points;
     }
 }
