@@ -219,24 +219,7 @@ public class Siege {
 		Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The attackers have won the siege of " + this.town.getName() + "!");
 		try {
 			nation = resident.getTown().getNation();
-		} catch (NotRegisteredException e) {
-			for (final String playerName : this.attackerPlayers) {
-				try {
-					Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.Chatlabel()) + "The town of "
-							+ this.town.getName()
-							+ " could not be occupied because the player who started the siege is not part of a nation");
-				} catch (NullPointerException ex) {
-				}
-			}
-			for (final String playerName : this.defenderPlayers) {
-				try {
-					Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.Chatlabel()) + "The town of "
-							+ this.town.getName()
-							+ " could not be occupied because the player who started the siege is not part of a nation");
-				} catch (NullPointerException ex2) {
-				}
-			}
-		}
+		} catch (Exception e) {}
 		if (nation != null) {
 			Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The town of " + this.town.getName()
 					+ " has been placed under occupation by " + nation.getName() + "!");
@@ -264,6 +247,12 @@ public class Siege {
 				+ ", valuing $" + String.valueOf(amt));
 		Main.econ.depositPlayer(siegeLeader, amt);
 
+        if (side1AreAttackers) {
+            war.addSide1Points(50);
+        } else {
+            war.addSide2Points(50);
+        }
+
 		stop();
 		clearBeacon();
 	}
@@ -275,6 +264,13 @@ public class Siege {
 				+ " has recovered the attackers' war chest, valued at $2,500");
 		Main.warLogger
 				.log(war.getName() + ": The defenders have won the siege of " + this.town.getName() + "!");
+
+        if (side1AreAttackers) {
+            war.addSide2Points(50);
+        } else {
+            war.addSide1Points(50);
+        }
+
 		stop();
 		clearBeacon();
 	}
