@@ -69,6 +69,11 @@ public class AdminTabCompletion implements TabCompleter {
             "set"
     });
 
+    List<String> addSubSet = List.of(new String[]{
+            "add",
+            "subtract",
+            "set"
+    });
 
     List<String> boolSet = List.of(new String[]{
             "true",
@@ -417,7 +422,7 @@ public class AdminTabCompletion implements TabCompleter {
                                 if (args.length > 5) {
                                     switch (args[2]) {
                                         /*
-                                         * -modify raid score [war] [town] [add/set] [value]
+                                         * -modify raid score [war] [town] [add/subtract/set] [side] [value]
                                          * -modify raid townspawn [war] [town] (x) (y) (Z)
                                          * -modify raid gather [war] [town] [town]
                                          * -modify raid phase [war] [town] [phase] //"next" to move to next phase
@@ -427,7 +432,18 @@ public class AdminTabCompletion implements TabCompleter {
                                          * -modify raid move [war] [town] [newWar] //low priority, moves raid to other war/ town
                                          * -modify raid clearActive [war] [town] //low priority
                                          */
-                                        case "score", "time" -> {
+                                        case "score" -> {
+                                            if (args.length > 6) {
+                                                if (args.length > 7) {
+                                                    return empty;
+                                                } else {
+                                                    return NameUtil.filterByStart(CommandHelper.getWarSides(args[3]), args[5]);
+                                                }
+                                            } else {
+                                                return NameUtil.filterByStart(addSubSet, args[5]);
+                                            }
+                                        }
+                                        case "time" -> {
                                             if (args.length > 6) {
                                                 return empty;
                                             } else {

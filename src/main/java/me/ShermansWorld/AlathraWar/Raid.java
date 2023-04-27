@@ -10,6 +10,10 @@ import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarFlag;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.Plugin;
@@ -72,7 +76,8 @@ public class Raid {
     private String raiders;
     private String defenders;
     private boolean side1AreRaiders;
-    private int raidScore;
+    private int raiderScore;
+    private int defenderScore;
     private OfflinePlayer owner;
     private int raidTicks;
     private TownBlock homeBlockRaided;
@@ -106,7 +111,8 @@ public class Raid {
         this.owner = owner;
         this.raiders = side1AreRaiders ? war.getSide1() : war.getSide2();
         this.defenders = !side1AreRaiders ? war.getSide1() : war.getSide2();
-        this.raidScore = 500;
+        this.raiderScore = 0;
+        this.defenderScore = 0;
 
         //AttackSide-Town
         this.name = war.getName() + "-" + raidedTown.getName().toLowerCase();
@@ -151,7 +157,8 @@ public class Raid {
         this.owner = owner;
         this.raiders = side1AreRaiders ? war.getSide1() : war.getSide2();
         this.defenders = !side1AreRaiders ? war.getSide1() : war.getSide2();
-        this.raidScore = 500;
+        this.raiderScore = 0;
+        this.defenderScore = 0;
 
         //AttackSide-Town
         this.name = war.getName() + "-" + raidedTown.getName().toLowerCase();
@@ -264,7 +271,7 @@ public class Raid {
                 lb.value = r.nextDouble() * 30;
 
                 //score for looting
-                this.addPointsToRaidScore(10);
+                this.addPointsToRaiderScore(10);
 
                 Main.warLogger.log(String.format("A townblock has been looted for $%.2f", lb.value));
                 //Broadcast to the whole raid
@@ -333,7 +340,7 @@ public class Raid {
     public void raiderKilledInCombat(PlayerDeathEvent event) {
 
         //award negative score
-        this.subtractPointsFromRaidScore(40);
+        this.addPointsToDefenderScore(40);
         for (final String playerName : this.getActiveRaiders()) {
             Player pl = Bukkit.getPlayer(playerName);
             if(pl != null) pl.sendMessage(String.valueOf(Helper.Chatlabel()) + "Raider killed! -40 Raid Score");
@@ -348,7 +355,7 @@ public class Raid {
      * Defender killed in combat
      */
     public void defenderKilledInCombat(PlayerDeathEvent event) {
-        this.addPointsToRaidScore(20);
+        this.addPointsToRaiderScore(20);
         for (final String playerName : this.getActiveRaiders()) {
             Player pl = Bukkit.getPlayer(playerName);
             if(pl != null) pl.sendMessage(String.valueOf(Helper.Chatlabel()) + "Defender killed! +20 Raid Score");
@@ -439,17 +446,15 @@ public class Raid {
     /**
      * Raiders win, give payout and finalize raid
      *
-     * @param owner
-     * @param raidScore
      */
-    public void raidersWin(final OfflinePlayer owner, int raidScore) {
+    public void raidersWin(final OfflinePlayer owner, int raiderScore, int defenderScore) {
         //TODO finalize payout
 
         //Calc win factor
         //difference of score minus 800, then divided by 100
         //raid needs 10+ kills over defenders to win
         //factor is 0.5 -> 3
-        double factor = ((raidScore - 800.0) / 100) + 0.5;
+        double factor = ((raiderScore - defenderScore) / 200.0D);
         if (factor > 3.0) factor = 3.0;
         if (factor < 0) factor = 0.0;
 
@@ -466,22 +471,37 @@ public class Raid {
 
         //TODO cap based on the town balance
 
-        //raid chest TODO REMOVE THIS
-        Main.econ.depositPlayer(offlinePlayer, 1000);
         double amt = 0.0;
+
+        //calc looted chunks
+        double looted = 0.0;
+        //calc looted chunks
+        for (WorldCoord wc : this.getLootedChunks().keySet()) {
+            if (this.getLootedChunks().get(wc).finished) looted += this.getLootedChunks().get(wc).value;
+        }
+
+        //multiply by victory factor
+        amt += looted * factor;
+
+        //cap based on town bank
         if (this.raidedTown.getAccount().getHoldingBalance() > 10000) {
-            amt = Math.floor(this.raidedTown.getAccount().getHoldingBalance()) / 10.0;
-            amt *= factor;
-            if (amt > 10000.0) amt = 10000.0;
+            //large towns get raided for alot more, cap at 1/10th the town holdings
+            double maxVal = Math.floor(this.raidedTown.getAccount().getHoldingBalance()) / 10.0;
+            if (amt > maxVal) amt = maxVal;
             this.raidedTown.getAccount().withdraw(amt, "war loot");
         } else if (this.raidedTown.getAccount().getHoldingBalance() < 1000) {
-            amt = 1000;
+            //generate $1000 if the town doesnt have it
+            double maxVal = 1000;
+            if (amt > maxVal) amt = maxVal;
             this.raidedTown.getAccount().withdraw(this.raidedTown.getAccount().getHoldingBalance(), "war loot");
         } else {
-            amt = 1000;
+            //give $1000 for the raid win
+            double maxVal = 1000;
+            if (amt > maxVal) amt = maxVal;
             this.raidedTown.getAccount().withdraw(amt, "war loot");
         }
 
+        //broadcast victory
         String statement = "raided";
         if (factor <= 1.0) {
             statement = "looted";
@@ -491,18 +511,10 @@ public class Raid {
             statement = "emptied";
         }
 
-        double looted = 0.0;
-        //calc looted chunks
-        for (WorldCoord wc : this.getLootedChunks().keySet()) {
-            if (this.getLootedChunks().get(wc).finished) looted += this.getLootedChunks().get(wc).value;
-        }
-
-        amt += looted;
-
         Bukkit.broadcastMessage("The town of " + this.raidedTown.getName() + " has been " + statement + " by " + this.getRaiders()
-                + " in a raid for $" + String.valueOf(amt));
+                + " in a raid for $" + amt);
         Main.warLogger.log("The town of " + this.raidedTown.getName() + " has been " + statement + " by " + this.getRaiders()
-                + " in a raid for $" + String.valueOf(amt));
+                + " in a raid for $" + amt);
         Main.econ.depositPlayer(offlinePlayer, amt);
 
 
@@ -512,9 +524,8 @@ public class Raid {
     /**
      * Defenders win, payout, and finalize raid
      *
-     * @param raidScore
      */
-    public void defendersWin(int raidScore) {
+    public void defendersWin(int raiderScore, int defenderScore) {
         //TODO finalize payout
         /*
         If defenders win, they get the 1000 deposit.
@@ -525,30 +536,30 @@ public class Raid {
         //at 500 this results in 1.0
         //at 0 this results in 3.5, which is capped to 3
 
-        double factor = (3 - ((raidScore) / 200.0) - 0.5);
+        double factor = ((defenderScore - raiderScore) / 200.0D);
         if (factor > 3.0) factor = 3.0;
         if (factor < 0) factor = 0.0;
 
         if (factor <= 0.5) {
-            Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The defenders from " + this.defenders
+            Bukkit.broadcastMessage(Helper.Chatlabel() + "The defenders from " + this.defenders
                     + " have barely pushed back the raiders of " + this.raiders + ". More has been lost than gained.");
-            Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + this.raidedTown.getName()
+            Bukkit.broadcastMessage(Helper.Chatlabel() + this.raidedTown.getName()
                     + " has recovered part of the attackers' raid chest, valued at $500");
             Main.warLogger
                     .log("The defenders from " + this.defenders + " have won the raid of " + this.raidedTown.getName() + "!");
             this.raidedTown.getAccount().deposit(500, "Raid chest");
         } else if (factor <= 1.5) {
-            Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The defenders from " + this.defenders
+            Bukkit.broadcastMessage(Helper.Chatlabel() + "The defenders from " + this.defenders
                     + " have fended off the raiders of " + this.raiders + "!");
-            Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + this.raidedTown.getName()
+            Bukkit.broadcastMessage(Helper.Chatlabel() + this.raidedTown.getName()
                     + " has recovered the attackers' raid chest, valued at $1000");
             Main.warLogger
                     .log("The defenders from " + this.defenders + " have won the raid of " + this.raidedTown.getName() + "!");
             this.raidedTown.getAccount().deposit(1000, "Raid chest");
         } else if (factor <= 3.0) {
-            Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The defenders from " + this.defenders
+            Bukkit.broadcastMessage(Helper.Chatlabel() + "The defenders from " + this.defenders
                     + " have wholly defeated the raiders of " + this.raiders + "! They barely broke the walls.");
-            Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + this.raidedTown.getName()
+            Bukkit.broadcastMessage(Helper.Chatlabel() + this.raidedTown.getName()
                     + " has recovered the attackers' raid chest, valued at $1000.");
             Main.warLogger
                     .log("The defenders from " + this.defenders + " have won the raid of " + this.raidedTown.getName() + "!");
@@ -577,11 +588,9 @@ public class Raid {
      *
      * @param points
      */
-    public void addPointsToRaidScore(final int points) {
-        this.raidScore += points;
-        //cap
-        if (raidScore > 1200) this.raidScore = 1200;
-        if (raidScore < 0) this.raidScore = 0;
+    public void addPointsToRaiderScore(final int points) {
+        this.raiderScore += points;
+        if (raiderScore < 0) this.raiderScore = 0;
     }
 
     /**
@@ -589,11 +598,24 @@ public class Raid {
      *
      * @param points
      */
-    public void subtractPointsFromRaidScore(final int points) {
-        this.raidScore -= points;
-        //cap
-        if (raidScore > 1200) this.raidScore = 1200;
-        if (raidScore < 0) this.raidScore = 0;
+    public void addPointsToDefenderScore(final int points) {
+        this.defenderScore += points;
+        if (defenderScore < 0) this.defenderScore = 0;
+    }
+
+    public void subtractPointsFromRaiderScore(final int points) {
+        this.raiderScore -= points;
+        if (raiderScore < 0) this.raiderScore = 0;
+    }
+
+    /**
+     * Negatively impact the raid score
+     *
+     * @param points
+     */
+    public void subtractPointsFromDefenderScore(final int points) {
+        this.defenderScore -= points;
+        if (defenderScore < 0) this.defenderScore = 0;
     }
 
     public String getName() {
@@ -649,12 +671,20 @@ public class Raid {
         this.raiders = defenders;
     }
 
-    public int getRaidScore() {
-        return this.raidScore;
+    public int getRaiderScore() {
+        return this.raiderScore;
     }
 
-    public void setRaidScore(final int raidScore) {
-        this.raidScore = raidScore;
+    public void setRaiderScore(final int raiderScore) {
+        this.raiderScore = raiderScore;
+    }
+
+    public int getDefenderScore() {
+        return this.defenderScore;
+    }
+
+    public void setDefenderScore(final int defenderScore) {
+        this.defenderScore = defenderScore;
     }
 
     public boolean getSide1AreRaiders() {
@@ -776,11 +806,11 @@ public class Raid {
 
                 if (Raid.this.phase == RaidPhase.END) {
                     //TODO: fix raid scoring
-                    //for raiders to win, they need a significant up from the defenders
-                    if (Raid.this.raidScore > 800) {
-                        Raid.this.raidersWin(Raid.this.owner, Raid.this.raidScore);
+                    //for raiders to win enough money, they need a significant up from the defenders, tie given to defender
+                    if (Raid.this.raiderScore > Raid.this.defenderScore) {
+                        Raid.this.raidersWin(Raid.this.owner, Raid.this.raiderScore, Raid.this.defenderScore);
                     } else {
-                        Raid.this.defendersWin(Raid.this.raidScore);
+                        Raid.this.defendersWin(Raid.this.raiderScore, Raid.this.defenderScore);
                     }
                 }
 
@@ -862,7 +892,9 @@ public class Raid {
                         Bukkit.broadcastMessage(Helper.Chatlabel() + "Report on the raid of "
                                 + Raid.this.getRaidedTown().getName() + ":");
                         Bukkit.broadcastMessage(
-                                "Raid Score - " + Raid.this.raidScore);
+                                "Raider Score - " + Raid.this.raiderScore);
+                        Bukkit.broadcastMessage(
+                                "Defender Score - " + Raid.this.defenderScore);
                         Bukkit.broadcastMessage(
                                 "Chunks Looted - " + Raid.this.lootedChunks.size() + "/" + raidedTown.getTownBlocks().size());
                     }
@@ -890,6 +922,16 @@ public class Raid {
                                 }
                             }
                         }
+                    }
+                    BossBar bossBar = Bukkit.createBossBar(String.format("%d --  Raiders  -- Raid Score -- Defenders -- %d", Raid.this.raiderScore, Raid.this.defenderScore), BarColor.RED, BarStyle.SOLID, BarFlag.CREATE_FOG);
+                    for (String s : Raid.this.getActiveRaiders()) {
+                        Player p = Bukkit.getPlayer(s);
+                        if (p != null) bossBar.addPlayer(p);
+                    }
+
+                    for (String s : Raid.this.getDefenderPlayers()) {
+                        Player p = Bukkit.getPlayer(s);
+                        if (p != null) bossBar.addPlayer(p);
                     }
                 }
             }
