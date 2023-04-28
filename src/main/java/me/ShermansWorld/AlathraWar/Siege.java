@@ -447,7 +447,6 @@ public class Siege {
 	}
 
 	public void refreshDisplayBar() {
-		SiegeData.addSiegeBar(bossBarKey);
 		BossBar bossBar = Bukkit.getBossBar(bossBarKey);
 		if(bossBar == null) bossBar = createNewDisplayBar();
 
@@ -470,7 +469,6 @@ public class Siege {
 	}
 
 	public void setupDisplayBar() {
-		SiegeData.addSiegeBar(bossBarKey);
 		BossBar bossBar = Bukkit.getBossBar(bossBarKey);
 		if(bossBar == null) bossBar = createNewDisplayBar();
 

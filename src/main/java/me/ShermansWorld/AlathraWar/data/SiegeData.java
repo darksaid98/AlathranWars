@@ -23,15 +23,6 @@ public class SiegeData
         return sieges;
     }
 
-    private static Set<NamespacedKey> siegeBars = new HashSet<>();
-
-    public static Set<NamespacedKey> getSiegeBars() {
-        return siegeBars;
-    }
-
-    public static void addSiegeBar(NamespacedKey key) {
-        siegeBars.add(key);
-    }
 
 
     /**

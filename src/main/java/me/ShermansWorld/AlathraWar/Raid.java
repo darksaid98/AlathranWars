@@ -951,7 +951,6 @@ public class Raid {
     }
 
     public void refreshDisplayBar() {
-        RaidData.addRaidBar(bossBarKey);
         BossBar bossBar = Bukkit.getBossBar(bossBarKey);
         if(bossBar == null) bossBar = createNewDisplayBar();
 
@@ -974,7 +973,6 @@ public class Raid {
     }
 
     public void setupDisplayBar() {
-        RaidData.addRaidBar(bossBarKey);
         BossBar bossBar = Bukkit.getBossBar(bossBarKey);
         if(bossBar == null) bossBar = createNewDisplayBar();
 

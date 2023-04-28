@@ -16,13 +16,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.boss.BossBar;
+import org.bukkit.boss.KeyedBossBar;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Boss;
 import org.bukkit.entity.Player;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -143,27 +146,17 @@ public class AdminCommands implements CommandExecutor {
     }
 
     private static boolean purgebars(CommandSender sender, String[] args) {
-        for (NamespacedKey r : RaidData.getRaidBars()) {
-            BossBar bb = Bukkit.getBossBar(r);
-            if(bb != null) {
-                bb.setVisible(false);
-                bb.removeAll();
-                Bukkit.removeBossBar(r);
+        for (Iterator<KeyedBossBar> it = Bukkit.getBossBars(); it.hasNext(); ) {
+            KeyedBossBar b = it.next();
+            if(b.getKey().getKey().contains(Main.getInstance().getName())) {
+                b.setVisible(false);
+                b.removeAll();
+                Bukkit.removeBossBar(b.getKey());
             }
         }
 
-        for (NamespacedKey r : SiegeData.getSiegeBars()) {
-            BossBar bb = Bukkit.getBossBar(r);
-            if(bb != null) {
-                bb.setVisible(false);
-                bb.removeAll();
-                Bukkit.removeBossBar(r);
-            }
-        }
         sender.sendMessage(Helper.chatLabel() + Helper.color("&cCleared all boss bars that have been registered with AlathraWar."));
-        sender.sendMessage(Helper.chatLabel() + Helper.color("&cNote: If any remain, please contact the plugin author or open an issue on GitHub."));
-        sender.sendMessage(Helper.chatLabel() + Helper.color("&cThe data can be found under the tag CustomBossEvents: in level.dat!"));
-        sender.sendMessage(Helper.chatLabel() + Helper.color("&cYou will need an NBT Editing program to delete it manually."));
+        sender.sendMessage(Helper.chatLabel() + Helper.color("&cNote: If any remain, please contact the plugin author or open an issue on GitHub. The data can be found under the tag CustomBossEvents: in level.dat! You will need an NBT Editing program to delete it manually."));
 
         return saveAll(sender, args);
     }

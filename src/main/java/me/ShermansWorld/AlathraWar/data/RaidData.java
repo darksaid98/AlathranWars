@@ -21,15 +21,7 @@ public class RaidData {
     private static ArrayList<Raid> raids = new ArrayList<Raid>();
 
 
-    private static Set<NamespacedKey> raidBars = new HashSet<>();
 
-    public static Set<NamespacedKey> getRaidBars() {
-        return raidBars;
-    }
-
-    public static void addRaidBar(NamespacedKey key) {
-        raidBars.add(key);
-    }
 
     public static ArrayList<Raid> getRaids() {
         return raids;
