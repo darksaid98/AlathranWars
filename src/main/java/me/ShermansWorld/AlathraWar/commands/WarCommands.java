@@ -32,7 +32,7 @@ public class WarCommands implements CommandExecutor {
 
         final Player p = (Player) sender;
         if (args.length == 0) {
-            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /war help");
+            p.sendMessage(String.valueOf(Helper.chatLabel()) + "Invalid Arguments. /war help");
             return true;
         } else if (args.length >= 1) {
 
@@ -59,7 +59,7 @@ public class WarCommands implements CommandExecutor {
                     warHelp(p, args);
                     return true;
                 default:
-                    p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Invalid Arguments. /war help");
+                    p.sendMessage(String.valueOf(Helper.chatLabel()) + "Invalid Arguments. /war help");
                     return true;
             }
        
@@ -77,13 +77,13 @@ public class WarCommands implements CommandExecutor {
             WarData.addWar(war);
             war.save();
 
-            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "War created with the name " + args[1] + ", "
+            p.sendMessage(String.valueOf(Helper.chatLabel()) + "War created with the name " + args[1] + ", "
                     + args[2] + " vs. " + args[3]);
             Main.warLogger.log(p.getName() + " created a new war with the name " + args[1] + ", " + args[2]
                     + " vs. " + args[3]);
                     return;
         } else {
-            p.sendMessage(String.valueOf(Helper.Chatlabel())
+            p.sendMessage(String.valueOf(Helper.chatLabel())
                     + "Invalid Arguments. /war create [name] [side1] [side2]");
         }
 
@@ -100,18 +100,18 @@ public class WarCommands implements CommandExecutor {
 
             // War Check
             if (war == null) {
-                p.sendMessage(Helper.Chatlabel()
+                p.sendMessage(Helper.chatLabel()
                         + "War not found. Type /war list to view current wars.");
                 return;
             }
 
             WarData.removeWar(war);
 
-            p.sendMessage(String.valueOf(Helper.Chatlabel()) + "War " + args[1] + " deleted.");
+            p.sendMessage(String.valueOf(Helper.chatLabel()) + "War " + args[1] + " deleted.");
             Main.warLogger.log(p.getName() + " deleted " + args[1]);
                     return;
         } else {
-            p.sendMessage(String.valueOf(Helper.Chatlabel())
+            p.sendMessage(String.valueOf(Helper.chatLabel())
                     + "Invalid Arguments. /war delete [name]");
         }
     }
@@ -125,7 +125,7 @@ public class WarCommands implements CommandExecutor {
     protected static void warJoin(CommandSender p, String[] args, boolean admin) {
         // Sufficient args check
         if (args.length < 3) {
-            p.sendMessage(Helper.Chatlabel()
+            p.sendMessage(Helper.chatLabel()
                     + "/war join [name] [side], type /war list to view current wars");
             return;
         }
@@ -133,7 +133,7 @@ public class WarCommands implements CommandExecutor {
         // War check
         War war = WarData.getWar(args[1]);
         if (war == null) {
-            p.sendMessage(Helper.Chatlabel()
+            p.sendMessage(Helper.chatLabel()
                     + "War not found. /war join [name] [side], type /war list to view current wars");
             return;
         }
@@ -142,7 +142,7 @@ public class WarCommands implements CommandExecutor {
         if (admin){
             player = Bukkit.getPlayer(args[3]);
             if(player == null) {
-                p.sendMessage(Helper.Chatlabel() + "Player " + args[3] + " not found!");
+                p.sendMessage(Helper.chatLabel() + "Player " + args[3] + " not found!");
                 return;
             }
         }
@@ -192,10 +192,10 @@ public class WarCommands implements CommandExecutor {
         // Side checks
         int side = war.getSide(town.getName().toLowerCase());
         if (side == -1) {
-            p.sendMessage(Helper.Chatlabel() + "You've already surrendered!");
+            p.sendMessage(Helper.chatLabel() + "You've already surrendered!");
             return;
         } else if (side > 0) {
-            p.sendMessage(Helper.Chatlabel() + "You're already in this war!");
+            p.sendMessage(Helper.chatLabel() + "You're already in this war!");
             return;
         }
 
@@ -203,26 +203,26 @@ public class WarCommands implements CommandExecutor {
             if(res.getPlayer().hasPermission("AlathraWar.nationjoin" )|| res.isKing()) {
                 // Has nation declaration permission
                 war.addNation(res.getNationOrNull(), args[2]);
-                res.getPlayer().sendMessage(Helper.Chatlabel() + "You have joined the war for " + res.getNationOrNull().getName());
-                p.sendMessage(Helper.Chatlabel() + "You have joined the war for " + res.getNationOrNull().getName());
+                res.getPlayer().sendMessage(Helper.chatLabel() + "You have joined the war for " + res.getNationOrNull().getName());
+                p.sendMessage(Helper.chatLabel() + "You have joined the war for " + res.getNationOrNull().getName());
                 war.save();
                 return;
             } else {
                 // Cannot declare nation involvement
-                p.sendMessage(Helper.Chatlabel() + "You cannot declare war for your nation.");
+                p.sendMessage(Helper.chatLabel() + "You cannot declare war for your nation.");
                 return;
             }
         } else if (res.hasTown()) {
             if (res.getPlayer().hasPermission("AlathraWar.townjoin") || res.isMayor()) {
                 // Is in indepdenent town & has declaration perms
                 war.addTown(res.getTownOrNull(), args[2]);
-                res.getPlayer().sendMessage(Helper.Chatlabel() + "You have joined the war for " + res.getTownOrNull().getName());
-                p.sendMessage(Helper.Chatlabel() + "You have joined the war for " + res.getTownOrNull().getName());
+                res.getPlayer().sendMessage(Helper.chatLabel() + "You have joined the war for " + res.getTownOrNull().getName());
+                p.sendMessage(Helper.chatLabel() + "You have joined the war for " + res.getTownOrNull().getName());
                 war.save();
                 return;
             } else {
                 // No perms
-                p.sendMessage(Helper.Chatlabel() + "You cannot declare war for your town.");
+                p.sendMessage(Helper.chatLabel() + "You cannot declare war for your town.");
                 return;
             }
         }
@@ -231,7 +231,7 @@ public class WarCommands implements CommandExecutor {
     protected static void warSurrender(Player p, String[] args, boolean admin) {
         // Sufficient args check
         if (args.length < 2) {
-            p.sendMessage(Helper.Chatlabel()
+            p.sendMessage(Helper.chatLabel()
                     + "/war surrender [name], type /war list to view current wars");
             return;
         }
@@ -239,7 +239,7 @@ public class WarCommands implements CommandExecutor {
         // War check
         War war = WarData.getWar(args[1]);
         if (war == null) {
-            p.sendMessage(Helper.Chatlabel()
+            p.sendMessage(Helper.chatLabel()
                     + "War not found. Type /war list to view current wars");
             return;
         }
@@ -258,24 +258,24 @@ public class WarCommands implements CommandExecutor {
             if(p.hasPermission("AlathraWar.nationsurrender" )|| res.isKing()) {
                 // Has nation surrender permission
                 war.surrenderNation(res.getNationOrNull());
-                p.sendMessage(Helper.Chatlabel() + "You have surrendered the war for " + res.getNationOrNull().getName());
+                p.sendMessage(Helper.chatLabel() + "You have surrendered the war for " + res.getNationOrNull().getName());
                 war.save();
                 return;
             } else {
                 // Cannot surrender nation involvement
-                p.sendMessage(Helper.Chatlabel() + "You cannot surrender war for your nation.");
+                p.sendMessage(Helper.chatLabel() + "You cannot surrender war for your nation.");
                 return;
             }
         } else if (res.hasTown()) {
             if (p.hasPermission("AlathraWar.townsurrender") || res.isMayor()) {
                 // Is in indepdenent town & has surrender perms
                 war.surrenderTown(res.getTownOrNull().getName());
-                p.sendMessage(Helper.Chatlabel() + "You have surrendered the war for " + res.getTownOrNull().getName());
+                p.sendMessage(Helper.chatLabel() + "You have surrendered the war for " + res.getTownOrNull().getName());
                 war.save();
                 return;
             } else {
                 // No perms
-                p.sendMessage(Helper.Chatlabel() + "You cannot surrender war for your town.");
+                p.sendMessage(Helper.chatLabel() + "You cannot surrender war for your town.");
                 return;
             }
         }
@@ -283,7 +283,7 @@ public class WarCommands implements CommandExecutor {
     }
 
     private static void warList(Player p, String[] args) {
-        p.sendMessage(Helper.Chatlabel()+ "Wars:");
+        p.sendMessage(Helper.chatLabel()+ "Wars:");
         ArrayList<War> wars = WarData.getWars();
         if (wars.size() < 1) {
             p.sendMessage("There are no current wars.");
@@ -296,15 +296,15 @@ public class WarCommands implements CommandExecutor {
 
     private static void warInfo(Player p, String[] args) {
         if (args.length < 2) {
-            p.sendMessage(Helper.Chatlabel() + "/war info [Player]");
+            p.sendMessage(Helper.chatLabel() + "/war info [Player]");
         }
 
         Resident res = TownyAPI.getInstance().getResident(args[1]);
         if (res == null || res.getTownOrNull() == null) {
-            p.sendMessage(Helper.Chatlabel() + "Invalid town resident.");
+            p.sendMessage(Helper.chatLabel() + "Invalid town resident.");
         }
 
-        p.sendMessage(Helper.Chatlabel() + p.getName() + "'s wars:");
+        p.sendMessage(Helper.chatLabel() + p.getName() + "'s wars:");
         for (War war : WarData.getWars()) {
             int side = war.getSide(args[1]);
             if (side != 0) {

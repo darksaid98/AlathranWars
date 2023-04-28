@@ -110,7 +110,7 @@ public final class KillsListener implements Listener
                         for (final String playerName : siege.getAttackerPlayers()) {
                             try {
                                 Player p = Bukkit.getPlayer(playerName);
-                                if (p != null) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Defender killed! + 20 Attacker Points");
+                                if (p != null) p.sendMessage(String.valueOf(Helper.chatLabel()) + "Defender killed! + 20 Attacker Points");
                             }
                             catch (NullPointerException ignored) {
                                 ignored.printStackTrace();
@@ -119,7 +119,7 @@ public final class KillsListener implements Listener
                         for (final String playerName : siege.getDefenderPlayers()) {
                             try {
                                 Player p = Bukkit.getPlayer(playerName);
-                                if (p != null) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Defender killed! + 20 Attacker Points");
+                                if (p != null) p.sendMessage(String.valueOf(Helper.chatLabel()) + "Defender killed! + 20 Attacker Points");
                             }
                             catch (NullPointerException ignored) {
                                 ignored.printStackTrace();
@@ -135,7 +135,7 @@ public final class KillsListener implements Listener
                         for (final String playerName : siege.getAttackerPlayers()) {
                             try {
                                 Player p = Bukkit.getPlayer(playerName);
-                                if (p != null) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Attacker killed! + 20 Defender Points");
+                                if (p != null) p.sendMessage(String.valueOf(Helper.chatLabel()) + "Attacker killed! + 20 Defender Points");
                             }
                             catch (NullPointerException ex3) {
                                 ex3.printStackTrace();
@@ -144,7 +144,7 @@ public final class KillsListener implements Listener
                         for (final String playerName : siege.getDefenderPlayers()) {
                             try {
                                 Player p = Bukkit.getPlayer(playerName);
-                                if (p != null) p.sendMessage(String.valueOf(Helper.Chatlabel()) + "Attacker killed! + 20 Defender Points");
+                                if (p != null) p.sendMessage(String.valueOf(Helper.chatLabel()) + "Attacker killed! + 20 Defender Points");
                             }
                             catch (NullPointerException ex4) {
                                 ex4.printStackTrace();
@@ -179,7 +179,7 @@ public final class KillsListener implements Listener
                 //do raider respawn
                 try {
                     event.setRespawnLocation(raid.getGatherTown().getSpawn());
-                    event.getPlayer().sendMessage(String.valueOf(Helper.Chatlabel()) + "You died " + (raid.getPhase().equals(RaidPhase.COMBAT) ? "raiding" : "before combat") + " and have been teleported back to the gather point.");
+                    event.getPlayer().sendMessage(String.valueOf(Helper.chatLabel()) + "You died " + (raid.getPhase().equals(RaidPhase.COMBAT) ? "raiding" : "before combat") + " and have been teleported back to the gather point.");
                 } catch (TownyException e) {
                     throw new RuntimeException(e);
                 }
