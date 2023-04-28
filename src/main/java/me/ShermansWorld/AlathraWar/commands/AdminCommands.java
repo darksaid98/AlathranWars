@@ -14,6 +14,8 @@ import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.data.WarData;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
+import org.bukkit.boss.BossBar;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -125,8 +127,68 @@ public class AdminCommands implements CommandExecutor {
                 return modify(sender, args);
             } else if (args[0].equalsIgnoreCase("awa")) {
                 return awa(sender, args);
+            } else if (args[0].equalsIgnoreCase("purgebars")) {
+                return purgebars(sender, args);
+            } else if (args[0].equalsIgnoreCase("save")) {
+                return save(sender, args);
+            } else if (args[0].equalsIgnoreCase("save-all")) {
+                return saveAll(sender, args);
+            } else if (args[0].equalsIgnoreCase("load")) {
+                return load(sender, args);
+            } else if (args[0].equalsIgnoreCase("load-all")) {
+                return loadAll(sender, args);
             }
         }
+        return true;
+    }
+
+    private static boolean purgebars(CommandSender sender, String[] args) {
+        for (NamespacedKey r : RaidData.getRaidBars()) {
+            BossBar bb = Bukkit.getBossBar(r);
+            if(bb != null) {
+                bb.setVisible(false);
+                bb.removeAll();
+                Bukkit.removeBossBar(r);
+            }
+        }
+
+        for (NamespacedKey r : SiegeData.getSiegeBars()) {
+            BossBar bb = Bukkit.getBossBar(r);
+            if(bb != null) {
+                bb.setVisible(false);
+                bb.removeAll();
+                Bukkit.removeBossBar(r);
+            }
+        }
+        sender.sendMessage(Helper.Chatlabel() + Helper.color("&cCleared all boss bars that have been registered with AlathraWar."));
+        sender.sendMessage(Helper.Chatlabel() + Helper.color("&cNote: If any remain, please contact the plugin author or open an issue on GitHub."));
+        sender.sendMessage(Helper.Chatlabel() + Helper.color("&cThe data can be found under the tag CustomBossEvents: in level.dat!"));
+        sender.sendMessage(Helper.Chatlabel() + Helper.color("&cYou will need an NBT Editing program to delete it manually."));
+
+        return saveAll(sender, args);
+    }
+
+    private static boolean save(CommandSender sender, String[] args) {
+        //TODO save
+        sender.sendMessage(Helper.Chatlabel() + Helper.color("&csave Unimplemented!"));
+        return true;
+    }
+
+    private static boolean saveAll(CommandSender sender, String[] args) {
+        //TODO save-all
+        sender.sendMessage(Helper.Chatlabel() + Helper.color("&csave-all Unimplemented!"));
+        return true;
+    }
+
+    private static boolean load(CommandSender sender, String[] args) {
+        //TODO load
+        sender.sendMessage(Helper.Chatlabel() + Helper.color("&cload Unimplemented!"));
+        return true;
+    }
+
+    private static boolean loadAll(CommandSender sender, String[] args) {
+        //TODO load-all
+        sender.sendMessage(Helper.Chatlabel() + Helper.color("&cload-all Unimplemented!"));
         return true;
     }
 

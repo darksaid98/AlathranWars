@@ -27,6 +27,10 @@ public class RaidData {
         return raidBars;
     }
 
+    public static void addRaidBar(NamespacedKey key) {
+        raidBars.add(key);
+    }
+
     public static ArrayList<Raid> getRaids() {
         return raids;
     }

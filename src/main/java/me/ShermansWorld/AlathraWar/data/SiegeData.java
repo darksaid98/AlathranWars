@@ -1,12 +1,9 @@
 package me.ShermansWorld.AlathraWar.data;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.UUID;
+import java.util.*;
 
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 
 import com.palmergames.bukkit.towny.TownyAPI;
@@ -25,6 +22,17 @@ public class SiegeData
     public static HashSet<Siege> getSieges() {
         return sieges;
     }
+
+    private static Set<NamespacedKey> siegeBars = new HashSet<>();
+
+    public static Set<NamespacedKey> getSiegeBars() {
+        return siegeBars;
+    }
+
+    public static void addSiegeBar(NamespacedKey key) {
+        siegeBars.add(key);
+    }
+
 
     /**
      * Gets a siege with a specific name
