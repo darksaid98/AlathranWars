@@ -26,33 +26,33 @@ public class RaidCommands implements CommandExecutor {
     }
 
     public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
-        final Player p = (Player) sender;
+//        final Player p = (Player) sender;
         if (args.length == 0) {
-            fail(p, args, "syntax");
+            fail(sender, args, "syntax");
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("list")) {
-                listRaids(p, args);
+                listRaids(sender, args);
             } else if (args[0].equalsIgnoreCase("help")) {
-                raidHelp(p, args);
+                raidHelp(sender, args);
             } else {
-                fail(p, args, "syntax");
+                fail(sender, args, "syntax");
             }
         }else if (args.length == 3) {
             if (args[0].equalsIgnoreCase("start")) {
-                startRaid(p, args, false);
+                startRaid(sender, args, false);
             } else if (args[0].equalsIgnoreCase("stop")) {
-                stopRaid(p, args);
+                stopRaid(sender, args);
             } else if (args[0].equalsIgnoreCase("join")) {
-                joinRaid(p, args, false);
+                joinRaid(sender, args, false);
             } else if (args[0].equalsIgnoreCase("leave")) {
-                leaveRaid(p, args, false);
+                leaveRaid(sender, args, false);
             } else if (args[0].equalsIgnoreCase("abandon")) {
-                abandonRaid(p, args);
+                abandonRaid(sender, args);
             } else {
-                fail(p, args, "syntax");
+                fail(sender, args, "syntax");
             }
         } else {
-            fail(p, args, "syntax");
+            fail(sender, args, "syntax");
         }
         return true;
     }
@@ -72,14 +72,9 @@ public class RaidCommands implements CommandExecutor {
                 warFound = true;
 
                 Player raidOwner = null;
-                if(p instanceof Player) {
+                if((p instanceof Player)) {
                     raidOwner = (Player) p;
-                } else {
-                    p.sendMessage("Running this from the console requires a Player Argument!");
-                    return;
                 }
-                TownyWorld townyWorld;
-                townyWorld = WorldCoord.parseWorldCoord(raidOwner.getLocation()).getTownyWorld();
                 if(admin && args.length >= 6) {
                     raidOwner = Bukkit.getPlayer(args[5]);
                     if(raidOwner == null) {
@@ -88,10 +83,13 @@ public class RaidCommands implements CommandExecutor {
                     }
                 }
 
+                TownyWorld townyWorld;
+                townyWorld = WorldCoord.parseWorldCoord(raidOwner.getLocation()).getTownyWorld();
+
                 String side = "";
-                if (war.getSide1Players().contains(p.getName())) {
+                if (war.getSide1Players().contains(raidOwner.getName())) {
                     side = war.getSide1();
-                } else if (war.getSide2Players().contains(p.getName())) {
+                } else if (war.getSide2Players().contains(raidOwner.getName())) {
                     side = war.getSide2();
                 } else {
                     p.sendMessage(String.valueOf(Helper.Chatlabel()) + "You are not in this war! Type /war join [war] [side]");
@@ -100,7 +98,7 @@ public class RaidCommands implements CommandExecutor {
 
                 //Minutemen countermeasures, 86400 * 4 time. 86400 seconds in a day, 4 days min playtime
                 if (admin) {
-                    if (System.currentTimeMillis() - CommandHelper.getPlayerJoinDate(args[3]) < 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge") ) {
+                    if (System.currentTimeMillis() - CommandHelper.getPlayerJoinDate(raidOwner.getName()) < 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge") ) {
                         if(args.length >= 5) {
                             //player has joined to recently
                             p.sendMessage(ChatColor.RED + "Warning! Ignoring Minuteman Countermeasure!");
@@ -112,7 +110,7 @@ public class RaidCommands implements CommandExecutor {
                         }
                     }
                 } else {
-                    if (System.currentTimeMillis() - CommandHelper.getPlayerJoinDate(p.getName()) < 86400000 * Main.getInstance().getConfig().getInt("minimumPlayerAge") ) {
+                    if (System.currentTimeMillis() - CommandHelper.getPlayerJoinDate(raidOwner.getName()) < 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge") ) {
                         //player has joined to recently
                         p.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
                         return;
@@ -179,7 +177,7 @@ public class RaidCommands implements CommandExecutor {
                         townExists = true;
 
                         Raid raid2;
-                        if (war.getSide1Players().contains(p.getName())) {
+                        if (war.getSide1Players().contains(raidOwner.getName())) {
                             //Time and raid activity validity check
                             int c = RaidData.isValidRaid(war, side, raidedTown);
                             if (c == 2) {
@@ -206,7 +204,7 @@ public class RaidCommands implements CommandExecutor {
                             }
                         } else {
                             //Something broke if this runs
-                            if (!war.getSide2Players().contains(p.getName())) {
+                            if (!war.getSide2Players().contains(raidOwner.getName())) {
                                 Bukkit.getLogger().info("Unable to find player declaring raid in the war");
                                 return;
                             }
@@ -392,7 +390,7 @@ public class RaidCommands implements CommandExecutor {
                         }
                     }
                 } else {
-                    if (System.currentTimeMillis() - CommandHelper.getPlayerJoinDate(p.getName()) < 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge") ) {
+                    if (System.currentTimeMillis() - CommandHelper.getPlayerJoinDate(joiner.getName()) < 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge") ) {
                         //player has joined to recently
                         p.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
                         return;

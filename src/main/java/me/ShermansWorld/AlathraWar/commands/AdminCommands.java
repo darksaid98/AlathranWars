@@ -144,6 +144,7 @@ public class AdminCommands implements CommandExecutor {
                     //specific behavior exists if an admin ran this
                     //using same method so that this doesnt get fucked up if we go back and change original implementation
                     RaidCommands.startRaid(p, args, true);
+                    p.sendMessage(Helper.color("&cForcefully started raid from the console."));
                     return true;
                 } else {
                     //defaultCode will bypass the custom gather town to force set owner
@@ -157,10 +158,12 @@ public class AdminCommands implements CommandExecutor {
                             "start",
                             args[2],
                             args[3],
-                            args[4]
+                            args[4],
+                            args[5]
                     };
                     SiegeCommands.siegeStart(p, adjusted, true);
-                    p.sendMessage(Helper.Chatlabel() + "Try again later!");
+//                    p.sendMessage(Helper.Chatlabel() + "Try again later!");
+                    p.sendMessage(Helper.color("&cForcefully started siege from the console."));
                     return true;
                 } else {
                     p.sendMessage(Helper.color("&cUsage: /alathrawaradmin create siege [war] [town] (owner)"));
@@ -177,6 +180,7 @@ public class AdminCommands implements CommandExecutor {
                             args[4]
                     };
                     WarCommands.warCreate(p, adjusted);
+                    p.sendMessage(Helper.color("&cForcefully started war from the console."));
                     return true;
                 } else {
                     p.sendMessage(Helper.color("&cUsage: /alathrawaradmin create war [name] [side1] [side2]"));

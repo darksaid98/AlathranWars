@@ -10,6 +10,7 @@ import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.Raid;
 import me.ShermansWorld.AlathraWar.War;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 
 import javax.annotation.Nonnull;
@@ -19,9 +20,17 @@ public class RaidData {
     // Static Raid list for all active raids
     private static ArrayList<Raid> raids = new ArrayList<Raid>();
 
+
+    private static Set<NamespacedKey> raidBars = new HashSet<>();
+
+    public static Set<NamespacedKey> getRaidBars() {
+        return raidBars;
+    }
+
     public static ArrayList<Raid> getRaids() {
         return raids;
     }
+
 
     /**
      * Gets a raid with a specific name
