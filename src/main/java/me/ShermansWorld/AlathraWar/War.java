@@ -130,8 +130,8 @@ public class War {
      * 0 - None
      * 1 - Side 1
      * 2 - Side 2
-     * @param string
-     * @return
+     * @param string town
+     * @return result
      */
     public int getSide(String string) {
         for (String str : surrenderedTowns) {

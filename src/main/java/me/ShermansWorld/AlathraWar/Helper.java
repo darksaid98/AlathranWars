@@ -57,6 +57,12 @@ public class Helper
                         damageable.setDamage(249);
                     }
                 }
+                else if (is.getType() == Material.TRIDENT) {
+                    damageable.setDamage(damageable.getDamage() + 62);
+                    if (damageable.getDamage() > 200) {
+                        damageable.setDamage(249);
+                    }
+                }
                 meta = (ItemMeta)damageable;
                 is.setItemMeta(meta);
             }
