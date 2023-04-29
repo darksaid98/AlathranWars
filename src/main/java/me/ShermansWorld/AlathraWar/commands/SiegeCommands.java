@@ -92,7 +92,7 @@ public class SiegeCommands implements CommandExecutor {
 
         // Player participance check
         Town leaderTown = TownyAPI.getInstance().getResident(siegeOwner).getTownOrNull();
-        int side = war.getSide(leaderTown.getName());
+        int side = war.getSide(leaderTown.getName().toLowerCase());
 
         //DEBUG PRINT
         Main.warLogger.log("Leader Town: " + leaderTown.getName());
@@ -154,12 +154,12 @@ public class SiegeCommands implements CommandExecutor {
             if(admin) sender.sendMessage(String.valueOf(Helper.chatLabel()) + "That town does not exist! /siege start [war] [town]");
             return;
         }
-        Main.warLogger.log("Attacked Town: " + town.getName());
-        sender.sendMessage("Attacked Town: " + town.getName());
+        Main.warLogger.log("Attacked Town: " + town.getName().toLowerCase());
+        sender.sendMessage("Attacked Town: " + town.getName().toLowerCase());
 
         // Is being raided check
         for ( Raid r : RaidData.getRaids()) {
-            if(r.getRaidedTown().getName().equals(town.getName())) {
+            if(r.getRaidedTown().getName().equalsIgnoreCase(town.getName())) {
                 siegeOwner.sendMessage(String.valueOf(Helper.chatLabel()) + "That town is already currently being raided! Cannot siege at this time!");
                 if(admin) sender.sendMessage(String.valueOf(Helper.chatLabel()) + "That town is already currently being raided! Cannot siege at this time!");
                 return;
@@ -262,8 +262,8 @@ public class SiegeCommands implements CommandExecutor {
         sender.sendMessage(String.valueOf(Helper.chatLabel()) + "Sieges currently in progress:");
         for (Siege siege : sieges) {
             War war = siege.getWar();
-            String color = (siege.getSide1AreAttackers() && (war.getSide(siege.getTown().getName()) == 1) ) ? "§c" : "§9";
-            sender.sendMessage(war.getName() + " - " + color + siege.getTown().getName());
+            String color = (siege.getSide1AreAttackers() && (war.getSide(siege.getTown().getName().toLowerCase()) == 1) ) ? "§c" : "§9";
+            sender.sendMessage(war.getName() + " - " + color + siege.getTown().getName().toLowerCase());
             sender.sendMessage(war.getSide1() + " - " + (siege.getSide1AreAttackers() ? siege.getAttackerPoints() : siege.getDefenderPoints()));
             sender.sendMessage(war.getSide2() + " - " + (siege.getSide1AreAttackers() ? siege.getDefenderPoints() : siege.getAttackerPoints()));
             sender.sendMessage("Time Left: " + (Siege.maxSiegeTicks - siege.getSiegeTicks())/1200 + " minutes");

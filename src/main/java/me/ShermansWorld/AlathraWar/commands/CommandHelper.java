@@ -42,7 +42,7 @@ public class CommandHelper {
     public static List<String> getWarSides(String name) {
         List<String> out = new ArrayList<>();
         for (War w : WarData.getWars()) {
-            if(w.getName().equals(name)) {
+            if(w.getName().equalsIgnoreCase(name)) {
                 out.add(w.getSide1());
                 out.add(w.getSide2());
                 break;
@@ -114,11 +114,11 @@ public class CommandHelper {
         War w = WarData.getWar(war);
         if(w == null) return Collections.emptyList();
         for (Town t : TownyAPI.getInstance().getTowns()) {
-            if(side.equals(w.getSide1())) {
+            if(side.equalsIgnoreCase(w.getSide1())) {
                 if(w.getSide1Towns().contains(t.getName())) {
                     out.add(t.getName());
                 }
-            } else if(side.equals(w.getSide2())) {
+            } else if(side.equalsIgnoreCase(w.getSide2())) {
                 if(w.getSide2Towns().contains(t.getName())) {
                     out.add(t.getName());
                 }

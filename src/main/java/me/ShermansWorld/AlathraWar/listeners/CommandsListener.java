@@ -72,7 +72,7 @@ public class CommandsListener implements Listener {
                         for (String prefix : prefixesTowny) {
                             //payment check
                             for (String cmd : blacklistedXLong) {
-                                    if (parse.equals(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
+                                    if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
                                         p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&cYou cannot modify this property during a raid!"));
                                         event.setCancelled(true);
                                         return;
@@ -88,7 +88,7 @@ public class CommandsListener implements Listener {
                                 //payment check
                                 for (String cmd : payment) {
                                     //check for each prefix
-                                    if (parse.equals(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
+                                    if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
                                         p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&cYou cannot withdraw money whilst in a raid!"));
                                         event.setCancelled(true);
                                         return;
@@ -97,13 +97,13 @@ public class CommandsListener implements Listener {
 
                                 for (String cmd : blacklistedLong) {
                                     //check for each prefix
-                                    if (parse.equals(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
+                                    if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
                                         //check if in spawn
-                                        if (p.getWorld().getName().equals("world")) {
-                                            if (parse.equals("n spawn") || parse.equals("nat spawn") || parse.equals("nation spawn")
-                                                    || parse.equals("t spawn") || parse.equals("town spawn")
-                                                    || parse.equals("towny:n spawn") || parse.equals("towny:nat spawn") || parse.equals("towny:nation spawn")
-                                                    || parse.equals("towny:t spawn") || parse.equals("towny:town spawn")) {
+                                        if (p.getWorld().getName().equalsIgnoreCase("world")) {
+                                            if (parse.equalsIgnoreCase("n spawn") || parse.equalsIgnoreCase("nat spawn") || parse.equalsIgnoreCase("nation spawn")
+                                                    || parse.equalsIgnoreCase("t spawn") || parse.equalsIgnoreCase("town spawn")
+                                                    || parse.equalsIgnoreCase("towny:n spawn") || parse.equalsIgnoreCase("towny:nat spawn") || parse.equalsIgnoreCase("towny:nation spawn")
+                                                    || parse.equalsIgnoreCase("towny:t spawn") || parse.equalsIgnoreCase("towny:town spawn")) {
                                                 p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
                                                 return;
                                             }
@@ -128,9 +128,9 @@ public class CommandsListener implements Listener {
                             for (String prefix : prefixes) {
                                 for (String cmd : blacklistedShort) {
                                     //check for each prefix
-                                    if (parse.equals(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
+                                    if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
                                         //spawn world check
-                                        if (p.getWorld().getName().equals("world")) {
+                                        if (p.getWorld().getName().equalsIgnoreCase("world")) {
                                             p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
                                             p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&eUse /t spawn, or /n spawn"));
                                             event.setCancelled(true);
@@ -162,7 +162,7 @@ public class CommandsListener implements Listener {
                         for (String prefix : prefixesTowny) {
                             //payment check
                             for (String cmd : blacklistedXLong) {
-                                    if (parse.equals(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
+                                    if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
                                         p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&cYou cannot modify this property during a siege!"));
                                         event.setCancelled(true);
                                         return;
@@ -178,8 +178,8 @@ public class CommandsListener implements Listener {
                                 //payment check
                                 for (String cmd : payment) {
                                     //check for each prefix
-                                    if (parse.equals(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
-                                        p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&cYou cannot withdraw money whilst in a siege!"));
+                                    if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
+                                        p.sendMessage(Helper.chatLabel() + Helper.color("&cYou cannot withdraw money whilst in a siege!"));
                                         event.setCancelled(true);
                                         return;
                                     }
@@ -187,24 +187,24 @@ public class CommandsListener implements Listener {
 
                                 for (String cmd : blacklistedLong) {
                                     //check for each prefix
-                                    if (parse.equals(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
+                                    if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
                                         //check if in spawn
-                                        if (p.getWorld().getName().equals("world")) {
-                                            if (parse.equals("n spawn") || parse.equals("nat spawn") || parse.equals("nation spawn")
-                                                    || parse.equals("t spawn") || parse.equals("town spawn")
-                                                    || parse.equals("towny:n spawn") || parse.equals("towny:nat spawn") || parse.equals("towny:nation spawn")
-                                                    || parse.equals("towny:t spawn") || parse.equals("towny:town spawn")) {
-                                                p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
+                                        if (p.getWorld().getName().equalsIgnoreCase("world")) {
+                                            if (parse.equalsIgnoreCase("n spawn") || parse.equalsIgnoreCase("nat spawn") || parse.equalsIgnoreCase("nation spawn")
+                                                    || parse.equalsIgnoreCase("t spawn") || parse.equalsIgnoreCase("town spawn")
+                                                    || parse.equalsIgnoreCase("towny:n spawn") || parse.equalsIgnoreCase("towny:nat spawn") || parse.equalsIgnoreCase("towny:nation spawn")
+                                                    || parse.equalsIgnoreCase("towny:t spawn") || parse.equalsIgnoreCase("towny:town spawn")) {
+                                                p.sendMessage(Helper.chatLabel() + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
                                                 return;
                                             }
-                                            p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
-                                            p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&eUse /t spawn, or /n spawn"));
+                                            p.sendMessage(Helper.chatLabel() + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
+                                            p.sendMessage(Helper.chatLabel() + Helper.color("&eUse /t spawn, or /n spawn"));
                                             event.setCancelled(true);
                                             return;
                                         }
 
                                         //else
-                                        p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&cYou cannot teleport whilst in a siege!"));
+                                        p.sendMessage(Helper.chatLabel() + Helper.color("&cYou cannot teleport whilst in a siege!"));
                                         event.setCancelled(true);
                                         return;
                                     }
@@ -218,9 +218,9 @@ public class CommandsListener implements Listener {
                             for (String prefix : prefixes) {
                                 for (String cmd : blacklistedShort) {
                                     //check for each prefix
-                                    if (parse.equals(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
+                                    if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
                                         //spawn world check
-                                        if (p.getWorld().getName().equals("world")) {
+                                        if (p.getWorld().getName().equalsIgnoreCase("world")) {
                                             p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
                                             p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&eUse /t spawn, or /n spawn"));
                                             event.setCancelled(true);

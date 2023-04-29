@@ -334,14 +334,14 @@ public class AdminCommands implements CommandExecutor {
                     if (args[2].equalsIgnoreCase("raid")) {
                         for (Raid r : RaidData.getRaids()) {
                             if (args.length >= 6) {
-                                if (r.getWar().getName().equals(args[3]) && r.getRaidedTown().getName().equals(args[4])) {
+                                if (r.getWar().getName().equalsIgnoreCase(args[3]) && r.getRaidedTown().getName().equals(args[4])) {
                                     if (r.getSide1AreRaiders()) {
-                                        if (args[5].equals(r.getWar().getSide1())) {
+                                        if (args[5].equalsIgnoreCase(r.getWar().getSide1())) {
                                             r.raidersWin(r.getOwner(), r.getRaiderScore(), r.getDefenderScore());
                                             p.sendMessage(Helper.chatLabel() + "Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[5] + " (raiders) declared as victor.");
                                             Main.warLogger.log("Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[5] + " (raiders) declared as victor.");
                                             return true;
-                                        } else if (args[5].equals(r.getWar().getSide2())) {
+                                        } else if (args[5].equalsIgnoreCase(r.getWar().getSide2())) {
                                             r.defendersWin(r.getRaiderScore(), r.getDefenderScore());
                                             p.sendMessage(Helper.chatLabel() + "Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[5] + " (defenders) declared as victor.");
                                             Main.warLogger.log("Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[5] + " (defenders) declared as victor.");
@@ -351,12 +351,12 @@ public class AdminCommands implements CommandExecutor {
                                             return true;
                                         }
                                     } else {
-                                        if (args[5].equals(r.getWar().getSide1())) {
+                                        if (args[5].equalsIgnoreCase(r.getWar().getSide1())) {
                                             r.defendersWin(r.getRaiderScore(), r.getDefenderScore());
                                             p.sendMessage(Helper.chatLabel() + "Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[5] + " (defenders) declared as victor.");
                                             Main.warLogger.log("Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[5] + " (defenders) declared as victor.");
                                             return true;
-                                        } else if (args[5].equals(r.getWar().getSide2())) {
+                                        } else if (args[5].equalsIgnoreCase(r.getWar().getSide2())) {
                                             r.raidersWin(r.getOwner(), r.getRaiderScore(), r.getDefenderScore());
                                             p.sendMessage(Helper.chatLabel() + "Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[5] + " (raiders) declared as victor.");
                                             Main.warLogger.log("Raid forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[5] + " (raiders) declared as victor.");
@@ -368,7 +368,7 @@ public class AdminCommands implements CommandExecutor {
                                     }
                                 }
                             } else if (args.length == 5) {
-                                if (r.getWar().getName().equals(args[3]) && r.getRaidedTown().getName().equals(args[4])) {
+                                if (r.getWar().getName().equalsIgnoreCase(args[3]) && r.getRaidedTown().getName().equalsIgnoreCase(args[4])) {
                                     r.noWinner();
                                     p.sendMessage(Helper.chatLabel() + "Raid forcefully ended on " + args[4] + " in war " + args[3] + " with no victor.");
                                     Main.warLogger.log("Raid forcefully ended on " + args[4] + " in war " + args[3] + " with no victor.");
@@ -385,14 +385,14 @@ public class AdminCommands implements CommandExecutor {
                     } else if (args[2].equalsIgnoreCase("siege")) {
                         for (Siege s : SiegeData.getSieges()) {
                             if (args.length >= 6) {
-                                if (s.getWar().getName().equals(args[3]) && s.getTown().getName().equals(args[4])) {
+                                if (s.getWar().getName().equalsIgnoreCase(args[3]) && s.getTown().getName().equalsIgnoreCase(args[4])) {
                                     if (s.getSide1AreAttackers()) {
-                                        if (args[5].equals(s.getWar().getSide1())) {
+                                        if (args[5].equalsIgnoreCase(s.getWar().getSide1())) {
                                             s.attackersWin(s.getSiegeOwner());
                                             p.sendMessage(Helper.chatLabel() + "Siege forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (attackers) declared as victor.");
                                             Main.warLogger.log("Siege forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (attackers) declared as victor.");
                                             return true;
-                                        } else if (args[5].equals(s.getWar().getSide2())) {
+                                        } else if (args[5].equalsIgnoreCase(s.getWar().getSide2())) {
                                             s.defendersWin();
                                             p.sendMessage(Helper.chatLabel() + "Siege forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
                                             Main.warLogger.log("Siege forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
@@ -402,12 +402,12 @@ public class AdminCommands implements CommandExecutor {
                                             return true;
                                         }
                                     } else {
-                                        if (args[5].equals(s.getWar().getSide1())) {
+                                        if (args[5].equalsIgnoreCase(s.getWar().getSide1())) {
                                             s.defendersWin();
                                             p.sendMessage(Helper.chatLabel() + "Siege forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
                                             Main.warLogger.log("Siege forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (defenders) declared as victor.");
                                             return true;
-                                        } else if (args[5].equals(s.getWar().getSide2())) {
+                                        } else if (args[5].equalsIgnoreCase(s.getWar().getSide2())) {
                                             s.attackersWin(s.getSiegeOwner());
                                             p.sendMessage(Helper.chatLabel() + "Siege forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (attackers) declared as victor.");
                                             Main.warLogger.log("Siege forcefully ended on " + args[4] + " in war " + args[3] + " with " + args[6] + " (attackers) declared as victor.");
@@ -419,7 +419,7 @@ public class AdminCommands implements CommandExecutor {
                                     }
                                 }
                             } else if (args.length == 5) {
-                                if (s.getWar().getName().equals(args[3]) && s.getTown().getName().equals(args[4])) {
+                                if (s.getWar().getName().equalsIgnoreCase(args[3]) && s.getTown().getName().equalsIgnoreCase(args[4])) {
                                     s.noWinner();
                                     p.sendMessage(Helper.chatLabel() + "Siege forcefully ended on " + args[4] + " in war " + args[3] + " with no victor.");
                                     Main.warLogger.log("Siege forcefully ended on " + args[4] + " in war " + args[3] + " with no victor.");
@@ -507,7 +507,7 @@ public class AdminCommands implements CommandExecutor {
                     if (args[2].equalsIgnoreCase("raid")) {
                         if (args.length >= 6) {
                             for (Raid r : RaidData.getRaids()) {
-                                if (r.getWar().getName().equals(args[3]) && r.getRaidedTown().getName().equals(args[4])) {
+                                if (r.getWar().getName().equalsIgnoreCase(args[3]) && r.getRaidedTown().getName().equalsIgnoreCase(args[4])) {
                                     if (Bukkit.getPlayer(args[5]) != null) {
                                         String[] fixed = new String[]{
                                                 args[1],
@@ -584,7 +584,7 @@ public class AdminCommands implements CommandExecutor {
             if (args[1].equalsIgnoreCase("war")) {
                 if (args.length >= 3) {
                     for (War w : WarData.getWars()) {
-                        if (w.getName().equals(args[2])) {
+                        if (w.getName().equalsIgnoreCase(args[2])) {
                             p.sendMessage(Helper.chatLabel() + "Info dump for war: " + w.getName());
                             p.sendMessage(Helper.chatLabel() + "oOo------------===------------oOo");
                             p.sendMessage(Helper.chatLabel() + "Name: " + w.getName());
@@ -648,7 +648,7 @@ public class AdminCommands implements CommandExecutor {
             } else if (args[1].equalsIgnoreCase("raid")) {
                 if (args.length >= 4) {
                     for (Raid r : RaidData.getRaids()) {
-                        if (r.getWar().getName().equals(args[2]) && r.getRaidedTown().getName().equals(args[3])) {
+                        if (r.getWar().getName().equalsIgnoreCase(args[2]) && r.getRaidedTown().getName().equalsIgnoreCase(args[3])) {
                             p.sendMessage(Helper.chatLabel() + "Info dump for raid: " + r.getName());
                             p.sendMessage(Helper.chatLabel() + "oOo------------===------------oOo");
                             p.sendMessage(Helper.chatLabel() + "Name: " + r.getName());
@@ -695,7 +695,7 @@ public class AdminCommands implements CommandExecutor {
             } else if (args[1].equalsIgnoreCase("siege")) {
                 if (args.length >= 4) {
                     for (Siege s : SiegeData.getSieges()) {
-                        if (s.getWar().getName().equals(args[2]) && s.getTown().getName().equals(args[3])) {
+                        if (s.getWar().getName().equalsIgnoreCase(args[2]) && s.getTown().getName().equalsIgnoreCase(args[3])) {
                             p.sendMessage(Helper.chatLabel() + "Info dump for siege: " + s.getName());
                             p.sendMessage(Helper.chatLabel() + "oOo------------===------------oOo");
                             p.sendMessage(Helper.chatLabel() + "Name: " + s.getName());
@@ -779,8 +779,8 @@ public class AdminCommands implements CommandExecutor {
                     if (args[2].equalsIgnoreCase("score")) {
                         if (args.length >= 8) {
                             for (Raid r : RaidData.getRaids()) {
-                                if (r.getWar().getName().equals(args[3]) && r.getRaidedTown().getName().equals(args[4])) {
-                                    if(args[6].equals(r.getWar().getSide1())) {
+                                if (r.getWar().getName().equalsIgnoreCase(args[3]) && r.getRaidedTown().getName().equalsIgnoreCase(args[4])) {
+                                    if(args[6].equalsIgnoreCase(r.getWar().getSide1())) {
                                         if(r.getSide1AreRaiders()) {
                                             if (args[5].equalsIgnoreCase("add")) {
                                                 r.addPointsToRaiderScore(Integer.parseInt(args[7]));
@@ -822,7 +822,7 @@ public class AdminCommands implements CommandExecutor {
                                                 return true;
                                             }
                                         }
-                                    } else if(args[6].equals(r.getWar().getSide2())) {
+                                    } else if(args[6].equalsIgnoreCase(r.getWar().getSide2())) {
                                         if(!r.getSide1AreRaiders()) {
                                             if (args[5].equalsIgnoreCase("add")) {
                                                 r.addPointsToRaiderScore(Integer.parseInt(args[7]));
@@ -878,7 +878,7 @@ public class AdminCommands implements CommandExecutor {
                     } else if (args[2].equalsIgnoreCase("townspawn")) {
                         if (args.length >= 5) {
                             for (Raid r : RaidData.getRaids()) {
-                                if (r.getWar().getName().equals(args[3]) && r.getRaidedTown().getName().equals(args[4])) {
+                                if (r.getWar().getName().equalsIgnoreCase(args[3]) && r.getRaidedTown().getName().equalsIgnoreCase(args[4])) {
                                     if (args.length == 6 || args.length == 7) {
                                         p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid townspawn [war] [town] (x) (Z)"));
                                         return true;
@@ -956,7 +956,7 @@ public class AdminCommands implements CommandExecutor {
                     } else if (args[2].equalsIgnoreCase("gather")) {
                         if (args.length >= 6) {
                             for (Raid r : RaidData.getRaids()) {
-                                if (r.getWar().getName().equals(args[3]) && r.getRaidedTown().getName().equals(args[4])) {
+                                if (r.getWar().getName().equalsIgnoreCase(args[3]) && r.getRaidedTown().getName().equalsIgnoreCase(args[4])) {
                                     Town t = TownyAPI.getInstance().getTown(args[5]);
                                     if (t != null) {
                                         r.setRaidedTown(t);
@@ -984,7 +984,7 @@ public class AdminCommands implements CommandExecutor {
                     } else if (args[2].equalsIgnoreCase("phase")) {
                         if (args.length >= 6) {
                             for (Raid r : RaidData.getRaids()) {
-                                if (r.getWar().getName().equals(args[3]) && r.getRaidedTown().getName().equals(args[4])) {
+                                if (r.getWar().getName().equalsIgnoreCase(args[3]) && r.getRaidedTown().getName().equalsIgnoreCase(args[4])) {
                                     //parse phase
                                     RaidPhase ph;
                                     if (args[5].equalsIgnoreCase("next")) {
@@ -1015,7 +1015,7 @@ public class AdminCommands implements CommandExecutor {
                     } else if (args[2].equalsIgnoreCase("loot")) {
                         if (args.length >= 5) {
                             for (Raid r : RaidData.getRaids()) {
-                                if (r.getWar().getName().equals(args[3]) && r.getRaidedTown().getName().equals(args[4])) {
+                                if (r.getWar().getName().equalsIgnoreCase(args[3]) && r.getRaidedTown().getName().equalsIgnoreCase(args[4])) {
                                     //parse phase
                                     if(!(p instanceof Player runner)) {
                                         p.sendMessage(Helper.chatLabel() + "This command cannot be run through console!");
@@ -1118,7 +1118,7 @@ public class AdminCommands implements CommandExecutor {
                     } else if (args[2].equalsIgnoreCase("time")) {
                         if (args.length >= 7) {
                             for (Raid r : RaidData.getRaids()) {
-                                if (r.getWar().getName().equals(args[3]) && r.getRaidedTown().getName().equals(args[4])) {
+                                if (r.getWar().getName().equalsIgnoreCase(args[3]) && r.getRaidedTown().getName().equalsIgnoreCase(args[4])) {
                                     //parse phase
                                     if (args[5].equalsIgnoreCase("add")) {
                                         r.setRaidTicks(r.getRaidTicks() + Integer.parseInt(args[6]));
@@ -1150,7 +1150,7 @@ public class AdminCommands implements CommandExecutor {
                     } else if (args[2].equalsIgnoreCase("owner")) {
                         if (args.length >= 6) {
                             for (Raid r : RaidData.getRaids()) {
-                                if (r.getWar().getName().equals(args[3]) && r.getRaidedTown().getName().equals(args[4])) {
+                                if (r.getWar().getName().equalsIgnoreCase(args[3]) && r.getRaidedTown().getName().equalsIgnoreCase(args[4])) {
                                     Player own = Bukkit.getPlayer(args[5]);
                                     if (own != null) {
                                         if(r.getActiveRaiders().contains(own.getName())) {
@@ -1194,9 +1194,9 @@ public class AdminCommands implements CommandExecutor {
                     if (args[2].equalsIgnoreCase("score")) {
                         if (args.length >= 8) {
                             for (Siege s : SiegeData.getSieges()) {
-                                if (s.getWar().getName().equals(args[3]) && s.getTown().getName().equals(args[4])) {
+                                if (s.getWar().getName().equalsIgnoreCase(args[3]) && s.getTown().getName().equalsIgnoreCase(args[4])) {
                                     if (args[5].equalsIgnoreCase("add")) {
-                                        if (s.getWar().getSide1().equals(args[6])) {
+                                        if (s.getWar().getSide1().equalsIgnoreCase(args[6])) {
                                             if (s.getSide1AreAttackers()) {
                                                 s.addPointsToAttackers(Integer.parseInt(args[7]));
                                             } else {
@@ -1205,7 +1205,7 @@ public class AdminCommands implements CommandExecutor {
                                             p.sendMessage(Helper.chatLabel() + "Added " + args[7] + " points to side " + args[6] + " in sige on " + args[4] + " in war " + args[3]);
                                             Main.warLogger.log("Added " + args[7] + " points to side " + args[6] + " in sige on " + args[4] + " in war " + args[3]);
                                             return finalizeSiege(s);
-                                        } else if (s.getWar().getSide2().equals(args[6])) {
+                                        } else if (s.getWar().getSide2().equalsIgnoreCase(args[6])) {
                                             if (s.getSide1AreAttackers()) {
                                                 s.addPointsToDefenders(Integer.parseInt(args[7]));
                                             } else {
@@ -1219,7 +1219,7 @@ public class AdminCommands implements CommandExecutor {
                                             return true;
                                         }
                                     } else if (args[5].equalsIgnoreCase("set")) {
-                                        if (s.getWar().getSide1().equals(args[6])) {
+                                        if (s.getWar().getSide1().equalsIgnoreCase(args[6])) {
                                             if (s.getSide1AreAttackers()) {
                                                 s.setAttackerPoints(Integer.parseInt(args[7]));
                                             } else {
@@ -1228,7 +1228,7 @@ public class AdminCommands implements CommandExecutor {
                                             p.sendMessage(Helper.chatLabel() + "Set " + args[7] + " points for side " + args[6] + " in sige on " + args[4] + " in war " + args[3]);
                                             Main.warLogger.log("Set " + args[7] + " points for side " + args[6] + " in sige on " + args[4] + " in war " + args[3]);
                                             return finalizeSiege(s);
-                                        } else if (s.getWar().getSide2().equals(args[6])) {
+                                        } else if (s.getWar().getSide2().equalsIgnoreCase(args[6])) {
                                             if (s.getSide1AreAttackers()) {
                                                 s.setDefenderPoints(Integer.parseInt(args[7]));
                                             } else {
@@ -1258,7 +1258,7 @@ public class AdminCommands implements CommandExecutor {
                     } else if (args[2].equalsIgnoreCase("townspawn")) {
                         if (args.length >= 5) {
                             for (Siege s : SiegeData.getSieges()) {
-                                if (s.getWar().getName().equals(args[3]) && s.getTown().getName().equals(args[4])) {
+                                if (s.getWar().getName().equalsIgnoreCase(args[3]) && s.getTown().getName().equalsIgnoreCase(args[4])) {
                                     if (args.length == 6 || args.length == 7) {
                                         p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify siege townspawn [war] [town] (x) (y) (Z)"));
                                         return true;
@@ -1338,7 +1338,7 @@ public class AdminCommands implements CommandExecutor {
                     } else if (args[2].equalsIgnoreCase("time")) {
                         if (args.length >= 7) {
                             for (Siege s : SiegeData.getSieges()) {
-                                if (s.getWar().getName().equals(args[3]) && s.getTown().getName().equals(args[4])) {
+                                if (s.getWar().getName().equalsIgnoreCase(args[3]) && s.getTown().getName().equalsIgnoreCase(args[4])) {
                                     //parse phase
                                     if (args[5].equalsIgnoreCase("add")) {
                                         s.setSiegeTicks(s.getSiegeTicks() + Integer.parseInt(args[6]));
@@ -1364,7 +1364,7 @@ public class AdminCommands implements CommandExecutor {
                     } else if (args[2].equalsIgnoreCase("owner")) {
                         if (args.length >= 7) {
                             for (Siege s : SiegeData.getSieges()) {
-                                if (s.getWar().getName().equals(args[3]) && s.getTown().getName().equals(args[4])) {
+                                if (s.getWar().getName().equalsIgnoreCase(args[3]) && s.getTown().getName().equalsIgnoreCase(args[4])) {
                                     Player own = Bukkit.getPlayer(args[5]);
                                     if (own != null) {
                                         if (s.attackerPlayers.contains(own.getName())) {
@@ -1404,8 +1404,8 @@ public class AdminCommands implements CommandExecutor {
                     if (args[2].equalsIgnoreCase("score")) {
                         if (args.length >= 7) {
                             for (War w : WarData.getWars()) {
-                                if (w.getName().equals(args[3])) {
-                                    if(args[4].equals(w.getSide1())) {
+                                if (w.getName().equalsIgnoreCase(args[3])) {
+                                    if(args[4].equalsIgnoreCase(w.getSide1())) {
                                         if (args[5].equalsIgnoreCase("add")) {
                                             w.addSide1Points(Integer.parseInt(args[6]));
                                             p.sendMessage(Helper.chatLabel() + "Added " + args[6] + " points to the raid war in the war " + args[3] + " on side " + args[4]);
@@ -1425,7 +1425,7 @@ public class AdminCommands implements CommandExecutor {
                                             p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war score [war] [side] [add/subtract/set] [amt]"));
                                             return true;
                                         }
-                                    } else if(args[4].equals(w.getSide2())) {
+                                    } else if(args[4].equalsIgnoreCase(w.getSide2())) {
                                         if (args[5].equalsIgnoreCase("add")) {
                                             w.addSide2Points(Integer.parseInt(args[6]));
                                             p.sendMessage(Helper.chatLabel() + "Added " + args[6] + " points to the war score in the war " + args[3] + " on side " + args[4]);
@@ -1459,14 +1459,14 @@ public class AdminCommands implements CommandExecutor {
                     } else if (args[2].equalsIgnoreCase("side")) {
                         if (args.length >= 6) {
                             for (War w : WarData.getWars()) {
-                                if (w.getName().equals(args[3])) {
-                                    if (w.getSide1().equals(args[4])) {
+                                if (w.getName().equalsIgnoreCase(args[3])) {
+                                    if (w.getSide1().equalsIgnoreCase(args[4])) {
                                         w.setSide1(args[5]);
                                         w.save();
                                         p.sendMessage(Helper.chatLabel() + "Set side " + args[4] + " to " + args[5] + " in war " + args[3]);
                                         Main.warLogger.log(Helper.chatLabel() + "Set side " + args[4] + " to " + args[5] + " in war " + args[3]);
                                         return finalizeWar(w);
-                                    } else if (w.getSide2().equals(args[4])) {
+                                    } else if (w.getSide2().equalsIgnoreCase(args[4])) {
                                         w.setSide2(args[5]);
                                         w.save();
                                         p.sendMessage(Helper.chatLabel() + "Set side " + args[4] + " to " + args[5] + " in war " + args[3]);
@@ -1486,7 +1486,7 @@ public class AdminCommands implements CommandExecutor {
                     } else if (args[2].equalsIgnoreCase("name")) {
                         if (args.length >= 5) {
                             for (War w : WarData.getWars()) {
-                                if (w.getName().equals(args[3])) {
+                                if (w.getName().equalsIgnoreCase(args[3])) {
                                     w.setName(args[4]);
                                     p.sendMessage(Helper.chatLabel() + "Set name of war " + args[3] + " to " + args[4]);
                                     Main.warLogger.log(Helper.chatLabel() + "Set name of war " + args[3] + " to " + args[4]);
@@ -1503,8 +1503,8 @@ public class AdminCommands implements CommandExecutor {
                     else if (args[2].equalsIgnoreCase("add")) {
                         if (args.length >= 7) {
                             for (War w : WarData.getWars()) {
-                                if (w.getName().equals(args[3])) {
-                                    if (!w.getSide1().equals(args[4]) && !w.getSide2().equals(args[4])) {
+                                if (w.getName().equalsIgnoreCase(args[3])) {
+                                    if (!w.getSide1().equalsIgnoreCase(args[4]) && !w.getSide2().equalsIgnoreCase(args[4])) {
                                         p.sendMessage(Helper.color("&cError: Side not found!"));
                                         return true;
                                     }
@@ -1520,12 +1520,12 @@ public class AdminCommands implements CommandExecutor {
                                                         p.sendMessage(Helper.chatLabel() + "Un-surrendered town " + args[6]);
                                                         Main.warLogger.log(Helper.chatLabel() + "Un-surrendered town " + args[6]);
                                                     }
-                                                    if(w.getSide1().equals(args[4])) {
+                                                    if(w.getSide1().equalsIgnoreCase(args[4])) {
                                                         if(w.getSide2Towns().remove(args[6])) {
                                                             p.sendMessage(Helper.chatLabel() + "Removed town " + args[6] + " from side " + w.getSide2());
                                                             Main.warLogger.log(Helper.chatLabel() + "Un-surrendered town " + args[6]);
                                                         }
-                                                    } else if(w.getSide2().equals(args[4])) {
+                                                    } else if(w.getSide2().equalsIgnoreCase(args[4])) {
                                                         if(w.getSide1Towns().remove(args[6])) {
                                                             p.sendMessage(Helper.chatLabel() + "Removed town " + args[6] + " from side " + w.getSide2());
                                                             Main.warLogger.log(Helper.chatLabel() + "Un-surrendered town " + args[6]);
@@ -1564,12 +1564,12 @@ public class AdminCommands implements CommandExecutor {
                                                             p.sendMessage(Helper.chatLabel() + "Unsurrendered town " + t.getName());
                                                             Main.warLogger.log(Helper.chatLabel() + "Unsurrendered town " + t.getName());
                                                         }
-                                                        if(w.getSide1().equals(args[4])) {
+                                                        if(w.getSide1().equalsIgnoreCase(args[4])) {
                                                             if(w.getSide2Towns().remove(t.getName())) {
                                                                 p.sendMessage(Helper.chatLabel() + "Removed town " + t.getName() + " from side " + w.getSide2());
                                                                 Main.warLogger.log(Helper.chatLabel() + "Un-surrendered town " + t.getName());
                                                             }
-                                                        } else if(w.getSide2().equals(args[4])) {
+                                                        } else if(w.getSide2().equalsIgnoreCase(args[4])) {
                                                             if(w.getSide1Towns().remove(t.getName())) {
                                                                 p.sendMessage(Helper.chatLabel() + "Removed town " + t.getName() + " from side " + w.getSide2());
                                                                 Main.warLogger.log(Helper.chatLabel() + "Un-surrendered town " + t.getName());
@@ -1615,7 +1615,7 @@ public class AdminCommands implements CommandExecutor {
                     else if (args[2].equalsIgnoreCase("unsurrender")) {
                         if (args.length >= 6) {
                             for (War w : WarData.getWars()) {
-                                if (w.getName().equals(args[3])) {
+                                if (w.getName().equalsIgnoreCase(args[3])) {
                                     if (args[4].equalsIgnoreCase("town")) {
                                         Town t = TownyAPI.getInstance().getTown(args[5]);
                                         if (t != null) {
@@ -1669,26 +1669,26 @@ public class AdminCommands implements CommandExecutor {
                     else if (args[2].equalsIgnoreCase("surrender")) {
                         if (args.length >= 7) {
                             for (War w : WarData.getWars()) {
-                                if (w.getName().equals(args[3])) {
-                                    if (!w.getSide1().equals(args[4]) && !w.getSide2().equals(args[4])) {
+                                if (w.getName().equalsIgnoreCase(args[3])) {
+                                    if (!w.getSide1().equalsIgnoreCase(args[4]) && !w.getSide2().equalsIgnoreCase(args[4])) {
                                         p.sendMessage(Helper.color("&cError: Side not found!"));
                                         return true;
                                     }
                                     if (args[5].equalsIgnoreCase("town")) {
                                         Town t = TownyAPI.getInstance().getTown(args[6]);
                                         if (t != null) {
-                                            if(w.getSide1Towns().contains(t.getName()) && w.getSide1().equals(args[4])) {
+                                            if(w.getSide1Towns().contains(t.getName()) && w.getSide1().equalsIgnoreCase(args[4])) {
                                                 w.surrenderTown(t.getName());
                                                 p.sendMessage(Helper.chatLabel() + "Forcefully surrendered town " + args[6] + " war " + args[3] + " on side " + args[4]);
                                                 Main.warLogger.log(Helper.chatLabel() + "Forcefully surrendered town " + args[6] + " war " + args[3] + " on side " + args[4]);
                                                 return finalizeWar(w);
-                                            } else if(w.getSide2Towns().contains(t.getName()) && w.getSide2().equals(args[4])) {
+                                            } else if(w.getSide2Towns().contains(t.getName()) && w.getSide2().equalsIgnoreCase(args[4])) {
                                                 w.surrenderTown(t.getName());
                                                 p.sendMessage(Helper.chatLabel() + "Forcefully surrendered town " + args[6] + " war " + args[3] + " on side " + args[4]);
                                                 Main.warLogger.log(Helper.chatLabel() + "Forcefully surrendered town " + args[6] + " war " + args[3] + " on side " + args[4]);
                                                 return finalizeWar(w);
                                             } else {
-                                                if (w.getSide1().equals(args[4]) || w.getSide2().equals(args[4])) {
+                                                if (w.getSide1().equalsIgnoreCase(args[4]) || w.getSide2().equalsIgnoreCase(args[4])) {
                                                     p.sendMessage(Helper.chatLabel() + "Town " + args[5] + " is not on either side of the war!");
                                                     Main.warLogger.log(Helper.chatLabel() + "Town " + args[5] + " is not on either side of the war!");
                                                     return true;
@@ -1705,18 +1705,18 @@ public class AdminCommands implements CommandExecutor {
                                         Nation n = TownyAPI.getInstance().getNation(args[6]);
                                         if (n != null) {
                                             for (Town t : n.getTowns()) {
-                                                if(w.getSide1Towns().contains(t.getName()) && w.getSide1().equals(args[4])) {
+                                                if(w.getSide1Towns().contains(t.getName()) && w.getSide1().equalsIgnoreCase(args[4])) {
                                                     w.surrenderTown(t.getName());
                                                     p.sendMessage(Helper.chatLabel() + "Forcefully surrendered town " + t.getName() + " war " + args[3] + " on side " + args[4]);
                                                     Main.warLogger.log(Helper.chatLabel() + "Forcefully surrendered town " + t.getName() + " war " + args[3] + " on side " + args[4]);
 
-                                                } else if(w.getSide2Towns().contains(t.getName()) && w.getSide2().equals(args[4])) {
+                                                } else if(w.getSide2Towns().contains(t.getName()) && w.getSide2().equalsIgnoreCase(args[4])) {
                                                     w.surrenderTown(t.getName());
                                                     p.sendMessage(Helper.chatLabel() + "Forcefully surrendered town " + t.getName() + " war " + args[3] + " on side " + args[4]);
                                                     Main.warLogger.log(Helper.chatLabel() + "Forcefully surrendered town " + t.getName() + " war " + args[3] + " on side " + args[4]);
 
                                                 } else {
-                                                    if (w.getSide1().equals(args[4]) || w.getSide2().equals(args[4])) {
+                                                    if (w.getSide1().equalsIgnoreCase(args[4]) || w.getSide2().equalsIgnoreCase(args[4])) {
                                                         p.sendMessage(Helper.chatLabel() + "Town " + t.getName() + " is not on either side of the war!");
                                                         Main.warLogger.log(Helper.chatLabel() + "Town " + t.getName() + " is not on either side of the war!");
                                                         return true;
@@ -1747,15 +1747,15 @@ public class AdminCommands implements CommandExecutor {
                     } else if (args[2].equalsIgnoreCase("raidTimeWar")) {
                         if (args.length >= 5) {
                             for (War w : WarData.getWars()) {
-                                if (w.getName().equals(args[4])) {
+                                if (w.getName().equalsIgnoreCase(args[4])) {
                                     if (args[3].equalsIgnoreCase("add")) {
                                         if (args.length >= 7) {
-                                            if (args[6].equals(w.getSide1())) {
+                                            if (args[6].equalsIgnoreCase(w.getSide1())) {
                                                 w.setLastRaidTimeSide1(w.getLastRaidTimeSide1() + Integer.parseInt(args[5]));
                                                 p.sendMessage(Helper.chatLabel() + "Added " + args[6] + " to last raid time in war " + args[4]);
                                                 Main.warLogger.log(Helper.chatLabel() + "Added " + args[6] + " to last raid time in war " + args[4]);
                                                 return finalizeWar(w);
-                                            } else if (args[6].equals(w.getSide2())) {
+                                            } else if (args[6].equalsIgnoreCase(w.getSide2())) {
                                                 w.setLastRaidTimeSide2(w.getLastRaidTimeSide2() + Integer.parseInt(args[5]));
                                                 p.sendMessage(Helper.chatLabel() + "Added " + args[6] + " to last raid time in war " + args[4]);
                                                 Main.warLogger.log(Helper.chatLabel() + "Added " + args[6] + " to last raid time in war " + args[4]);
@@ -1770,12 +1770,12 @@ public class AdminCommands implements CommandExecutor {
                                         }
                                     } else if (args[3].equalsIgnoreCase("set")) {
                                         if (args.length >= 7) {
-                                            if (args[6].equals(w.getSide1())) {
+                                            if (args[6].equalsIgnoreCase(w.getSide1())) {
                                                 w.setLastRaidTimeSide1(Integer.parseInt(args[5]));
                                                 p.sendMessage(Helper.chatLabel() + "Set last raid time in war " + args[4] + " to " + args[6]);
                                                 Main.warLogger.log(Helper.chatLabel() + "Set last raid time in war " + args[4] + " to " + args[6]);
                                                 return finalizeWar(w);
-                                            } else if (args[6].equals(w.getSide2())) {
+                                            } else if (args[6].equalsIgnoreCase(w.getSide2())) {
                                                 w.setLastRaidTimeSide2(Integer.parseInt(args[5]));
                                                 p.sendMessage(Helper.chatLabel() + "Set last raid time in war " + args[4] + " to " + args[6]);
                                                 Main.warLogger.log(Helper.chatLabel() + "Set last raid time in war " + args[4] + " to " + args[6]);
@@ -1791,12 +1791,12 @@ public class AdminCommands implements CommandExecutor {
                                     } else if (args[3].equalsIgnoreCase("reset")) {
 
                                         if (args.length >= 6) {
-                                            if (args[5].equals(w.getSide1())) {
+                                            if (args[5].equalsIgnoreCase(w.getSide1())) {
                                                 w.setLastRaidTimeSide1(0);
                                                 p.sendMessage(Helper.chatLabel() + "Reset last raid time in war " + args[4]);
                                                 Main.warLogger.log(Helper.chatLabel() + "Reset last raid time in war " + args[4]);
                                                 return finalizeWar(w);
-                                            } else if (args[5].equals(w.getSide2())) {
+                                            } else if (args[5].equalsIgnoreCase(w.getSide2())) {
                                                 w.setLastRaidTimeSide2(0);
                                                 p.sendMessage(Helper.chatLabel() + "Reset last raid time in war " + args[4]);
                                                 Main.warLogger.log(Helper.chatLabel() + "Reset last raid time in war " + args[4]);
@@ -1823,7 +1823,7 @@ public class AdminCommands implements CommandExecutor {
                     } else if (args[2].equalsIgnoreCase("raidTimeTown")) {
                         if (args.length >= 5) {
                             for (Town t : TownyAPI.getInstance().getTowns()) {
-                                if (t.getName().equals(args[4])) {
+                                if (t.getName().equalsIgnoreCase(args[4])) {
                                     if (args[3].equalsIgnoreCase("add")) {
                                         if (args.length >= 6) {
                                             LongDataField last = (LongDataField) t.getMetadata("lastRaided");

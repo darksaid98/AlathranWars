@@ -172,8 +172,8 @@ public class RaidCommands implements CommandExecutor {
                         }
 
                         //check if the town were attempting to raid is in the war
-                        if(!war.getSide1Towns().contains(raidedTown.getName()) && !war.getSide2Towns().contains(raidedTown.getName())) {
-                            if (war.getSurrenderedTowns().contains(raidedTown.getName())) {
+                        if(!war.getSide1Towns().contains(raidedTown.getName().toLowerCase()) && !war.getSide2Towns().contains(raidedTown.getName().toLowerCase())) {
+                            if (war.getSurrenderedTowns().contains(raidedTown.getName().toLowerCase())) {
                                 if (admin) p.sendMessage(String.valueOf(Helper.chatLabel()) + "The town you are trying to raid has already surrendered!");
                                 raidOwner.sendMessage(String.valueOf(Helper.chatLabel()) + "The town you are trying to raid has already surrendered!");
                                 return;
@@ -185,7 +185,7 @@ public class RaidCommands implements CommandExecutor {
 
                         // Is being sieged check
                         for (Siege s : SiegeData.getSieges()) {
-                            if(s.getTown().getName().equals(raidedTown.getName())) {
+                            if(s.getTown().getName().equalsIgnoreCase(raidedTown.getName())) {
                                 raidOwner.sendMessage(String.valueOf(Helper.chatLabel()) + "That town is already currently being sieged! Cannot raid at this time!");
                                 if(admin) p.sendMessage(String.valueOf(Helper.chatLabel()) + "That town is already currently being sieged! Cannot raid at this time!");
                             }
@@ -252,7 +252,7 @@ public class RaidCommands implements CommandExecutor {
 
                         // Player participance check
                         Town leaderTown = TownyAPI.getInstance().getResident(raidOwner).getTownOrNull();
-                        int sideR = war.getSide(leaderTown.getName());
+                        int sideR = war.getSide(leaderTown.getName().toLowerCase());
                         if (sideR == 0) {
                             if (admin) p.sendMessage(Helper.chatLabel() + "You are not in this war.");
                             raidOwner.sendMessage(Helper.chatLabel() + "You are not in this war.");
@@ -356,7 +356,7 @@ public class RaidCommands implements CommandExecutor {
 
                     if(joiner != null) {
                         if (args[4] != null) {
-                            if (args[4].equals(raid.getDefenderSide())) {
+                            if (args[4].equalsIgnoreCase(raid.getDefenderSide())) {
                                 if (!raid.getDefenderPlayers().contains(joiner.getName()))
                                     raid.getDefenderPlayers().add(joiner.getName());
                                 p.sendMessage(String.valueOf(Helper.chatLabel()) + "Player " + joiner.getName() + " added to defender side.");
@@ -521,7 +521,7 @@ public class RaidCommands implements CommandExecutor {
                     return;
                 }
 
-                if (raid.getOwner().getName().equals(p.getName())) {
+                if (raid.getOwner().getName().equalsIgnoreCase(p.getName())) {
                     //check if gather phase
                     if (raid.getPhase() == RaidPhase.GATHER || raid.getPhase() == RaidPhase.START || raid.getPhase() == RaidPhase.TRAVEL || raid.getPhase() == RaidPhase.COMBAT) {
                         //force defender victory
@@ -550,8 +550,8 @@ public class RaidCommands implements CommandExecutor {
             p.sendMessage("Name: " + raid.getName());
             p.sendMessage("War: " + raid.getWar().getName());
             p.sendMessage("Owner: " + raid.getOwner().getName());
-            p.sendMessage("Raiding: " + raid.getRaidedTown().getName());
-            p.sendMessage("Gathering In: " + raid.getGatherTown().getName());
+            p.sendMessage("Raiding: " + raid.getRaidedTown().getName().toLowerCase());
+            p.sendMessage("Gathering In: " + raid.getGatherTown().getName().toLowerCase());
             p.sendMessage("Raiders: " + raid.getRaiderSide());
             p.sendMessage("Defenders: " + raid.getDefenderSide());
             p.sendMessage("Raider Score: " + raid.getRaiderScore());
