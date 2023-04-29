@@ -289,7 +289,7 @@ public class WarCommands implements CommandExecutor {
             p.sendMessage("There are no current wars.");
         } else {
             for (War war : wars) {
-                p.sendMessage(war.getName() + " - " + war.getSide1() + "(" + war.getSide1Points() + ") vs. " + war.getSide2() + "(" + war.getSide2Points() + ")");
+                p.sendMessage(war.getName() + " - " + war.getSide1() + " (" + war.getSide1Points() + ") vs. " + war.getSide2() + " (" + war.getSide2Points() + ")");
             }
         }
     }
