@@ -1,6 +1,7 @@
 package me.ShermansWorld.AlathraWar.commands;
 
 import com.palmergames.bukkit.towny.utils.NameUtil;
+import me.ShermansWorld.AlathraWar.items.WarItems;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -197,7 +198,7 @@ public class AdminTabCompletion implements TabCompleter {
                 if(args.length > 2) {
                     return empty;
                 } else {
-                    return CommandHelper.getWarNames();
+                    return NameUtil.filterByStart(CommandHelper.getWarNames(), args[1]);
                 }
             } else if (args[0].equalsIgnoreCase("save-all")) {
                 return empty;
@@ -205,11 +206,25 @@ public class AdminTabCompletion implements TabCompleter {
                 if(args.length > 2) {
                     return empty;
                 } else {
-                    return CommandHelper.getWarNames();
+                    return NameUtil.filterByStart(CommandHelper.getWarNames(), args[1]);
                 }
             } else if (args[0].equalsIgnoreCase("load-all")) {
                 return empty;
-            } else if (args[0].equalsIgnoreCase("create")) {
+            } else if (args[0].equalsIgnoreCase("item")) {
+                if(args.length > 2) {
+                    if(args.length > 3) {
+                        if(args.length > 4) {
+                            return empty;
+                        } else {
+                            return NameUtil.filterByStart(CommandHelper.getPlayers(), args[3]);
+                        }
+                    } else {
+                        return empty;
+                    }
+                } else {
+                    return NameUtil.filterByStart(CommandHelper.getWarItems(), args[1]);
+                }
+            }  else if (args[0].equalsIgnoreCase("create")) {
                 if (args.length > 2) {
                     switch (args[1]) {
                         case "raid" -> {

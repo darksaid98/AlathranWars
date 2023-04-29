@@ -10,6 +10,7 @@ import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.data.WarData;
+import me.ShermansWorld.AlathraWar.items.WarItems;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -205,5 +206,9 @@ public class CommandHelper {
         }
         Main.warLogger.log(Helper.chatLabel() + sender.getName() + " ran command: " + log.toString());
         return true;
+    }
+
+    public static List<String> getWarItems() {
+        return new ArrayList<>(WarItems.getItemRegistry().keySet());
     }
 }
