@@ -22,7 +22,8 @@ public class AdminTabCompletion implements TabCompleter {
             "load",
             "load-all",
             "save",
-            "save-all"
+            "save-all",
+            "item"
     });
 
     List<String> type = List.of(new String[]{

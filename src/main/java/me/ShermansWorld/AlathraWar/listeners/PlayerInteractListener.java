@@ -1,6 +1,13 @@
 package me.ShermansWorld.AlathraWar.listeners;
 
+import com.palmergames.bukkit.towny.object.TownBlock;
+import com.palmergames.bukkit.towny.object.WorldCoord;
+import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.Main;
+import me.ShermansWorld.AlathraWar.Raid;
+import me.ShermansWorld.AlathraWar.Siege;
+import me.ShermansWorld.AlathraWar.data.RaidData;
+import me.ShermansWorld.AlathraWar.data.SiegeData;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Door;
@@ -33,21 +40,51 @@ public class PlayerInteractListener implements Listener {
 
         if (action == Action.LEFT_CLICK_BLOCK && clicked.getType().toString().contains("DOOR")) { // right click + any door types
             Door door = (Door) clicked.getBlockData();
-            // lock door in the opposite position
-            if (item.getType() == Material.GUNPOWDER && item.getItemMeta().getDisplayName().contains("Door Ram")) {
-                if (brokenDoors.get(door) != null && brokenDoors.get(door) > System.currentTimeMillis()) {
-                    player.sendMessage("The door is already broken!");
-                    event.setCancelled(true);
+
+            boolean inSiegeOrRaid = false;
+            //siege check
+            for(Siege s : SiegeData.getSieges()) {
+                for (TownBlock townBlock : s.getTown().getTownBlocks()) {
+                    if(WorldCoord.parseWorldCoord(clicked).equals(townBlock.getWorldCoord())) {
+                        // if we find one, just end no need to continue
+                        inSiegeOrRaid = true;
+                        break;
+                    }
+                }
+            }
+            //if it wasnt in a siege, then
+            if(!inSiegeOrRaid) {
+                for(Raid r : RaidData.getRaids()) {
+                    for (TownBlock townBlock : r.getRaidedTown().getTownBlocks()) {
+                        if(WorldCoord.parseWorldCoord(clicked).equals(townBlock.getWorldCoord())) {
+                            // if we find one, just end no need to continue
+                            inSiegeOrRaid = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if(inSiegeOrRaid) {
+                // lock door in the opposite position
+                if (item.getType() == Material.GUNPOWDER && item.getItemMeta().getDisplayName().contains("Door Ram")) {
+                    if (brokenDoors.get(door) != null && brokenDoors.get(door) > System.currentTimeMillis()) {
+                        player.sendMessage("The door is already broken!");
+                        event.setCancelled(true);
+                        return;
+                    }
+
+                    player.sendMessage("Break it down alright!");
+                    brokenDoors.put(door, System.currentTimeMillis() + (1000L * Main.getInstance().getConfig().getInt("batteringRamEffectiveness")));
                     return;
                 }
 
-                player.sendMessage("Break it down alright!");
-                brokenDoors.put(door, System.currentTimeMillis() + (1000L * Main.getInstance().getConfig().getInt("batteringRamEffectiveness")));
-                return;
-            }
-
-            if (brokenDoors.get(door) != null && brokenDoors.get(door) > System.currentTimeMillis())  {
-                player.sendMessage("Door is broken! " + String.valueOf(System.currentTimeMillis()) + " " + brokenDoors.get(door));
+                if (brokenDoors.get(door) != null && brokenDoors.get(door) > System.currentTimeMillis())  {
+                    player.sendMessage(Helper.chatLabel() + Helper.color("Door is broken! " + String.valueOf(System.currentTimeMillis()) + " " + brokenDoors.get(door)));
+                    event.setCancelled(true);
+                }
+            } else {
+                player.sendMessage(Helper.chatLabel() + Helper.color("&cThis item can only be used in a siege or raid!"));
                 event.setCancelled(true);
             }
         }
