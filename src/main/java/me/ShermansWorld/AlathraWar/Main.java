@@ -1,15 +1,13 @@
 package me.ShermansWorld.AlathraWar;
 
 import me.ShermansWorld.AlathraWar.commands.*;
-import me.ShermansWorld.AlathraWar.listeners.CommandsListener;
+import me.ShermansWorld.AlathraWar.items.WarItems;
+import me.ShermansWorld.AlathraWar.listeners.*;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.Plugin;
 import me.ShermansWorld.AlathraWar.data.WarData;
 import me.ShermansWorld.AlathraWar.hooks.TABHook;
-import me.ShermansWorld.AlathraWar.listeners.BlockBreakListener;
-import me.ShermansWorld.AlathraWar.listeners.JoinListener;
-import me.ShermansWorld.AlathraWar.listeners.KillsListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +19,7 @@ public class Main extends JavaPlugin {
 	public static Main instance;
 	public static Economy econ;
 	public static AlathraWarLogger warLogger;
+	public static WarItems itemRegistry;
 
 	static {
 		instance = null;
@@ -90,10 +89,14 @@ public class Main extends JavaPlugin {
 		getCommand("siege").setTabCompleter(new SiegeTabCompletion());
 		getCommand("raid").setTabCompleter(new RaidTabCompletion());
 		getCommand("alathrawaradmin").setTabCompleter(new AdminTabCompletion());
-		getServer().getPluginManager().registerEvents((Listener) new KillsListener(), (Plugin) this);
-		getServer().getPluginManager().registerEvents((Listener) new CommandsListener(), (Plugin) this);
-		getServer().getPluginManager().registerEvents((Listener) new JoinListener(), (Plugin) this);
-		getServer().getPluginManager().registerEvents((Listener) new BlockBreakListener(), (Plugin) this);
+		getServer().getPluginManager().registerEvents(new KillsListener(), (Plugin) this);
+		getServer().getPluginManager().registerEvents(new CommandsListener(), (Plugin) this);
+		getServer().getPluginManager().registerEvents(new JoinListener(), (Plugin) this);
+		getServer().getPluginManager().registerEvents(new BlockBreakListener(), (Plugin) this);
+		getServer().getPluginManager().registerEvents(new PlayerInteractListener(), this);
+
+		itemRegistry = new WarItems();
+
 		initData();
 		initAPIs();
 		setupEconomy();

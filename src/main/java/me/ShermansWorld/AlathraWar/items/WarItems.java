@@ -3,6 +3,7 @@ package me.ShermansWorld.AlathraWar.items;
 import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.Main;
 import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -33,8 +34,31 @@ public class WarItems {
      * @param item
      * @return
      */
-    private String registryName(String item) {
+    private static String registryName(String item) {
         return namespace + ":" + item;
+    }
+
+    public static HashMap<String, ItemStack> getItemRegistry() {
+        return itemRegistry;
+    }
+
+    /**
+     * returns the associated itemstack with the item key, use for finding without namespace
+     * @param registryName
+     * @return
+     */
+    public static ItemStack getOrNull(String registryName) {
+        return itemRegistry.get(registryName(registryName));
+    }
+
+
+    /**
+     * returns the associated itemstack with the item key, use for finding with namespace
+     * @param registryName
+     * @return
+     */
+    public static ItemStack getOrNullNamespace(String registryName) {
+        return itemRegistry.get(registryName);
     }
 
 

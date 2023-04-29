@@ -113,7 +113,7 @@ public class AdminCommands implements CommandExecutor {
      */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        logCommand(sender, label, args);
+        CommandHelper.logCommand(sender, label, args);
         if (!sender.hasPermission("AlathraWar.admin")) {
             return fail(sender, args, "permissions");
         }
@@ -151,7 +151,60 @@ public class AdminCommands implements CommandExecutor {
     }
 
     private boolean item(CommandSender sender, String[] args) {
-        for (ItemStack stack : WarItems.)
+        if(args.length >= 2) {
+            //find item
+            ItemStack stack = null;
+            if(args[1].contains(Main.getInstance().getName().toLowerCase())) {
+                stack = WarItems.getOrNullNamespace(args[1]);
+            } else {
+                stack = WarItems.getOrNull(args[1]);
+            }
+            // item not real!
+            if(stack == null) {
+                sender.sendMessage(Helper.chatLabel() + Helper.color("&cNot an AlathraWar item."));
+                return true;
+            }
+
+            //amount parameter
+            int amt = stack.getAmount();
+            if(args.length >= 3) {
+                try {
+                    amt = Integer.parseInt(args[2]);
+                } catch (NumberFormatException ex) {
+                    sender.sendMessage(Helper.chatLabel() + Helper.color("&cNot a number!"));
+                    return true;
+                }
+            }
+            stack.setAmount(amt);
+
+            //determine who gets the item
+            Player reciever = null;
+            if(args.length >= 4) {
+                reciever = Bukkit.getPlayer(args[3]);
+            } else {
+                //console cant get item
+                if (!(sender instanceof Player)) {
+                    sender.sendMessage(Helper.chatLabel() + Helper.color("&cNo, you don't have arms. Define a player."));
+                    return true;
+                }
+                reciever = (Player) sender;
+            }
+
+            // player is invilid
+            if (reciever == null) {
+                sender.sendMessage(Helper.chatLabel() + Helper.color("&cPlayer not found!"));
+                return true;
+            }
+
+            //give
+            reciever.getInventory().addItem(stack);
+
+            String name = stack.getItemMeta() == null ? stack.toString() : stack.getItemMeta().getDisplayName();
+            //log
+            sender.sendMessage(Helper.chatLabel() + Helper.color("Gave " + stack.getAmount() + "x " + name + " to " + reciever.getName()));
+            Main.warLogger.log(Helper.chatLabel() + Helper.color("Gave " + stack.getAmount() + "x " + name + " to " + reciever.getName()));
+
+        }
         return true;
     }
 
