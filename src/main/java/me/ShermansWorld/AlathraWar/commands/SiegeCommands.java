@@ -23,6 +23,7 @@ public class SiegeCommands implements CommandExecutor {
     }
     
     public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
+        CommandHelper.logCommand(sender, label, args);
         if (args.length == 0) {
             sender.sendMessage(String.valueOf(Helper.chatLabel()) + "Invalid Arguments. /siege help");
             return true;

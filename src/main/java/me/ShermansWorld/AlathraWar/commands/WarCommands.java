@@ -25,6 +25,7 @@ public class WarCommands implements CommandExecutor {
     }
 
     public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
+        CommandHelper.logCommand(sender, label, args);
         if (!(sender instanceof Player)) {
             consoleCommand(sender, args);
             return true;

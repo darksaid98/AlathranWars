@@ -12,6 +12,7 @@ import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.data.WarData;
+import me.ShermansWorld.AlathraWar.items.WarItems;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -22,6 +23,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Boss;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -111,6 +113,7 @@ public class AdminCommands implements CommandExecutor {
      */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        logCommand(sender, label, args);
         if (!sender.hasPermission("AlathraWar.admin")) {
             return fail(sender, args, "permissions");
         }
@@ -140,8 +143,15 @@ public class AdminCommands implements CommandExecutor {
                 return load(sender, args);
             } else if (args[0].equalsIgnoreCase("load-all")) {
                 return loadAll(sender, args);
+            } else if (args[0].equalsIgnoreCase("item")) {
+                return item(sender, args);
             }
         }
+        return true;
+    }
+
+    private boolean item(CommandSender sender, String[] args) {
+        for (ItemStack stack : WarItems.)
         return true;
     }
 
@@ -1861,4 +1871,5 @@ public class AdminCommands implements CommandExecutor {
         w.save();
         return true;
     }
+
 }

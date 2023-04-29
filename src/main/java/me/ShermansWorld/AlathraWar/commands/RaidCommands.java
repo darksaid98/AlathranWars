@@ -27,6 +27,7 @@ public class RaidCommands implements CommandExecutor {
 
     public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
 //        final Player p = (Player) sender;
+        CommandHelper.logCommand(sender, label, args);
         if (args.length == 0) {
             fail(sender, args, "syntax");
         } else if (args.length == 1) {

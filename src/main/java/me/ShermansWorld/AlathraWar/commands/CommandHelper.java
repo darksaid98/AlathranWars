@@ -5,14 +5,13 @@ import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
-import me.ShermansWorld.AlathraWar.Raid;
-import me.ShermansWorld.AlathraWar.Siege;
-import me.ShermansWorld.AlathraWar.War;
+import me.ShermansWorld.AlathraWar.*;
 import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.data.WarData;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -197,5 +196,14 @@ public class CommandHelper {
     public static long getPlayerJoinDate(String player) {
         Resident res = TownyAPI.getInstance().getResident(player);
         return res.getRegistered();
+    }
+
+    protected static boolean logCommand(CommandSender sender, String label, String[] args) {
+        StringBuilder log = new StringBuilder(label);
+        for (String s : args) {
+            log.append(" ").append(s);
+        }
+        Main.warLogger.log(Helper.chatLabel() + sender.getName() + " ran command: " + log.toString());
+        return true;
     }
 }
