@@ -77,6 +77,7 @@ public class Main extends JavaPlugin {
 
 	public void onEnable() {
 		instance = this;
+		this.saveDefaultConfig();
         initLogs();
 
 		new WarData(this);
