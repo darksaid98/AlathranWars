@@ -781,7 +781,7 @@ public class Raid {
         this.lootedChunks.put(c, new LootBlock(c, 0, 0.0));
     }
 
-    protected Runnable getTickLoop() {
+    private Runnable getTickLoop() {
         return (Runnable) new Runnable() {
 
             @Override
