@@ -121,6 +121,7 @@ public class WarData
         ArrayList<Siege> sieges = SiegeData.createSieges(war, siegeMaps);
         for (Siege siege : sieges) {
             war.addSiege(siege);
+            SiegeData.addSiege(siege);
         }
 
         // Raid adding from map.

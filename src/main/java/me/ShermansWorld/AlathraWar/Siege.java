@@ -75,6 +75,9 @@ public class Siege {
 
 		siegeTicks = resumeTick;
 
+        homeBlock = town.getHomeBlockOrNull();
+        townSpawn = town.getSpawnOrNull();
+
         this.bukkitId[0] = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask((Plugin) Main.getInstance(), getTickLoop(), 0L, 200L);
 
 		setupDisplayBar();
