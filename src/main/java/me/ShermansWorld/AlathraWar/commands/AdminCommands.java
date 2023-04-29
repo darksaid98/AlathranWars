@@ -496,6 +496,11 @@ public class AdminCommands implements CommandExecutor {
         p.sendMessage(Helper.chatLabel() + "/alathrawaradmin help");
         p.sendMessage(Helper.chatLabel() + "/alathrawaradmin info");
         p.sendMessage(Helper.chatLabel() + "/alathrawaradmin modify");
+        p.sendMessage(Helper.chatLabel() + "/alathrawaradmin purgebars");
+//        p.sendMessage(Helper.chatLabel() + "/alathrawaradmin save");
+//        p.sendMessage(Helper.chatLabel() + "/alathrawaradmin save-all");
+//        p.sendMessage(Helper.chatLabel() + "/alathrawaradmin load");
+//        p.sendMessage(Helper.chatLabel() + "/alathrawaradmin load-all");
         return true;
     }
 

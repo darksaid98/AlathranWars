@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import java.util.Collections;
 import java.util.List;
 
 public class AdminTabCompletion implements TabCompleter {
@@ -104,9 +105,7 @@ public class AdminTabCompletion implements TabCompleter {
             "reset"
     });
 
-    List<String> empty = List.of(new String[]{
-            ""
-    });
+    List<String> empty = Collections.emptyList();
 
 
     /**
