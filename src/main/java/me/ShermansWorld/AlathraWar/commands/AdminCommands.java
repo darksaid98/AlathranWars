@@ -148,7 +148,7 @@ public class AdminCommands implements CommandExecutor {
     private static boolean purgebars(CommandSender sender, String[] args) {
         for (Iterator<KeyedBossBar> it = Bukkit.getBossBars(); it.hasNext(); ) {
             KeyedBossBar b = it.next();
-            if(b.getKey().getKey().contains(Main.getInstance().getName())) {
+            if(b.getKey().getNamespace().contains(Main.getInstance().getName())) {
                 b.setVisible(false);
                 b.removeAll();
                 Bukkit.removeBossBar(b.getKey());
