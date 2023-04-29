@@ -31,6 +31,7 @@ public class BlockBreakListener implements Listener {
 	
 	@EventHandler
 	public void onBlockBreak(final BlockBreakEvent event) {
+
 		final Block block = event.getBlock();
 		if (SiegeData.getSieges().isEmpty() && RaidData.getRaids().isEmpty()) {
 			return;
@@ -45,6 +46,9 @@ public class BlockBreakListener implements Listener {
 			return;
 		}
 		Player p = event.getPlayer();
+		if(p.hasPermission("AlathraWar.break")) {
+			return;
+		}
 		if (WorldCoord.parseWorldCoord(block).getTownOrNull() != null) {
 			for (final Siege siege : SiegeData.getSieges()) {
 				if (siege.getTown() == WorldCoord.parseWorldCoord(block).getTownOrNull()) {
@@ -74,6 +78,9 @@ public class BlockBreakListener implements Listener {
 			return;
 		}
 		Player p = event.getPlayer();
+		if(p.hasPermission("AlathraWar.place")) {
+			return;
+		}
 		if (WorldCoord.parseWorldCoord(block).getTownOrNull() != null) {
 			for (final Siege siege : SiegeData.getSieges()) {
 				if (siege.getTown() == WorldCoord.parseWorldCoord(block).getTownOrNull()) {
