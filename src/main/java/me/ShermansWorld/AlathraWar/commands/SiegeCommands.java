@@ -89,9 +89,26 @@ public class SiegeCommands implements CommandExecutor {
             return;
         }
 
+
         // Player participance check
         Town leaderTown = TownyAPI.getInstance().getResident(siegeOwner).getTownOrNull();
         int side = war.getSide(leaderTown.getName());
+
+        //DEBUG PRINT
+        Main.warLogger.log("Leader Town: " + leaderTown.getName());
+        Main.warLogger.log("Siege Owner: " + siegeOwner.getName());
+        sender.sendMessage("Leader Town: " + leaderTown.getName());
+        sender.sendMessage("Siege Owner: " + siegeOwner.getName());
+        //DEBUG PRINT
+        for (String t : war.getSide1Towns()) {
+            Main.warLogger.log("Side1 town: " + t);
+            sender.sendMessage("Side1 town: " + t);
+        }
+        for (String t : war.getSide2Towns()) {
+            Main.warLogger.log("Side2 town: " + t);
+            sender.sendMessage("Side2 town: " + t);
+        }
+
         if (side == 0) {
             siegeOwner.sendMessage(Helper.chatLabel() + "You are not in this war.");
             if(admin) sender.sendMessage(Helper.chatLabel() + "You are not in this war.");
@@ -137,6 +154,8 @@ public class SiegeCommands implements CommandExecutor {
             if(admin) sender.sendMessage(String.valueOf(Helper.chatLabel()) + "That town does not exist! /siege start [war] [town]");
             return;
         }
+        Main.warLogger.log("Attacked Town: " + town.getName());
+        sender.sendMessage("Attacked Town: " + town.getName());
 
         // Is being raided check
         for ( Raid r : RaidData.getRaids()) {

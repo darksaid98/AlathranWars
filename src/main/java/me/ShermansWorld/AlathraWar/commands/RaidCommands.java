@@ -155,6 +155,22 @@ public class RaidCommands implements CommandExecutor {
                     //if this is run as admin, shift our check forward a slot
                     if (raidedTown.getName().equalsIgnoreCase(args[2 + (admin ? 1 : 0)]) && gatherTown != null) {
 
+                        Main.warLogger.log("Raided town: " + raidedTown.getName());
+                        Main.warLogger.log("Gather town: " + gatherTown.getName());
+                        Main.warLogger.log("Raid Owner: " + raidOwner.getName());
+                        p.sendMessage("Raided town: " + raidedTown.getName());
+                        p.sendMessage("Gather town: " + gatherTown.getName());
+                        p.sendMessage("Raid Owner: " + raidOwner.getName());
+                        //DEBUG PRINT
+                        for (String t : war.getSide1Towns()) {
+                            Main.warLogger.log("Side1 town: " + t);
+                            p.sendMessage("Side1 town: " + t);
+                        }
+                        for (String t : war.getSide2Towns()) {
+                            Main.warLogger.log("Side2 town: " + t);
+                            p.sendMessage("Side2 town: " + t);
+                        }
+
                         //check if the town were attempting to raid is in the war
                         if(!war.getSide1Towns().contains(raidedTown.getName()) && !war.getSide2Towns().contains(raidedTown.getName())) {
                             if (war.getSurrenderedTowns().contains(raidedTown.getName())) {
