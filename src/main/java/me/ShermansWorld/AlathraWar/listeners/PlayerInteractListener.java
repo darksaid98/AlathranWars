@@ -89,12 +89,15 @@ public class PlayerInteractListener implements Listener {
                     }
                 }
 
-                if (brokenDoors.get(door) != null && brokenDoors.get(door) > System.currentTimeMillis())  {
-                    player.sendMessage(Helper.chatLabel() + Helper.color("Door is broken! " + String.valueOf(System.currentTimeMillis()) + " " + brokenDoors.get(door)));
-                    event.setCancelled(true);
-                }
 
+        }
 
+        if (action == Action.RIGHT_CLICK_BLOCK && clicked.getType().toString().contains("DOOR")) {
+            Door door = (Door) clicked.getBlockData();
+            if (brokenDoors.get(door) != null && brokenDoors.get(door) > System.currentTimeMillis())  {
+                player.sendMessage(Helper.chatLabel() + Helper.color("Door is broken! " + String.valueOf(System.currentTimeMillis()) + " " + brokenDoors.get(door)));
+                event.setCancelled(true);
+            }
         }
     }
 }
