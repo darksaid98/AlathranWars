@@ -65,150 +65,7 @@ public class Siege {
         homeBlock = town.getHomeBlockOrNull();
         townSpawn = town.getSpawnOrNull();
 
-		this.bukkitId[0] = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask((Plugin) Main.getInstance(),
-				(Runnable) new Runnable() {
-					int homeBlockControl = 0;
-
-					@Override
-					public void run() {
-						if (homeBlock != null) {
-							town.setHomeBlock(homeBlock);
-							town.setSpawn(townSpawn);
-						}
-						if (Siege.this.side1AreAttackers) {
-							Siege.this.attackerPlayers = Siege.this.war.getSide1Players();
-							Siege.this.defenderPlayers = Siege.this.war.getSide2Players();
-						} else {
-                            Siege.this.attackerPlayers = Siege.this.war.getSide2Players();
-							Siege.this.defenderPlayers = Siege.this.war.getSide1Players();
-						}
-						if (Siege.this.siegeTicks >= maxSiegeTicks) {
-							Bukkit.getServer().getScheduler().cancelTask(Siege.this.bukkitId[0]);
-                            SiegeData.removeSiege(Siege.this);
-							if (Siege.this.attackerPoints > Siege.this.defenderPoints) {
-								Siege.this.attackersWin(Siege.this.siegeLeader);
-							} else {
-								Siege.this.defendersWin();
-							}
-						} else {
-							boolean attackersAreOnHomeBlock = false;
-							boolean defendersAreOnHomeBlock = false;
-                            siegeTicks = siegeTicks + 200;
-							for (final String playerName : Siege.this.attackerPlayers) {
-								try {
-									if (WorldCoord.parseWorldCoord(Main.getInstance().getServer().getPlayer(playerName))
-											.getTownBlock().isHomeBlock()
-											&& WorldCoord
-											.parseWorldCoord(
-													Main.getInstance().getServer().getPlayer(playerName))
-											.getTownBlock().getTown().equals(town)
-											&& !Bukkit.getPlayer(playerName).isDead()
-											&& (Math.abs(
-											Bukkit.getServer().getPlayer(playerName).getLocation().getBlockY()
-													- townSpawn.getBlockY())) < 10) {
-										attackersAreOnHomeBlock = true;
-									}
-								} catch (NotRegisteredException ex) {
-								} catch (NullPointerException ex2) {
-								}
-							}
-							for (final String playerName : Siege.this.defenderPlayers) {
-								try {
-									if (WorldCoord.parseWorldCoord(Main.getInstance().getServer().getPlayer(playerName))
-											.getTownBlock().isHomeBlock()
-											&& WorldCoord
-											.parseWorldCoord(
-													Main.getInstance().getServer().getPlayer(playerName))
-											.getTownBlock().getTown().equals(town)
-											&& !Bukkit.getPlayer(playerName).isDead()
-											&& (Math.abs(
-											Bukkit.getServer().getPlayer(playerName).getLocation().getBlockY()
-													- townSpawn.getBlockY())) < 10) {
-										defendersAreOnHomeBlock = true;
-									}
-								} catch (NotRegisteredException ex3) {
-								} catch (NullPointerException ex4) {
-								}
-							}
-							if (attackersAreOnHomeBlock && defendersAreOnHomeBlock) { // Contested
-								if (this.homeBlockControl != 1) {
-									for (final String playerName : Siege.this.attackerPlayers) {
-										try {
-											Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.chatLabel())
-													+ "HomeBlock at " + Siege.this.town.getName() + " contested!");
-										} catch (NullPointerException ex5) {
-										}
-									}
-									for (final String playerName : Siege.this.defenderPlayers) {
-										try {
-											Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.chatLabel())
-													+ "HomeBlock at " + Siege.this.town.getName() + " contested!");
-										} catch (NullPointerException ex6) {
-										}
-									}
-								}
-								this.homeBlockControl = 1;
-							} else if (attackersAreOnHomeBlock && !defendersAreOnHomeBlock) { // Attackers
-								if (this.homeBlockControl != 2) {
-									for (final String playerName : Siege.this.attackerPlayers) {
-										try {
-											Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.chatLabel())
-													+ "Attackers have captured the HomeBlock at "
-													+ Siege.this.town.getName() + "! +1 Attacker Points per second");
-										} catch (NullPointerException ex7) {
-										}
-									}
-									for (final String playerName : Siege.this.defenderPlayers) {
-										try {
-											Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.chatLabel())
-													+ "Attackers have captured the HomeBlock at "
-													+ Siege.this.town.getName() + "! +1 Attacker Points per second");
-										} catch (NullPointerException ex8) {
-										}
-									}
-								}
-								this.homeBlockControl = 2;
-								Siege.this.addPointsToAttackers(10);
-							} else { // Defenders / None
-								if (this.homeBlockControl != 3) {
-									for (final String playerName : Siege.this.attackerPlayers) {
-										try {
-											Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.chatLabel())
-													+ "Defenders retain control of the HomeBlock at "
-													+ Siege.this.town.getName() + "! +1 Defender Points per second");
-										} catch (NullPointerException ex9) {
-										}
-									}
-									for (final String playerName : Siege.this.defenderPlayers) {
-										try {
-											Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.chatLabel())
-													+ "Defenders retain control of the HomeBlock at "
-													+ Siege.this.town.getName() + "! +1 Defender Points per second");
-										} catch (NullPointerException ex10) {
-										}
-									}
-								}
-								Siege.this.addPointsToDefenders(10);
-								this.homeBlockControl = 3;
-							}
-							if (Siege.this.siegeTicks % 6000 == 0) { // Updates every 5 minutes
-								Bukkit.broadcastMessage(String.valueOf(Helper.chatLabel()) + "Report on the siege of "
-										+ Siege.this.town.getName() + ":");
-								Bukkit.broadcastMessage(
-										"Attacker Points - " + String.valueOf(Siege.this.attackerPoints));
-								Bukkit.broadcastMessage(
-										"Defender Points - " + String.valueOf(Siege.this.defenderPoints));
-							}
-                            if (siegeTicks % 1200 == 0) { // Saves every minute
-                                save();
-                            }
-						}
-
-						refreshDisplayBar();
-					}
-
-
-				}, 0L, 200L);
+		this.bukkitId[0] = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask((Plugin) Main.getInstance(), getTickLoop(), 0L, 200L);
 
 		setupDisplayBar();
 	}
@@ -217,6 +74,8 @@ public class Siege {
     public void resume(int resumeTick) {
 
 		siegeTicks = resumeTick;
+
+        this.bukkitId[0] = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask((Plugin) Main.getInstance(), getTickLoop(), 0L, 200L);
 
 		setupDisplayBar();
     }
@@ -228,6 +87,161 @@ public class Siege {
 		SiegeData.removeSiege(this);
 
 	}
+
+    private Runnable getTickLoop() {
+        return new Runnable() {
+            int homeBlockControl = 0;
+
+            @Override
+            public void run() {
+                if (homeBlock != null) {
+                    town.setHomeBlock(homeBlock);
+                    town.setSpawn(townSpawn);
+                }
+                if (Siege.this.side1AreAttackers) {
+                    Siege.this.attackerPlayers = Siege.this.war.getSide1Players();
+                    Siege.this.defenderPlayers = Siege.this.war.getSide2Players();
+                } else {
+                    Siege.this.attackerPlayers = Siege.this.war.getSide2Players();
+                    Siege.this.defenderPlayers = Siege.this.war.getSide1Players();
+                }
+                if (Siege.this.siegeTicks >= maxSiegeTicks) {
+                    Bukkit.getServer().getScheduler().cancelTask(Siege.this.bukkitId[0]);
+                    SiegeData.removeSiege(Siege.this);
+                    if (Siege.this.attackerPoints > Siege.this.defenderPoints) {
+                        Siege.this.attackersWin(Siege.this.siegeLeader);
+                    } else {
+                        Siege.this.defendersWin();
+                    }
+                } else {
+                    boolean attackersAreOnHomeBlock = false;
+                    boolean defendersAreOnHomeBlock = false;
+                    siegeTicks = siegeTicks + 200;
+                    for (final String playerName : Siege.this.attackerPlayers) {
+                        Player pl = Main.getInstance().getServer().getPlayer(playerName);
+                        try {
+                            if (pl != null) {
+                                WorldCoord wc = WorldCoord.parseWorldCoord(pl);
+                                if (wc.getTownBlock().getTown().equals(town)) {
+                                    if(town.getHomeBlockOrNull() != null) {
+                                        if (town.getHomeBlockOrNull().getWorldCoord().equals(wc)) {
+                                            if (!pl.isDead()) {
+                                                if ((Math.abs(pl.getLocation().getBlockY() - townSpawn.getBlockY())) < 10) {
+                                                    attackersAreOnHomeBlock = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (NotRegisteredException ignored) {
+                            Main.warLogger.log(Helper.chatLabel() + "Attempting to look for town at " + WorldCoord.parseWorldCoord(pl).toString());
+                        }
+                    }
+                    for (final String playerName : Siege.this.defenderPlayers) {
+                        Player pl = Main.getInstance().getServer().getPlayer(playerName);
+                        try {
+                            if (pl != null) {
+                                WorldCoord wc = WorldCoord.parseWorldCoord(pl);
+                                if (wc.getTownBlock().getTown().equals(town)) {
+                                    if(town.getHomeBlockOrNull() != null) {
+                                        if (town.getHomeBlockOrNull().getWorldCoord().equals(wc)) {
+                                            if (!pl.isDead()) {
+                                                if ((Math.abs(pl.getLocation().getBlockY() - townSpawn.getBlockY())) <= 10) {
+                                                    defendersAreOnHomeBlock = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (NotRegisteredException ignored) {
+                            Main.warLogger.log(Helper.chatLabel() + "Attempting to look for town at " + WorldCoord.parseWorldCoord(pl).toString());
+                        }
+                    }
+                    if (attackersAreOnHomeBlock && defendersAreOnHomeBlock) { // Contested
+                        if (this.homeBlockControl != 1) {
+                            for (final String playerName : Siege.this.attackerPlayers) {
+                                try {
+                                    Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.chatLabel())
+                                            + "HomeBlock at " + Siege.this.town.getName() + " contested!");
+                                } catch (NullPointerException ex5) {
+                                }
+                            }
+                            for (final String playerName : Siege.this.defenderPlayers) {
+                                try {
+                                    Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.chatLabel())
+                                            + "HomeBlock at " + Siege.this.town.getName() + " contested!");
+                                } catch (NullPointerException ex6) {
+                                }
+                            }
+                        }
+                        this.homeBlockControl = 1;
+                    } else if (attackersAreOnHomeBlock && !defendersAreOnHomeBlock) { // Attackers
+                        if (this.homeBlockControl != 2) {
+                            for (final String playerName : Siege.this.attackerPlayers) {
+                                try {
+                                    Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.chatLabel())
+                                            + "Attackers have captured the HomeBlock at "
+                                            + Siege.this.town.getName() + "! +1 Attacker Points per second");
+                                } catch (NullPointerException ex7) {
+                                }
+                            }
+                            for (final String playerName : Siege.this.defenderPlayers) {
+                                try {
+                                    Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.chatLabel())
+                                            + "Attackers have captured the HomeBlock at "
+                                            + Siege.this.town.getName() + "! +1 Attacker Points per second");
+                                } catch (NullPointerException ex8) {
+                                }
+                            }
+                        }
+                        this.homeBlockControl = 2;
+                        Siege.this.addPointsToAttackers(10);
+                    } else { // Defenders / None
+                        if (this.homeBlockControl != 3) {
+                            for (final String playerName : Siege.this.attackerPlayers) {
+                                try {
+                                    Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.chatLabel())
+                                            + "Defenders retain control of the HomeBlock at "
+                                            + Siege.this.town.getName() + "! +1 Defender Points per second");
+                                } catch (NullPointerException ex9) {
+                                }
+                            }
+                            for (final String playerName : Siege.this.defenderPlayers) {
+                                try {
+                                    Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.chatLabel())
+                                            + "Defenders retain control of the HomeBlock at "
+                                            + Siege.this.town.getName() + "! +1 Defender Points per second");
+                                } catch (NullPointerException ex10) {
+                                }
+                            }
+                        }
+                        Siege.this.addPointsToDefenders(10);
+                        this.homeBlockControl = 3;
+                    }
+                    if (Siege.this.siegeTicks % 6000 == 0) { // Updates every 5 minutes
+                        Bukkit.broadcastMessage(String.valueOf(Helper.chatLabel()) + "Report on the siege of "
+                                + Siege.this.town.getName() + ":");
+                        Bukkit.broadcastMessage(
+                                "Attacker Points - " + String.valueOf(Siege.this.attackerPoints));
+                        Bukkit.broadcastMessage(
+                                "Defender Points - " + String.valueOf(Siege.this.defenderPoints));
+                    }
+                    if (siegeTicks % 1200 == 0) { // Saves every minute
+                        save();
+                    }
+                }
+
+                refreshDisplayBar();
+            }
+
+
+
+        };
+    }
 
 	public void attackersWin(final OfflinePlayer siegeLeader) {
 		final Resident resident = TownyAPI.getInstance().getResident(siegeLeader.getUniqueId());
