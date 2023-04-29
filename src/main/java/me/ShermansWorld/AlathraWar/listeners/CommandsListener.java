@@ -3,9 +3,9 @@ package me.ShermansWorld.AlathraWar.listeners;
 import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.Raid;
 import me.ShermansWorld.AlathraWar.Siege;
-import me.ShermansWorld.AlathraWar.War;
+import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
-import me.ShermansWorld.AlathraWar.data.WarData;
+import me.ShermansWorld.AlathraWar.data.SiegeData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -61,18 +61,17 @@ public class CommandsListener implements Listener {
 
         allow n spawn and t spawn for defenders trapped in spawn
          */
-        for (War war : WarData.getWars()) {
-            for (Raid raid : war.getRaids()) {
-                //Only do this during regular phases, start and end ignored in case something breaks
-                if (raid.getPhase() == RaidPhase.COMBAT || raid.getPhase() == RaidPhase.TRAVEL || raid.getPhase() == RaidPhase.GATHER) {
-                    //only do for active raiders and any defenders
-                    if (raid.getActiveRaiders().contains(p.getName()) || raid.getDefenderPlayers().contains(p.getName())) {
-                        //set spawn and properties
-                        if (args.length >= 3) {
-                            String parse = (args[0].charAt(0) == '/' ? args[0].substring(1) : args[0]) + " " + args[1] + " " + args[2];
-                            for (String prefix : prefixesTowny) {
-                                //payment check
-                                for (String cmd : blacklistedXLong) {
+        for (Raid raid : RaidData.getRaids()) {
+            //Only do this during regular phases, start and end ignored in case something breaks
+            if (raid.getPhase() == RaidPhase.COMBAT || raid.getPhase() == RaidPhase.TRAVEL || raid.getPhase() == RaidPhase.GATHER) {
+                //only do for active raiders and any defenders
+                if (raid.getActiveRaiders().contains(p.getName()) || raid.getDefenderPlayers().contains(p.getName())) {
+                    //set spawn and properties
+                    if (args.length >= 3) {
+                        String parse = (args[0].charAt(0) == '/' ? args[0].substring(1) : args[0]) + " " + args[1] + " " + args[2];
+                        for (String prefix : prefixesTowny) {
+                            //payment check
+                            for (String cmd : blacklistedXLong) {
                                     if (parse.equals(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
                                         p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&cYou cannot modify this property during a raid!"));
                                         event.setCancelled(true);
@@ -152,17 +151,17 @@ public class CommandsListener implements Listener {
             /*
             Prevent players from teleporting during a siege
              */
-            for (Siege siege : war.getSieges()) {
-                //Only do this during regular phases, start and end ignored in case something breaks
-                if (siege.getSiegeTicks() > 0) {
-                    //only do for active raiders and any defenders
-                    if (siege.getAttackerPlayers().contains(p.getName()) || siege.getDefenderPlayers().contains(p.getName())) {
-                        //set spawn and properties
-                        if (args.length >= 3) {
-                            String parse = (args[0].charAt(0) == '/' ? args[0].substring(1) : args[0]) + " " + args[1] + " " + args[2];
-                            for (String prefix : prefixesTowny) {
-                                //payment check
-                                for (String cmd : blacklistedXLong) {
+        for (Siege siege : SiegeData.getSieges()) {
+            //Only do this during regular phases, start and end ignored in case something breaks
+            if (siege.getSiegeTicks() > 0) {
+                //only do for active raiders and any defenders
+                if (siege.getAttackerPlayers().contains(p.getName()) || siege.getDefenderPlayers().contains(p.getName())) {
+                    //set spawn and properties
+                    if (args.length >= 3) {
+                        String parse = (args[0].charAt(0) == '/' ? args[0].substring(1) : args[0]) + " " + args[1] + " " + args[2];
+                        for (String prefix : prefixesTowny) {
+                            //payment check
+                            for (String cmd : blacklistedXLong) {
                                     if (parse.equals(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
                                         p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&cYou cannot modify this property during a siege!"));
                                         event.setCancelled(true);
@@ -237,7 +236,7 @@ public class CommandsListener implements Listener {
                         }
                     }
                 }
-            }
+
         }
     }
 }
