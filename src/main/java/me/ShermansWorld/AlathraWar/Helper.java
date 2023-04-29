@@ -18,7 +18,7 @@ public class Helper
         return ChatColor.translateAlternateColorCodes('&', input);
     }
     
-    public static String Chatlabel() {
+    public static String chatLabel() {
         return color("&6[&4AlathraWar&6]&r ");
     }
     

@@ -74,7 +74,7 @@ public class CommandsListener implements Listener {
                                 //payment check
                                 for (String cmd : blacklistedXLong) {
                                     if (parse.equals(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
-                                        p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&cYou cannot modify this property during a raid!"));
+                                        p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&cYou cannot modify this property during a raid!"));
                                         event.setCancelled(true);
                                         return;
                                     }
@@ -90,7 +90,7 @@ public class CommandsListener implements Listener {
                                 for (String cmd : payment) {
                                     //check for each prefix
                                     if (parse.equals(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
-                                        p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&cYou cannot withdraw money whilst in a raid!"));
+                                        p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&cYou cannot withdraw money whilst in a raid!"));
                                         event.setCancelled(true);
                                         return;
                                     }
@@ -105,17 +105,17 @@ public class CommandsListener implements Listener {
                                                     || parse.equals("t spawn") || parse.equals("town spawn")
                                                     || parse.equals("towny:n spawn") || parse.equals("towny:nat spawn") || parse.equals("towny:nation spawn")
                                                     || parse.equals("towny:t spawn") || parse.equals("towny:town spawn")) {
-                                                p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
+                                                p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
                                                 return;
                                             }
-                                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
-                                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&eUse /t spawn, or /n spawn"));
+                                            p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
+                                            p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&eUse /t spawn, or /n spawn"));
                                             event.setCancelled(true);
                                             return;
                                         }
 
                                         //else
-                                        p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&cYou cannot teleport whilst in a raid!"));
+                                        p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&cYou cannot teleport whilst in a raid!"));
                                         event.setCancelled(true);
                                         return;
                                     }
@@ -132,13 +132,13 @@ public class CommandsListener implements Listener {
                                     if (parse.equals(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
                                         //spawn world check
                                         if (p.getWorld().getName().equals("world")) {
-                                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
-                                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&eUse /t spawn, or /n spawn"));
+                                            p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
+                                            p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&eUse /t spawn, or /n spawn"));
                                             event.setCancelled(true);
                                             return;
                                         }
 
-                                        p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&cYou cannot teleport whilst in a raid!"));
+                                        p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&cYou cannot teleport whilst in a raid!"));
                                         event.setCancelled(true);
                                         return;
                                     }
@@ -164,7 +164,7 @@ public class CommandsListener implements Listener {
                                 //payment check
                                 for (String cmd : blacklistedXLong) {
                                     if (parse.equals(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
-                                        p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&cYou cannot modify this property during a siege!"));
+                                        p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&cYou cannot modify this property during a siege!"));
                                         event.setCancelled(true);
                                         return;
                                     }
@@ -180,7 +180,7 @@ public class CommandsListener implements Listener {
                                 for (String cmd : payment) {
                                     //check for each prefix
                                     if (parse.equals(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
-                                        p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&cYou cannot withdraw money whilst in a siege!"));
+                                        p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&cYou cannot withdraw money whilst in a siege!"));
                                         event.setCancelled(true);
                                         return;
                                     }
@@ -195,17 +195,17 @@ public class CommandsListener implements Listener {
                                                     || parse.equals("t spawn") || parse.equals("town spawn")
                                                     || parse.equals("towny:n spawn") || parse.equals("towny:nat spawn") || parse.equals("towny:nation spawn")
                                                     || parse.equals("towny:t spawn") || parse.equals("towny:town spawn")) {
-                                                p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
+                                                p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
                                                 return;
                                             }
-                                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
-                                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&eUse /t spawn, or /n spawn"));
+                                            p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
+                                            p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&eUse /t spawn, or /n spawn"));
                                             event.setCancelled(true);
                                             return;
                                         }
 
                                         //else
-                                        p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&cYou cannot teleport whilst in a siege!"));
+                                        p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&cYou cannot teleport whilst in a siege!"));
                                         event.setCancelled(true);
                                         return;
                                     }
@@ -222,13 +222,13 @@ public class CommandsListener implements Listener {
                                     if (parse.equals(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
                                         //spawn world check
                                         if (p.getWorld().getName().equals("world")) {
-                                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
-                                            p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&eUse /t spawn, or /n spawn"));
+                                            p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
+                                            p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&eUse /t spawn, or /n spawn"));
                                             event.setCancelled(true);
                                             return;
                                         }
 
-                                        p.sendMessage(String.valueOf(Helper.Chatlabel()) + Helper.color("&cYou cannot teleport whilst in a siege!"));
+                                        p.sendMessage(String.valueOf(Helper.chatLabel()) + Helper.color("&cYou cannot teleport whilst in a siege!"));
                                         event.setCancelled(true);
                                         return;
                                     }

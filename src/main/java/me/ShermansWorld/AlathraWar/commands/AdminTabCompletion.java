@@ -15,7 +15,12 @@ public class AdminTabCompletion implements TabCompleter {
             "force",
             "help",
             "info",
-            "modify"
+            "modify",
+            "purgebars",
+            "load",
+            "load-all",
+            "save",
+            "save-all"
     });
 
     List<String> type = List.of(new String[]{
@@ -186,7 +191,26 @@ public class AdminTabCompletion implements TabCompleter {
         } else if (args.length == 1) {
             return NameUtil.filterByStart(base, args[0]);
         } else {
-            if (args[0].equalsIgnoreCase("create")) {
+
+            if (args[0].equalsIgnoreCase("purgebars")) {
+                return empty;
+            } else if (args[0].equalsIgnoreCase("save")) {
+                if(args.length > 2) {
+                    return empty;
+                } else {
+                    return CommandHelper.getWarNames();
+                }
+            } else if (args[0].equalsIgnoreCase("save-all")) {
+                return empty;
+            } else if (args[0].equalsIgnoreCase("load")) {
+                if(args.length > 2) {
+                    return empty;
+                } else {
+                    return CommandHelper.getWarNames();
+                }
+            } else if (args[0].equalsIgnoreCase("load-all")) {
+                return empty;
+            } else if (args[0].equalsIgnoreCase("create")) {
                 if (args.length > 2) {
                     switch (args[1]) {
                         case "raid" -> {

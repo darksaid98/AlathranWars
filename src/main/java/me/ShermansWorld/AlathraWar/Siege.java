@@ -134,14 +134,14 @@ public class Siege {
 								if (this.homeBlockControl != 1) {
 									for (final String playerName : Siege.this.attackerPlayers) {
 										try {
-											Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.Chatlabel())
+											Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.chatLabel())
 													+ "HomeBlock at " + Siege.this.town.getName() + " contested!");
 										} catch (NullPointerException ex5) {
 										}
 									}
 									for (final String playerName : Siege.this.defenderPlayers) {
 										try {
-											Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.Chatlabel())
+											Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.chatLabel())
 													+ "HomeBlock at " + Siege.this.town.getName() + " contested!");
 										} catch (NullPointerException ex6) {
 										}
@@ -152,7 +152,7 @@ public class Siege {
 								if (this.homeBlockControl != 2) {
 									for (final String playerName : Siege.this.attackerPlayers) {
 										try {
-											Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.Chatlabel())
+											Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.chatLabel())
 													+ "Attackers have captured the HomeBlock at "
 													+ Siege.this.town.getName() + "! +1 Attacker Points per second");
 										} catch (NullPointerException ex7) {
@@ -160,7 +160,7 @@ public class Siege {
 									}
 									for (final String playerName : Siege.this.defenderPlayers) {
 										try {
-											Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.Chatlabel())
+											Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.chatLabel())
 													+ "Attackers have captured the HomeBlock at "
 													+ Siege.this.town.getName() + "! +1 Attacker Points per second");
 										} catch (NullPointerException ex8) {
@@ -173,7 +173,7 @@ public class Siege {
 								if (this.homeBlockControl != 3) {
 									for (final String playerName : Siege.this.attackerPlayers) {
 										try {
-											Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.Chatlabel())
+											Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.chatLabel())
 													+ "Defenders retain control of the HomeBlock at "
 													+ Siege.this.town.getName() + "! +1 Defender Points per second");
 										} catch (NullPointerException ex9) {
@@ -181,7 +181,7 @@ public class Siege {
 									}
 									for (final String playerName : Siege.this.defenderPlayers) {
 										try {
-											Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.Chatlabel())
+											Bukkit.getPlayer(playerName).sendMessage(String.valueOf(Helper.chatLabel())
 													+ "Defenders retain control of the HomeBlock at "
 													+ Siege.this.town.getName() + "! +1 Defender Points per second");
 										} catch (NullPointerException ex10) {
@@ -192,7 +192,7 @@ public class Siege {
 								this.homeBlockControl = 3;
 							}
 							if (Siege.this.siegeTicks % 6000 == 0) { // Updates every 5 minutes
-								Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "Report on the siege of "
+								Bukkit.broadcastMessage(String.valueOf(Helper.chatLabel()) + "Report on the siege of "
 										+ Siege.this.town.getName() + ":");
 								Bukkit.broadcastMessage(
 										"Attacker Points - " + String.valueOf(Siege.this.attackerPoints));
@@ -232,12 +232,12 @@ public class Siege {
 	public void attackersWin(final OfflinePlayer siegeLeader) {
 		final Resident resident = TownyAPI.getInstance().getResident(siegeLeader.getUniqueId());
 		Nation nation = null;
-		Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The attackers have won the siege of " + this.town.getName() + "!");
+		Bukkit.broadcastMessage(String.valueOf(Helper.chatLabel()) + "The attackers have won the siege of " + this.town.getName() + "!");
 		try {
 			nation = resident.getTown().getNation();
 		} catch (Exception e) {}
 		if (nation != null) {
-			Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The town of " + this.town.getName()
+			Bukkit.broadcastMessage(String.valueOf(Helper.chatLabel()) + "The town of " + this.town.getName()
 					+ " has been placed under occupation by " + nation.getName() + "!");
 		}
 		Main.econ.depositPlayer(siegeLeader, 2500.0);
@@ -248,7 +248,7 @@ public class Siege {
 		} else {
 			if (this.town.getAccount().getHoldingBalance() < 2500.0) {
 				amt = this.town.getAccount().getHoldingBalance();
-				Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The town of " + this.town.getName()
+				Bukkit.broadcastMessage(String.valueOf(Helper.chatLabel()) + "The town of " + this.town.getName()
 						+ " has been destroyed by " + this.getAttackerSide() + "!");
 				TownyUniverse.getInstance().getDataSource().deleteTown(this.town);
 				Main.econ.depositPlayer(siegeLeader, amt);
@@ -275,8 +275,8 @@ public class Siege {
 
 	public void defendersWin() {
 		this.town.getAccount().deposit(2500.0, "War chest");
-		Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The defenders have won the siege of " + this.town.getName() + "!");
-		Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + this.town.getName()
+		Bukkit.broadcastMessage(String.valueOf(Helper.chatLabel()) + "The defenders have won the siege of " + this.town.getName() + "!");
+		Bukkit.broadcastMessage(String.valueOf(Helper.chatLabel()) + this.town.getName()
 				+ " has recovered the attackers' war chest, valued at $2,500");
 		Main.warLogger
 				.log(war.getName() + ": The defenders have won the siege of " + this.town.getName() + "!");
@@ -295,8 +295,8 @@ public class Siege {
 	 * No winnder declared
 	 */
 	public void noWinner() {
-		Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "The siege of " + this.town.getName() + " was a draw!");
-		Bukkit.broadcastMessage(String.valueOf(Helper.Chatlabel()) + "No money has been recovered.");
+		Bukkit.broadcastMessage(String.valueOf(Helper.chatLabel()) + "The siege of " + this.town.getName() + " was a draw!");
+		Bukkit.broadcastMessage(String.valueOf(Helper.chatLabel()) + "No money has been recovered.");
 		Main.warLogger
 				.log(war.getName() + ": No one won the siege of " + this.town.getName() + "!");
 		stop();
