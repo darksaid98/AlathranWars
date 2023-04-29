@@ -150,7 +150,7 @@ public class AdminCommands implements CommandExecutor {
         return true;
     }
 
-    private boolean item(CommandSender sender, String[] args) {
+    private static boolean item(CommandSender sender, String[] args) {
         if(args.length >= 2) {
             //find item
             ItemStack stack = null;
