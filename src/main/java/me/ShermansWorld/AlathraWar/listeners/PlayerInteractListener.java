@@ -78,6 +78,8 @@ public class PlayerInteractListener implements Listener {
 
                         player.sendMessage(Helper.chatLabel() + Helper.color("&eBreak it down alright!"));
                         brokenDoors.put(door, System.currentTimeMillis() + (1000L * Main.getInstance().getConfig().getInt("batteringRamEffectiveness")));
+                        door.setOpen(!door.isOpen());
+                        player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
                         return;
 
                     } else {
