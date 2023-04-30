@@ -58,7 +58,7 @@ public class SiegeData
 
     /**
      * Creates a siege object from a provided HashMap
-     * @param fileData
+     * @param fileData data
      * @return Siege object
      */
     private static Siege fromMap(War war, HashMap<String, Object> fileData) {
