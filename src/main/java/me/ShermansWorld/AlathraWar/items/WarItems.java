@@ -64,12 +64,13 @@ public class WarItems {
 
     public ItemStack getBatteringRam() {
 
-        ItemStack ram = new ItemStack(Material.GUNPOWDER);
+        ItemStack ram = new ItemStack(Material.WOODEN_HOE);
         ItemMeta meta = ram.getItemMeta();
 
         meta.setDisplayName("Door Ram");
         ArrayList<String> lore = new ArrayList<String>();
         meta.setLore(lore);
+        meta.setCustomModelData(14700);
 
         ram.setItemMeta(meta);
 
