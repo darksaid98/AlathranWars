@@ -8,6 +8,7 @@ import me.ShermansWorld.AlathraWar.Raid;
 import me.ShermansWorld.AlathraWar.Siege;
 import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
+import me.ShermansWorld.AlathraWar.items.WarItems;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Door;
@@ -41,9 +42,9 @@ public class PlayerInteractListener implements Listener {
         ItemStack item = player.getInventory().getItemInMainHand();
 
         if (action == Action.LEFT_CLICK_BLOCK && clicked.getType().toString().contains("DOOR")) { // right click + any door types
-            Door door = (Door) clicked.getBlockData();
+            Door door = (Door) clicked.getState();
                 // lock door in the opposite position
-                if (item.getType() == Material.GUNPOWDER && item.getItemMeta().getDisplayName().contains("Door Ram")) {
+                if (item.getType() == Material.WOODEN_HOE && item.getItemMeta().getDisplayName().contains("Door Ram")) {
 
                     boolean inSiegeOrRaid = false;
                     //siege check
@@ -92,10 +93,18 @@ public class PlayerInteractListener implements Listener {
 
         }
 
-        if (action == Action.RIGHT_CLICK_BLOCK && clicked.getType().toString().contains("DOOR")) {
-            Door door = (Door) clicked.getBlockData();
-            if (brokenDoors.get(door) != null && brokenDoors.get(door) > System.currentTimeMillis())  {
-                player.sendMessage(Helper.chatLabel() + Helper.color("Door is broken! " + String.valueOf(System.currentTimeMillis()) + " " + brokenDoors.get(door)));
+        if (action == Action.RIGHT_CLICK_BLOCK) {
+            if(clicked != null) {
+                if (clicked.getType().toString().contains("DOOR")) {
+                    Door door = (Door) clicked.getBlockData();
+                    if (brokenDoors.get(door) != null && brokenDoors.get(door) > System.currentTimeMillis())  {
+                        player.sendMessage(Helper.chatLabel() + Helper.color("Door is broken! " + String.valueOf(System.currentTimeMillis()) + " " + brokenDoors.get(door)));
+                        event.setCancelled(true);
+                    }
+                }
+            }
+
+            if(item.equals(WarItems.getOrNull("ram"))) {
                 event.setCancelled(true);
             }
         }
