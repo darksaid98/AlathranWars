@@ -9,7 +9,6 @@ import me.ShermansWorld.AlathraWar.Siege;
 import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.items.WarItems;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Door;
 import org.bukkit.entity.Player;
@@ -41,56 +40,54 @@ public class PlayerInteractListener implements Listener {
         Block clicked = event.getClickedBlock();
         ItemStack item = player.getInventory().getItemInMainHand();
 
-        if (action == Action.LEFT_CLICK_BLOCK && clicked.getType().toString().contains("DOOR")) { // right click + any door types
-            Door door = (Door) clicked.getState();
-                // lock door in the opposite position
-                if (item.getType() == Material.WOODEN_HOE && item.getItemMeta().getDisplayName().contains("Door Ram")) {
-
-                    boolean inSiegeOrRaid = false;
-                    //siege check
-                    for(Siege s : SiegeData.getSieges()) {
-                        for (TownBlock townBlock : s.getTown().getTownBlocks()) {
-                            if(WorldCoord.parseWorldCoord(clicked).equals(townBlock.getWorldCoord())) {
-                                // if we find one, just end no need to continue
-                                inSiegeOrRaid = true;
-                                break;
-                            }
-                        }
-                    }
-                    //if it wasnt in a siege, then
-                    if(!inSiegeOrRaid) {
-                        for(Raid r : RaidData.getRaids()) {
-                            for (TownBlock townBlock : r.getRaidedTown().getTownBlocks()) {
-                                if(WorldCoord.parseWorldCoord(clicked).equals(townBlock.getWorldCoord())) {
+        if (action == Action.LEFT_CLICK_BLOCK) {
+            if (clicked != null) {
+                if (clicked.getType().toString().contains("DOOR")) { // right click + any door types
+                    Door door = (Door) clicked.getState();
+                    // lock door in the opposite position
+                    if (item.equals(WarItems.getOrNull("ram"))) {
+                        boolean inSiegeOrRaid = false;
+                        //siege check
+                        for (Siege s : SiegeData.getSieges()) {
+                            for (TownBlock townBlock : s.getTown().getTownBlocks()) {
+                                if (WorldCoord.parseWorldCoord(clicked).equals(townBlock.getWorldCoord())) {
                                     // if we find one, just end no need to continue
                                     inSiegeOrRaid = true;
                                     break;
                                 }
                             }
                         }
-                    }
-
-                    if(inSiegeOrRaid) {
-                        if (brokenDoors.get(door) != null && brokenDoors.get(door) > System.currentTimeMillis()) {
-                            player.sendMessage(Helper.chatLabel() + Helper.color("&cThe door is already broken!"));
-                            event.setCancelled(true);
-                            return;
+                        //if it wasnt in a siege, then
+                        if (!inSiegeOrRaid) {
+                            for (Raid r : RaidData.getRaids()) {
+                                for (TownBlock townBlock : r.getRaidedTown().getTownBlocks()) {
+                                    if (WorldCoord.parseWorldCoord(clicked).equals(townBlock.getWorldCoord())) {
+                                        // if we find one, just end no need to continue
+                                        inSiegeOrRaid = true;
+                                        break;
+                                    }
+                                }
+                            }
                         }
 
-                        player.sendMessage(Helper.chatLabel() + Helper.color("&eBreak it down alright!"));
-                        brokenDoors.put(door, System.currentTimeMillis() + (1000L * Main.getInstance().getConfig().getInt("batteringRamEffectiveness")));
-                        door.setOpen(!door.isOpen());
-                        player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
-                        return;
-
-                    } else {
-                        player.sendMessage(Helper.chatLabel() + Helper.color("&cThis item can only be used in a siege or raid!"));
-                        event.setCancelled(true);
+                        if (inSiegeOrRaid) {
+                            if (brokenDoors.get(door) != null && brokenDoors.get(door) > System.currentTimeMillis()) {
+                                player.sendMessage(Helper.chatLabel() + Helper.color("&cThe door is already broken!"));
+                                event.setCancelled(true);
+                                return;
+                            }
+                            player.sendMessage(Helper.chatLabel() + Helper.color("&eBreak it down alright!"));
+                            brokenDoors.put(door, System.currentTimeMillis() + (1000L * Main.getInstance().getConfig().getInt("batteringRamEffectiveness")));
+                            door.setOpen(!door.isOpen());
+                            player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
+                        } else {
+                            player.sendMessage(Helper.chatLabel() + Helper.color("&cThis item can only be used in a siege or raid!"));
+                            event.setCancelled(true);
+                        }
                         return;
                     }
                 }
-
-
+            }
         }
 
         if (action == Action.RIGHT_CLICK_BLOCK) {
@@ -100,12 +97,14 @@ public class PlayerInteractListener implements Listener {
                     if (brokenDoors.get(door) != null && brokenDoors.get(door) > System.currentTimeMillis())  {
                         player.sendMessage(Helper.chatLabel() + Helper.color("Door is broken! " + String.valueOf(System.currentTimeMillis()) + " " + brokenDoors.get(door)));
                         event.setCancelled(true);
+                        return;
                     }
                 }
             }
 
             if(item.equals(WarItems.getOrNull("ram"))) {
                 event.setCancelled(true);
+                return;
             }
         }
     }
