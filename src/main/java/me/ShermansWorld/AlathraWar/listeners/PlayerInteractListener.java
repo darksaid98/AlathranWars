@@ -20,6 +20,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nonnull;
@@ -106,6 +107,13 @@ public class PlayerInteractListener implements Listener {
                     }
                 }
             }
+        }
+    }
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerRClick(final PlayerItemDamageEvent event) {
+        ItemStack item = event.getItem();
+        if (item.equals(WarItems.getOrNull("ram"))) {
+            event.setCancelled(true);
         }
     }
 

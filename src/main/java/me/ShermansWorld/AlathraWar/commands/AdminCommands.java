@@ -15,13 +15,10 @@ import me.ShermansWorld.AlathraWar.data.WarData;
 import me.ShermansWorld.AlathraWar.items.WarItems;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
-import org.bukkit.boss.BossBar;
 import org.bukkit.boss.KeyedBossBar;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Boss;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
