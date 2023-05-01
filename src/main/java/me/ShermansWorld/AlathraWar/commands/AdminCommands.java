@@ -328,19 +328,18 @@ public class AdminCommands implements CommandExecutor {
             } else if (args[1].equalsIgnoreCase("siege")) {
                 //this exists to force a seige with a new owner
                 if (args.length >= 4) {
-                    String[] adjusted = new String[]{
-                            "start",
-                            args[2],
-                            args[3],
-                            args[4],
-                            args[5]
-                    };
-                    SiegeCommands.siegeStart(p, adjusted, true);
+                    List<String> l = new ArrayList<>();
+                    l.add("start");
+                    l.add(args[2]);
+                    l.add(args[3]);
+                    if(args.length >= 5) l.add(args[4]);
+                    if(args.length >= 6) l.add(args[5]);
+                    SiegeCommands.siegeStart(p, l.toArray(new String[]{}), true);
 //                    p.sendMessage(Helper.Chatlabel() + "Try again later!");
                     p.sendMessage(Helper.color("&cForcefully started siege from the console."));
                     return true;
                 } else {
-                    p.sendMessage(Helper.color("&cUsage: /alathrawaradmin create siege [war] [town] (owner)"));
+                    p.sendMessage(Helper.color("&cUsage: /alathrawaradmin create siege [war] [town] (owner) (force)"));
                     return true;
                 }
             } else if (args[1].equalsIgnoreCase("war")) {
