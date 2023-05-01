@@ -14,6 +14,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Door;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -29,12 +30,11 @@ public class PlayerInteractListener implements Listener {
     };
 
     /**
-     *
      * @param event event
      * @author DunnoConz
      * @author AubriTheHuman
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerInteract(final PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Action action = event.getAction();
@@ -93,6 +93,7 @@ public class PlayerInteractListener implements Listener {
                             Bukkit.getLogger().info("SAVED STATE");
                             door.setOpen(!door.isOpen());
                             player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
+                            event.setCancelled(true);
                         } else {
                             Bukkit.getLogger().info("NOT EITHER SIEG OR RAIDE");
                             player.sendMessage(Helper.chatLabel() + Helper.color("&cThis item can only be used in a siege or raid!"));
@@ -103,20 +104,32 @@ public class PlayerInteractListener implements Listener {
                 }
             }
         }
+    }
 
+    /**
+     * @param event event
+     * @author DunnoConz
+     * @author AubriTheHuman
+     */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerRClick(final PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        Action action = event.getAction();
+        Block clicked = event.getClickedBlock();
+        ItemStack item = player.getInventory().getItemInMainHand();
         if (action == Action.RIGHT_CLICK_BLOCK) {
-            if(clicked != null) {
+            if (clicked != null) {
                 if (clicked.getType().toString().contains("DOOR")) {
                     Door door = (Door) clicked.getBlockData();
-                    if (brokenDoors.get(door) != null && brokenDoors.get(door) > System.currentTimeMillis())  {
+                    if (brokenDoors.get(door) != null && brokenDoors.get(door) > System.currentTimeMillis()) {
                         player.sendMessage(Helper.chatLabel() + Helper.color("Door is broken! " + String.valueOf(System.currentTimeMillis()) + " " + brokenDoors.get(door)));
-                        event.setCancelled(true);
+                        event.setCancelled(false);
                         return;
                     }
                 }
             }
 
-            if(item.equals(WarItems.getOrNull("ram"))) {
+            if (item.equals(WarItems.getOrNull("ram"))) {
                 event.setCancelled(true);
                 return;
             }
