@@ -254,6 +254,7 @@ public class Raid {
     public void stop() {
         deleteDisplayBar();
         Bukkit.getScheduler().cancelTask(this.bukkitId[0]);
+        this.getWar().getRaids().remove(this);
         RaidData.removeRaid(this);
     }
 

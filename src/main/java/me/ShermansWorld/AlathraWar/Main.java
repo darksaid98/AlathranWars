@@ -26,7 +26,10 @@ public class Main extends JavaPlugin {
 		econ = null;
 	}
 
-	private static void initData() {
+	/**
+	 * Dangerous if done at the wrong time!
+	 */
+	public static void initData() {
 		File userDataFolder = new File("plugins" + File.separator + "AlathraWar" + File.separator + "userdata");
 		if (!userDataFolder.exists()) {
 			userDataFolder.mkdirs();

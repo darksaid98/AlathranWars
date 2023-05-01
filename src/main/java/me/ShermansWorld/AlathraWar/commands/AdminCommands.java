@@ -225,26 +225,84 @@ public class AdminCommands implements CommandExecutor {
     }
 
     private static boolean save(CommandSender sender, String[] args) {
-        //TODO save
-        sender.sendMessage(Helper.chatLabel() + Helper.color("&csave Unimplemented!"));
+        if(args.length >= 2) {
+            for (War w : WarData.getWars()) {
+                if(w.getName().equalsIgnoreCase(args[2])) {
+                    WarData.saveWar(w);
+                    sender.sendMessage(Helper.chatLabel() + Helper.color("&cForced Save of war: " + w.getName()));
+                    return true;
+                }
+            }
+        }
+        sender.sendMessage(Helper.chatLabel() + Helper.color("&cWar does not exist!"));
         return true;
     }
 
     private static boolean saveAll(CommandSender sender, String[] args) {
-        //TODO save-all
-        sender.sendMessage(Helper.chatLabel() + Helper.color("&csave-all Unimplemented!"));
+        for (War w : WarData.getWars()) WarData.saveWar(w);
+        sender.sendMessage(Helper.chatLabel() + Helper.color("&cForced Save of all wars"));
         return true;
     }
 
     private static boolean load(CommandSender sender, String[] args) {
-        //TODO load
-        sender.sendMessage(Helper.chatLabel() + Helper.color("&cload Unimplemented!"));
+        if (args.length >= 3) {
+            if(Boolean.parseBoolean(args[2])) {
+                for (War w : WarData.getWars()) {
+                    int index = -1;
+                    if(w.getName().equalsIgnoreCase(args[1])) {
+                        //kill raids
+                        for (Raid raid : w.getRaids()) {
+                            raid.stop();
+                        }
+                        //kill sieges
+                        for (Siege siege : w.getSieges()) {
+                            siege.stop();
+                        }
+                        //delete wars
+                        index = WarData.getWars().lastIndexOf(w);
+                        WarData.getWars().remove(w);
+                    }
+                    if(index < 0) {
+                        sender.sendMessage(Helper.chatLabel() + Helper.color("&cError! Failed to delete war, forcing end."));
+                        return true;
+                    }
+                    //reload data
+                    ;
+                    sender.sendMessage(Helper.chatLabel() + Helper.color("&cForcefully Reloaded all Wars!"));
+                    return true;
+                }
+            }
+        }
+        sender.sendMessage(Helper.chatLabel() + Helper.color("Are you sure you want to do this?"));
+        sender.sendMessage(Helper.chatLabel() + Helper.color("Doing this will forcefully stop and reload every war live. It can be very dangerous and may not work as intended."));
+        sender.sendMessage(Helper.chatLabel() + Helper.color("To confirm do /awa load-all true"));
         return true;
     }
 
     private static boolean loadAll(CommandSender sender, String[] args) {
-        //TODO load-all
-        sender.sendMessage(Helper.chatLabel() + Helper.color("&cload-all Unimplemented!"));
+        if (args.length >= 2) {
+            if(Boolean.parseBoolean(args[1])) {
+                for (War w : WarData.getWars()) {
+                    //kill raids
+                    for (Raid raid : w.getRaids()) {
+                        raid.stop();
+                    }
+                    //kill sieges
+                    for (Siege siege : w.getSieges()) {
+                        siege.stop();
+                    }
+                    //delete wars
+                    WarData.getWars().remove(w);
+                }
+                //reload data
+                Main.initData();
+                sender.sendMessage(Helper.chatLabel() + Helper.color("&cForcefully Reloaded all Wars!"));
+                return true;
+            }
+        }
+        sender.sendMessage(Helper.chatLabel() + Helper.color("Are you sure you want to do this?"));
+        sender.sendMessage(Helper.chatLabel() + Helper.color("Doing this will forcefully stop and reload every war live. It can be very dangerous and may not work as intended."));
+        sender.sendMessage(Helper.chatLabel() + Helper.color("To confirm do /awa load-all true"));
         return true;
     }
 
