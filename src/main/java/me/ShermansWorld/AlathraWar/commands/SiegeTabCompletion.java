@@ -37,8 +37,9 @@ public class SiegeTabCompletion implements TabCompleter {
 						if (args.length > 2) {
 							if (args.length > 3) {
 								return Collections.emptyList();
+							} else {
+								return NameUtil.filterByStart(CommandHelper.getTownyWarTowns(args[1]), args[2]);
 							}
-							return NameUtil.filterByStart(CommandHelper.getTownyWarTowns(args[1]), args[2]);
 						} else {
 							return NameUtil.filterByStart(CommandHelper.getWarNames(), args[1]);
 						}
