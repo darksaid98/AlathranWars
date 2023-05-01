@@ -245,37 +245,35 @@ public class AdminCommands implements CommandExecutor {
     }
 
     private static boolean load(CommandSender sender, String[] args) {
-        if (args.length >= 3) {
-            if(Boolean.parseBoolean(args[2])) {
-                for (War w : WarData.getWars()) {
-                    int index = -1;
-                    if(w.getName().equalsIgnoreCase(args[1])) {
-                        //kill raids
-                        for (Raid raid : w.getRaids()) {
-                            raid.stop();
-                        }
-                        //kill sieges
-                        for (Siege siege : w.getSieges()) {
-                            siege.stop();
-                        }
-                        //delete wars
-                        index = WarData.getWars().lastIndexOf(w);
-                        WarData.getWars().remove(w);
-                    }
-                    if(index < 0) {
-                        sender.sendMessage(Helper.chatLabel() + Helper.color("&cError! Failed to delete war, forcing end."));
-                        return true;
-                    }
-                    //reload data
-                    ;
-                    sender.sendMessage(Helper.chatLabel() + Helper.color("&cForcefully Reloaded all Wars!"));
-                    return true;
-                }
-            }
-        }
-        sender.sendMessage(Helper.chatLabel() + Helper.color("Are you sure you want to do this?"));
-        sender.sendMessage(Helper.chatLabel() + Helper.color("Doing this will forcefully stop and reload every war live. It can be very dangerous and may not work as intended."));
-        sender.sendMessage(Helper.chatLabel() + Helper.color("To confirm do /awa load-all true"));
+//        if (args.length >= 3) {
+//            if(Boolean.parseBoolean(args[2])) {
+//                for (War w : WarData.getWars()) {
+//                    int index = -1;
+//                    if(w.getName().equalsIgnoreCase(args[1])) {
+//                        //kill raids
+//                        for (Raid raid : w.getRaids()) {
+//                            raid.stop();
+//                        }
+//                        //kill sieges
+//                        for (Siege siege : w.getSieges()) {
+//                            siege.stop();
+//                        }
+//                        //delete wars
+//                        index = WarData.getWars().lastIndexOf(w);
+//                        WarData.getWars().remove(w);
+//                    }
+//                    if(index < 0) {
+//                        sender.sendMessage(Helper.chatLabel() + Helper.color("&cError! Failed to delete war, forcing end."));
+//                        return true;
+//                    }
+//                    //reload data
+//                    ;
+//                    sender.sendMessage(Helper.chatLabel() + Helper.color("&cForcefully Reloaded all Wars!"));
+//                    return true;
+//                }
+//            }
+//        }
+        sender.sendMessage(Helper.chatLabel() + Helper.color("&cSupport for loading wars individually is currently unimplemented. Use /awa load-all instead"));
         return true;
     }
 
