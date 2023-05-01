@@ -48,7 +48,7 @@ public class WarItems {
      * @return
      */
     public static ItemStack getOrNull(String registryName) {
-        return itemRegistry.get(registryName(registryName));
+        return itemRegistry.get(registryName(registryName)).clone();
     }
 
 
@@ -58,7 +58,7 @@ public class WarItems {
      * @return
      */
     public static ItemStack getOrNullNamespace(String registryName) {
-        return itemRegistry.get(registryName);
+        return itemRegistry.get(registryName).clone();
     }
 
 

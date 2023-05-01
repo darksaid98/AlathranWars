@@ -10,7 +10,9 @@ import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.items.WarItems;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.type.Door;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,14 +22,14 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 
 public class PlayerInteractListener implements Listener {
 
     //map of broken doors
-    public Map<Door, Long> brokenDoors = new HashMap<Door, Long>() {
-    };
+    public Map<Location, Long> brokenDoors = new HashMap<Location, Long>();
 
     /**
      * @param event event
@@ -81,7 +83,7 @@ public class PlayerInteractListener implements Listener {
                         Bukkit.getLogger().info("FOUND FROM RAID? : " + inSiegeOrRaid);
                         if (inSiegeOrRaid) {
                             Bukkit.getLogger().info("ARE IN ONE");
-                            if (brokenDoors.get(door) != null && brokenDoors.get(door) > System.currentTimeMillis()) {
+                            if (doorBroken(clicked, door)) {
                                 Bukkit.getLogger().info("DOOR BROKEN");
                                 player.sendMessage(Helper.chatLabel() + Helper.color("&cThe door is already broken!"));
                                 event.setCancelled(true);
@@ -89,9 +91,10 @@ public class PlayerInteractListener implements Listener {
                             }
                             Bukkit.getLogger().info("BREAKING DOOR");
                             player.sendMessage(Helper.chatLabel() + Helper.color("&eBreak it down alright!"));
-                            brokenDoors.put(door, System.currentTimeMillis() + (1000L * Main.getInstance().getConfig().getInt("batteringRamEffectiveness")));
+                            brokenDoors.put(getDoorPos(clicked, door), System.currentTimeMillis() + (1000L * Main.getInstance().getConfig().getInt("batteringRamEffectiveness")));
                             Bukkit.getLogger().info("SAVED STATE");
                             door.setOpen(!door.isOpen());
+                            clicked.setBlockData(door);
                             player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
                             event.setCancelled(true);
                         } else {
@@ -106,33 +109,71 @@ public class PlayerInteractListener implements Listener {
         }
     }
 
+
     /**
      * @param event event
      * @author DunnoConz
      * @author AubriTheHuman
      */
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerRClick(final PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Action action = event.getAction();
         Block clicked = event.getClickedBlock();
         ItemStack item = player.getInventory().getItemInMainHand();
         if (action == Action.RIGHT_CLICK_BLOCK) {
+            Bukkit.getLogger().info("RIGHT CLICK BLOCK");
             if (clicked != null) {
+                Bukkit.getLogger().info("NOT NULL");
                 if (clicked.getType().toString().contains("DOOR")) {
+                    Bukkit.getLogger().info("DOOR FOUND");
                     Door door = (Door) clicked.getBlockData();
-                    if (brokenDoors.get(door) != null && brokenDoors.get(door) > System.currentTimeMillis()) {
-                        player.sendMessage(Helper.chatLabel() + Helper.color("Door is broken! " + String.valueOf(System.currentTimeMillis()) + " " + brokenDoors.get(door)));
+                    if (doorBroken(clicked, door)) {
+                        Bukkit.getLogger().info("DOOR BROKEN");
+                        player.sendMessage(Helper.chatLabel() + Helper.color("Door is broken! " + String.valueOf(System.currentTimeMillis()) + " " + getDoorPos(clicked, door).toString()));
+                        door.setOpen(!door.isOpen());
+                        clicked.setBlockData(door);
                         event.setCancelled(false);
+
                         return;
                     }
                 }
             }
 
             if (item.equals(WarItems.getOrNull("ram"))) {
-                event.setCancelled(true);
-                return;
+                if (clicked != null) {
+                    if (clicked.getType().name().equals("GRASS_BLOCK")
+                            || clicked.getType().name().equals("DIRT")
+                            || clicked.getType().name().equals("COARSE_DIRT")
+                            || clicked.getType().name().equals("ROOTED_DIRT")
+                            || clicked.getType().name().equals("DIRT_PATH")) {
+                        event.setCancelled(true);
+                        return;
+                    }
+                }
             }
         }
+    }
+
+    private Location getDoorPos(Block clicked, Door door) {
+        if(door.getHalf() == Bisected.Half.BOTTOM) {
+            return clicked.getLocation().clone();
+        } else if(door.getHalf() == Bisected.Half.TOP) {
+            return clicked.getLocation().subtract(0.0, 1.0, 0.0).clone();
+        }
+        return clicked.getLocation().clone();
+    }
+
+    private boolean doorBroken(@Nonnull Block clicked, Door door) {
+        if(door.getHalf() == Bisected.Half.BOTTOM) {
+            if(brokenDoors.get(clicked.getLocation()) != null) {
+                return brokenDoors.get(clicked.getLocation()) > System.currentTimeMillis();
+            }
+        } else if(door.getHalf() == Bisected.Half.TOP) {
+            if(brokenDoors.get(clicked.getLocation().subtract(0.0, 1.0D, 0.0)) != null) {
+                return brokenDoors.get(clicked.getLocation().subtract(0.0, 1.0D, 0.0)) > System.currentTimeMillis();
+            }
+        }
+        return false;
     }
 }
