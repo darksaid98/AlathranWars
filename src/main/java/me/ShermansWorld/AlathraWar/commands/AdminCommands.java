@@ -1515,7 +1515,7 @@ public class AdminCommands implements CommandExecutor {
                                                 //forceful add, ignore surrender and override it if the town is
                                                 if(Boolean.parseBoolean(args[7])) {
                                                     //if we already have surrendered
-                                                    if(w.getSurrenderedTowns().contains(args[6])) {
+                                                    if(w.getSurrenderedTowns().contains(args[6].toLowerCase())) {
                                                         w.unSurrenderTown(args[6]);
                                                         p.sendMessage(Helper.chatLabel() + "Un-surrendered town " + args[6]);
                                                         Main.warLogger.log(Helper.chatLabel() + "Un-surrendered town " + args[6]);
@@ -1559,7 +1559,7 @@ public class AdminCommands implements CommandExecutor {
                                                 if(Boolean.parseBoolean(args[7])) {
                                                     //if we already have surrendered
                                                     for(Town t : n.getTowns()) {
-                                                        if(w.getSurrenderedTowns().contains(t.getName())) {
+                                                        if(w.getSurrenderedTowns().contains(t.getName().toLowerCase())) {
                                                             w.unSurrenderTown(t.getName());
                                                             p.sendMessage(Helper.chatLabel() + "Unsurrendered town " + t.getName());
                                                             Main.warLogger.log(Helper.chatLabel() + "Unsurrendered town " + t.getName());
@@ -1619,7 +1619,7 @@ public class AdminCommands implements CommandExecutor {
                                     if (args[4].equalsIgnoreCase("town")) {
                                         Town t = TownyAPI.getInstance().getTown(args[5]);
                                         if (t != null) {
-                                            if(w.getSurrenderedTowns().contains(args[5])) {
+                                            if(w.getSurrenderedTowns().contains(args[5].toLowerCase())) {
                                                 w.unSurrenderTown(args[5]);
                                                 p.sendMessage(Helper.chatLabel() + "Un-surrendered town " + args[5]);
                                                 Main.warLogger.log(Helper.chatLabel() + "Un-surrendered town " + args[5]);
@@ -1637,7 +1637,7 @@ public class AdminCommands implements CommandExecutor {
                                         Nation n = TownyAPI.getInstance().getNation(args[5]);
                                         if (n != null) {
                                             for(Town t : n.getTowns()) {
-                                                if (w.getSurrenderedTowns().contains(t.getName())) {
+                                                if (w.getSurrenderedTowns().contains(t.getName().toLowerCase())) {
                                                     w.unSurrenderTown(t.getName());
                                                     p.sendMessage(Helper.chatLabel() + "Un-surrendered town " + t.getName());
                                                     Main.warLogger.log(Helper.chatLabel() + "Un-surrendered town " + t.getName());
@@ -1677,12 +1677,12 @@ public class AdminCommands implements CommandExecutor {
                                     if (args[5].equalsIgnoreCase("town")) {
                                         Town t = TownyAPI.getInstance().getTown(args[6]);
                                         if (t != null) {
-                                            if(w.getSide1Towns().contains(t.getName()) && w.getSide1().equalsIgnoreCase(args[4])) {
+                                            if(w.getSide1Towns().contains(t.getName().toLowerCase()) && w.getSide1().equalsIgnoreCase(args[4])) {
                                                 w.surrenderTown(t.getName());
                                                 p.sendMessage(Helper.chatLabel() + "Forcefully surrendered town " + args[6] + " war " + args[3] + " on side " + args[4]);
                                                 Main.warLogger.log(Helper.chatLabel() + "Forcefully surrendered town " + args[6] + " war " + args[3] + " on side " + args[4]);
                                                 return finalizeWar(w);
-                                            } else if(w.getSide2Towns().contains(t.getName()) && w.getSide2().equalsIgnoreCase(args[4])) {
+                                            } else if(w.getSide2Towns().contains(t.getName().toLowerCase()) && w.getSide2().equalsIgnoreCase(args[4])) {
                                                 w.surrenderTown(t.getName());
                                                 p.sendMessage(Helper.chatLabel() + "Forcefully surrendered town " + args[6] + " war " + args[3] + " on side " + args[4]);
                                                 Main.warLogger.log(Helper.chatLabel() + "Forcefully surrendered town " + args[6] + " war " + args[3] + " on side " + args[4]);
@@ -1705,12 +1705,12 @@ public class AdminCommands implements CommandExecutor {
                                         Nation n = TownyAPI.getInstance().getNation(args[6]);
                                         if (n != null) {
                                             for (Town t : n.getTowns()) {
-                                                if(w.getSide1Towns().contains(t.getName()) && w.getSide1().equalsIgnoreCase(args[4])) {
+                                                if(w.getSide1Towns().contains(t.getName().toLowerCase()) && w.getSide1().equalsIgnoreCase(args[4])) {
                                                     w.surrenderTown(t.getName());
                                                     p.sendMessage(Helper.chatLabel() + "Forcefully surrendered town " + t.getName() + " war " + args[3] + " on side " + args[4]);
                                                     Main.warLogger.log(Helper.chatLabel() + "Forcefully surrendered town " + t.getName() + " war " + args[3] + " on side " + args[4]);
 
-                                                } else if(w.getSide2Towns().contains(t.getName()) && w.getSide2().equalsIgnoreCase(args[4])) {
+                                                } else if(w.getSide2Towns().contains(t.getName().toLowerCase()) && w.getSide2().equalsIgnoreCase(args[4])) {
                                                     w.surrenderTown(t.getName());
                                                     p.sendMessage(Helper.chatLabel() + "Forcefully surrendered town " + t.getName() + " war " + args[3] + " on side " + args[4]);
                                                     Main.warLogger.log(Helper.chatLabel() + "Forcefully surrendered town " + t.getName() + " war " + args[3] + " on side " + args[4]);

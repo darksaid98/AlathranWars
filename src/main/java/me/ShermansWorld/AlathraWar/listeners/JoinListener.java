@@ -28,10 +28,10 @@ public class JoinListener implements Listener {
         String townName = town.getName();
         boolean inWar = false;
         for (final War war : WarData.getWars()) {
-            if (war.getSide1Towns().contains(townName)) {
+            if (war.getSide1Towns().contains(townName.toLowerCase())) {
                 TABHook.assignSide1WarSuffix(p, war);
                 inWar = true;
-            } else if (war.getSide2Towns().contains(townName)) {
+            } else if (war.getSide2Towns().contains(townName.toLowerCase())) {
                 TABHook.assignSide2WarSuffix(p, war);
                 inWar = true;
             }

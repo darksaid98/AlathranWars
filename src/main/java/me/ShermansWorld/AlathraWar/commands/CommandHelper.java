@@ -74,7 +74,7 @@ public class CommandHelper {
         War w = WarData.getWar(war);
         if(w == null) return Collections.emptyList();
         for (Town t : TownyAPI.getInstance().getTowns()) {
-            if(w.getSide2Towns().contains(t.getName()) || w.getSide1Towns().contains(t.getName())) {
+            if(w.getSide2Towns().contains(t.getName().toLowerCase()) || w.getSide1Towns().contains(t.getName().toLowerCase())) {
                 out.add(t.getName());
             }
         }
@@ -91,7 +91,7 @@ public class CommandHelper {
         War w = WarData.getWar(war);
         if(w == null) return Collections.emptyList();
         for (Town t : TownyAPI.getInstance().getTowns()) {
-            if(w.getSide2Towns().contains(t.getName()) || w.getSide1Towns().contains(t.getName())) {
+            if(w.getSide2Towns().contains(t.getName().toLowerCase()) || w.getSide1Towns().contains(t.getName().toLowerCase())) {
                 if(t.hasNation()) {
                     try {
                         out.add(t.getNation().getName());
@@ -115,11 +115,11 @@ public class CommandHelper {
         if(w == null) return Collections.emptyList();
         for (Town t : TownyAPI.getInstance().getTowns()) {
             if(side.equalsIgnoreCase(w.getSide1())) {
-                if(w.getSide1Towns().contains(t.getName())) {
+                if(w.getSide1Towns().contains(t.getName().toLowerCase())) {
                     out.add(t.getName());
                 }
             } else if(side.equalsIgnoreCase(w.getSide2())) {
-                if(w.getSide2Towns().contains(t.getName())) {
+                if(w.getSide2Towns().contains(t.getName().toLowerCase())) {
                     out.add(t.getName());
                 }
             }

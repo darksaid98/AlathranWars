@@ -69,13 +69,13 @@ public class War {
      */
 	public void addTown(final String town, String side) {
         if (side1.equalsIgnoreCase(side)) {
-            if (!side1Towns.contains(town)) {
+            if (!side1Towns.contains(town.toLowerCase())) {
                 side1Towns.add(town.toLowerCase());
                 Main.warLogger.log("Town "+ town + " joined " + this.name + " on " + side);
                 return;
             }
         } else if(side2.equalsIgnoreCase(side)) {
-            if (!side2Towns.contains(town)) {
+            if (!side2Towns.contains(town.toLowerCase())) {
                 side2Towns.add(town.toLowerCase());
                 Main.warLogger.log("Town "+ town + " joined " + this.name + " on " + side);
                 return;
