@@ -9,6 +9,7 @@ import me.ShermansWorld.AlathraWar.Siege;
 import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.items.WarItems;
+import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Door;
 import org.bukkit.entity.Player;
@@ -41,11 +42,16 @@ public class PlayerInteractListener implements Listener {
         ItemStack item = player.getInventory().getItemInMainHand();
 
         if (action == Action.LEFT_CLICK_BLOCK) {
+            Bukkit.getLogger().info("LEFT CLICK BLOCK");
             if (clicked != null) {
-                if (clicked.getType().toString().contains("DOOR")) { // right click + any door types
-                    Door door = (Door) clicked.getState();
+                Bukkit.getLogger().info("NOT NULL");
+                if (clicked.getType().toString().contains("DOOR")) { // left click + any door types
+                    Bukkit.getLogger().info("DOOR");
+                    Door door = (Door) clicked.getBlockData();
+                    Bukkit.getLogger().info("DOOR IS STATE");
                     // lock door in the opposite position
                     if (item.equals(WarItems.getOrNull("ram"))) {
+                        Bukkit.getLogger().info("IS RAM");
                         boolean inSiegeOrRaid = false;
                         //siege check
                         for (Siege s : SiegeData.getSieges()) {
@@ -57,6 +63,8 @@ public class PlayerInteractListener implements Listener {
                                 }
                             }
                         }
+
+                        Bukkit.getLogger().info("FOUND FROM SIEGE? : " + inSiegeOrRaid);
                         //if it wasnt in a siege, then
                         if (!inSiegeOrRaid) {
                             for (Raid r : RaidData.getRaids()) {
@@ -70,17 +78,23 @@ public class PlayerInteractListener implements Listener {
                             }
                         }
 
+                        Bukkit.getLogger().info("FOUND FROM RAID? : " + inSiegeOrRaid);
                         if (inSiegeOrRaid) {
+                            Bukkit.getLogger().info("ARE IN ONE");
                             if (brokenDoors.get(door) != null && brokenDoors.get(door) > System.currentTimeMillis()) {
+                                Bukkit.getLogger().info("DOOR BROKEN");
                                 player.sendMessage(Helper.chatLabel() + Helper.color("&cThe door is already broken!"));
                                 event.setCancelled(true);
                                 return;
                             }
+                            Bukkit.getLogger().info("BREAKING DOOR");
                             player.sendMessage(Helper.chatLabel() + Helper.color("&eBreak it down alright!"));
                             brokenDoors.put(door, System.currentTimeMillis() + (1000L * Main.getInstance().getConfig().getInt("batteringRamEffectiveness")));
+                            Bukkit.getLogger().info("SAVED STATE");
                             door.setOpen(!door.isOpen());
                             player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
                         } else {
+                            Bukkit.getLogger().info("NOT EITHER SIEG OR RAIDE");
                             player.sendMessage(Helper.chatLabel() + Helper.color("&cThis item can only be used in a siege or raid!"));
                             event.setCancelled(true);
                         }
