@@ -1,5 +1,6 @@
 package me.ShermansWorld.AlathraWar.commands;
 
+import me.ShermansWorld.AlathraWar.*;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -7,9 +8,6 @@ import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 
-import me.ShermansWorld.AlathraWar.Helper;
-import me.ShermansWorld.AlathraWar.Main;
-import me.ShermansWorld.AlathraWar.War;
 import me.ShermansWorld.AlathraWar.data.WarData;
 import net.md_5.bungee.api.ChatColor;
 
@@ -104,6 +102,13 @@ public class WarCommands implements CommandExecutor {
                 p.sendMessage(Helper.chatLabel()
                         + "War not found. Type /war list to view current wars.");
                 return;
+            }
+
+            for(Siege s : war.getSieges()) {
+                s.stop();
+            }
+            for(Raid r : war.getRaids()) {
+                r.stop();
             }
 
             WarData.removeWar(war);
