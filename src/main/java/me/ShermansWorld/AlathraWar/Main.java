@@ -19,8 +19,6 @@ public class Main extends JavaPlugin {
 	public static Main instance;
 	public static Economy econ;
 	public static AlathraWarLogger warLogger;
-	public static WarItemRegistry itemRegistry;
-	public static WarRecipeRegistry recipeRegistry;
 
 	static {
 		instance = null;
@@ -101,9 +99,9 @@ public class Main extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new PlayerInteractListener(), this);
 
 		//run first
-		itemRegistry = new WarItemRegistry();
+		new WarItemRegistry();
 		//run second
-		recipeRegistry = new WarRecipeRegistry();
+		new WarRecipeRegistry();
 
 		initData();
 		initAPIs();

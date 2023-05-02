@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 
 public class WarItemRegistry {
 
+    private static WarItemRegistry instance;
 
     private static final HashMap<String, IWarItem> itemRegistry = new HashMap<>();
 
@@ -24,11 +25,17 @@ public class WarItemRegistry {
      * loads all items into the plugin registry list
      */
     public WarItemRegistry() {
+        instance = this;
+
         Main.warLogger.log(Helper.chatLabel() + "Registering AlathraWar items.");
 
         itemRegistry.put(registryName("ram"), new RamItem());
 
         Main.warLogger.log(Helper.chatLabel() + "Registered AlathraWar items.");
+    }
+
+    public static WarItemRegistry getInstance() {
+        return instance;
     }
 
     /**

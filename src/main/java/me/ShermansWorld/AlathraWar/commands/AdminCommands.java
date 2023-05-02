@@ -152,9 +152,9 @@ public class AdminCommands implements CommandExecutor {
             //find item
             ItemStack stack = null;
             if(args[1].contains(Main.getInstance().getName().toLowerCase())) {
-                stack = Main.itemRegistry.getOrNullNamespace(args[1]);
+                stack = WarItemRegistry.getInstance().getOrNullNamespace(args[1]);
             } else {
-                stack = Main.itemRegistry.getOrNull(args[1]);
+                stack = WarItemRegistry.getInstance().getOrNull(args[1]);
             }
             // item not real!
             if(stack == null) {

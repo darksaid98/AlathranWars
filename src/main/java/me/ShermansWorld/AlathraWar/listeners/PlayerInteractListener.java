@@ -48,7 +48,7 @@ public class PlayerInteractListener implements Listener {
                 if (clicked.getType().toString().contains("DOOR")) { // left click + any door types
                     Door door = (Door) clicked.getBlockData();
                     // lock door in the opposite position
-                    if (item.equals(WarItemRegistry.getOrNull("ram"))) {
+                    if (item.equals(Main.itemRegistry.getOrNull("ram"))) {
                         boolean inSiegeOrRaid = false;
                         //siege check
                         for (Siege s : SiegeData.getSieges()) {

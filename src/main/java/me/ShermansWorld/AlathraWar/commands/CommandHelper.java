@@ -242,6 +242,6 @@ public class CommandHelper {
      * @return list of all alathrawar items namespaced
      */
     public static List<String> getWarItems() {
-        return new ArrayList<>(WarItemRegistry.getItemRegistry().keySet());
+        return new ArrayList<>(WarItemRegistry.getInstance().getItemRegistry().keySet());
     }
 }

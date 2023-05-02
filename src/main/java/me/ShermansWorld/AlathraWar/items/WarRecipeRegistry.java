@@ -11,12 +11,16 @@ import java.util.Set;
 
 public class WarRecipeRegistry {
 
+    private static WarRecipeRegistry instance;
+
     private static final HashMap<String, Recipe> recipeRegistry = new HashMap<>();
 
     public WarRecipeRegistry() {
+        instance = this;
+
         Main.warLogger.log(Helper.chatLabel() + "Registering AlathraWar recipes.");
 
-        register(WarItemRegistry.registryName("ram"), Main.itemRegistry.getWarItem("ram").getRecipes());
+        register(WarItemRegistry.registryName("ram"), WarItemRegistry.getInstance().getWarItem("ram").getRecipes());
 
         Main.warLogger.log(Helper.chatLabel() + "Registered AlathraWar recipes.");
     }
