@@ -34,7 +34,7 @@ public class RamItem implements IWarItem {
 
     @Override
     public Set<Recipe> getRecipes() {
-        ItemStack output = Main.itemRegistry.getOrNull("ram");
+        ItemStack output = WarItemRegistry.getInstance().getOrNull("ram");
         NamespacedKey key = new NamespacedKey(Main.getInstance(), "ram");
         ShapedRecipe recipe = new ShapedRecipe(key, output);
         recipe.shape("$@$", "B##");

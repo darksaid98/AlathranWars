@@ -48,7 +48,7 @@ public class PlayerInteractListener implements Listener {
                 if (clicked.getType().toString().contains("DOOR")) { // left click + any door types
                     Door door = (Door) clicked.getBlockData();
                     // lock door in the opposite position
-                    if (item.equals(Main.itemRegistry.getOrNull("ram"))) {
+                    if (item.equals(WarItemRegistry.getInstance().getOrNull("ram"))) {
                         boolean inSiegeOrRaid = false;
                         //siege check
                         for (Siege s : SiegeData.getSieges()) {
@@ -101,7 +101,7 @@ public class PlayerInteractListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerRClick(final PlayerItemDamageEvent event) {
         ItemStack item = event.getItem();
-        if (item.equals(WarItemRegistry.getOrNull("ram"))) {
+        if (item.equals(WarItemRegistry.getInstance().getOrNull("ram"))) {
             event.setCancelled(true);
         }
     }
@@ -131,7 +131,7 @@ public class PlayerInteractListener implements Listener {
                 }
             }
 
-            if (item.equals(WarItemRegistry.getOrNull("ram"))) {
+            if (item.equals(WarItemRegistry.getInstance().getOrNull("ram"))) {
                 if (clicked != null) {
                     if (clicked.getType().name().equals("GRASS_BLOCK")
                             || clicked.getType().name().equals("DIRT")

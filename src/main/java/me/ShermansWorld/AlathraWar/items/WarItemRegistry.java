@@ -48,7 +48,6 @@ public class WarItemRegistry {
     }
 
     public Map<String, ItemStack> getItemRegistry() {
-
         return itemRegistry.entrySet()
                 .stream()
                 .filter(v -> v.getValue() != null)
