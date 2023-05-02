@@ -229,13 +229,12 @@ public class CommandHelper {
      * @param args command args
      * @return success
      */
-    protected static boolean logCommand(CommandSender sender, String label, String[] args) {
+    protected static void logCommand(CommandSender sender, String label, String[] args) {
         StringBuilder log = new StringBuilder(label);
         for (String s : args) {
             log.append(" ").append(s);
         }
         Main.warLogger.log(Helper.chatLabel() + sender.getName() + " ran command: " + log.toString());
-        return true;
     }
 
     /**

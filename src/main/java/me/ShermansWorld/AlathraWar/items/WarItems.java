@@ -24,7 +24,7 @@ public class WarItems {
     public WarItems() {
         Main.warLogger.log(Helper.chatLabel() + "Registering AlathraWar items.");
 
-        itemRegistry.put(registryName("ram"), getBatteringRam());
+        itemRegistry.put(registryName("ram"), batteringRam());
 
         Main.warLogger.log(Helper.chatLabel() + "Registered AlathraWar items.");
     }
@@ -34,7 +34,7 @@ public class WarItems {
      * @param item
      * @return
      */
-    private static String registryName(String item) {
+    public static String registryName(String item) {
         return namespace + ":" + item;
     }
 
@@ -62,7 +62,7 @@ public class WarItems {
     }
 
 
-    public ItemStack getBatteringRam() {
+    public ItemStack batteringRam() {
 
         ItemStack ram = new ItemStack(Material.WOODEN_HOE);
         ItemMeta meta = ram.getItemMeta();
