@@ -76,6 +76,11 @@ public class SiegeCommands implements CommandExecutor {
             }
         }
 
+        if (siegeOwner == null) {
+            sender.sendMessage("Owner is Null");
+            return;
+        }
+
         if (args.length < 3) {
             sender.sendMessage(Helper.chatLabel() + "/war siege [war] [town]");
             return;

@@ -3,7 +3,6 @@ package me.ShermansWorld.AlathraWar.data;
 import java.util.*;
 
 import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 
 import com.palmergames.bukkit.towny.TownyAPI;
