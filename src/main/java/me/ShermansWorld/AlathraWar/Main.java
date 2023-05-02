@@ -1,7 +1,8 @@
 package me.ShermansWorld.AlathraWar;
 
 import me.ShermansWorld.AlathraWar.commands.*;
-import me.ShermansWorld.AlathraWar.items.WarItems;
+import me.ShermansWorld.AlathraWar.items.WarItemRegistry;
+import me.ShermansWorld.AlathraWar.items.WarRecipeRegistry;
 import me.ShermansWorld.AlathraWar.listeners.*;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.Plugin;
@@ -18,7 +19,8 @@ public class Main extends JavaPlugin {
 	public static Main instance;
 	public static Economy econ;
 	public static AlathraWarLogger warLogger;
-	public static WarItems itemRegistry;
+	public static WarItemRegistry itemRegistry;
+	public static WarRecipeRegistry recipeRegistry;
 
 	static {
 		instance = null;
@@ -98,7 +100,10 @@ public class Main extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new BlockBreakListener(), (Plugin) this);
 		getServer().getPluginManager().registerEvents(new PlayerInteractListener(), this);
 
-		itemRegistry = new WarItems();
+		//run first
+		itemRegistry = new WarItemRegistry();
+		//run second
+		recipeRegistry = new WarRecipeRegistry();
 
 		initData();
 		initAPIs();

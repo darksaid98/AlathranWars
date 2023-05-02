@@ -12,7 +12,7 @@ import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.data.WarData;
-import me.ShermansWorld.AlathraWar.items.WarItems;
+import me.ShermansWorld.AlathraWar.items.WarItemRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.boss.KeyedBossBar;
@@ -152,9 +152,9 @@ public class AdminCommands implements CommandExecutor {
             //find item
             ItemStack stack = null;
             if(args[1].contains(Main.getInstance().getName().toLowerCase())) {
-                stack = WarItems.getOrNullNamespace(args[1]);
+                stack = Main.itemRegistry.getOrNullNamespace(args[1]);
             } else {
-                stack = WarItems.getOrNull(args[1]);
+                stack = Main.itemRegistry.getOrNull(args[1]);
             }
             // item not real!
             if(stack == null) {

@@ -10,7 +10,7 @@ import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.data.WarData;
-import me.ShermansWorld.AlathraWar.items.WarItems;
+import me.ShermansWorld.AlathraWar.items.WarItemRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
 import org.bukkit.command.CommandSender;
@@ -242,6 +242,6 @@ public class CommandHelper {
      * @return list of all alathrawar items namespaced
      */
     public static List<String> getWarItems() {
-        return new ArrayList<>(WarItems.getItemRegistry().keySet());
+        return new ArrayList<>(WarItemRegistry.getItemRegistry().keySet());
     }
 }
