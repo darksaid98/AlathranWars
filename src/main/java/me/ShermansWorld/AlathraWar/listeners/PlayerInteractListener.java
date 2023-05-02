@@ -123,7 +123,7 @@ public class PlayerInteractListener implements Listener {
                 if (clicked.getType().toString().contains("DOOR")) {
                     Door door = (Door) clicked.getBlockData();
                     if (doorBroken(clicked, door)) {
-                        player.sendMessage(Helper.chatLabel() + Helper.color("Door is broken! " + String.valueOf(System.currentTimeMillis()) + " " + getDoorPos(clicked, door).toString()));
+                        player.sendMessage(Helper.chatLabel() + Helper.color("Door is broken!"));
                         event.setCancelled(true);
 
                         return;
