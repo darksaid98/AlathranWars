@@ -279,10 +279,10 @@ public class SiegeCommands implements CommandExecutor {
 
     private static void siegeHelp(CommandSender sender, String[] args) {
         if (sender.hasPermission("AlathraWar.admin")) {
-            sender.sendMessage(Helper.chatLabel() + "/siege stop [town]");
+            sender.sendMessage(Helper.chatLabel() + "/siege stop [war] [town]");
         }
         sender.sendMessage(Helper.chatLabel() + "/siege start [war] [town]");
-        sender.sendMessage(Helper.chatLabel() + "/siege abandon [town]");
+        sender.sendMessage(Helper.chatLabel() + "/siege abandon [war] [town]");
         sender.sendMessage(Helper.chatLabel() + "/siege list");
     }
 }
