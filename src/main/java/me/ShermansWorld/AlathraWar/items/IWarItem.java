@@ -9,6 +9,6 @@ public interface IWarItem {
 
     public ItemStack getItemStack();
 
-    public Set<Recipe> getRecipes();
+    public Recipe getRecipe();
 
 }

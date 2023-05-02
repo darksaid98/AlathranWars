@@ -191,7 +191,6 @@ public class AdminTabCompletion implements TabCompleter {
         } else if (args.length == 1) {
             return NameUtil.filterByStart(base, args[0]);
         } else {
-
             if (args[0].equalsIgnoreCase("purgebars")) {
                 return empty;
             } else if (args[0].equalsIgnoreCase("save")) {

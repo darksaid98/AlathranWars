@@ -3,6 +3,7 @@ package me.ShermansWorld.AlathraWar.items;
 import me.ShermansWorld.AlathraWar.AlathraWarLogger;
 import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.Main;
+import me.ShermansWorld.AlathraWar.War;
 import me.ShermansWorld.AlathraWar.items.item.RamItem;
 import org.bukkit.inventory.Recipe;
 
@@ -20,16 +21,20 @@ public class WarRecipeRegistry {
 
         Main.warLogger.log(Helper.chatLabel() + "Registering AlathraWar recipes.");
 
-        register(WarItemRegistry.registryName("ram"), WarItemRegistry.getInstance().getWarItem("ram").getRecipes());
+//        register(WarItemRegistry.registryName("ram"), new RamItem().getRecipes());
 
         Main.warLogger.log(Helper.chatLabel() + "Registered AlathraWar recipes.");
     }
 
     public void register(String name, Set<Recipe> recipes) {
         for (Recipe recipe : recipes) {
-            Main.getInstance().getServer().addRecipe(recipe);
+//            Bukkit.getServer().addRecipe(recipe);
             recipeRegistry.put(name, recipe);
         }
+    }
+
+    public static WarRecipeRegistry getInstance() {
+        return instance;
     }
 
     public HashMap<String, Recipe> getRecipeRegistry() {

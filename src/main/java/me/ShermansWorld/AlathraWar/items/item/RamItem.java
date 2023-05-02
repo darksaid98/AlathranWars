@@ -33,7 +33,7 @@ public class RamItem implements IWarItem {
     }
 
     @Override
-    public Set<Recipe> getRecipes() {
+    public Recipe getRecipe() {
         ItemStack output = WarItemRegistry.getInstance().getOrNull("ram");
         NamespacedKey key = new NamespacedKey(Main.getInstance(), "ram");
         ShapedRecipe recipe = new ShapedRecipe(key, output);
@@ -42,6 +42,6 @@ public class RamItem implements IWarItem {
         recipe.setIngredient('$', Material.IRON_INGOT);
         recipe.setIngredient('B', Material.IRON_BLOCK);
         recipe.setIngredient('%', new RecipeChoice.MaterialChoice(Tag.LOGS));
-        return Set.of(recipe);
+        return recipe;
     }
 }

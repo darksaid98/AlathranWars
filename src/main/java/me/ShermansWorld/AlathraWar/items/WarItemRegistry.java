@@ -3,6 +3,7 @@ package me.ShermansWorld.AlathraWar.items;
 import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.items.item.RamItem;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -30,6 +31,8 @@ public class WarItemRegistry {
         Main.warLogger.log(Helper.chatLabel() + "Registering AlathraWar items.");
 
         itemRegistry.put(registryName("ram"), new RamItem());
+        //THIS BREAKS EVERYTHING???? TODO
+//            Bukkit.getServer().addRecipe(new RamItem().getRecipe());
 
         Main.warLogger.log(Helper.chatLabel() + "Registered AlathraWar items.");
     }

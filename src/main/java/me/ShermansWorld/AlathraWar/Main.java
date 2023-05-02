@@ -98,10 +98,10 @@ public class Main extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new BlockBreakListener(), (Plugin) this);
 		getServer().getPluginManager().registerEvents(new PlayerInteractListener(), this);
 
-		//run first
+//		//run first
 		new WarItemRegistry();
-		//run second
-		new WarRecipeRegistry();
+//		//run second
+//		new WarRecipeRegistry();
 
 		initData();
 		initAPIs();
