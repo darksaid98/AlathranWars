@@ -9,7 +9,6 @@ import me.ShermansWorld.AlathraWar.Siege;
 import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.items.WarItems;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Bisected;
@@ -92,11 +91,7 @@ public class PlayerInteractListener implements Listener {
                         } else {
                             player.sendMessage(Helper.chatLabel() + Helper.color("&cThis item can only be used in a siege or raid!"));
                         }
-                            event.setCancelled(true);
-                            event.setCancelled(true);
-                        }
                         event.setCancelled(true);
-                        }
                         return;
                     }
                 }
