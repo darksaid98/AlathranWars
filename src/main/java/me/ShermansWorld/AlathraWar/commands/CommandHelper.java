@@ -25,7 +25,7 @@ public class CommandHelper {
 
     /**
      * Grabs list of all war names
-     * @return
+     * @return list of wars
      */
     public static List<String> getWarNames() {
         List<String> out = new ArrayList<>();
@@ -37,8 +37,8 @@ public class CommandHelper {
 
     /**
      * Grabs first matching war and lists the sides
-     * @param name
-     * @return
+     * @param name name of war
+     * @return side of war
      */
     public static List<String> getWarSides(String name) {
         List<String> out = new ArrayList<>();
@@ -55,7 +55,7 @@ public class CommandHelper {
     /**
      * get list of all towny towns
      *
-     * @return
+     * @return list of all towns
      */
     public static List<String> getTownyTowns() {
         List<String> out = new ArrayList<>();
@@ -68,7 +68,7 @@ public class CommandHelper {
     /**
      * get list of all towny towns in a war
      *
-     * @return
+     * @return list of all towns in a war
      */
     public static List<String> getTownyWarTowns(String war) {
         List<String> out = new ArrayList<>();
@@ -85,7 +85,7 @@ public class CommandHelper {
     /**
      * get list of all towny towns in a war
      *
-     * @return
+     * @return list of all nations in a war
      */
     public static List<String> getTownyWarNations(String war) {
         List<String> out = new ArrayList<>();
@@ -108,7 +108,7 @@ public class CommandHelper {
     /**
      * get list of all towny towns on a side in a war
      *
-     * @return
+     * @return list of all towns in a side of a war
      */
     public static List<String> getTownyWarTowns(String war, String side) {
         List<String> out = new ArrayList<>();
@@ -130,7 +130,7 @@ public class CommandHelper {
 
     /**
      * return list of all towns in a raid
-     * @return
+     * @return list of all towns involved in a raid
      */
     public static List<String> getRaidTowns() {
         List<String> out = new ArrayList<>();
@@ -141,8 +141,8 @@ public class CommandHelper {
     }
 
     /**
-     * return list of all towns in a raid
-     * @return
+     * return list of all towns in a siege
+     * @return list of towns involved in a siege
      */
     public static List<String> getSiegeTowns() {
         List<String> out = new ArrayList<>();
@@ -155,7 +155,7 @@ public class CommandHelper {
     /**
      * get list of all towny nations
      *
-     * @return
+     * @return list of all nations
      */
     public static List<String> getTownyNations() {
         List<String> out = new ArrayList<>();
@@ -172,7 +172,7 @@ public class CommandHelper {
 
     /**
      * get a list of all online players
-     * @return
+     * @return list of all players online
      */
     public static List<String> getPlayers() {
         Collection<? extends Player> players = Bukkit.getOnlinePlayers();
@@ -185,7 +185,7 @@ public class CommandHelper {
 
     /**
      * get a list of all raid phases
-     * @return
+     * @return list of all raid phases
      */
     public static List<String> getRaidPhases() {
         List<String> out = new ArrayList<>();
@@ -219,9 +219,16 @@ public class CommandHelper {
             return out;
         }
         //if the player doesnt exist just return true
-        return true;
+        return 0;
     }
 
+    /**
+     * log the command
+     * @param sender sender
+     * @param label command
+     * @param args command args
+     * @return success
+     */
     protected static boolean logCommand(CommandSender sender, String label, String[] args) {
         StringBuilder log = new StringBuilder(label);
         for (String s : args) {
@@ -231,6 +238,10 @@ public class CommandHelper {
         return true;
     }
 
+    /**
+     * return list of all alathrawar items with namespace
+     * @return list of all alathrawar items namespaced
+     */
     public static List<String> getWarItems() {
         return new ArrayList<>(WarItems.getItemRegistry().keySet());
     }
