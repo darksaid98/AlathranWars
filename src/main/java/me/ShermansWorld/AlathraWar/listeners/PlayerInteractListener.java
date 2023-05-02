@@ -9,7 +9,6 @@ import me.ShermansWorld.AlathraWar.Siege;
 import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.items.WarItems;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Bisected;
@@ -41,20 +40,15 @@ public class PlayerInteractListener implements Listener {
     public void onPlayerInteract(final PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Action action = event.getAction();
-        Block clicked = event.getClickedBlock();
-        ItemStack item = player.getInventory().getItemInMainHand();
 
         if (action == Action.LEFT_CLICK_BLOCK) {
-            Bukkit.getLogger().info("LEFT CLICK BLOCK");
+            Block clicked = event.getClickedBlock();
+            ItemStack item = player.getInventory().getItemInMainHand();
             if (clicked != null) {
-                Bukkit.getLogger().info("NOT NULL");
                 if (clicked.getType().toString().contains("DOOR")) { // left click + any door types
-                    Bukkit.getLogger().info("DOOR");
                     Door door = (Door) clicked.getBlockData();
-                    Bukkit.getLogger().info("DOOR IS STATE");
                     // lock door in the opposite position
                     if (item.equals(WarItems.getOrNull("ram"))) {
-                        Bukkit.getLogger().info("IS RAM");
                         boolean inSiegeOrRaid = false;
                         //siege check
                         for (Siege s : SiegeData.getSieges()) {
@@ -67,7 +61,6 @@ public class PlayerInteractListener implements Listener {
                             }
                         }
 
-                        Bukkit.getLogger().info("FOUND FROM SIEGE? : " + inSiegeOrRaid);
                         //if it wasnt in a siege, then
                         if (!inSiegeOrRaid) {
                             for (Raid r : RaidData.getRaids()) {
@@ -81,28 +74,24 @@ public class PlayerInteractListener implements Listener {
                             }
                         }
 
-                        Bukkit.getLogger().info("FOUND FROM RAID? : " + inSiegeOrRaid);
                         if (inSiegeOrRaid) {
-                            Bukkit.getLogger().info("ARE IN ONE");
+
+                            // Returns if already broken.
                             if (doorBroken(clicked, door)) {
-                                Bukkit.getLogger().info("DOOR BROKEN");
                                 player.sendMessage(Helper.chatLabel() + Helper.color("&cThe door is already broken!"));
                                 event.setCancelled(true);
                                 return;
                             }
-                            Bukkit.getLogger().info("BREAKING DOOR");
                             player.sendMessage(Helper.chatLabel() + Helper.color("&eBreak it down alright!"));
                             brokenDoors.put(getDoorPos(clicked, door), System.currentTimeMillis() + (1000L * Main.getInstance().getConfig().getInt("batteringRamEffectiveness")));
-                            Bukkit.getLogger().info("SAVED STATE");
                             door.setOpen(!door.isOpen());
                             clicked.setBlockData(door);
                             player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
-                            event.setCancelled(true);
+                            Main.warLogger.log("User " + player.getName() + " has broken down door" + clicked.getLocation().toString());
                         } else {
-                            Bukkit.getLogger().info("NOT EITHER SIEG OR RAIDE");
                             player.sendMessage(Helper.chatLabel() + Helper.color("&cThis item can only be used in a siege or raid!"));
-                            event.setCancelled(true);
                         }
+                        event.setCancelled(true);
                         return;
                     }
                 }
@@ -130,18 +119,12 @@ public class PlayerInteractListener implements Listener {
         Block clicked = event.getClickedBlock();
         ItemStack item = player.getInventory().getItemInMainHand();
         if (action == Action.RIGHT_CLICK_BLOCK) {
-            Bukkit.getLogger().info("RIGHT CLICK BLOCK");
             if (clicked != null) {
-                Bukkit.getLogger().info("NOT NULL");
                 if (clicked.getType().toString().contains("DOOR")) {
-                    Bukkit.getLogger().info("DOOR FOUND");
                     Door door = (Door) clicked.getBlockData();
                     if (doorBroken(clicked, door)) {
-                        Bukkit.getLogger().info("DOOR BROKEN");
-                        player.sendMessage(Helper.chatLabel() + Helper.color("Door is broken! " + String.valueOf(System.currentTimeMillis()) + " " + getDoorPos(clicked, door).toString()));
-                        door.setOpen(!door.isOpen());
-                        clicked.setBlockData(door);
-                        event.setCancelled(false);
+                        player.sendMessage(Helper.chatLabel() + Helper.color("Door is broken!"));
+                        event.setCancelled(true);
 
                         return;
                     }

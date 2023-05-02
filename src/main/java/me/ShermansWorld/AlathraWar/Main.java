@@ -3,7 +3,6 @@ package me.ShermansWorld.AlathraWar;
 import me.ShermansWorld.AlathraWar.commands.*;
 import me.ShermansWorld.AlathraWar.items.WarItems;
 import me.ShermansWorld.AlathraWar.listeners.*;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.Plugin;
 import me.ShermansWorld.AlathraWar.data.WarData;

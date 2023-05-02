@@ -10,7 +10,6 @@ import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.Raid;
 import me.ShermansWorld.AlathraWar.War;
 import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 
 import javax.annotation.Nonnull;

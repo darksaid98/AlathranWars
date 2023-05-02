@@ -1,7 +1,6 @@
 package me.ShermansWorld.AlathraWar.commands;
 
 import com.palmergames.bukkit.towny.utils.NameUtil;
-import me.ShermansWorld.AlathraWar.items.WarItems;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;

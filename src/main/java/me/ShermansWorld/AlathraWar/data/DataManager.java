@@ -35,6 +35,8 @@ public class DataManager {
 	 */
 	public static void saveData(String filePath, HashMap<String,Object> map) {
 	    File file = getFile(filePath);
+        if (file == null) return;
+
         Bukkit.getLogger().log(Level.WARNING, "scoreboard.yml printout");
         Bukkit.getLogger().log(Level.WARNING, "Error Print isAbsolute: " + (file == null ? "" : file.isAbsolute()));
         Bukkit.getLogger().log(Level.WARNING, "Error Print isFile: " + (file == null ? "" : file.isFile()));

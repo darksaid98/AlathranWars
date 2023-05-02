@@ -84,6 +84,11 @@ public class RaidCommands implements CommandExecutor {
                     }
                 }
 
+                if (raidOwner == null) {
+                    p.sendMessage("Raid Owner is Null");
+                    return;
+                }
+
                 TownyWorld townyWorld;
                 townyWorld = WorldCoord.parseWorldCoord(raidOwner.getLocation()).getTownyWorld();
 
