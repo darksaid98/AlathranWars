@@ -120,30 +120,32 @@ public class SiegeCommands implements CommandExecutor {
         }
 
         //Minutemen countermeasures, 86400 * 4 time. 86400 seconds in a day, 4 days min playtime
+        //Minuteman countermeasures
+        int minuteman = CommandHelper.isPlayerMinuteman(siegeOwner.getName());
+        boolean override = false;
         if (admin) {
-            if (System.currentTimeMillis() - CommandHelper.getPlayerJoinDate(siegeOwner.getName()) < 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge") ) {
-                if(args.length >= 5) {
-                    if (Boolean.parseBoolean(args[4])) {
-                        //player has joined to recently
-                        sender.sendMessage(ChatColor.RED + "Warning! Ignoring Minuteman Countermeasure!");
-                    } else {
-                        //player has joined to recently
-                        sender.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
-                        siegeOwner.getPlayer().sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
-                        return;
-                    }
-                } else {
+            if (args.length >= 6) {
+                if (Boolean.parseBoolean(args[5])) {
                     //player has joined to recently
-                    sender.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
-                    siegeOwner.getPlayer().sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
-                    return;
+                    sender.sendMessage(ChatColor.RED + "Warning! Ignoring Minuteman Countermeasure!");
+                    override = true;
                 }
             }
-        } else {
-            if (System.currentTimeMillis() - CommandHelper.getPlayerJoinDate(siegeOwner.getName()) < 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge") ) {
-                //player has joined to recently
-                siegeOwner.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
-                return;
+        }
+        //override?
+        if(!override) {
+            if (minuteman != 0) {
+                if (minuteman == 1) {
+                    //player has joined to recently
+                    if (admin) sender.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayerAge") + " days from joining.");
+                    siegeOwner.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayerAge") + " days from joining.");
+                    return;
+                } else if (minuteman == 2) {
+                    //player has played too little
+                    if (admin) sender.sendMessage(ChatColor.RED + "You have not played enough! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayTime") + " hours of play.");
+                    siegeOwner.sendMessage(ChatColor.RED + "You have not played enough! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayTime") + " hours of play.");
+                    return;
+                }
             }
         }
 

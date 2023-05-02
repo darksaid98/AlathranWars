@@ -12,6 +12,7 @@ import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.data.WarData;
 import me.ShermansWorld.AlathraWar.items.WarItems;
 import org.bukkit.Bukkit;
+import org.bukkit.Statistic;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -194,9 +195,31 @@ public class CommandHelper {
         return out;
     }
 
-    public static long getPlayerJoinDate(String player) {
+    /**
+     *
+     * @param player player to check
+     * @return 0, 1, 2 (good to go, insufficient join, insufficient playtime)
+     */
+    public static int isPlayerMinuteman(String player) {
         Resident res = TownyAPI.getInstance().getResident(player);
-        return res.getRegistered();
+        if(res != null) {
+            //get registration time
+            long regTime = res.getRegistered();
+            int playTicks = Bukkit.getPlayer(res.getUUID()).getStatistic(Statistic.PLAY_ONE_MINUTE);
+            int out = 0;
+            if(Main.getInstance().getConfig().getInt("minimumPlayerAge") > 0) {
+                //compare the join date, if they joined less that min age ago it is true
+                if ((System.currentTimeMillis() - regTime) < 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge")) out = 1;
+            }
+            if(Main.getInstance().getConfig().getInt("minimumPlayTime") > 0) {
+                //check playtime, if its less than min its true
+                if(playTicks < (Main.getInstance().getConfig().getInt("minimumPlayTime") * (60 * 60 * 20))) out = 2;
+            }
+
+            return out;
+        }
+        //if the player doesnt exist just return true
+        return true;
     }
 
     protected static boolean logCommand(CommandSender sender, String label, String[] args) {

@@ -245,8 +245,8 @@ public class War {
             Town town = TownyAPI.getInstance().getTown(townString);
             if (town != null) {
                 for (Resident res : town.getResidents()) {
-                    //Minuteman countermeasure!
-                    if (System.currentTimeMillis() - CommandHelper.getPlayerJoinDate(res.getName()) > 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge") ) {
+                    //Minuteman countermeasure! if they are they get skipped
+                    if (CommandHelper.isPlayerMinuteman(res.getName()) == 0) {
                         returnList.add(res.getName());
                     }
                 }
