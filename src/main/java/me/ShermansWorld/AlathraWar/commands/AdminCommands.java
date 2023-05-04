@@ -319,7 +319,7 @@ public class AdminCommands implements CommandExecutor {
                     return true;
                 } else {
                     //defaultCode will bypass the custom gather town to force set owner
-                    p.sendMessage(Helper.color("&cUsage: /alathrawaradmin create raid [war] [raidTown] (gatherTown/\"defaultCode\") (owner)"));
+                    p.sendMessage(Helper.color("&cUsage: /alathrawaradmin create raid [war] [raidTown] (gatherTown/\"defaultCode\") (owner) (override)"));
                     return true;
                 }
             } else if (args[1].equalsIgnoreCase("siege")) {
@@ -579,7 +579,7 @@ public class AdminCommands implements CommandExecutor {
                             }
                             p.sendMessage(Helper.color("&cRaid not found!"));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force leave raid [war] [town] [player] (timeout)"));
+                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force leave raid [war] [town] [player]"));
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("siege")) {
@@ -612,10 +612,10 @@ public class AdminCommands implements CommandExecutor {
         p.sendMessage(Helper.chatLabel() + "/alathrawaradmin info");
         p.sendMessage(Helper.chatLabel() + "/alathrawaradmin modify");
         p.sendMessage(Helper.chatLabel() + "/alathrawaradmin purgebars");
-//        p.sendMessage(Helper.chatLabel() + "/alathrawaradmin save");
-//        p.sendMessage(Helper.chatLabel() + "/alathrawaradmin save-all");
-//        p.sendMessage(Helper.chatLabel() + "/alathrawaradmin load");
-//        p.sendMessage(Helper.chatLabel() + "/alathrawaradmin load-all");
+        p.sendMessage(Helper.chatLabel() + "/alathrawaradmin save");
+        p.sendMessage(Helper.chatLabel() + "/alathrawaradmin save-all");
+        p.sendMessage(Helper.chatLabel() + "/alathrawaradmin load-all");
+        p.sendMessage(Helper.chatLabel() + "/alathrawaradmin item");
         return true;
     }
 
@@ -932,7 +932,7 @@ public class AdminCommands implements CommandExecutor {
                             for (Raid r : RaidData.getRaids()) {
                                 if (r.getWar().getName().equalsIgnoreCase(args[3]) && r.getRaidedTown().getName().equalsIgnoreCase(args[4])) {
                                     if (args.length == 6 || args.length == 7) {
-                                        p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid townspawn [war] [town] (x) (Z)"));
+                                        p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid townspawn [war] [town] (x) (y) (Z)"));
                                         return true;
                                     }
                                     Town t = r.getRaidedTown();
@@ -1002,7 +1002,7 @@ public class AdminCommands implements CommandExecutor {
                             }
                             p.sendMessage(Helper.chatLabel() + Helper.color("&cRaid cannot be found."));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid homeblock [war] [town] (x) (Z)"));
+                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid townspawn [war] [town] (x) (y) (Z)"));
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("gather")) {
@@ -1410,7 +1410,7 @@ public class AdminCommands implements CommandExecutor {
                             }
                             p.sendMessage(Helper.chatLabel() + Helper.color("&cSiege cannot be found."));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify siege time [war] [town] [add/set/max] [value]"));
+                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify siege time [war] [town] [add/set] [value]"));
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("owner")) {

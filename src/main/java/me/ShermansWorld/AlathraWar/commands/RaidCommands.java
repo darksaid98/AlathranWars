@@ -106,8 +106,8 @@ public class RaidCommands implements CommandExecutor {
                 int minuteman = CommandHelper.isPlayerMinuteman(raidOwner.getName());
                 boolean override = false;
                 if (admin) {
-                    if (args.length >= 6) {
-                        if (Boolean.parseBoolean(args[5])) {
+                    if (args.length >= 7) {
+                        if (Boolean.parseBoolean(args[6])) {
                             //player has joined to recently
                             p.sendMessage(ChatColor.RED + "Warning! Ignoring Minuteman Countermeasure!");
                             override = true;
