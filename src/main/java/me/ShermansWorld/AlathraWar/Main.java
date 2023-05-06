@@ -2,7 +2,6 @@ package me.ShermansWorld.AlathraWar;
 
 import me.ShermansWorld.AlathraWar.commands.*;
 import me.ShermansWorld.AlathraWar.items.WarItemRegistry;
-import me.ShermansWorld.AlathraWar.items.WarRecipeRegistry;
 import me.ShermansWorld.AlathraWar.listeners.*;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.Plugin;

@@ -13,7 +13,6 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.Set;
 
 public class RamItem implements IWarItem {
 

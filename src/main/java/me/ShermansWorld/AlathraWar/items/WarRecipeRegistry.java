@@ -1,10 +1,7 @@
 package me.ShermansWorld.AlathraWar.items;
 
-import me.ShermansWorld.AlathraWar.AlathraWarLogger;
 import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.Main;
-import me.ShermansWorld.AlathraWar.War;
-import me.ShermansWorld.AlathraWar.items.item.RamItem;
 import org.bukkit.inventory.Recipe;
 
 import java.util.HashMap;
