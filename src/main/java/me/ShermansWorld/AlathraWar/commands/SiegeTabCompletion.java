@@ -1,22 +1,12 @@
 package me.ShermansWorld.AlathraWar.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import com.palmergames.bukkit.towny.utils.NameUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.entity.Player;
 
-import com.palmergames.bukkit.towny.TownyAPI;
-import com.palmergames.bukkit.towny.object.Town;
-
-import me.ShermansWorld.AlathraWar.Siege;
-import me.ShermansWorld.AlathraWar.War;
-import me.ShermansWorld.AlathraWar.data.SiegeData;
-import me.ShermansWorld.AlathraWar.data.WarData;
+import java.util.Collections;
+import java.util.List;
 
 public class SiegeTabCompletion implements TabCompleter {
 
@@ -47,8 +37,9 @@ public class SiegeTabCompletion implements TabCompleter {
 						if (args.length > 2) {
 							if (args.length > 3) {
 								return Collections.emptyList();
+							} else {
+								return NameUtil.filterByStart(CommandHelper.getTownyWarTowns(args[1]), args[2]);
 							}
-							return NameUtil.filterByStart(CommandHelper.getTownyWarTowns(args[1]), args[2]);
 						} else {
 							return NameUtil.filterByStart(CommandHelper.getWarNames(), args[1]);
 						}

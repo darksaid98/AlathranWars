@@ -10,7 +10,6 @@ import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.Raid;
 import me.ShermansWorld.AlathraWar.War;
 import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 
 import javax.annotation.Nonnull;
@@ -36,7 +35,7 @@ public class RaidData {
      */
     public static Raid getRaidOrNull(String name) {
         for (Raid raid : raids) {
-            if (raid.getName().equals(name)) return raid;
+            if (raid.getName().equalsIgnoreCase(name)) return raid;
         }
         return null;
     }
@@ -248,7 +247,7 @@ public class RaidData {
         }
 
         //6 hour raid cooldown for war
-        if ((System.currentTimeMillis() / 1000) - (side.equals(war.getSide1()) ? war.getLastRaidTimeSide1() : war.getLastRaidTimeSide2()) <= 21600) {
+        if ((System.currentTimeMillis() / 1000) - (side.equalsIgnoreCase(war.getSide1()) ? war.getLastRaidTimeSide1() : war.getLastRaidTimeSide2()) <= 21600) {
             return 0;
         }
 
@@ -263,7 +262,7 @@ public class RaidData {
 
         //check if being raided
         for (Raid raid : war.getRaids()) {
-            if (raid.getRaidedTown().getName().equals(town.getName())) {
+            if (raid.getRaidedTown().getName().equalsIgnoreCase(town.getName())) {
                 return 1;
             }
 

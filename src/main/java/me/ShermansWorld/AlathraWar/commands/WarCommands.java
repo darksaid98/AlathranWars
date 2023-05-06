@@ -1,5 +1,6 @@
 package me.ShermansWorld.AlathraWar.commands;
 
+import me.ShermansWorld.AlathraWar.*;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -7,9 +8,6 @@ import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 
-import me.ShermansWorld.AlathraWar.Helper;
-import me.ShermansWorld.AlathraWar.Main;
-import me.ShermansWorld.AlathraWar.War;
 import me.ShermansWorld.AlathraWar.data.WarData;
 import net.md_5.bungee.api.ChatColor;
 
@@ -25,6 +23,7 @@ public class WarCommands implements CommandExecutor {
     }
 
     public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
+        CommandHelper.logCommand(sender, label, args);
         if (!(sender instanceof Player)) {
             consoleCommand(sender, args);
             return true;
@@ -105,6 +104,13 @@ public class WarCommands implements CommandExecutor {
                 return;
             }
 
+            for(Siege s : war.getSieges()) {
+                s.stop();
+            }
+            for(Raid r : war.getRaids()) {
+                r.stop();
+            }
+
             WarData.removeWar(war);
 
             p.sendMessage(String.valueOf(Helper.chatLabel()) + "War " + args[1] + " deleted.");
@@ -161,31 +167,32 @@ public class WarCommands implements CommandExecutor {
             return;
         }
 
-        //Minutemen countermeasures, 86400 * 4 time. 86400 seconds in a day, 4 days min playtime
+        //Minuteman countermeasures
+        int minuteman = CommandHelper.isPlayerMinuteman(player.getName());
+        boolean override = false;
         if (admin) {
-            if (System.currentTimeMillis() - CommandHelper.getPlayerJoinDate(args[3]) < 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge") ) {
-                if(args.length >= 5) {
-                    if (Boolean.parseBoolean(args[4])) {
-                        //player has joined to recently
-                        p.sendMessage(ChatColor.RED + "Warning! Ignoring Minuteman Countermeasure!");
-                    } else {
-                        //player has joined to recently
-                        p.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
-                        res.getPlayer().sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
-                        return;
-                    }
-                } else {
+            if (args.length >= 6) {
+                if (Boolean.parseBoolean(args[5])) {
                     //player has joined to recently
-                    p.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
-                    res.getPlayer().sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
-                    return;
+                    p.sendMessage(ChatColor.RED + "Warning! Ignoring Minuteman Countermeasure!");
+                    override = true;
                 }
             }
-        } else {
-            if (System.currentTimeMillis() - CommandHelper.getPlayerJoinDate(p.getName()) < 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge") ) {
-                //player has joined to recently
-                p.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
-                return;
+        }
+        //override?
+        if(!override) {
+            if (minuteman != 0) {
+                if (minuteman == 1) {
+                    //player has joined to recently
+                    if (admin) p.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayerAge") + " days from joining.");
+                    player.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayerAge") + " days from joining.");
+                    return;
+                } else if (minuteman == 2) {
+                    //player has played too little
+                    if (admin) p.sendMessage(ChatColor.RED + "You have not played enough! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayTime") + " hours of play.");
+                    player.sendMessage(ChatColor.RED + "You have not played enough! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayTime") + " hours of play.");
+                    return;
+                }
             }
         }
 

@@ -1,15 +1,13 @@
 package me.ShermansWorld.AlathraWar;
 
 import me.ShermansWorld.AlathraWar.commands.*;
-import me.ShermansWorld.AlathraWar.listeners.CommandsListener;
-import org.bukkit.event.Listener;
+import me.ShermansWorld.AlathraWar.items.WarItemRegistry;
+import me.ShermansWorld.AlathraWar.items.WarRecipeRegistry;
+import me.ShermansWorld.AlathraWar.listeners.*;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.Plugin;
 import me.ShermansWorld.AlathraWar.data.WarData;
 import me.ShermansWorld.AlathraWar.hooks.TABHook;
-import me.ShermansWorld.AlathraWar.listeners.BlockBreakListener;
-import me.ShermansWorld.AlathraWar.listeners.JoinListener;
-import me.ShermansWorld.AlathraWar.listeners.KillsListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +25,10 @@ public class Main extends JavaPlugin {
 		econ = null;
 	}
 
-	private static void initData() {
+	/**
+	 * Dangerous if done at the wrong time!
+	 */
+	public static void initData() {
 		File userDataFolder = new File("plugins" + File.separator + "AlathraWar" + File.separator + "userdata");
 		if (!userDataFolder.exists()) {
 			userDataFolder.mkdirs();
@@ -78,6 +79,7 @@ public class Main extends JavaPlugin {
 
 	public void onEnable() {
 		instance = this;
+		this.saveDefaultConfig();
         initLogs();
 
 		new WarData(this);
@@ -90,10 +92,17 @@ public class Main extends JavaPlugin {
 		getCommand("siege").setTabCompleter(new SiegeTabCompletion());
 		getCommand("raid").setTabCompleter(new RaidTabCompletion());
 		getCommand("alathrawaradmin").setTabCompleter(new AdminTabCompletion());
-		getServer().getPluginManager().registerEvents((Listener) new KillsListener(), (Plugin) this);
-		getServer().getPluginManager().registerEvents((Listener) new CommandsListener(), (Plugin) this);
-		getServer().getPluginManager().registerEvents((Listener) new JoinListener(), (Plugin) this);
-		getServer().getPluginManager().registerEvents((Listener) new BlockBreakListener(), (Plugin) this);
+		getServer().getPluginManager().registerEvents(new KillsListener(), (Plugin) this);
+		getServer().getPluginManager().registerEvents(new CommandsListener(), (Plugin) this);
+		getServer().getPluginManager().registerEvents(new JoinListener(), (Plugin) this);
+		getServer().getPluginManager().registerEvents(new BlockBreakListener(), (Plugin) this);
+		getServer().getPluginManager().registerEvents(new PlayerInteractListener(), this);
+
+//		//run first
+		new WarItemRegistry();
+//		//run second
+//		new WarRecipeRegistry();
+
 		initData();
 		initAPIs();
 		setupEconomy();

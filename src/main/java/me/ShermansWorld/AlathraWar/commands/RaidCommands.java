@@ -27,6 +27,7 @@ public class RaidCommands implements CommandExecutor {
 
     public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
 //        final Player p = (Player) sender;
+        CommandHelper.logCommand(sender, label, args);
         if (args.length == 0) {
             fail(sender, args, "syntax");
         } else if (args.length == 1) {
@@ -83,6 +84,11 @@ public class RaidCommands implements CommandExecutor {
                     }
                 }
 
+                if (raidOwner == null) {
+                    p.sendMessage("Raid Owner is Null");
+                    return;
+                }
+
                 TownyWorld townyWorld;
                 townyWorld = WorldCoord.parseWorldCoord(raidOwner.getLocation()).getTownyWorld();
 
@@ -96,24 +102,32 @@ public class RaidCommands implements CommandExecutor {
                     return;
                 }
 
-                //Minutemen countermeasures, 86400 * 4 time. 86400 seconds in a day, 4 days min playtime
+                //Minuteman countermeasures
+                int minuteman = CommandHelper.isPlayerMinuteman(raidOwner.getName());
+                boolean override = false;
                 if (admin) {
-                    if (System.currentTimeMillis() - CommandHelper.getPlayerJoinDate(raidOwner.getName()) < 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge") ) {
-                        if(args.length >= 5) {
+                    if (args.length >= 7) {
+                        if (Boolean.parseBoolean(args[6])) {
                             //player has joined to recently
                             p.sendMessage(ChatColor.RED + "Warning! Ignoring Minuteman Countermeasure!");
-                        } else {
-                            //player has joined to recently
-                            p.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
-                            raidOwner.getPlayer().sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
-                            return;
+                            override = true;
                         }
                     }
-                } else {
-                    if (System.currentTimeMillis() - CommandHelper.getPlayerJoinDate(raidOwner.getName()) < 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge") ) {
-                        //player has joined to recently
-                        p.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
-                        return;
+                }
+                //override?
+                if(!override) {
+                    if (minuteman != 0) {
+                        if (minuteman == 1) {
+                            //player has joined to recently
+                            if (admin) p.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayerAge") + " days from joining.");
+                            raidOwner.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayerAge") + " days from joining.");
+                            return;
+                        } else if (minuteman == 2) {
+                            //player has played too little
+                            if (admin) p.sendMessage(ChatColor.RED + "You have not played enough! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayTime") + " hours of play.");
+                            raidOwner.sendMessage(ChatColor.RED + "You have not played enough! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayTime") + " hours of play.");
+                            return;
+                        }
                     }
                 }
 
@@ -154,9 +168,25 @@ public class RaidCommands implements CommandExecutor {
                     //if this is run as admin, shift our check forward a slot
                     if (raidedTown.getName().equalsIgnoreCase(args[2 + (admin ? 1 : 0)]) && gatherTown != null) {
 
+                        Main.warLogger.log("Raided town: " + raidedTown.getName());
+                        Main.warLogger.log("Gather town: " + gatherTown.getName());
+                        Main.warLogger.log("Raid Owner: " + raidOwner.getName());
+                        p.sendMessage("Raided town: " + raidedTown.getName());
+                        p.sendMessage("Gather town: " + gatherTown.getName());
+                        p.sendMessage("Raid Owner: " + raidOwner.getName());
+                        //DEBUG PRINT
+                        for (String t : war.getSide1Towns()) {
+                            Main.warLogger.log("Side1 town: " + t);
+                            p.sendMessage("Side1 town: " + t);
+                        }
+                        for (String t : war.getSide2Towns()) {
+                            Main.warLogger.log("Side2 town: " + t);
+                            p.sendMessage("Side2 town: " + t);
+                        }
+
                         //check if the town were attempting to raid is in the war
-                        if(!war.getSide1Towns().contains(raidedTown.getName()) && !war.getSide2Towns().contains(raidedTown.getName())) {
-                            if (war.getSurrenderedTowns().contains(raidedTown.getName())) {
+                        if(!war.getSide1Towns().contains(raidedTown.getName().toLowerCase()) && !war.getSide2Towns().contains(raidedTown.getName().toLowerCase())) {
+                            if (war.getSurrenderedTowns().contains(raidedTown.getName().toLowerCase())) {
                                 if (admin) p.sendMessage(String.valueOf(Helper.chatLabel()) + "The town you are trying to raid has already surrendered!");
                                 raidOwner.sendMessage(String.valueOf(Helper.chatLabel()) + "The town you are trying to raid has already surrendered!");
                                 return;
@@ -168,7 +198,7 @@ public class RaidCommands implements CommandExecutor {
 
                         // Is being sieged check
                         for (Siege s : SiegeData.getSieges()) {
-                            if(s.getTown().getName().equals(raidedTown.getName())) {
+                            if(s.getTown().getName().equalsIgnoreCase(raidedTown.getName())) {
                                 raidOwner.sendMessage(String.valueOf(Helper.chatLabel()) + "That town is already currently being sieged! Cannot raid at this time!");
                                 if(admin) p.sendMessage(String.valueOf(Helper.chatLabel()) + "That town is already currently being sieged! Cannot raid at this time!");
                             }
@@ -235,7 +265,7 @@ public class RaidCommands implements CommandExecutor {
 
                         // Player participance check
                         Town leaderTown = TownyAPI.getInstance().getResident(raidOwner).getTownOrNull();
-                        int sideR = war.getSide(leaderTown.getName());
+                        int sideR = war.getSide(leaderTown.getName().toLowerCase());
                         if (sideR == 0) {
                             if (admin) p.sendMessage(Helper.chatLabel() + "You are not in this war.");
                             raidOwner.sendMessage(Helper.chatLabel() + "You are not in this war.");
@@ -339,7 +369,7 @@ public class RaidCommands implements CommandExecutor {
 
                     if(joiner != null) {
                         if (args[4] != null) {
-                            if (args[4].equals(raid.getDefenderSide())) {
+                            if (args[4].equalsIgnoreCase(raid.getDefenderSide())) {
                                 if (!raid.getDefenderPlayers().contains(joiner.getName()))
                                     raid.getDefenderPlayers().add(joiner.getName());
                                 p.sendMessage(String.valueOf(Helper.chatLabel()) + "Player " + joiner.getName() + " added to defender side.");
@@ -370,30 +400,31 @@ public class RaidCommands implements CommandExecutor {
                 }
 
                 //Minutemen countermeasures, 86400 * 4 time. 86400 seconds in a day, 4 days min playtime
+                //also 12 hours min platim by default
+                int minuteman = CommandHelper.isPlayerMinuteman(joiner.getName());
+                boolean override = false;
                 if (admin) {
-                    if (System.currentTimeMillis() - CommandHelper.getPlayerJoinDate(args[3]) < 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge") ) {
-                        if(args.length >= 6) {
-                            if (Boolean.parseBoolean(args[5])) {
-                                //player has joined to recently
-                                p.sendMessage(ChatColor.RED + "Warning! Ignoring Minuteman Countermeasure!");
-                            } else {
-                                //player has joined to recently
-                                p.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
-                                joiner.getPlayer().sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
-                                return;
-                            }
-                        } else {
+                    if (args.length >= 6) {
+                        if (Boolean.parseBoolean(args[5])) {
                             //player has joined to recently
-                            p.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
-                            joiner.getPlayer().sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
-                            return;
+                            p.sendMessage(ChatColor.RED + "Warning! Ignoring Minuteman Countermeasure!");
+                            override = true;
                         }
                     }
-                } else {
-                    if (System.currentTimeMillis() - CommandHelper.getPlayerJoinDate(joiner.getName()) < 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge") ) {
-                        //player has joined to recently
-                        p.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
-                        return;
+                }
+                if(!override) {
+                    if (minuteman != 0) {
+                        if (minuteman == 1) {
+                            //player has joined to recently
+                            if (admin) p.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayerAge") + " days from joining.");
+                            joiner.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayerAge") + " days from joining.");
+                            return;
+                        } else if (minuteman == 2) {
+                            //player has played too little
+                            if (admin) p.sendMessage(ChatColor.RED + "You have not played enough! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayTime") + " hours of play.");
+                            joiner.sendMessage(ChatColor.RED + "You have not played enough! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayTime") + " hours of play.");
+                            return;
+                        }
                     }
                 }
 
@@ -504,7 +535,7 @@ public class RaidCommands implements CommandExecutor {
                     return;
                 }
 
-                if (raid.getOwner().getName().equals(p.getName())) {
+                if (raid.getOwner().getName().equalsIgnoreCase(p.getName())) {
                     //check if gather phase
                     if (raid.getPhase() == RaidPhase.GATHER || raid.getPhase() == RaidPhase.START || raid.getPhase() == RaidPhase.TRAVEL || raid.getPhase() == RaidPhase.COMBAT) {
                         //force defender victory
@@ -533,8 +564,8 @@ public class RaidCommands implements CommandExecutor {
             p.sendMessage("Name: " + raid.getName());
             p.sendMessage("War: " + raid.getWar().getName());
             p.sendMessage("Owner: " + raid.getOwner().getName());
-            p.sendMessage("Raiding: " + raid.getRaidedTown().getName());
-            p.sendMessage("Gathering In: " + raid.getGatherTown().getName());
+            p.sendMessage("Raiding: " + raid.getRaidedTown().getName().toLowerCase());
+            p.sendMessage("Gathering In: " + raid.getGatherTown().getName().toLowerCase());
             p.sendMessage("Raiders: " + raid.getRaiderSide());
             p.sendMessage("Defenders: " + raid.getDefenderSide());
             p.sendMessage("Raider Score: " + raid.getRaiderScore());

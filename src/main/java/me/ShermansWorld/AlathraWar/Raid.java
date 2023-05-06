@@ -254,6 +254,7 @@ public class Raid {
     public void stop() {
         deleteDisplayBar();
         Bukkit.getScheduler().cancelTask(this.bukkitId[0]);
+        this.getWar().getRaids().remove(this);
         RaidData.removeRaid(this);
     }
 
@@ -520,9 +521,9 @@ public class Raid {
         }
 
         Bukkit.broadcastMessage("The town of " + this.raidedTown.getName() + " has been " + statement + " by " + this.getRaiderSide()
-                + " in a raid for $" + amt);
+                + " in a raid for " + String.format("$%.2f", amt));
         Main.warLogger.log("The town of " + this.raidedTown.getName() + " has been " + statement + " by " + this.getRaiderSide()
-                + " in a raid for $" + amt);
+                + " in a raid for " + String.format("$%.2f", amt));
         Main.econ.depositPlayer(offlinePlayer, amt);
 
         if (this.side1AreRaiders) {

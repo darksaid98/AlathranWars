@@ -87,6 +87,7 @@ public class Siege {
 	public void stop() {
 		deleteDisplayBar();
 		Bukkit.getScheduler().cancelTask(this.bukkitId[0]);
+		this.war.getSieges().remove(this);
 		SiegeData.removeSiege(this);
 
 	}

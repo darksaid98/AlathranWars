@@ -69,13 +69,13 @@ public class War {
      */
 	public void addTown(final String town, String side) {
         if (side1.equalsIgnoreCase(side)) {
-            if (!side1Towns.contains(town)) {
+            if (!side1Towns.contains(town.toLowerCase())) {
                 side1Towns.add(town.toLowerCase());
                 Main.warLogger.log("Town "+ town + " joined " + this.name + " on " + side);
                 return;
             }
         } else if(side2.equalsIgnoreCase(side)) {
-            if (!side2Towns.contains(town)) {
+            if (!side2Towns.contains(town.toLowerCase())) {
                 side2Towns.add(town.toLowerCase());
                 Main.warLogger.log("Town "+ town + " joined " + this.name + " on " + side);
                 return;
@@ -130,8 +130,8 @@ public class War {
      * 0 - None
      * 1 - Side 1
      * 2 - Side 2
-     * @param string
-     * @return
+     * @param string town
+     * @return result
      */
     public int getSide(String string) {
         for (String str : surrenderedTowns) {
@@ -245,8 +245,8 @@ public class War {
             Town town = TownyAPI.getInstance().getTown(townString);
             if (town != null) {
                 for (Resident res : town.getResidents()) {
-                    //Minuteman countermeasure!
-                    if (System.currentTimeMillis() - CommandHelper.getPlayerJoinDate(res.getName()) > 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge") ) {
+                    //Minuteman countermeasure! if they are they get skipped
+                    if (CommandHelper.isPlayerMinuteman(res.getName()) == 0) {
                         returnList.add(res.getName());
                     }
                 }

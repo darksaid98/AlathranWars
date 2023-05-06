@@ -8,7 +8,9 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -33,11 +35,27 @@ public class DataManager {
 	 */
 	public static void saveData(String filePath, HashMap<String,Object> map) {
 	    File file = getFile(filePath);
+        if (file == null) return;
+
+        Bukkit.getLogger().log(Level.WARNING, "scoreboard.yml printout");
+        Bukkit.getLogger().log(Level.WARNING, "Error Print isAbsolute: " + (file == null ? "" : file.isAbsolute()));
+        Bukkit.getLogger().log(Level.WARNING, "Error Print isFile: " + (file == null ? "" : file.isFile()));
+        Bukkit.getLogger().log(Level.WARNING, "Error Print canWrite: " + (file == null ? "" : file.canWrite()));
+        Bukkit.getLogger().log(Level.WARNING, "Error Print exists: " + (file == null ? "" : file.exists()));
+        Bukkit.getLogger().log(Level.WARNING, "Error Print canRead: " + (file == null ? "" : file.canRead()));
+        Bukkit.getLogger().log(Level.WARNING, "Error Print isHidden: " + (file == null ? "" : file.isHidden()));
+        Bukkit.getLogger().log(Level.WARNING, "Error Print path: " + (file == null ? "" : file.getPath()));
 	    PrintWriter writer = null;
         try {
+            file.setWritable(true);
             writer = new PrintWriter(file);
         } catch (FileNotFoundException e) {
-            Main.warLogger.log("Encountered error when creating PrintWriter for " + filePath);
+            Main.warLogger.log("Encountered FileNotFound error when creating PrintWriter for " + filePath);
+            e.printStackTrace();
+            return;
+        } catch (NullPointerException e) {
+            Main.warLogger.log("Encountered NullPointer error when creating PrintWriter for " + filePath);
+            e.printStackTrace();
             return;
         }
         
@@ -50,6 +68,7 @@ public class DataManager {
         
         Yaml yaml = new Yaml(options);
         yaml.dump(map, writer);
+        writer.flush();
         writer.close();
 	}
 	

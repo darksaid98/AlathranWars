@@ -3,7 +3,6 @@ package me.ShermansWorld.AlathraWar.data;
 import java.util.*;
 
 import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 
 import com.palmergames.bukkit.towny.TownyAPI;
@@ -58,7 +57,7 @@ public class SiegeData
 
     /**
      * Creates a siege object from a provided HashMap
-     * @param fileData
+     * @param fileData data
      * @return Siege object
      */
     private static Siege fromMap(War war, HashMap<String, Object> fileData) {

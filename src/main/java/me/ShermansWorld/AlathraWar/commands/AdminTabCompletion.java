@@ -21,7 +21,8 @@ public class AdminTabCompletion implements TabCompleter {
             "load",
             "load-all",
             "save",
-            "save-all"
+            "save-all",
+            "item"
     });
 
     List<String> type = List.of(new String[]{
@@ -190,14 +191,13 @@ public class AdminTabCompletion implements TabCompleter {
         } else if (args.length == 1) {
             return NameUtil.filterByStart(base, args[0]);
         } else {
-
             if (args[0].equalsIgnoreCase("purgebars")) {
                 return empty;
             } else if (args[0].equalsIgnoreCase("save")) {
                 if(args.length > 2) {
                     return empty;
                 } else {
-                    return CommandHelper.getWarNames();
+                    return NameUtil.filterByStart(CommandHelper.getWarNames(), args[1]);
                 }
             } else if (args[0].equalsIgnoreCase("save-all")) {
                 return empty;
@@ -205,11 +205,25 @@ public class AdminTabCompletion implements TabCompleter {
                 if(args.length > 2) {
                     return empty;
                 } else {
-                    return CommandHelper.getWarNames();
+                    return NameUtil.filterByStart(CommandHelper.getWarNames(), args[1]);
                 }
             } else if (args[0].equalsIgnoreCase("load-all")) {
                 return empty;
-            } else if (args[0].equalsIgnoreCase("create")) {
+            } else if (args[0].equalsIgnoreCase("item")) {
+                if(args.length > 2) {
+                    if(args.length > 3) {
+                        if(args.length > 4) {
+                            return empty;
+                        } else {
+                            return NameUtil.filterByStart(CommandHelper.getPlayers(), args[3]);
+                        }
+                    } else {
+                        return empty;
+                    }
+                } else {
+                    return NameUtil.filterByStart(CommandHelper.getWarItems(), args[1]);
+                }
+            }  else if (args[0].equalsIgnoreCase("create")) {
                 if (args.length > 2) {
                     switch (args[1]) {
                         case "raid" -> {

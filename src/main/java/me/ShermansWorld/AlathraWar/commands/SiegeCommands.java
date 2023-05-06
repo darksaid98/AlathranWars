@@ -23,6 +23,7 @@ public class SiegeCommands implements CommandExecutor {
     }
     
     public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
+        CommandHelper.logCommand(sender, label, args);
         if (args.length == 0) {
             sender.sendMessage(String.valueOf(Helper.chatLabel()) + "Invalid Arguments. /siege help");
             return true;
@@ -75,6 +76,11 @@ public class SiegeCommands implements CommandExecutor {
             }
         }
 
+        if (siegeOwner == null) {
+            sender.sendMessage("Owner is Null");
+            return;
+        }
+
         if (args.length < 3) {
             sender.sendMessage(Helper.chatLabel() + "/war siege [war] [town]");
             return;
@@ -88,9 +94,26 @@ public class SiegeCommands implements CommandExecutor {
             return;
         }
 
+
         // Player participance check
         Town leaderTown = TownyAPI.getInstance().getResident(siegeOwner).getTownOrNull();
-        int side = war.getSide(leaderTown.getName());
+        int side = war.getSide(leaderTown.getName().toLowerCase());
+
+        //DEBUG PRINT
+        Main.warLogger.log("Leader Town: " + leaderTown.getName());
+        Main.warLogger.log("Siege Owner: " + siegeOwner.getName());
+        sender.sendMessage("Leader Town: " + leaderTown.getName());
+        sender.sendMessage("Siege Owner: " + siegeOwner.getName());
+        //DEBUG PRINT
+        for (String t : war.getSide1Towns()) {
+            Main.warLogger.log("Side1 town: " + t);
+            sender.sendMessage("Side1 town: " + t);
+        }
+        for (String t : war.getSide2Towns()) {
+            Main.warLogger.log("Side2 town: " + t);
+            sender.sendMessage("Side2 town: " + t);
+        }
+
         if (side == 0) {
             siegeOwner.sendMessage(Helper.chatLabel() + "You are not in this war.");
             if(admin) sender.sendMessage(Helper.chatLabel() + "You are not in this war.");
@@ -102,30 +125,32 @@ public class SiegeCommands implements CommandExecutor {
         }
 
         //Minutemen countermeasures, 86400 * 4 time. 86400 seconds in a day, 4 days min playtime
+        //Minuteman countermeasures
+        int minuteman = CommandHelper.isPlayerMinuteman(siegeOwner.getName());
+        boolean override = false;
         if (admin) {
-            if (System.currentTimeMillis() - CommandHelper.getPlayerJoinDate(siegeOwner.getName()) < 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge") ) {
-                if(args.length >= 5) {
-                    if (Boolean.parseBoolean(args[4])) {
-                        //player has joined to recently
-                        sender.sendMessage(ChatColor.RED + "Warning! Ignoring Minuteman Countermeasure!");
-                    } else {
-                        //player has joined to recently
-                        sender.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
-                        siegeOwner.getPlayer().sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
-                        return;
-                    }
-                } else {
+            if (args.length >= 6) {
+                if (Boolean.parseBoolean(args[5])) {
                     //player has joined to recently
-                    sender.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
-                    siegeOwner.getPlayer().sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
-                    return;
+                    sender.sendMessage(ChatColor.RED + "Warning! Ignoring Minuteman Countermeasure!");
+                    override = true;
                 }
             }
-        } else {
-            if (System.currentTimeMillis() - CommandHelper.getPlayerJoinDate(siegeOwner.getName()) < 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge") ) {
-                //player has joined to recently
-                siegeOwner.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a war after 4 days from joining.");
-                return;
+        }
+        //override?
+        if(!override) {
+            if (minuteman != 0) {
+                if (minuteman == 1) {
+                    //player has joined to recently
+                    if (admin) sender.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayerAge") + " days from joining.");
+                    siegeOwner.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayerAge") + " days from joining.");
+                    return;
+                } else if (minuteman == 2) {
+                    //player has played too little
+                    if (admin) sender.sendMessage(ChatColor.RED + "You have not played enough! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayTime") + " hours of play.");
+                    siegeOwner.sendMessage(ChatColor.RED + "You have not played enough! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayTime") + " hours of play.");
+                    return;
+                }
             }
         }
 
@@ -136,10 +161,12 @@ public class SiegeCommands implements CommandExecutor {
             if(admin) sender.sendMessage(String.valueOf(Helper.chatLabel()) + "That town does not exist! /siege start [war] [town]");
             return;
         }
+        Main.warLogger.log("Attacked Town: " + town.getName().toLowerCase());
+        sender.sendMessage("Attacked Town: " + town.getName().toLowerCase());
 
         // Is being raided check
         for ( Raid r : RaidData.getRaids()) {
-            if(r.getRaidedTown().getName().equals(town.getName())) {
+            if(r.getRaidedTown().getName().equalsIgnoreCase(town.getName())) {
                 siegeOwner.sendMessage(String.valueOf(Helper.chatLabel()) + "That town is already currently being raided! Cannot siege at this time!");
                 if(admin) sender.sendMessage(String.valueOf(Helper.chatLabel()) + "That town is already currently being raided! Cannot siege at this time!");
                 return;
@@ -242,8 +269,8 @@ public class SiegeCommands implements CommandExecutor {
         sender.sendMessage(String.valueOf(Helper.chatLabel()) + "Sieges currently in progress:");
         for (Siege siege : sieges) {
             War war = siege.getWar();
-            String color = (siege.getSide1AreAttackers() && (war.getSide(siege.getTown().getName()) == 1) ) ? "§c" : "§9";
-            sender.sendMessage(war.getName() + " - " + color + siege.getTown().getName());
+            String color = (siege.getSide1AreAttackers() && (war.getSide(siege.getTown().getName().toLowerCase()) == 1) ) ? "§c" : "§9";
+            sender.sendMessage(war.getName() + " - " + color + siege.getTown().getName().toLowerCase());
             sender.sendMessage(war.getSide1() + " - " + (siege.getSide1AreAttackers() ? siege.getAttackerPoints() : siege.getDefenderPoints()));
             sender.sendMessage(war.getSide2() + " - " + (siege.getSide1AreAttackers() ? siege.getDefenderPoints() : siege.getAttackerPoints()));
             sender.sendMessage("Time Left: " + (Siege.maxSiegeTicks - siege.getSiegeTicks())/1200 + " minutes");
@@ -254,10 +281,10 @@ public class SiegeCommands implements CommandExecutor {
 
     private static void siegeHelp(CommandSender sender, String[] args) {
         if (sender.hasPermission("AlathraWar.admin")) {
-            sender.sendMessage(Helper.chatLabel() + "/siege stop [town]");
+            sender.sendMessage(Helper.chatLabel() + "/siege stop [war] [town]");
         }
         sender.sendMessage(Helper.chatLabel() + "/siege start [war] [town]");
-        sender.sendMessage(Helper.chatLabel() + "/siege abandon [town]");
+        sender.sendMessage(Helper.chatLabel() + "/siege abandon [war] [town]");
         sender.sendMessage(Helper.chatLabel() + "/siege list");
     }
 }

@@ -1,18 +1,10 @@
 package me.ShermansWorld.AlathraWar.commands;
 
-import com.palmergames.bukkit.towny.TownyAPI;
-import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.utils.NameUtil;
-import me.ShermansWorld.AlathraWar.Raid;
-import me.ShermansWorld.AlathraWar.War;
-import me.ShermansWorld.AlathraWar.data.RaidData;
-import me.ShermansWorld.AlathraWar.data.WarData;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 

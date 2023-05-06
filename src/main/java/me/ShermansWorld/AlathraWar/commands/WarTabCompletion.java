@@ -1,18 +1,12 @@
 package me.ShermansWorld.AlathraWar.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import com.palmergames.bukkit.towny.utils.NameUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.entity.Player;
 
-import me.ShermansWorld.AlathraWar.War;
-import me.ShermansWorld.AlathraWar.data.WarData;
+import java.util.Collections;
+import java.util.List;
 
 public class WarTabCompletion implements TabCompleter{
 
