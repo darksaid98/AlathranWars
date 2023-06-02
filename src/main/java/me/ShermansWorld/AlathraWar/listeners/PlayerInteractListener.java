@@ -10,6 +10,7 @@ import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.items.WarItemRegistry;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Bisected;
 import org.bukkit.block.data.type.Door;
@@ -24,10 +25,28 @@ import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class PlayerInteractListener implements Listener {
-
+	
+	//predefined foor materials
+	private static Set<Material> doors = new HashSet<Material>();
+	
+	static {
+		doors.add(Material.ACACIA_DOOR);
+		doors.add(Material.BIRCH_DOOR);
+		doors.add(Material.CRIMSON_DOOR);
+		doors.add(Material.DARK_OAK_DOOR);
+		doors.add(Material.IRON_DOOR);
+		doors.add(Material.JUNGLE_DOOR);
+		doors.add(Material.MANGROVE_DOOR);
+		doors.add(Material.OAK_DOOR);
+		doors.add(Material.SPRUCE_DOOR);
+		doors.add(Material.WARPED_DOOR);
+	}
+	
     //map of broken doors
     public Map<Location, Long> brokenDoors = new HashMap<Location, Long>();
 
@@ -45,7 +64,7 @@ public class PlayerInteractListener implements Listener {
             Block clicked = event.getClickedBlock();
             ItemStack item = player.getInventory().getItemInMainHand();
             if (clicked != null) {
-                if (clicked.getType().toString().contains("DOOR")) { // left click + any door types
+                if (doors.contains(clicked.getType())) { // left click + any door types
                     Door door = (Door) clicked.getBlockData();
                     // lock door in the opposite position
                     if (item.equals(WarItemRegistry.getInstance().getOrNull("ram"))) {
@@ -120,7 +139,7 @@ public class PlayerInteractListener implements Listener {
         ItemStack item = player.getInventory().getItemInMainHand();
         if (action == Action.RIGHT_CLICK_BLOCK) {
             if (clicked != null) {
-                if (clicked.getType().toString().contains("DOOR")) {
+                if (doors.contains(clicked.getType())) {
                     Door door = (Door) clicked.getBlockData();
                     if (doorBroken(clicked, door)) {
                         player.sendMessage(Helper.chatLabel() + Helper.color("Door is broken!"));

@@ -76,7 +76,7 @@ public class WarCommands implements CommandExecutor {
             WarData.addWar(war);
             war.save();
 
-            p.sendMessage(String.valueOf(Helper.chatLabel()) + "War created with the name " + args[1] + ", "
+            Bukkit.broadcastMessage(String.valueOf(Helper.chatLabel()) + "War created with the name " + args[1] + ", "
                     + args[2] + " vs. " + args[3]);
             Main.warLogger.log(p.getName() + " created a new war with the name " + args[1] + ", " + args[2]
                     + " vs. " + args[3]);
@@ -113,7 +113,7 @@ public class WarCommands implements CommandExecutor {
 
             WarData.removeWar(war);
 
-            p.sendMessage(String.valueOf(Helper.chatLabel()) + "War " + args[1] + " deleted.");
+            Bukkit.broadcastMessage(String.valueOf(Helper.chatLabel()) + "War " + args[1] + " deleted.");
             Main.warLogger.log(p.getName() + " deleted " + args[1]);
                     return;
         } else {
@@ -212,6 +212,7 @@ public class WarCommands implements CommandExecutor {
                 war.addNation(res.getNationOrNull(), args[2]);
                 res.getPlayer().sendMessage(Helper.chatLabel() + "You have joined the war for " + res.getNationOrNull().getName());
                 p.sendMessage(Helper.chatLabel() + "You have joined the war for " + res.getNationOrNull().getName());
+                Bukkit.broadcastMessage(Helper.chatLabel() + "The nation of " + res.getNationOrNull().getName() + " has joined the war on the side of " + args[2] + "!");
                 war.save();
                 return;
             } else {
@@ -225,6 +226,7 @@ public class WarCommands implements CommandExecutor {
                 war.addTown(res.getTownOrNull(), args[2]);
                 res.getPlayer().sendMessage(Helper.chatLabel() + "You have joined the war for " + res.getTownOrNull().getName());
                 p.sendMessage(Helper.chatLabel() + "You have joined the war for " + res.getTownOrNull().getName());
+                Bukkit.broadcastMessage(Helper.chatLabel() + "The town of " + res.getTownOrNull().getName() + " has joined the war on the side of " + args[2] + "!");
                 war.save();
                 return;
             } else {
@@ -266,6 +268,7 @@ public class WarCommands implements CommandExecutor {
                 // Has nation surrender permission
                 war.surrenderNation(res.getNationOrNull());
                 p.sendMessage(Helper.chatLabel() + "You have surrendered the war for " + res.getNationOrNull().getName());
+                Bukkit.broadcastMessage(Helper.chatLabel() + "The nation of " + res.getNationOrNull().getName() + " has surrendered! They were fighting for " + args[2] + ".");
                 war.save();
                 return;
             } else {
@@ -278,6 +281,7 @@ public class WarCommands implements CommandExecutor {
                 // Is in indepdenent town & has surrender perms
                 war.surrenderTown(res.getTownOrNull().getName());
                 p.sendMessage(Helper.chatLabel() + "You have surrendered the war for " + res.getTownOrNull().getName());
+                Bukkit.broadcastMessage(Helper.chatLabel() + "The town of " + res.getTownOrNull().getName() + " has surrendered! They were fighting for " + args[2] + ".");
                 war.save();
                 return;
             } else {
