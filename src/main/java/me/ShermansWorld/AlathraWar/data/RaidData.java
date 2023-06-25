@@ -11,21 +11,25 @@ import me.ShermansWorld.AlathraWar.Raid;
 import me.ShermansWorld.AlathraWar.War;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 
 public class RaidData {
     // Static Raid list for all active raids
-    private static ArrayList<Raid> raids = new ArrayList<Raid>();
-
-
+    private static final ArrayList<Raid> raids = new ArrayList<>();
 
 
     public static ArrayList<Raid> getRaids() {
         return raids;
     }
 
+    public static void setRaids(ArrayList<Raid> raids) {
+        for (Raid raid : raids) {
+            addRaid(raid);
+        }
+    }
 
     /**
      * Gets a raid with a specific name
@@ -38,12 +42,6 @@ public class RaidData {
             if (raid.getName().equalsIgnoreCase(name)) return raid;
         }
         return null;
-    }
-
-    public static void setRaids(ArrayList<Raid> raids) {
-        for (Raid raid : raids) {
-            addRaid(raid);
-        }
     }
 
     public static void addRaid(Raid raid) {
@@ -80,7 +78,7 @@ public class RaidData {
         //THIS MAY OR MAY NOT WORK
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString((String) fileData.get("owner")));
 
-        if(raidedTown == null || gatherTown == null) {
+        if (raidedTown == null || gatherTown == null) {
             return null;
         }
         Raid raid = new Raid(war, raidedTown, gatherTown, attackBoolean, offlinePlayer);
@@ -119,7 +117,7 @@ public class RaidData {
     }
 
     public static ArrayList<Raid> createRaids(War war, Collection<HashMap<String, Object>> raidMaps) {
-        ArrayList<Raid> returnList = new ArrayList<Raid>();
+        ArrayList<Raid> returnList = new ArrayList<>();
         for (HashMap<String, Object> map : raidMaps) {
             Town town = TownyAPI.getInstance().getTown((String) map.get("raidedTown"));
             if (town == null) continue;
@@ -143,9 +141,9 @@ public class RaidData {
         war.save();
     }
 
-    /**
-     * deletes raid, unused
-     */
+//    /**
+//     * deletes raid, unused
+//     */
 //    private static void deleteRaid(War war) {
 //        File[] files = new File(dataFolderPath + File.separator + "wars").listFiles(ymlFilter);
 //
@@ -163,7 +161,7 @@ public class RaidData {
      * @return Map
      */
     public static HashMap<String, Object> raidToMap(Raid raid) {
-        HashMap<String, Object> returnMap = new HashMap<String, Object>();
+        HashMap<String, Object> returnMap = new HashMap<>();
         // Shoves everything into a map.
         returnMap.put("name", raid.getName());
         returnMap.put("raidedTown", raid.getRaidedTown().getName());
@@ -178,11 +176,20 @@ public class RaidData {
         returnMap.put("owner", raid.getOwner().getUniqueId().toString());
 
         //create a list from the looted chunks
-        List<Object> chunkList = new ArrayList<Object>();
+        final List<Object> chunkList = getChunkList(raid);
+
+        returnMap.put("lootedChunks", chunkList);
+
+        return returnMap;
+    }
+
+    @NotNull
+    private static List<Object> getChunkList(Raid raid) {
+        List<Object> chunkList = new ArrayList<>();
         for (Raid.LootBlock b : raid.getLootedChunks().values()) {
-            HashMap<String, Object> blockMap = new HashMap<String, Object>();
+            HashMap<String, Object> blockMap = new HashMap<>();
             //worldcoord
-            HashMap<String, Object> wcMap = new HashMap<String, Object>();
+            HashMap<String, Object> wcMap = new HashMap<>();
             wcMap.put("world", b.worldCoord.getWorldName());
             wcMap.put("x", b.worldCoord.getCoord().getX());
             wcMap.put("z", b.worldCoord.getCoord().getZ());
@@ -193,10 +200,7 @@ public class RaidData {
             blockMap.put("finished", b.finished);
             chunkList.add(blockMap);
         }
-
-        returnMap.put("lootedChunks", chunkList);
-
-        return returnMap;
+        return chunkList;
     }
 
     /**
@@ -206,7 +210,7 @@ public class RaidData {
      * @return Map of Maps
      */
     public static HashMap<String, Object> getRaidMap(War war) {
-        HashMap<String, Object> returnMap = new HashMap<String, Object>();
+        HashMap<String, Object> returnMap = new HashMap<>();
         for (Raid raid : war.getRaids()) {
             returnMap.put(raid.getRaidedTown().getName(), raidToMap(raid));
         }
@@ -253,12 +257,12 @@ public class RaidData {
 
         //make sure a player is online in the raided town
         boolean onlinePlayer = false;
-        for(Resident r : town.getResidents()) {
-            if(r.isOnline()) {
+        for (Resident r : town.getResidents()) {
+            if (r.isOnline()) {
                 onlinePlayer = true;
             }
         }
-        if(!onlinePlayer) return -2;
+        if (!onlinePlayer) return -2;
 
         //check if being raided
         for (Raid raid : war.getRaids()) {

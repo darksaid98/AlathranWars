@@ -1,69 +1,23 @@
 package me.ShermansWorld.AlathraWar.commands;
 
-import me.ShermansWorld.AlathraWar.*;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
-
+import me.ShermansWorld.AlathraWar.*;
 import me.ShermansWorld.AlathraWar.data.WarData;
 import net.md_5.bungee.api.ChatColor;
-
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import java.util.ArrayList;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
 
 public class WarCommands implements CommandExecutor {
 
     public WarCommands(final Main plugin) {
-        plugin.getCommand("war").setExecutor((CommandExecutor) this);
-    }
-
-    public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
-        CommandHelper.logCommand(sender, label, args);
-        if (!(sender instanceof Player)) {
-            consoleCommand(sender, args);
-            return true;
-        }
-
-        final Player p = (Player) sender;
-        if (args.length == 0) {
-            p.sendMessage(String.valueOf(Helper.chatLabel()) + "Invalid Arguments. /war help");
-            return true;
-        } else if (args.length >= 1) {
-
-            switch(args[0].toLowerCase()) {
-                case "create":
-                    warCreate(p, args);
-                    return true;
-                case "delete":
-                    warDelete(p, args);
-                    return true;
-                case "join":
-                    warJoin(p, args, false);
-                    return true;
-                case "surrender":
-                    warSurrender(p, args, false);
-                    return true;
-                case "list":
-                    warList(p, args);
-                    return true;
-                case "info":
-                    warInfo(p, args);
-                    return true;
-                case "help":
-                    warHelp(p, args);
-                    return true;
-                default:
-                    p.sendMessage(String.valueOf(Helper.chatLabel()) + "Invalid Arguments. /war help");
-                    return true;
-            }
-       
-        }
-        return false;
+        plugin.getCommand("war").setExecutor(this);
     }
 
     protected static void warCreate(CommandSender p, String[] args) {
@@ -76,13 +30,12 @@ public class WarCommands implements CommandExecutor {
             WarData.addWar(war);
             war.save();
 
-            Bukkit.broadcastMessage(String.valueOf(Helper.chatLabel()) + "War created with the name " + args[1] + ", "
+            Bukkit.broadcastMessage(Helper.chatLabel() + "War created with the name " + args[1] + ", "
                     + args[2] + " vs. " + args[3]);
             Main.warLogger.log(p.getName() + " created a new war with the name " + args[1] + ", " + args[2]
                     + " vs. " + args[3]);
-                    return;
         } else {
-            p.sendMessage(String.valueOf(Helper.chatLabel())
+            p.sendMessage(Helper.chatLabel()
                     + "Invalid Arguments. /war create [name] [side1] [side2]");
         }
 
@@ -104,27 +57,25 @@ public class WarCommands implements CommandExecutor {
                 return;
             }
 
-            for(Siege s : war.getSieges()) {
+            for (Siege s : war.getSieges()) {
                 s.stop();
             }
-            for(Raid r : war.getRaids()) {
+            for (Raid r : war.getRaids()) {
                 r.stop();
             }
 
             WarData.removeWar(war);
 
-            Bukkit.broadcastMessage(String.valueOf(Helper.chatLabel()) + "War " + args[1] + " deleted.");
+            Bukkit.broadcastMessage(Helper.chatLabel() + "War " + args[1] + " deleted.");
             Main.warLogger.log(p.getName() + " deleted " + args[1]);
-                    return;
         } else {
-            p.sendMessage(String.valueOf(Helper.chatLabel())
+            p.sendMessage(Helper.chatLabel()
                     + "Invalid Arguments. /war delete [name]");
         }
     }
 
     /**
-     *
-     * @param p - executor
+     * @param p     - executor
      * @param args
      * @param admin - admin behavior
      */
@@ -145,14 +96,14 @@ public class WarCommands implements CommandExecutor {
         }
 
         Player player = null;
-        if (admin){
+        if (admin) {
             player = Bukkit.getPlayer(args[3]);
-            if(player == null) {
+            if (player == null) {
                 p.sendMessage(Helper.chatLabel() + "Player " + args[3] + " not found!");
                 return;
             }
         }
-        if(player == null) {
+        if (player == null) {
             player = (Player) p;
         }
 
@@ -180,16 +131,18 @@ public class WarCommands implements CommandExecutor {
             }
         }
         //override?
-        if(!override) {
+        if (!override) {
             if (minuteman != 0) {
                 if (minuteman == 1) {
                     //player has joined to recently
-                    if (admin) p.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayerAge") + " days from joining.");
+                    if (admin)
+                        p.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayerAge") + " days from joining.");
                     player.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayerAge") + " days from joining.");
                     return;
                 } else if (minuteman == 2) {
                     //player has played too little
-                    if (admin) p.sendMessage(ChatColor.RED + "You have not played enough! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayTime") + " hours of play.");
+                    if (admin)
+                        p.sendMessage(ChatColor.RED + "You have not played enough! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayTime") + " hours of play.");
                     player.sendMessage(ChatColor.RED + "You have not played enough! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayTime") + " hours of play.");
                     return;
                 }
@@ -207,18 +160,16 @@ public class WarCommands implements CommandExecutor {
         }
 
         if (res.hasNation()) {
-            if(res.getPlayer().hasPermission("AlathraWar.nationjoin" )|| res.isKing()) {
+            if (res.getPlayer().hasPermission("AlathraWar.nationjoin") || res.isKing()) {
                 // Has nation declaration permission
                 war.addNation(res.getNationOrNull(), args[2]);
                 res.getPlayer().sendMessage(Helper.chatLabel() + "You have joined the war for " + res.getNationOrNull().getName());
                 p.sendMessage(Helper.chatLabel() + "You have joined the war for " + res.getNationOrNull().getName());
                 Bukkit.broadcastMessage(Helper.chatLabel() + "The nation of " + res.getNationOrNull().getName() + " has joined the war on the side of " + args[2] + "!");
                 war.save();
-                return;
             } else {
                 // Cannot declare nation involvement
                 p.sendMessage(Helper.chatLabel() + "You cannot declare war for your nation.");
-                return;
             }
         } else if (res.hasTown()) {
             if (res.getPlayer().hasPermission("AlathraWar.townjoin") || res.isMayor()) {
@@ -228,11 +179,9 @@ public class WarCommands implements CommandExecutor {
                 p.sendMessage(Helper.chatLabel() + "You have joined the war for " + res.getTownOrNull().getName());
                 Bukkit.broadcastMessage(Helper.chatLabel() + "The town of " + res.getTownOrNull().getName() + " has joined the war on the side of " + args[2] + "!");
                 war.save();
-                return;
             } else {
                 // No perms
                 p.sendMessage(Helper.chatLabel() + "You cannot declare war for your town.");
-                return;
             }
         }
     }
@@ -262,19 +211,17 @@ public class WarCommands implements CommandExecutor {
             p.sendMessage(ChatColor.RED + "You are not in a town.");
             return;
         }
-        
+
         if (res.hasNation()) {
-            if(p.hasPermission("AlathraWar.nationsurrender" )|| res.isKing()) {
+            if (p.hasPermission("AlathraWar.nationsurrender") || res.isKing()) {
                 // Has nation surrender permission
                 war.surrenderNation(res.getNationOrNull());
                 p.sendMessage(Helper.chatLabel() + "You have surrendered the war for " + res.getNationOrNull().getName());
                 Bukkit.broadcastMessage(Helper.chatLabel() + "The nation of " + res.getNationOrNull().getName() + " has surrendered! They were fighting for " + args[2] + ".");
                 war.save();
-                return;
             } else {
                 // Cannot surrender nation involvement
                 p.sendMessage(Helper.chatLabel() + "You cannot surrender war for your nation.");
-                return;
             }
         } else if (res.hasTown()) {
             if (p.hasPermission("AlathraWar.townsurrender") || res.isMayor()) {
@@ -283,20 +230,18 @@ public class WarCommands implements CommandExecutor {
                 p.sendMessage(Helper.chatLabel() + "You have surrendered the war for " + res.getTownOrNull().getName());
                 Bukkit.broadcastMessage(Helper.chatLabel() + "The town of " + res.getTownOrNull().getName() + " has surrendered! They were fighting for " + args[2] + ".");
                 war.save();
-                return;
             } else {
                 // No perms
                 p.sendMessage(Helper.chatLabel() + "You cannot surrender war for your town.");
-                return;
             }
         }
 
     }
 
     private static void warList(Player p, String[] args) {
-        p.sendMessage(Helper.chatLabel()+ "Wars:");
+        p.sendMessage(Helper.chatLabel() + "Wars:");
         ArrayList<War> wars = WarData.getWars();
-        if (wars.size() < 1) {
+        if (wars.isEmpty()) {
             p.sendMessage("There are no current wars.");
         } else {
             for (War war : wars) {
@@ -320,11 +265,11 @@ public class WarCommands implements CommandExecutor {
             int side = war.getSide(args[1]);
             if (side != 0) {
                 if (side == -1) {
-                    p.sendMessage(war.getName() +  " - Surrendered");
+                    p.sendMessage(war.getName() + " - Surrendered");
                 } else if (side == 1) {
-                    p.sendMessage(war.getName() +  " - " + war.getSide1());
+                    p.sendMessage(war.getName() + " - " + war.getSide1());
                 } else if (side == 2) {
-                    p.sendMessage(war.getName() +  " - " + war.getSide2());
+                    p.sendMessage(war.getName() + " - " + war.getSide2());
                 }
             }
         }
@@ -336,6 +281,7 @@ public class WarCommands implements CommandExecutor {
 
     /**
      * Method for console access
+     *
      * @param sender
      * @param args
      */
@@ -349,6 +295,32 @@ public class WarCommands implements CommandExecutor {
                 sender.sendMessage(war.toString());
             }
         }
+    }
+
+    public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
+        CommandHelper.logCommand(sender, label, args);
+        if (!(sender instanceof Player p)) {
+            consoleCommand(sender, args);
+            return true;
+        }
+
+        if (args.length == 0) {
+            p.sendMessage(Helper.chatLabel() + "Invalid Arguments. /war help");
+        } else {
+
+            switch (args[0].toLowerCase()) {
+                case "create" -> warCreate(p, args);
+                case "delete" -> warDelete(p, args);
+                case "join" -> warJoin(p, args, false);
+                case "surrender" -> warSurrender(p, args, false);
+                case "list" -> warList(p, args);
+                case "info" -> warInfo(p, args);
+                case "help" -> warHelp(p, args);
+                default -> p.sendMessage(Helper.chatLabel() + "Invalid Arguments. /war help");
+            }
+
+        }
+        return true;
     }
 
 }

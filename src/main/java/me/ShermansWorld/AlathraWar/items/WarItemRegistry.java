@@ -4,17 +4,16 @@ import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.items.item.RamItem;
 import org.bukkit.inventory.ItemStack;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class WarItemRegistry {
 
-    private static WarItemRegistry instance;
-
-    private static final HashMap<String, IWarItem> itemRegistry = new HashMap<>();
-
     public static final String namespace = Main.getInstance().getName().toLowerCase();
+    private static final HashMap<String, IWarItem> itemRegistry = new HashMap<>();
+    private static WarItemRegistry instance;
 
     /**
      * loads all items into the plugin registry list
@@ -37,6 +36,7 @@ public class WarItemRegistry {
 
     /**
      * generate a registry name
+     *
      * @param item
      * @return
      */
@@ -55,6 +55,7 @@ public class WarItemRegistry {
 
     /**
      * returns the associated itemstack with the item key, use for finding without namespace
+     *
      * @param registryName
      * @return
      */
@@ -65,6 +66,7 @@ public class WarItemRegistry {
 
     /**
      * returns the associated itemstack with the item key, use for finding with namespace
+     *
      * @param registryName
      * @return
      */
@@ -74,6 +76,7 @@ public class WarItemRegistry {
 
     /**
      * returns the associated IWarItem with the item key, use for finding with namespace
+     *
      * @param registryName
      * @return
      */

@@ -16,50 +16,52 @@ public enum RaidPhase {
     public final int id;
     public final int startTick;
 
-    private RaidPhase(int id, int startTick) {
+    RaidPhase(int id, int startTick) {
         this.id = id;
         this.startTick = startTick;
     }
 
     /**
      * Grabs the phase by name, ignores case
+     *
      * @param name
      * @return
      */
     public static RaidPhase getByName(String name) {
-        for(RaidPhase p : RaidPhase.values()) {
-            if(p.name().equalsIgnoreCase(name)) return p;
+        for (RaidPhase p : RaidPhase.values()) {
+            if (p.name().equalsIgnoreCase(name)) return p;
         }
         return null;
     }
 
     /**
      * Grabs phase by id number for easy storage reading
+     *
      * @param id
      * @return
      */
     public static RaidPhase getByID(int id) {
-        for(RaidPhase p : RaidPhase.values()) {
-            if(p.id == id) return p;
+        for (RaidPhase p : RaidPhase.values()) {
+            if (p.id == id) return p;
         }
         return null;
     }
 
     public static RaidPhase getNext(RaidPhase phase) {
         switch (phase) {
-            case START: {
+            case START -> {
                 return GATHER;
             }
-            case GATHER: {
+            case GATHER -> {
                 return TRAVEL;
             }
-            case TRAVEL: {
+            case TRAVEL -> {
                 return COMBAT;
             }
-            case COMBAT: {
+            case COMBAT -> {
                 return END;
             }
-            default: {
+            default -> {
                 return null;
             }
         }

@@ -10,7 +10,7 @@ import java.util.List;
 
 public class RaidTabCompletion implements TabCompleter {
 
-    private static final List<String> base = List.of(new String[] {
+    private static final List<String> base = List.of(new String[]{
             "abandon",
             "help",
             "join",
@@ -19,7 +19,7 @@ public class RaidTabCompletion implements TabCompleter {
             "start"
     });
 
-    private static final List<String> baseAdmin = List.of(new String[] {
+    private static final List<String> baseAdmin = List.of(new String[]{
             "abandon",
             "help",
             "join",
@@ -34,7 +34,7 @@ public class RaidTabCompletion implements TabCompleter {
         boolean flag = sender.hasPermission("AlathraWar.admin");
 
         if (args.length > 0) {
-            if(args.length > 1) {
+            if (args.length > 1) {
                 switch (args[0]) {
                     case "abandon", "join", "leave", "start", "stop" -> {
                         if (args.length > 2) {
