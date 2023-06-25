@@ -1,5 +1,5 @@
 name: AlathraWar
-version: 2.0.1
+version: ${project.version}
 api-version: 1.19
 author: ShermansWorld
 main: me.ShermansWorld.AlathraWar.Main
