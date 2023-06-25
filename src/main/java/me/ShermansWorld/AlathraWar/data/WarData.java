@@ -1,9 +1,5 @@
 package me.ShermansWorld.AlathraWar.data;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.Raid;
 import me.ShermansWorld.AlathraWar.Siege;
@@ -11,36 +7,37 @@ import me.ShermansWorld.AlathraWar.War;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 
-public class WarData
-{
+public class WarData {
 
-    // Static War list for all active wars
-    private static ArrayList<War> wars = new ArrayList<War>();
     private final static String dataFolderPath = "plugins" + File.separator + "AlathraWar" + File.separator + "data";
-
+    // Static War list for all active wars
+    private static ArrayList<War> wars = new ArrayList<>();
     // Filter for only accessing yml files
-    private static FilenameFilter ymlFilter = new FilenameFilter() {
-        @Override
-        public boolean accept(File dir, String name) {
-            return name.endsWith(".yml");
-        }
-    };
+    private static final FilenameFilter ymlFilter = (dir, name) -> name.endsWith(".yml");
 
     // Constructor used to initialise folder.
     public WarData(final Main plugin) {
         File userDataFolder = new File(dataFolderPath + File.separator + "wars");
-		if (!userDataFolder.exists()) {
-			userDataFolder.mkdirs();
-		}
+        if (!userDataFolder.exists()) {
+            userDataFolder.mkdirs();
+        }
     }
-    
+
     public static ArrayList<War> getWars() {
         return wars;
     }
 
+    public static void setWars(ArrayList<War> wars) {
+        WarData.wars = wars;
+    }
+
     /**
      * Gets a war with a specific name
+     *
      * @param name - Name to check
      * @return War or Null
      */
@@ -49,10 +46,6 @@ public class WarData
             if (war.getName().equalsIgnoreCase(name)) return war;
         }
         return null;
-    }
-
-    public static void setWars(ArrayList<War> wars) {
-        WarData.wars = wars;
     }
 
     public static void addWar(War war) {
@@ -70,17 +63,18 @@ public class WarData
 
     /**
      * Gets the wars currently saved in files as an ArrayList of War Objects
+     *
      * @return War Object ArrayList
      */
     public static ArrayList<War> createWars() {
         File[] files = new File(dataFolderPath + File.separator + "wars").listFiles(ymlFilter);
 
-        ArrayList<War> returnList = new ArrayList<War>();
+        ArrayList<War> returnList = new ArrayList<>();
         for (File file : files) {
             try {
                 HashMap<String, Object> fileData = DataManager.getData(file);
                 War fileWar = fromMap(fileData);
-                returnList.add(fileWar); 
+                returnList.add(fileWar);
             } catch (Exception e) {
                 Main.warLogger.log("Failed to load " + file.getName());
                 e.printStackTrace();
@@ -92,6 +86,7 @@ public class WarData
 
     /**
      * Creates a war object from a provided HashMap
+     *
      * @param fileData
      * @return War object
      */
@@ -99,10 +94,10 @@ public class WarData
     public static War fromMap(HashMap<String, Object> fileData) {
 
         War war = new War((String) fileData.get("name"),
-        (String) fileData.get("side1"),
-        (String) fileData.get("side2")
+                (String) fileData.get("side1"),
+                (String) fileData.get("side2")
         );
-        
+
         war.setSide1Towns((ArrayList<String>) fileData.get("side1Towns"));
         war.setSide2Towns((ArrayList<String>) fileData.get("side2Towns"));
         war.setSurrenderedTowns((ArrayList<String>) fileData.get("surrenderedTowns"));
@@ -110,14 +105,14 @@ public class WarData
         war.addSide1Points((int) fileData.get("side1Points"));
         war.addSide2Points((int) fileData.get("side2Points"));
 
-        if(fileData.get("lastRaidTimeSide1") != null && fileData.get("lastRaidTimeSide2") != null) {
+        if (fileData.get("lastRaidTimeSide1") != null && fileData.get("lastRaidTimeSide2") != null) {
             war.setLastRaidTimeSide1((int) fileData.get("lastRaidTimeSide1"));
             war.setLastRaidTimeSide2((int) fileData.get("lastRaidTimeSide2"));
         }
 
 
         // Siege adding from map.
-        Collection<HashMap<String, Object>> siegeMaps = ((HashMap<String,HashMap<String, Object>>) fileData.get("sieges")).values();
+        Collection<HashMap<String, Object>> siegeMaps = ((HashMap<String, HashMap<String, Object>>) fileData.get("sieges")).values();
         ArrayList<Siege> sieges = SiegeData.createSieges(war, siegeMaps);
         for (Siege siege : sieges) {
             war.addSiege(siege);
@@ -125,7 +120,7 @@ public class WarData
         }
 
         // Raid adding from map.
-        Collection<HashMap<String, Object>> raidMaps = ((HashMap<String,HashMap<String, Object>>) fileData.get("raids")).values();
+        Collection<HashMap<String, Object>> raidMaps = ((HashMap<String, HashMap<String, Object>>) fileData.get("raids")).values();
         ArrayList<Raid> raids = RaidData.createRaids(war, raidMaps);
         for (Raid raid : raids) {
             war.addRaid(raid);
@@ -136,18 +131,19 @@ public class WarData
 
     /**
      * Saves the war into files.
+     *
      * @param war - War to be saved.
      */
     public static void saveWar(War war) {
-        HashMap<String, Object> sHashMap = new HashMap<String,Object>();
+        HashMap<String, Object> sHashMap = new HashMap<>();
 
         // Shoves everything into a map.
         sHashMap.put("name", war.getName());
         sHashMap.put("side1", war.getSide1());
         sHashMap.put("side2", war.getSide2());
-        sHashMap.put("side1Towns", (List<String>) war.getSide1Towns());
-        sHashMap.put("side2Towns", (List<String>) war.getSide2Towns());
-        sHashMap.put("surrenderedTowns", (List<String>) war.getSurrenderedTowns());
+        sHashMap.put("side1Towns", war.getSide1Towns());
+        sHashMap.put("side2Towns", war.getSide2Towns());
+        sHashMap.put("surrenderedTowns", war.getSurrenderedTowns());
         sHashMap.put("side1Points", war.getSide1Points());
         sHashMap.put("side2Points", war.getSide2Points());
 
@@ -167,5 +163,5 @@ public class WarData
             }
         }
     }
-    
+
 }

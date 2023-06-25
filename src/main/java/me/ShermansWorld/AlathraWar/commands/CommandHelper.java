@@ -25,6 +25,7 @@ public class CommandHelper {
 
     /**
      * Grabs list of all war names
+     *
      * @return list of wars
      */
     public static List<String> getWarNames() {
@@ -37,13 +38,14 @@ public class CommandHelper {
 
     /**
      * Grabs first matching war and lists the sides
+     *
      * @param name name of war
      * @return side of war
      */
     public static List<String> getWarSides(String name) {
         List<String> out = new ArrayList<>();
         for (War w : WarData.getWars()) {
-            if(w.getName().equalsIgnoreCase(name)) {
+            if (w.getName().equalsIgnoreCase(name)) {
                 out.add(w.getSide1());
                 out.add(w.getSide2());
                 break;
@@ -73,9 +75,9 @@ public class CommandHelper {
     public static List<String> getTownyWarTowns(String war) {
         List<String> out = new ArrayList<>();
         War w = WarData.getWar(war);
-        if(w == null) return Collections.emptyList();
+        if (w == null) return Collections.emptyList();
         for (Town t : TownyAPI.getInstance().getTowns()) {
-            if(w.getSide2Towns().contains(t.getName().toLowerCase()) || w.getSide1Towns().contains(t.getName().toLowerCase())) {
+            if (w.getSide2Towns().contains(t.getName().toLowerCase()) || w.getSide1Towns().contains(t.getName().toLowerCase())) {
                 out.add(t.getName());
             }
         }
@@ -90,10 +92,10 @@ public class CommandHelper {
     public static List<String> getTownyWarNations(String war) {
         List<String> out = new ArrayList<>();
         War w = WarData.getWar(war);
-        if(w == null) return Collections.emptyList();
+        if (w == null) return Collections.emptyList();
         for (Town t : TownyAPI.getInstance().getTowns()) {
-            if(w.getSide2Towns().contains(t.getName().toLowerCase()) || w.getSide1Towns().contains(t.getName().toLowerCase())) {
-                if(t.hasNation()) {
+            if (w.getSide2Towns().contains(t.getName().toLowerCase()) || w.getSide1Towns().contains(t.getName().toLowerCase())) {
+                if (t.hasNation()) {
                     try {
                         out.add(t.getNation().getName());
                     } catch (NotRegisteredException e) {
@@ -113,14 +115,14 @@ public class CommandHelper {
     public static List<String> getTownyWarTowns(String war, String side) {
         List<String> out = new ArrayList<>();
         War w = WarData.getWar(war);
-        if(w == null) return Collections.emptyList();
+        if (w == null) return Collections.emptyList();
         for (Town t : TownyAPI.getInstance().getTowns()) {
-            if(side.equalsIgnoreCase(w.getSide1())) {
-                if(w.getSide1Towns().contains(t.getName().toLowerCase())) {
+            if (side.equalsIgnoreCase(w.getSide1())) {
+                if (w.getSide1Towns().contains(t.getName().toLowerCase())) {
                     out.add(t.getName());
                 }
-            } else if(side.equalsIgnoreCase(w.getSide2())) {
-                if(w.getSide2Towns().contains(t.getName().toLowerCase())) {
+            } else if (side.equalsIgnoreCase(w.getSide2())) {
+                if (w.getSide2Towns().contains(t.getName().toLowerCase())) {
                     out.add(t.getName());
                 }
             }
@@ -130,6 +132,7 @@ public class CommandHelper {
 
     /**
      * return list of all towns in a raid
+     *
      * @return list of all towns involved in a raid
      */
     public static List<String> getRaidTowns() {
@@ -142,6 +145,7 @@ public class CommandHelper {
 
     /**
      * return list of all towns in a siege
+     *
      * @return list of towns involved in a siege
      */
     public static List<String> getSiegeTowns() {
@@ -161,8 +165,8 @@ public class CommandHelper {
         List<String> out = new ArrayList<>();
         for (Town t : TownyAPI.getInstance().getTowns()) {
             Nation n = t.getNationOrNull();
-            if(n != null) {
-                if(!out.contains(n.getName())) {
+            if (n != null) {
+                if (!out.contains(n.getName())) {
                     out.add(n.getName());
                 }
             }
@@ -172,6 +176,7 @@ public class CommandHelper {
 
     /**
      * get a list of all online players
+     *
      * @return list of all players online
      */
     public static List<String> getPlayers() {
@@ -185,6 +190,7 @@ public class CommandHelper {
 
     /**
      * get a list of all raid phases
+     *
      * @return list of all raid phases
      */
     public static List<String> getRaidPhases() {
@@ -196,24 +202,24 @@ public class CommandHelper {
     }
 
     /**
-     *
      * @param player player to check
      * @return 0, 1, 2 (good to go, insufficient join, insufficient playtime)
      */
     public static int isPlayerMinuteman(String player) {
         Resident res = TownyAPI.getInstance().getResident(player);
-        if(res != null) {
+        if (res != null) {
             //get registration time
             long regTime = res.getRegistered();
             int playTicks = Bukkit.getPlayer(res.getUUID()).getStatistic(Statistic.PLAY_ONE_MINUTE);
             int out = 0;
-            if(Main.getInstance().getConfig().getInt("minimumPlayerAge") > 0) {
+            if (Main.getInstance().getConfig().getInt("minimumPlayerAge") > 0) {
                 //compare the join date, if they joined less that min age ago it is true
-                if ((System.currentTimeMillis() - regTime) < 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge")) out = 1;
+                if ((System.currentTimeMillis() - regTime) < 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge"))
+                    out = 1;
             }
-            if(Main.getInstance().getConfig().getInt("minimumPlayTime") > 0) {
+            if (Main.getInstance().getConfig().getInt("minimumPlayTime") > 0) {
                 //check playtime, if its less than min its true
-                if(playTicks < (Main.getInstance().getConfig().getInt("minimumPlayTime") * (60 * 60 * 20))) out = 2;
+                if (playTicks < (Main.getInstance().getConfig().getInt("minimumPlayTime") * (60 * 60 * 20))) out = 2;
             }
 
             return out;
@@ -224,9 +230,10 @@ public class CommandHelper {
 
     /**
      * log the command
+     *
      * @param sender sender
-     * @param label command
-     * @param args command args
+     * @param label  command
+     * @param args   command args
      * @return success
      */
     protected static void logCommand(CommandSender sender, String label, String[] args) {
@@ -234,11 +241,12 @@ public class CommandHelper {
         for (String s : args) {
             log.append(" ").append(s);
         }
-        Main.warLogger.log(Helper.chatLabel() + sender.getName() + " ran command: " + log.toString());
+        Main.warLogger.log(Helper.chatLabel() + sender.getName() + " ran command: " + log);
     }
 
     /**
      * return list of all alathrawar items with namespace
+     *
      * @return list of all alathrawar items namespaced
      */
     public static List<String> getWarItems() {

@@ -11,8 +11,7 @@ import java.util.List;
 
 public class AdminTabCompletion implements TabCompleter {
 
-    List<String> base = List.of(new String[]{
-            "create",
+    List<String> base = List.of("create",
             "force",
             "help",
             "info",
@@ -22,8 +21,7 @@ public class AdminTabCompletion implements TabCompleter {
             "load-all",
             "save",
             "save-all",
-            "item"
-    });
+            "item");
 
     List<String> type = List.of(new String[]{
             "raid",
@@ -194,7 +192,7 @@ public class AdminTabCompletion implements TabCompleter {
             if (args[0].equalsIgnoreCase("purgebars")) {
                 return empty;
             } else if (args[0].equalsIgnoreCase("save")) {
-                if(args.length > 2) {
+                if (args.length > 2) {
                     return empty;
                 } else {
                     return NameUtil.filterByStart(CommandHelper.getWarNames(), args[1]);
@@ -202,7 +200,7 @@ public class AdminTabCompletion implements TabCompleter {
             } else if (args[0].equalsIgnoreCase("save-all")) {
                 return empty;
             } else if (args[0].equalsIgnoreCase("load")) {
-                if(args.length > 2) {
+                if (args.length > 2) {
                     return empty;
                 } else {
                     return NameUtil.filterByStart(CommandHelper.getWarNames(), args[1]);
@@ -210,9 +208,9 @@ public class AdminTabCompletion implements TabCompleter {
             } else if (args[0].equalsIgnoreCase("load-all")) {
                 return empty;
             } else if (args[0].equalsIgnoreCase("item")) {
-                if(args.length > 2) {
-                    if(args.length > 3) {
-                        if(args.length > 4) {
+                if (args.length > 2) {
+                    if (args.length > 3) {
+                        if (args.length > 4) {
                             return empty;
                         } else {
                             return NameUtil.filterByStart(CommandHelper.getPlayers(), args[3]);
@@ -223,7 +221,7 @@ public class AdminTabCompletion implements TabCompleter {
                 } else {
                     return NameUtil.filterByStart(CommandHelper.getWarItems(), args[1]);
                 }
-            }  else if (args[0].equalsIgnoreCase("create")) {
+            } else if (args[0].equalsIgnoreCase("create")) {
                 if (args.length > 2) {
                     switch (args[1]) {
                         case "raid" -> {
@@ -323,7 +321,7 @@ public class AdminTabCompletion implements TabCompleter {
                                                 if (args.length > 8) {
                                                     return empty;
                                                 } else {
-                                                    return NameUtil.filterByStart(List.of(new String[] { "true","false" }), args[7]);
+                                                    return NameUtil.filterByStart(List.of(new String[]{"true", "false"}), args[7]);
                                                 }
                                             } else {
                                                 return NameUtil.filterByStart(CommandHelper.getWarSides(args[4]), args[6]);
@@ -345,7 +343,7 @@ public class AdminTabCompletion implements TabCompleter {
                                                 if (args.length > 8) {
                                                     return empty;
                                                 } else {
-                                                    return NameUtil.filterByStart(List.of(new String[] { "true","false" }), args[7]);
+                                                    return NameUtil.filterByStart(List.of(new String[]{"true", "false"}), args[7]);
                                                 }
                                             } else {
                                                 return NameUtil.filterByStart(CommandHelper.getWarSides(args[4]), args[6]);
@@ -366,7 +364,7 @@ public class AdminTabCompletion implements TabCompleter {
                                             if (args.length > 7) {
                                                 return empty;
                                             } else {
-                                                return NameUtil.filterByStart(List.of(new String[] { "true","false" }), args[6]);
+                                                return NameUtil.filterByStart(List.of(new String[]{"true", "false"}), args[6]);
                                             }
                                         } else {
                                             return NameUtil.filterByStart(CommandHelper.getWarSides(args[4]), args[5]);
@@ -488,19 +486,19 @@ public class AdminTabCompletion implements TabCompleter {
                                             }
                                         }
                                         case "townspawn" -> {
-                                            if(sender instanceof Player) {
+                                            if (sender instanceof Player) {
                                                 if (args.length > 6) {
                                                     if (args.length > 7) {
                                                         if (args.length > 8) {
                                                             return empty;
                                                         } else {
-                                                            return List.of(new String[]{String.valueOf(((Player)sender).getLocation().getZ())});
+                                                            return List.of(new String[]{String.valueOf(((Player) sender).getLocation().getZ())});
                                                         }
                                                     } else {
-                                                        return List.of(new String[]{String.valueOf(((Player)sender).getLocation().getY())});
+                                                        return List.of(new String[]{String.valueOf(((Player) sender).getLocation().getY())});
                                                     }
                                                 } else {
-                                                    return List.of(new String[]{String.valueOf(((Player)sender).getLocation().getX())});
+                                                    return List.of(new String[]{String.valueOf(((Player) sender).getLocation().getX())});
                                                 }
                                             }
                                         }
@@ -525,10 +523,10 @@ public class AdminTabCompletion implements TabCompleter {
                                                         if (args.length > 9) {
                                                             return empty;
                                                         } else {
-                                                            return List.of(new String[]{String.valueOf(((Player)sender).getLocation().getZ())});
+                                                            return List.of(new String[]{String.valueOf(((Player) sender).getLocation().getZ())});
                                                         }
                                                     } else {
-                                                        return List.of(new String[]{String.valueOf(((Player)sender).getLocation().getX())});
+                                                        return List.of(new String[]{String.valueOf(((Player) sender).getLocation().getX())});
                                                     }
                                                 } else {
                                                     return empty;
@@ -575,13 +573,13 @@ public class AdminTabCompletion implements TabCompleter {
                                                     if (args.length > 8) {
                                                         return empty;
                                                     } else {
-                                                        return List.of(new String[]{String.valueOf(((Player)sender).getLocation().getZ())});
+                                                        return List.of(new String[]{String.valueOf(((Player) sender).getLocation().getZ())});
                                                     }
                                                 } else {
-                                                    return List.of(new String[]{String.valueOf(((Player)sender).getLocation().getY())});
+                                                    return List.of(new String[]{String.valueOf(((Player) sender).getLocation().getY())});
                                                 }
                                             } else {
-                                                return List.of(new String[]{String.valueOf(((Player)sender).getLocation().getX())});
+                                                return List.of(new String[]{String.valueOf(((Player) sender).getLocation().getX())});
                                             }
                                         }
                                         case "owner" -> {
@@ -650,7 +648,7 @@ public class AdminTabCompletion implements TabCompleter {
                                 case "raidTimeWar" -> {
                                     if (args.length > 4) {
                                         if (args.length > 5) {
-                                            if(args[3].equalsIgnoreCase("reset")) {
+                                            if (args[3].equalsIgnoreCase("reset")) {
                                                 if (args.length > 6) {
                                                     return empty;
                                                 } else {

@@ -21,8 +21,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import java.util.HashMap;
 import java.util.UUID;
 
-public final class KillsListener implements Listener
-{
+public final class KillsListener implements Listener {
 
     public static final HashMap<UUID, Raid> respawnqueue = new HashMap<>();
 
@@ -34,8 +33,7 @@ public final class KillsListener implements Listener
         Town town = null;
         try {
             town = WorldCoord.parseWorldCoord(killed).getTownBlock().getTown();
-        }
-        catch (NotRegisteredException ex2) {
+        } catch (NotRegisteredException ex2) {
             ex2.printStackTrace();
         }
         boolean playerCloseToHomeBlockSiege = false;
@@ -82,7 +80,7 @@ public final class KillsListener implements Listener
                         respawnqueue.put(killed.getUniqueId(), raid);
                         return;
                     }
-                     //teleport back to gather town spawn, without damaged gear
+                    //teleport back to gather town spawn, without damaged gear
                     //this is to disincentive people prekilling
                     this.oocKill(killed, event);
                     raid.raiderKilledOutofCombat(event);
@@ -96,7 +94,7 @@ public final class KillsListener implements Listener
             }
 
 
-            if(killer == null) return;
+            if (killer == null) return;
 
             for (final Siege siege : SiegeData.getSieges()) {
                 final int homeBlockXCoord = siege.getTown().getHomeBlock().getCoord().getX() * 16;
@@ -110,18 +108,18 @@ public final class KillsListener implements Listener
                         for (final String playerName : siege.getAttackerPlayers()) {
                             try {
                                 Player p = Bukkit.getPlayer(playerName);
-                                if (p != null) p.sendMessage(String.valueOf(Helper.chatLabel()) + "Defender killed! + 20 Attacker Points");
-                            }
-                            catch (NullPointerException ignored) {
+                                if (p != null)
+                                    p.sendMessage(Helper.chatLabel() + "Defender killed! + 20 Attacker Points");
+                            } catch (NullPointerException ignored) {
                                 ignored.printStackTrace();
                             }
                         }
                         for (final String playerName : siege.getDefenderPlayers()) {
                             try {
                                 Player p = Bukkit.getPlayer(playerName);
-                                if (p != null) p.sendMessage(String.valueOf(Helper.chatLabel()) + "Defender killed! + 20 Attacker Points");
-                            }
-                            catch (NullPointerException ignored) {
+                                if (p != null)
+                                    p.sendMessage(Helper.chatLabel() + "Defender killed! + 20 Attacker Points");
+                            } catch (NullPointerException ignored) {
                                 ignored.printStackTrace();
                             }
                         }
@@ -135,18 +133,18 @@ public final class KillsListener implements Listener
                         for (final String playerName : siege.getAttackerPlayers()) {
                             try {
                                 Player p = Bukkit.getPlayer(playerName);
-                                if (p != null) p.sendMessage(String.valueOf(Helper.chatLabel()) + "Attacker killed! + 20 Defender Points");
-                            }
-                            catch (NullPointerException ex3) {
+                                if (p != null)
+                                    p.sendMessage(Helper.chatLabel() + "Attacker killed! + 20 Defender Points");
+                            } catch (NullPointerException ex3) {
                                 ex3.printStackTrace();
                             }
                         }
                         for (final String playerName : siege.getDefenderPlayers()) {
                             try {
                                 Player p = Bukkit.getPlayer(playerName);
-                                if (p != null) p.sendMessage(String.valueOf(Helper.chatLabel()) + "Attacker killed! + 20 Defender Points");
-                            }
-                            catch (NullPointerException ex4) {
+                                if (p != null)
+                                    p.sendMessage(Helper.chatLabel() + "Attacker killed! + 20 Defender Points");
+                            } catch (NullPointerException ex4) {
                                 ex4.printStackTrace();
                             }
                         }
@@ -154,13 +152,12 @@ public final class KillsListener implements Listener
                     this.siegeKill(killed, event);
                     return;
                 }
-                if ( (town != null && town.equals(siege.getTown()) || playerCloseToHomeBlockSiege) ) {
+                if ((town != null && town.equals(siege.getTown()) || playerCloseToHomeBlockSiege)) {
                     this.siegeKill(killed, event);
                 }
             }
 
-        }
-        catch (NullPointerException | TownyException ignored) {
+        } catch (NullPointerException | TownyException ignored) {
             ignored.printStackTrace();
         }
     }
@@ -172,18 +169,18 @@ public final class KillsListener implements Listener
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onRespawn(PlayerRespawnEvent event) {
-        if(respawnqueue.containsKey(event.getPlayer().getUniqueId())) {
+        if (respawnqueue.containsKey(event.getPlayer().getUniqueId())) {
             Raid raid = respawnqueue.get(event.getPlayer().getUniqueId());
             if (raid == null) return;
-            if(raid.getActiveRaiders().contains(event.getPlayer().getName())) {
+            if (raid.getActiveRaiders().contains(event.getPlayer().getName())) {
                 //do raider respawn
                 try {
                     event.setRespawnLocation(raid.getGatherTown().getSpawn());
-                    event.getPlayer().sendMessage(String.valueOf(Helper.chatLabel()) + "You died " + (raid.getPhase().equals(RaidPhase.COMBAT) ? "raiding" : "before combat") + " and have been teleported back to the gather point.");
+                    event.getPlayer().sendMessage(Helper.chatLabel() + "You died " + (raid.getPhase().equals(RaidPhase.COMBAT) ? "raiding" : "before combat") + " and have been teleported back to the gather point.");
                 } catch (TownyException e) {
                     throw new RuntimeException(e);
                 }
-            } else if(raid.getDefenderSide().contains(event.getPlayer().getName())) {
+            } else if (raid.getDefenderSide().contains(event.getPlayer().getName())) {
                 //do defender respawn ?
             } else {
                 //invalid code
@@ -196,8 +193,9 @@ public final class KillsListener implements Listener
     /**
      * Damage all gear held by the player (and then send them to spawn?)
      * They don't lose items from death.
+     *
      * @param killed killed player
-     * @param event event
+     * @param event  event
      */
     private void siegeKill(final Player killed, final PlayerDeathEvent event) {
         //Helper
@@ -215,7 +213,7 @@ public final class KillsListener implements Listener
      * They don't lose items from death.
      *
      * @param killed killed player
-     * @param event event
+     * @param event  event
      */
     private void raidKill(final Player killed, final PlayerDeathEvent event) {
         //Helper
@@ -233,7 +231,7 @@ public final class KillsListener implements Listener
      * They don't lose items from death.
      *
      * @param killed killed player
-     * @param event event
+     * @param event  event
      */
     private void oocKill(final Player killed, final PlayerDeathEvent event) {
         //Siege specific

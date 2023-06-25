@@ -1,40 +1,34 @@
 package me.ShermansWorld.AlathraWar.data;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.logging.Level;
-
+import me.ShermansWorld.AlathraWar.Main;
 import org.bukkit.Bukkit;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
-import me.ShermansWorld.AlathraWar.Main;
+import java.io.*;
+import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.logging.Level;
 
 /**
  * Manages file IO & Deletion for other data classes.
  */
 public class DataManager {
     private static DumperOptions options;
-    
-	public DataManager() {
+    private static final String dataFolder = "plugins" + File.separator + "AlathraWar" + File.separator + "data";
 
-	}
+    public DataManager() {
 
-	private static String dataFolder = "plugins" + File.separator + "AlathraWar" + File.separator + "data";
-	
-	/**
-	 * Saves data into a .yml format
-	 * @param filePath - File's path after <PLUGIN>/Data/
-	 * @param map - Map to be saved
-	 */
-	public static void saveData(String filePath, HashMap<String,Object> map) {
-	    File file = getFile(filePath);
+    }
+
+    /**
+     * Saves data into a .yml format
+     *
+     * @param filePath - File's path after <PLUGIN>/Data/
+     * @param map      - Map to be saved
+     */
+    public static void saveData(String filePath, HashMap<String, Object> map) {
+        File file = getFile(filePath);
         if (file == null) return;
 
         Bukkit.getLogger().log(Level.WARNING, "scoreboard.yml printout");
@@ -45,7 +39,7 @@ public class DataManager {
         Bukkit.getLogger().log(Level.WARNING, "Error Print canRead: " + (file == null ? "" : file.canRead()));
         Bukkit.getLogger().log(Level.WARNING, "Error Print isHidden: " + (file == null ? "" : file.isHidden()));
         Bukkit.getLogger().log(Level.WARNING, "Error Print path: " + (file == null ? "" : file.getPath()));
-	    PrintWriter writer = null;
+        PrintWriter writer;
         try {
             file.setWritable(true);
             writer = new PrintWriter(file);
@@ -58,42 +52,44 @@ public class DataManager {
             e.printStackTrace();
             return;
         }
-        
+
         if (options == null) {
             options = new DumperOptions();
             options.setIndent(2);
             options.setPrettyFlow(true);
             options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         }
-        
+
         Yaml yaml = new Yaml(options);
         yaml.dump(map, writer);
         writer.flush();
         writer.close();
-	}
-	
-	/**
-	 * Gets the data back as a HashMap
-	 * @param filePath - FilePath of data
-	 * @return HashMap of data or null
-	 */
-	public static HashMap<String,Object> getData(String filePath) {
-	    File file = getFile(filePath);
-        return getData(file);
-	}
-	
+    }
+
     /**
      * Gets the data back as a HashMap
+     *
+     * @param filePath - FilePath of data
+     * @return HashMap of data or null
+     */
+    public static HashMap<String, Object> getData(String filePath) {
+        File file = getFile(filePath);
+        return getData(file);
+    }
+
+    /**
+     * Gets the data back as a HashMap
+     *
      * @param file - Data file
      * @return HashMap of data or null
      */
-    public static HashMap<String,Object> getData(File file) {
+    public static HashMap<String, Object> getData(File file) {
         if (!file.exists()) {
             Main.warLogger.log("Attempted to retrieve non-existant file: " + file.getPath());
             return null;
         }
-        
-        InputStream inputStream = null;
+
+        InputStream inputStream;
         try {
             inputStream = new FileInputStream(file);
         } catch (FileNotFoundException e) {
@@ -107,23 +103,24 @@ public class DataManager {
         } catch (IOException e) {
             Main.warLogger.log(e.getMessage());
         }
-        
+
         return data;
     }
 
     /**
      * Deletes the specified file
+     *
      * @param filePath - FilePath of deletion
      * @return Boolean of success
      */
-	public static boolean deleteFile(String filePath) {
-	    File file = getFile(filePath);
-	    
-	    if (!file.exists()) {
+    public static boolean deleteFile(String filePath) {
+        File file = getFile(filePath);
+
+        if (!file.exists()) {
             Main.warLogger.log("Attempted to retrieve non-existant file: " + filePath + ".yml");
             return false;
         }
-        
+
         try {
             return Files.deleteIfExists(file.toPath());
         } catch (IOException e) {
@@ -131,16 +128,17 @@ public class DataManager {
             e.printStackTrace();
             return false;
         }
-	}
-	
-	/**
-	 * Converts filePath into File
-	 * @param path - File's path within data folder
-	 * @return File or null
-	 */
-	private static File getFile(String path) {
+    }
+
+    /**
+     * Converts filePath into File
+     *
+     * @param path - File's path within data folder
+     * @return File or null
+     */
+    private static File getFile(String path) {
         path = dataFolder + File.separator + path;
-        
+
         File file = new File(path);
         if (!file.exists()) {
             try {

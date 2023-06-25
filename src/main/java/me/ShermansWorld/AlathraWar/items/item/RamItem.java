@@ -22,7 +22,7 @@ public class RamItem implements IWarItem {
         ItemMeta meta = ram.getItemMeta();
 
         meta.setDisplayName("Door Ram");
-        ArrayList<String> lore = new ArrayList<String>();
+        ArrayList<String> lore = new ArrayList<>();
         meta.setLore(lore);
         meta.setCustomModelData(14700);
 

@@ -5,8 +5,8 @@ import org.bukkit.inventory.Recipe;
 
 public interface IWarItem {
 
-    public ItemStack getItemStack();
+    ItemStack getItemStack();
 
-    public Recipe getRecipe();
+    Recipe getRecipe();
 
 }

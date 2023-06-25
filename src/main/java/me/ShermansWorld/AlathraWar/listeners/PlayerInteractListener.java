@@ -30,25 +30,25 @@ import java.util.Map;
 import java.util.Set;
 
 public class PlayerInteractListener implements Listener {
-	
-	//predefined foor materials
-	private static Set<Material> doors = new HashSet<Material>();
-	
-	static {
-		doors.add(Material.ACACIA_DOOR);
-		doors.add(Material.BIRCH_DOOR);
-		doors.add(Material.CRIMSON_DOOR);
-		doors.add(Material.DARK_OAK_DOOR);
-		doors.add(Material.IRON_DOOR);
-		doors.add(Material.JUNGLE_DOOR);
-		doors.add(Material.MANGROVE_DOOR);
-		doors.add(Material.OAK_DOOR);
-		doors.add(Material.SPRUCE_DOOR);
-		doors.add(Material.WARPED_DOOR);
-	}
-	
+
+    //predefined foor materials
+    private static final Set<Material> doors = new HashSet<>();
+
+    static {
+        doors.add(Material.ACACIA_DOOR);
+        doors.add(Material.BIRCH_DOOR);
+        doors.add(Material.CRIMSON_DOOR);
+        doors.add(Material.DARK_OAK_DOOR);
+        doors.add(Material.IRON_DOOR);
+        doors.add(Material.JUNGLE_DOOR);
+        doors.add(Material.MANGROVE_DOOR);
+        doors.add(Material.OAK_DOOR);
+        doors.add(Material.SPRUCE_DOOR);
+        doors.add(Material.WARPED_DOOR);
+    }
+
     //map of broken doors
-    public Map<Location, Long> brokenDoors = new HashMap<Location, Long>();
+    public Map<Location, Long> brokenDoors = new HashMap<>();
 
     /**
      * @param event event
@@ -106,17 +106,17 @@ public class PlayerInteractListener implements Listener {
                             door.setOpen(!door.isOpen());
                             clicked.setBlockData(door);
                             player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
-                            Main.warLogger.log("User " + player.getName() + " has broken down door" + clicked.getLocation().toString());
+                            Main.warLogger.log("User " + player.getName() + " has broken down door" + clicked.getLocation());
                         } else {
                             player.sendMessage(Helper.chatLabel() + Helper.color("&cThis item can only be used in a siege or raid!"));
                         }
                         event.setCancelled(true);
-                        return;
                     }
                 }
             }
         }
     }
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerRClick(final PlayerItemDamageEvent event) {
         ItemStack item = event.getItem();
@@ -158,7 +158,6 @@ public class PlayerInteractListener implements Listener {
                             || clicked.getType().name().equals("ROOTED_DIRT")
                             || clicked.getType().name().equals("DIRT_PATH")) {
                         event.setCancelled(true);
-                        return;
                     }
                 }
             }
@@ -166,21 +165,21 @@ public class PlayerInteractListener implements Listener {
     }
 
     private Location getDoorPos(Block clicked, Door door) {
-        if(door.getHalf() == Bisected.Half.BOTTOM) {
+        if (door.getHalf() == Bisected.Half.BOTTOM) {
             return clicked.getLocation().clone();
-        } else if(door.getHalf() == Bisected.Half.TOP) {
+        } else if (door.getHalf() == Bisected.Half.TOP) {
             return clicked.getLocation().subtract(0.0, 1.0, 0.0).clone();
         }
         return clicked.getLocation().clone();
     }
 
     private boolean doorBroken(@Nonnull Block clicked, Door door) {
-        if(door.getHalf() == Bisected.Half.BOTTOM) {
-            if(brokenDoors.get(clicked.getLocation()) != null) {
+        if (door.getHalf() == Bisected.Half.BOTTOM) {
+            if (brokenDoors.get(clicked.getLocation()) != null) {
                 return brokenDoors.get(clicked.getLocation()) > System.currentTimeMillis();
             }
-        } else if(door.getHalf() == Bisected.Half.TOP) {
-            if(brokenDoors.get(clicked.getLocation().subtract(0.0, 1.0D, 0.0)) != null) {
+        } else if (door.getHalf() == Bisected.Half.TOP) {
+            if (brokenDoors.get(clicked.getLocation().subtract(0.0, 1.0D, 0.0)) != null) {
                 return brokenDoors.get(clicked.getLocation().subtract(0.0, 1.0D, 0.0)) > System.currentTimeMillis();
             }
         }
