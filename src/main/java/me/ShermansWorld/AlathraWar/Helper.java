@@ -17,13 +17,13 @@ public class Helper
     public static String color(final String input) {
         return ChatColor.translateAlternateColorCodes('&', input);
     }
-    
+
     public static String chatLabel() {
         return color("&6[&4AlathraWar&6]&r ");
     }
-    
+
     public static void testMsg() {
-    	Bukkit.broadcastMessage("test message");
+        Bukkit.broadcastMessage("test message");
     }
 
     /**
@@ -42,25 +42,25 @@ public class Helper
                 if (is.getType() == Material.NETHERITE_SWORD || is.getType() == Material.NETHERITE_AXE) {
                     damageable.setDamage(damageable.getDamage() + 507);
                     if (damageable.getDamage() > 2000) {
-                        damageable.setDamage(2030);
+                        damageable.setDamage(0);
                     }
                 }
                 else if (is.getType() == Material.DIAMOND_SWORD || is.getType() == Material.DIAMOND_AXE) {
                     damageable.setDamage(damageable.getDamage() + 390);
                     if (damageable.getDamage() > 1500) {
-                        damageable.setDamage(1560);
+                        damageable.setDamage(0);
                     }
                 }
                 else if (is.getType() == Material.IRON_SWORD || is.getType() == Material.IRON_AXE) {
                     damageable.setDamage(damageable.getDamage() + 62);
                     if (damageable.getDamage() > 200) {
-                        damageable.setDamage(249);
+                        damageable.setDamage(0);
                     }
                 }
                 else if (is.getType() == Material.TRIDENT) {
                     damageable.setDamage(damageable.getDamage() + 62);
                     if (damageable.getDamage() > 200) {
-                        damageable.setDamage(249);
+                        damageable.setDamage(0);
                     }
                 }
                 meta = (ItemMeta)damageable;
@@ -77,73 +77,73 @@ public class Helper
                     if (is2.getType() == Material.NETHERITE_HELMET) {
                         damageable2.setDamage(damageable2.getDamage() + 101);
                         if (damageable2.getDamage() > 400) {
-                            damageable2.setDamage(406);
+                            damageable2.setDamage(0);
                         }
                     }
                     if (is2.getType() == Material.NETHERITE_CHESTPLATE) {
                         damageable2.setDamage(damageable2.getDamage() + 148);
                         if (damageable2.getDamage() > 450) {
-                            damageable2.setDamage(591);
+                            damageable2.setDamage(0);
                         }
                     }
                     if (is2.getType() == Material.NETHERITE_LEGGINGS) {
                         damageable2.setDamage(damageable2.getDamage() + 138);
                         if (damageable2.getDamage() > 420) {
-                            damageable2.setDamage(554);
+                            damageable2.setDamage(0);
                         }
                     }
                     if (is2.getType() == Material.NETHERITE_BOOTS) {
                         damageable2.setDamage(damageable2.getDamage() + 120);
                         if (damageable2.getDamage() > 370) {
-                            damageable2.setDamage(480);
+                            damageable2.setDamage(0);
                         }
                     }
                     if (is2.getType() == Material.DIAMOND_HELMET) {
                         damageable2.setDamage(damageable2.getDamage() + 90);
                         if (damageable2.getDamage() > 280) {
-                            damageable2.setDamage(362);
+                            damageable2.setDamage(0);
                         }
                     }
                     if (is2.getType() == Material.DIAMOND_CHESTPLATE) {
                         damageable2.setDamage(damageable2.getDamage() + 132);
                         if (damageable2.getDamage() > 410) {
-                            damageable2.setDamage(527);
+                            damageable2.setDamage(0);
                         }
                     }
                     if (is2.getType() == Material.DIAMOND_LEGGINGS) {
                         damageable2.setDamage(damageable2.getDamage() + 123);
                         if (damageable2.getDamage() > 380) {
-                            damageable2.setDamage(494);
+                            damageable2.setDamage(0);
                         }
                     }
                     if (is2.getType() == Material.DIAMOND_BOOTS) {
                         damageable2.setDamage(damageable2.getDamage() + 107);
                         if (damageable2.getDamage() > 330) {
-                            damageable2.setDamage(428);
+                            damageable2.setDamage(0);
                         }
                     }
                     if (is2.getType() == Material.IRON_HELMET) {
                         damageable2.setDamage(damageable2.getDamage() + 41);
                         if (damageable2.getDamage() > 125) {
-                            damageable2.setDamage(164);
+                            damageable2.setDamage(0);
                         }
                     }
                     if (is2.getType() == Material.IRON_CHESTPLATE) {
                         damageable2.setDamage(damageable2.getDamage() + 60);
                         if (damageable2.getDamage() > 190) {
-                            damageable2.setDamage(239);
+                            damageable2.setDamage(0);
                         }
                     }
                     if (is2.getType() == Material.IRON_LEGGINGS) {
                         damageable2.setDamage(damageable2.getDamage() + 56);
                         if (damageable2.getDamage() > 180) {
-                            damageable2.setDamage(224);
+                            damageable2.setDamage(0);
                         }
                     }
                     if (is2.getType() == Material.IRON_BOOTS) {
                         damageable2.setDamage(damageable2.getDamage() + 48);
                         if (damageable2.getDamage() > 150) {
-                            damageable2.setDamage(194);
+                            damageable2.setDamage(0);
                         }
                     }
                     meta2 = (ItemMeta)damageable2;
