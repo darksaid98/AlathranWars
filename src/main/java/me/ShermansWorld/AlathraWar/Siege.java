@@ -337,7 +337,7 @@ public class Siege {
             }
             int homeBlockY = 253;
             final Location beaconLoc = new Location(this.town.getWorld(), homeBlockX,
-					homeBlockY - 2, homeBlockZ);
+                    homeBlockY - 2, homeBlockZ);
             while (beaconLoc.getBlock().getType().equals(Material.AIR)) {
                 --homeBlockY;
                 beaconLoc.setY(homeBlockY);
@@ -357,13 +357,13 @@ public class Siege {
             this.beaconLocs.add(
                     new Location(world, homeBlockX, homeBlockY - 1, homeBlockZ - 1));
             this.beaconLocs.add(new Location(world, homeBlockX + 1, homeBlockY - 1,
-					homeBlockZ + 1));
+                    homeBlockZ + 1));
             this.beaconLocs.add(new Location(world, homeBlockX + 1, homeBlockY - 1,
-					homeBlockZ - 1));
+                    homeBlockZ - 1));
             this.beaconLocs.add(new Location(world, homeBlockX - 1, homeBlockY - 1,
-					homeBlockZ + 1));
+                    homeBlockZ + 1));
             this.beaconLocs.add(new Location(world, homeBlockX - 1, homeBlockY - 1,
-					homeBlockZ - 1));
+                    homeBlockZ - 1));
             for (int i = 2; i < this.beaconLocs.size(); ++i) {
                 if (this.beaconLocs.get(i).getBlock().getType() != Material.AIR) {
                     i = 1;

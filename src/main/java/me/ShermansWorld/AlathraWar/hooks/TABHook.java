@@ -27,7 +27,7 @@ public class TABHook {
         if (tabAPI.getTabListFormatManager() == null) return;
 
         tabAPI.getTabListFormatManager().setSuffix(tabPlayer,
-            Helper.color(" &c[") + war.getSide1() + "]&r");
+                Helper.color(" &c[") + war.getSide1() + "]&r");
     }
 
     public static void assignSide2WarSuffix(Player p, War war) {

@@ -7,17 +7,15 @@ import me.ShermansWorld.AlathraWar.War;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
 
 public class WarData {
 
     private final static String dataFolderPath = "plugins" + File.separator + "AlathraWar" + File.separator + "data";
-    // Static War list for all active wars
-    private static ArrayList<War> wars = new ArrayList<>();
     // Filter for only accessing yml files
     private static final FilenameFilter ymlFilter = (dir, name) -> name.endsWith(".yml");
+    // Static War list for all active wars
+    private static ArrayList<War> wars = new ArrayList<>();
 
     // Constructor used to initialise folder.
     public WarData(final Main plugin) {
@@ -35,6 +33,18 @@ public class WarData {
         WarData.wars = wars;
     }
 
+    public static Collection<String> getWarsNames() {
+        List<String> warNames = new ArrayList<>();
+
+        for (War war : getWars()) {
+            warNames.add(war.getName());
+        }
+
+        Collections.sort(warNames);
+
+        return warNames;
+    }
+
     /**
      * Gets a war with a specific name
      *
@@ -44,6 +54,13 @@ public class WarData {
     public static War getWar(String name) {
         for (War war : wars) {
             if (war.getName().equalsIgnoreCase(name)) return war;
+        }
+        return null;
+    }
+
+    public static War getWar(UUID uuid) {
+        for (War war : wars) {
+            if (war.getUUID().equals(uuid)) return war;
         }
         return null;
     }

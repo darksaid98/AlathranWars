@@ -1,6 +1,6 @@
 package me.ShermansWorld.AlathraWar;
 
-import me.ShermansWorld.AlathraWar.commands.*;
+import me.ShermansWorld.AlathraWar.commands.CommandManager;
 import me.ShermansWorld.AlathraWar.data.WarData;
 import me.ShermansWorld.AlathraWar.hooks.TABHook;
 import me.ShermansWorld.AlathraWar.items.WarItemRegistry;
@@ -9,18 +9,26 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
 
 public class Main extends JavaPlugin {
-    public static Main instance;
     public static Economy econ;
     public static AlathraWarLogger warLogger;
+    private static Main instance;
 
     static {
         instance = null;
         econ = null;
+    }
+
+    private final CommandManager commandManager = new CommandManager(Main.getInstance());
+
+    @NotNull
+    public static Main getInstance() {
+        return instance;
     }
 
     /**
@@ -33,10 +41,6 @@ public class Main extends JavaPlugin {
         }
 
         WarData.setWars(WarData.createWars());
-    }
-
-    public static Main getInstance() {
-        return instance;
     }
 
     public static void initLogs() {
@@ -74,21 +78,21 @@ public class Main extends JavaPlugin {
         return econ != null;
     }
 
+    @Override
+    public void onLoad() {
+        Main.instance = this;
+        commandManager.onLoad();
+    }
+
+    @Override
     public void onEnable() {
-        instance = this;
         this.saveDefaultConfig();
         initLogs();
 
         new WarData(this);
 //		new TimeoutData(this);
-        new WarCommands(this);
-        new SiegeCommands(this);
-        new RaidCommands(this);
-        new AdminCommands(this);
-        getCommand("war").setTabCompleter(new WarTabCompletion());
-        getCommand("siege").setTabCompleter(new SiegeTabCompletion());
-        getCommand("raid").setTabCompleter(new RaidTabCompletion());
-        getCommand("alathrawaradmin").setTabCompleter(new AdminTabCompletion());
+
+
         getServer().getPluginManager().registerEvents(new KillsListener(), this);
         getServer().getPluginManager().registerEvents(new CommandsListener(), this);
         getServer().getPluginManager().registerEvents(new JoinListener(), this);
@@ -100,13 +104,17 @@ public class Main extends JavaPlugin {
 //		//run second
 //		new WarRecipeRegistry();
 
+        commandManager.onEnable();
         initData();
         initAPIs();
         setupEconomy();
         initLogs();
     }
 
+    @Override
     public void onDisable() {
+        commandManager.onDisable();
+
         for (War war : WarData.getWars()) {
             war.save();
         }

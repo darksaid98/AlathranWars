@@ -68,18 +68,18 @@ public class Raid {
 
     //Ticks between activity, this is lower than siege because more activity is occuring in a raid
     private static final int incremental = 40;
+    final int[] bukkitId;
     private final String name;
     public final NamespacedKey bossBarKey = new NamespacedKey(Main.getInstance(), "raidBar." + Raid.this.getName());
+    private final String defenders;
     public ArrayList<String> activeRaiders = new ArrayList<>();
     public ArrayList<String> raiderPlayers = new ArrayList<>();
     public ArrayList<String> defenderPlayers = new ArrayList<>();
     public Map<WorldCoord, LootBlock> lootedChunks;
-    final int[] bukkitId;
     private War war;
     private Town raidedTown;
     private Town gatherTown;
     private String raiders;
-    private final String defenders;
     private boolean side1AreRaiders;
     private int raiderScore;
     private int defenderScore;

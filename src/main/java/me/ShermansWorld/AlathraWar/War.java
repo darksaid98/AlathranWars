@@ -10,10 +10,16 @@ import me.ShermansWorld.AlathraWar.data.WarData;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class War {
 
+    // References
+    private final ArrayList<Siege> sieges = new ArrayList<>();
+    private final ArrayList<Raid> raids = new ArrayList<>();
     // Object Fields
+    private final UUID uuid; // TODO Actually convert to using UUID for identifying this war
     private String name;
     private String side1;
     private String side2;
@@ -22,10 +28,6 @@ public class War {
     private ArrayList<String> surrenderedTowns = new ArrayList<>();
     private int side1Points = 0;
     private int side2Points = 0;
-
-    // References
-    private final ArrayList<Siege> sieges = new ArrayList<>();
-    private final ArrayList<Raid> raids = new ArrayList<>();
     private int lastRaidTimeSide1 = 0;
     private int lastRaidTimeSide2 = 0;
 
@@ -37,6 +39,7 @@ public class War {
      * @param side2 - Side 2 name
      */
     public War(final String name, final String side1, final String side2) {
+        this.uuid = generateUUID();
         this.name = name;
         this.side1 = side1;
         this.side2 = side2;
@@ -56,6 +59,16 @@ public class War {
             }
         }
         return returnList;
+    }
+
+    private UUID generateUUID() {
+        UUID uuid = UUID.randomUUID();
+
+        while (WarData.getWar(uuid) != null) {
+            uuid = UUID.randomUUID();
+        }
+
+        return UUID.randomUUID();
     }
 
     /**
@@ -147,6 +160,10 @@ public class War {
         surrenderedTowns.remove(town);
     }
 
+    public UUID getUUID() {
+        return this.uuid;
+    }
+
     /**
      * Gets side of town
      * -1 - Surrendered
@@ -184,6 +201,10 @@ public class War {
         DataManager.deleteFile("wars" + File.separator + this.getName() + ".yml");
         this.name = name;
         this.save();
+    }
+
+    public List<String> getSides() {
+        return List.of(getSide1(), getSide2());
     }
 
     public String getSide1() {
@@ -301,5 +322,13 @@ public class War {
 
     public void addSide2Points(int points) {
         side2Points += points;
+    }
+
+    public boolean equals(War war) {
+        return getUUID().equals(war.getUUID());
+    }
+
+    public boolean equals(UUID uuid) {
+        return getUUID().equals(uuid);
     }
 }

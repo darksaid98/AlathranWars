@@ -4,6 +4,7 @@ import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.items.item.RamItem;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,7 +60,7 @@ public class WarItemRegistry {
      * @param registryName
      * @return
      */
-    public ItemStack getOrNull(String registryName) {
+    public @Nullable ItemStack getOrNull(String registryName) {
         return itemRegistry.get(registryName(registryName)).getItemStack().clone();
     }
 
@@ -70,7 +71,7 @@ public class WarItemRegistry {
      * @param registryName
      * @return
      */
-    public ItemStack getOrNullNamespace(String registryName) {
+    public @Nullable ItemStack getOrNullNamespace(String registryName) {
         return itemRegistry.get(registryName).getItemStack().clone();
     }
 

@@ -12,6 +12,7 @@ import me.ShermansWorld.AlathraWar.War;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -37,7 +38,7 @@ public class RaidData {
      * @param name - Name to check
      * @return Raid or Null
      */
-    public static Raid getRaidOrNull(String name) {
+    public static @Nullable Raid getRaidOrNull(String name) {
         for (Raid raid : raids) {
             if (raid.getName().equalsIgnoreCase(name)) return raid;
         }
