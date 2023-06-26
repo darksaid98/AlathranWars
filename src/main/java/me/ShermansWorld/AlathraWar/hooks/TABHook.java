@@ -9,84 +9,133 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 public class TABHook {
-
-    public static boolean init = false;
+    public static boolean enabled = false;
     public static TabAPI tabAPI;
 
     public static void init() {
+        if (enabled) return;
+
         tabAPI = TabAPI.getInstance();
-        init = true;
+        enabled = true;
     }
 
     public static void assignSide1WarSuffix(Player p, War war) {
+        if (!enabled) return;
+
         TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
-        tabAPI.getTablistFormatManager().setSuffix(tabPlayer,
-                Helper.color("&c[") + war.getSide1() + "]&r");
+
+        if (tabAPI.getTabListFormatManager() == null) return;
+
+        tabAPI.getTabListFormatManager().setSuffix(tabPlayer,
+            Helper.color(" &c[") + war.getSide1() + "]&r");
     }
 
     public static void assignSide2WarSuffix(Player p, War war) {
+        if (!enabled) return;
+
         TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
-        tabAPI.getTablistFormatManager().setSuffix(tabPlayer,
-                Helper.color("&9[") + war.getSide2() + "]&r");
+
+        if (tabAPI.getTabListFormatManager() == null) return;
+
+        tabAPI.getTabListFormatManager().setSuffix(tabPlayer,
+                Helper.color(" &9[") + war.getSide2() + "]&r");
     }
 
     public static void assignSide1WarSuffixMerc(Player p, War war) {
+        if (!enabled) return;
+
         TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
-        tabAPI.getTablistFormatManager().setSuffix(tabPlayer,
-                Helper.color("&a[M]&c[") + war.getSide1() + "]&r");
+
+        if (tabAPI.getTabListFormatManager() == null) return;
+
+        tabAPI.getTabListFormatManager().setSuffix(tabPlayer,
+                Helper.color(" &a[M]&c[") + war.getSide1() + "]&r");
     }
 
     public static void assignSide2WarSuffixMerc(Player p, War war) {
+        if (!enabled) return;
+
         TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
-        tabAPI.getTablistFormatManager().setSuffix(tabPlayer,
-                Helper.color("&a[M]&9[") + war.getSide2() + "]&r");
+
+        if (tabAPI.getTabListFormatManager() == null) return;
+
+        tabAPI.getTabListFormatManager().setSuffix(tabPlayer,
+                Helper.color(" &a[M]&9[") + war.getSide2() + "]&r");
     }
 
     public static void resetSuffix(Player p) {
+        if (!enabled) return;
+
         TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
-        tabAPI.getTablistFormatManager().resetSuffix(tabPlayer);
+
+        if (tabAPI.getTabListFormatManager() == null) return;
+
+        tabAPI.getTabListFormatManager().setSuffix(tabPlayer, null);
     }
 
-    public static void resetSuffix(String playername) {
+    public static void resetSuffix(String username) {
+        if (!enabled) return;
+
         @SuppressWarnings("deprecation")
-        OfflinePlayer op = Bukkit.getOfflinePlayer(playername);
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(username);
+
         try {
-            if (op.isOnline()) {
-                TabPlayer tabPlayer = tabAPI.getPlayer(playername);
-                tabAPI.getTablistFormatManager().resetSuffix(tabPlayer);
+            if (offlinePlayer.isOnline()) {
+                TabPlayer tabPlayer = tabAPI.getPlayer(username);
+
+                if (tabAPI.getTabListFormatManager() == null) return;
+
+                tabAPI.getTabListFormatManager().setSuffix(tabPlayer, null);
             }
         } catch (NullPointerException e) {
         }
     }
 
     public static void resetPrefix(Player p) {
+        if (!enabled) return;
+
         TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
-        tabAPI.getTablistFormatManager().resetPrefix(tabPlayer);
+
+        if (tabAPI.getTabListFormatManager() == null) return;
+
+        tabAPI.getTabListFormatManager().setSuffix(tabPlayer, null);
     }
 
     public static void resetPrefix(String playername) {
+        if (!enabled) return;
+
         @SuppressWarnings("deprecation")
-        OfflinePlayer op = Bukkit.getOfflinePlayer(playername);
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playername);
         try {
-            if (op.isOnline()) {
+            if (offlinePlayer.isOnline()) {
                 TabPlayer tabPlayer = tabAPI.getPlayer(playername);
-                tabAPI.getTablistFormatManager().resetPrefix(tabPlayer);
+
+                if (tabAPI.getTabListFormatManager() == null) return;
+
+                tabAPI.getTabListFormatManager().setSuffix(tabPlayer, null);
             }
         } catch (NullPointerException e) {
         }
     }
 
     public static void removeColorPrefix(Player p, String prefix) {
+        if (!enabled) return;
+
         TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
+
         if (prefix.length() > 2) {
             prefix = prefix.substring(0, prefix.length() - 2);
         } else {
             Bukkit.getLogger().info("There is an error when removing a color prefix, prefix not long enough:");
-            Bukkit.getLogger().info("Player: " + p.getDisplayName());
+            Bukkit.getLogger().info("Player: " + p.displayName());
             Bukkit.getLogger().info("Prefix: " + prefix);
             Bukkit.getLogger().info("------");
         }
-        tabAPI.getTablistFormatManager().setPrefix(tabPlayer, Helper.color(prefix));
+
+
+        if (tabAPI.getTabListFormatManager() == null) return;
+
+        tabAPI.getTabListFormatManager().setPrefix(tabPlayer, Helper.color(prefix));
     }
 
 }
