@@ -12,6 +12,7 @@ import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.data.WarData;
+import me.ShermansWorld.AlathraWar.enums.TownWarState;
 import me.ShermansWorld.AlathraWar.items.WarItemRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -202,7 +203,7 @@ public class AdminCommands implements CommandExecutor {
                 if (args.length >= 4) {
                     //specific behavior exists if an admin ran this
                     //using same method so that this doesnt get fucked up if we go back and change original implementation
-                    RaidCommands.startRaid(p, args, true);
+                    RaidCommand.raidStart(p, args, true);
                     p.sendMessage(Helper.color("&cForcefully started raid from the console."));
                 } else {
                     //defaultCode will bypass the custom gather town to force set owner
@@ -218,7 +219,7 @@ public class AdminCommands implements CommandExecutor {
                     l.add(args[3]);
                     if (args.length >= 5) l.add(args[4]);
                     if (args.length >= 6) l.add(args[5]);
-                    SiegeCommands.siegeStart(p, l.toArray(new String[]{}), true);
+                    SiegeCommand.siegeStart(p, l.toArray(new String[]{}), true);
 //                    p.sendMessage(Helper.Chatlabel() + "Try again later!");
                     p.sendMessage(Helper.color("&cForcefully started siege from the console."));
                 } else {
@@ -230,12 +231,12 @@ public class AdminCommands implements CommandExecutor {
                 if (args.length == 5) {
                     //should purge the first argument;
                     String[] adjusted = new String[]{
-                            args[1],
-                            args[2],
-                            args[3],
-                            args[4]
+                        args[1],
+                        args[2],
+                        args[3],
+                        args[4]
                     };
-                    WarCommands.warCreate(p, adjusted);
+                    WarCommand.warCreate(p, adjusted);
                     p.sendMessage(Helper.color("&cForcefully started war from the console."));
                 } else {
                     p.sendMessage(Helper.color("&cUsage: /alathrawaradmin create war [name] [side1] [side2]"));
@@ -393,7 +394,7 @@ public class AdminCommands implements CommandExecutor {
                             adjusted.add(args[3]);
                             adjusted.add(args[6]);
                             adjusted.add(args[7]);
-                            RaidCommands.joinRaid(p, adjusted.toArray(new String[6]), true);
+                            RaidCommand.raidJoin(p, adjusted.toArray(new String[6]), true);
                             return true;
                         } else {
                             p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force join raid [player] [war] [town] [side] (ignoreIssues)"));
@@ -411,11 +412,11 @@ public class AdminCommands implements CommandExecutor {
                         if (args.length >= 7) {
                             //fix args to match
                             String[] adjusted = new String[]{
-                                    args[1],
-                                    args[4],
-                                    args[5],
-                                    args[3],
-                                    args[6]
+                                args[1],
+                                args[4],
+                                args[5],
+                                args[3],
+                                args[6]
                             };
                             if (Bukkit.getPlayer(args[3]) != null) {
                             } else {
@@ -423,7 +424,7 @@ public class AdminCommands implements CommandExecutor {
                                 p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force join war [player] [war] [side]"));
                                 return true;
                             }
-                            WarCommands.warJoin(p, adjusted, true);
+                            WarCommand.warJoin(p, adjusted, true);
                             p.sendMessage(Helper.color("&cForced " + args[3] + " to join the war " + args[4] + " on side " + args[5]));
                             Main.warLogger.log("Forced " + args[3] + " to join the war " + args[4] + " on side " + args[5]);
                         } else {
@@ -446,12 +447,12 @@ public class AdminCommands implements CommandExecutor {
                                 if (r.getWar().getName().equalsIgnoreCase(args[3]) && r.getRaidedTown().getName().equalsIgnoreCase(args[4])) {
                                     if (Bukkit.getPlayer(args[5]) != null) {
                                         String[] fixed = new String[]{
-                                                args[1],
-                                                args[3],
-                                                args[4],
-                                                args[5]
+                                            args[1],
+                                            args[3],
+                                            args[4],
+                                            args[5]
                                         };
-                                        RaidCommands.leaveRaid(p, fixed, true);
+                                        RaidCommand.raidLeave(p, fixed, true);
                                         p.sendMessage(Helper.chatLabel() + "Forced player " + args[5] + " to leave raid on " + args[4] + " in war " + args[3]);
                                         Main.warLogger.log("Forced player " + args[5] + " to leave raid on " + args[4] + " in war " + args[3]);
                                         return finalizeRaid(r);
@@ -1497,11 +1498,11 @@ public class AdminCommands implements CommandExecutor {
                                                 }
                                             }
                                             // Side checks
-                                            int side = w.getSide(t.getName().toLowerCase());
-                                            if (side == -1) {
+                                            TownWarState side = w.getState(t.getName().toLowerCase());
+                                            if (side == TownWarState.SURRENDERED) {
                                                 p.sendMessage(Helper.chatLabel() + "Town already surrendered!");
                                                 return true;
-                                            } else if (side > 0) {
+                                            } else if (side != TownWarState.NOT_PARTICIPANT) {
                                                 p.sendMessage(Helper.chatLabel() + "Town already in this war!");
                                                 return true;
                                             }
@@ -1544,11 +1545,11 @@ public class AdminCommands implements CommandExecutor {
 
                                             for (Town t : n.getTowns()) {
                                                 // Side checks
-                                                int side = w.getSide(t.getName().toLowerCase());
-                                                if (side == -1) {
+                                                TownWarState side = w.getState(t.getName().toLowerCase());
+                                                if (side == TownWarState.SURRENDERED) {
                                                     p.sendMessage(Helper.chatLabel() + "Town " + t.getName() + " already surrendered!");
                                                     continue;
-                                                } else if (side > 0) {
+                                                } else if (side != TownWarState.NOT_PARTICIPANT) {
                                                     p.sendMessage(Helper.chatLabel() + "Town " + t.getName() + " already in this war!");
                                                     continue;
                                                 }
@@ -1873,19 +1874,16 @@ public class AdminCommands implements CommandExecutor {
         }
     }
 
-    private static boolean finalizeRaid(Raid r) {
+    private static void finalizeRaid(Raid r) {
         r.save();
-        return true;
     }
 
-    private static boolean finalizeSiege(Siege s) {
+    private static void finalizeSiege(Siege s) {
         s.save();
-        return true;
     }
 
-    private static boolean finalizeWar(War w) {
+    private static void finalizeWar(War w) {
         w.save();
-        return true;
     }
 
     /**

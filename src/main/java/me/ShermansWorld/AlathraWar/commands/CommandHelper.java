@@ -37,6 +37,32 @@ public class CommandHelper {
     }
 
     /**
+     * Grabs list of all sieges
+     *
+     * @return list of wars
+     */
+    public static List<String> getSieges() {
+        List<String> out = new ArrayList<>();
+        for (Siege s : SiegeData.getSieges()) {
+            out.add(s.getName());
+        }
+        return out;
+    }
+
+    /**
+     * Grabs list of all raids
+     *
+     * @return list of wars
+     */
+    public static List<String> getRaids() {
+        List<String> out = new ArrayList<>();
+        for (Raid r : RaidData.getRaids()) {
+            out.add(r.getName());
+        }
+        return out;
+    }
+
+    /**
      * Grabs first matching war and lists the sides
      *
      * @param name name of war

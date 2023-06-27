@@ -15,7 +15,7 @@ public class AlathraWarLogger {
     public AlathraWarLogger() {
         logsFolder = new File("plugins" + File.separator + "AlathraWar" + File.separator + "logs");
         log = new File(
-                "plugins" + File.separator + "AlathraWar" + File.separator + "logs" + File.separator + "log.txt");
+            "plugins" + File.separator + "AlathraWar" + File.separator + "logs" + File.separator + "log.txt");
     }
 
     public boolean checkFiles() {
@@ -36,8 +36,8 @@ public class AlathraWarLogger {
         // init file writer
         try {
             FileWriter fw = new FileWriter(
-                    "plugins" + File.separator + "AlathraWar" + File.separator + "logs" + File.separator + "log.txt",
-                    true);
+                "plugins" + File.separator + "AlathraWar" + File.separator + "logs" + File.separator + "log.txt",
+                true);
             BufferedWriter bw = new BufferedWriter(fw);
             output = new PrintWriter(bw);
         } catch (IOException e1) {

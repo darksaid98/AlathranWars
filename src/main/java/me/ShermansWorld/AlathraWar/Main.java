@@ -49,7 +49,7 @@ public class Main extends JavaPlugin {
             logsFolder.mkdirs();
         }
         File log = new File(
-                "plugins" + File.separator + "AlathraWar" + File.separator + "logs" + File.separator + "log.txt");
+            "plugins" + File.separator + "AlathraWar" + File.separator + "logs" + File.separator + "log.txt");
         if (!log.exists()) {
             try {
                 log.createNewFile();
@@ -70,7 +70,7 @@ public class Main extends JavaPlugin {
             return false;
         }
         @SuppressWarnings("unchecked") final RegisteredServiceProvider<Economy> rsp = (RegisteredServiceProvider<Economy>) this.getServer()
-                .getServicesManager().getRegistration((Class) Economy.class);
+            .getServicesManager().getRegistration((Class) Economy.class);
         if (rsp == null) {
             return false;
         }
@@ -91,7 +91,6 @@ public class Main extends JavaPlugin {
 
         new WarData(this);
 //		new TimeoutData(this);
-
 
         getServer().getPluginManager().registerEvents(new KillsListener(), this);
         getServer().getPluginManager().registerEvents(new CommandsListener(), this);

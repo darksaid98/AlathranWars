@@ -15,6 +15,7 @@ import me.ShermansWorld.AlathraWar.*;
 import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.data.WarData;
+import me.ShermansWorld.AlathraWar.enums.TownWarState;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -25,111 +26,109 @@ import java.util.HashSet;
 public class SiegeCommand {
     public SiegeCommand() {
         new CommandAPICommand("siege")
-                .withSubcommands(
-                        commandStart(),
-                        commandStop(),
-                        commandAbandon(),
-                        commandList(),
-                        commandHelp()
-                )
-                .executesPlayer((sender, args) -> {
-                    if (args.count() == 0)
-                        throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "Invalid Arguments. /siege help").build());
-                })
-                .register();
+            .withSubcommands(
+                commandStart(),
+                commandStop(),
+                commandAbandon(),
+                commandList(),
+                commandHelp()
+            )
+            .executesPlayer((sender, args) -> {
+                if (args.count() == 0)
+                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "Invalid Arguments. /siege help").build());
+            })
+            .register();
     }
 
     public static CommandAPICommand commandStart() {
         return new CommandAPICommand("start")
-                .withArguments(
-                        new StringArgument("warname")
-                                .replaceSuggestions(
-                                        ArgumentSuggestions.strings(
-                                                WarData.getWarsNames()
-                                        )
-                                ),
-                        new StringArgument("target")
-                                .replaceSuggestions(
-                                        ArgumentSuggestions.stringCollection(info -> {
-                                            final String warname = (String) info.previousArgs().get("warname");
-                                            return CommandHelper.getTownyWarTowns(warname);
-                                        })
-                                ),
-                        new PlayerArgument("leader")
-                                .setOptional(true)
-                                .withPermission("AlathraWar.admin"),
-                        new BooleanArgument("minutemen")
-                                .setOptional(true)
-                                .withPermission("AlathraWar.admin")
-                )
-                .executesPlayer((Player p, CommandArguments args) -> siegeStart(p, args, false));
+            .withArguments(
+                new StringArgument("warname")
+                    .replaceSuggestions(
+                        ArgumentSuggestions.strings(
+                            WarData.getWarsNames()
+                        )
+                    ),
+                new StringArgument("town")
+                    .replaceSuggestions(
+                        ArgumentSuggestions.stringCollection(info -> {
+                            final String warname = (String) info.previousArgs().get("warname");
+                            return CommandHelper.getTownyWarTowns(warname);
+                        })
+                    ),
+                new PlayerArgument("leader")
+                    .setOptional(true)
+                    .withPermission("AlathraWar.admin"),
+                new BooleanArgument("minutemen")
+                    .setOptional(true)
+                    .withPermission("AlathraWar.admin")
+            )
+            .executesPlayer((Player p, CommandArguments args) -> siegeStart(p, args, false));
     }
 
     public static CommandAPICommand commandStop() {
         return new CommandAPICommand("stop")
-                .withPermission("AlathraWar.admin")
-                .withArguments(
-                        new StringArgument("warname")
-                                .replaceSuggestions(
-                                        ArgumentSuggestions.stringCollection(info ->
-                                                WarData.getWarsNames()
-                                        )
-                                ),
-                        new StringArgument("town")
-                                .replaceSuggestions(
-                                        ArgumentSuggestions.stringCollection(info -> {
-                                            final String warname = (String) info.previousArgs().get("warname");
-                                            return CommandHelper.getTownyWarTowns(warname);
-                                        })
-                                )
-                )
-                .executesPlayer(SiegeCommand::siegeStop);
+            .withPermission("AlathraWar.admin")
+            .withArguments(
+                new StringArgument("warname")
+                    .replaceSuggestions(
+                        ArgumentSuggestions.stringCollection(info ->
+                            WarData.getWarsNames()
+                        )
+                    ),
+                new StringArgument("town")
+                    .replaceSuggestions(
+                        ArgumentSuggestions.stringCollection(info -> {
+                            final String warname = (String) info.previousArgs().get("warname");
+                            return CommandHelper.getTownyWarTowns(warname);
+                        })
+                    )
+            )
+            .executesPlayer(SiegeCommand::siegeStop);
     }
 
     public static CommandAPICommand commandAbandon() {
         return new CommandAPICommand("abandon")
-                .withArguments(
-                        new StringArgument("warname")
-                                .replaceSuggestions(
-                                        ArgumentSuggestions.stringCollection(info ->
-                                                WarData.getWarsNames()
-                                        )
-                                ),
-                        new StringArgument("town")
-                                .replaceSuggestions(
-                                        ArgumentSuggestions.stringCollection(info -> {
-                                            final String warname = (String) info.previousArgs().get("warname");
-                                            return CommandHelper.getTownyWarTowns(warname);
-                                        })
-                                )
-                )
-                .executesPlayer(SiegeCommand::siegeAbandon);
+            .withArguments(
+                new StringArgument("warname")
+                    .replaceSuggestions(
+                        ArgumentSuggestions.stringCollection(info ->
+                            WarData.getWarsNames()
+                        )
+                    ),
+                new StringArgument("town")
+                    .replaceSuggestions(
+                        ArgumentSuggestions.stringCollection(info -> {
+                            final String warname = (String) info.previousArgs().get("warname");
+                            return CommandHelper.getTownyWarTowns(warname);
+                        })
+                    )
+            )
+            .executesPlayer(SiegeCommand::siegeAbandon);
     }
 
     public static CommandAPICommand commandList() {
         return new CommandAPICommand("list")
-                .executesPlayer(SiegeCommand::siegeList);
+            .executesPlayer(SiegeCommand::siegeList);
     }
 
     public static CommandAPICommand commandHelp() {
         return new CommandAPICommand("help")
-                .executesPlayer(SiegeCommand::siegeHelp);
+            .executesPlayer(SiegeCommand::siegeHelp);
     }
 
 
     protected static void siegeStart(Player sender, CommandArguments args, boolean admin) throws WrapperCommandSyntaxException {
-//        if (!(sender instanceof Player)) return;
-
         if (!(args.get("warname") instanceof final String argWarName))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a war name.").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cUsage: /alathrawaradmin create siege [war] [town] (owner) (force).").build());
 
         //if this is admin mode use the forth arg instad of sender.
         //if player is null after this then force end
         final Player siegeOwner = (Player) args.getOptional("leader").orElse(sender);
 
-        if (siegeOwner == null) {
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser("Owner is Null").build());
-        }
+        if (siegeOwner == null)
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser("You need to pick a valid leader.").build());
+        
 
         /*if (args.length < 3) {
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "/war siege [war] [town]").build());
@@ -147,14 +146,15 @@ public class SiegeCommand {
 
         // Player participance check
         Town leaderTown = TownyAPI.getInstance().getResident(siegeOwner).getTownOrNull();
-        int side = war.getSide(leaderTown.getName().toLowerCase());
+        TownWarState side = war.getState(leaderTown.getName().toLowerCase());
 
-        //DEBUG PRINT
+        // TODO DEBUG PRINT
         Main.warLogger.log("Leader Town: " + leaderTown.getName());
         Main.warLogger.log("Siege Owner: " + siegeOwner.getName());
         sender.sendMessage("Leader Town: " + leaderTown.getName());
         sender.sendMessage("Siege Owner: " + siegeOwner.getName());
-        //DEBUG PRINT
+        // TODO DEBUG PRINT
+
         for (String t : war.getSide1Towns()) {
             Main.warLogger.log("Side1 town: " + t);
             sender.sendMessage("Side1 town: " + t);
@@ -164,11 +164,11 @@ public class SiegeCommand {
             sender.sendMessage("Side2 town: " + t);
         }
 
-        if (side == 0) {
+        if (side == TownWarState.NOT_PARTICIPANT) {
             siegeOwner.sendMessage(Helper.chatLabel() + "You are not in this war.");
             if (admin) sender.sendMessage(Helper.chatLabel() + "You are not in this war.");
             return;
-        } else if (side == -1) {
+        } else if (side == TownWarState.SURRENDERED) {
             siegeOwner.sendMessage(Helper.chatLabel() + "You have surrendered.");
             if (admin) sender.sendMessage(Helper.chatLabel() + "You have surrendered.");
             return;
@@ -202,7 +202,7 @@ public class SiegeCommand {
             }
         }
 
-        if (!(args.get("target") instanceof final String argTownName))
+        if (!(args.get("town") instanceof final String argTownName))
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "Specify a town! /siege start [war] [town]").build());
 
         // Town check
@@ -213,8 +213,6 @@ public class SiegeCommand {
                 sender.sendMessage(Helper.chatLabel() + "That town does not exist! /siege start [war] [town]");
             return;
         }
-        Main.warLogger.log("Attacked Town: " + town.getName().toLowerCase());
-        sender.sendMessage("Attacked Town: " + town.getName().toLowerCase());
 
         // Is being raided check
         for (Raid r : RaidData.getRaids()) {
@@ -227,7 +225,7 @@ public class SiegeCommand {
         }
 
         // Attacking own side
-        if (war.getSide(town) == side) {
+        if (war.getState(town) == side) {
             siegeOwner.sendMessage(Helper.chatLabel() + "You cannot attack your own towns.");
             if (admin) sender.sendMessage(Helper.chatLabel() + "You cannot attack your own towns.");
             return;
@@ -237,7 +235,14 @@ public class SiegeCommand {
         SiegeData.addSiege(siege);
         war.addSiege(siege);
 
-        Bukkit.broadcastMessage(Helper.chatLabel() + "A siege has been laid on " + siege.getTown() + " by " + siege.getAttackerSide() + "!");
+        Bukkit.broadcastMessage(Helper.chatLabel() + siege.getTown() + " has been put to siege by " + siege.getAttackerSide() + "!");
+
+        if (admin)
+            sender.sendMessage(Helper.color("&cForcefully started siege from the console."));
+
+        // TODO Debug logs...
+        Main.warLogger.log("Attacked Town: " + town.getName().toLowerCase());
+        sender.sendMessage("Attacked Town: " + town.getName().toLowerCase());
 
         war.save();
         siege.start();
@@ -319,7 +324,7 @@ public class SiegeCommand {
         sender.sendMessage(new ColorParser(Helper.chatLabel() + "Sieges currently in progress:").build());
         for (Siege siege : sieges) {
             War war = siege.getWar();
-            String color = (siege.getSide1AreAttackers() && (war.getSide(siege.getTown().getName().toLowerCase()) == 1)) ? "&c" : "&9";
+            String color = (siege.getSide1AreAttackers() && (war.getState(siege.getTown().getName().toLowerCase()) == TownWarState.SIDE1)) ? "&c" : "&9";
             sender.sendMessage(new ColorParser(war.getName() + " - " + color + siege.getTown().getName().toLowerCase()).build());
             sender.sendMessage(new ColorParser(war.getSide1() + " - " + (siege.getSide1AreAttackers() ? siege.getAttackerPoints() : siege.getDefenderPoints())).build());
             sender.sendMessage(new ColorParser(war.getSide2() + " - " + (siege.getSide1AreAttackers() ? siege.getDefenderPoints() : siege.getAttackerPoints())).build());

@@ -38,7 +38,7 @@ public class RaidData {
      * @param name - Name to check
      * @return Raid or Null
      */
-    public static @Nullable Raid getRaidOrNull(String name) {
+    public static @Nullable Raid getRaid(String name) {
         for (Raid raid : raids) {
             if (raid.getName().equalsIgnoreCase(name)) return raid;
         }

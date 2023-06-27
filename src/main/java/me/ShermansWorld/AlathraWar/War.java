@@ -7,6 +7,7 @@ import com.palmergames.bukkit.towny.object.Town;
 import me.ShermansWorld.AlathraWar.commands.CommandHelper;
 import me.ShermansWorld.AlathraWar.data.DataManager;
 import me.ShermansWorld.AlathraWar.data.WarData;
+import me.ShermansWorld.AlathraWar.enums.TownWarState;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -174,23 +175,27 @@ public class War {
      * @param string town
      * @return result
      */
-    public int getSide(String string) {
+    public TownWarState getState(String string) {
         for (String str : surrenderedTowns) {
-            if (str.equalsIgnoreCase(string)) return -1;
+            if (str.equalsIgnoreCase(string)) return TownWarState.SURRENDERED;
         }
 
         for (String str : side1Towns) {
-            if (str.equalsIgnoreCase(string)) return 1;
+            if (str.equalsIgnoreCase(string)) return TownWarState.SIDE1;
         }
 
         for (String str : side2Towns) {
-            if (str.equalsIgnoreCase(string)) return 2;
+            if (str.equalsIgnoreCase(string)) return TownWarState.SIDE2;
         }
-        return 0;
+        return TownWarState.NOT_PARTICIPANT;
     }
 
-    public int getSide(Town town) {
-        return getSide(town.getName());
+    public TownWarState getState(Town town) {
+        return getState(town.getName());
+    }
+
+    public boolean isSideValid(String side) {
+        return getSides().contains(side);
     }
 
     public String getName() {
@@ -272,8 +277,8 @@ public class War {
 
     public String toString() {
         return name + "[" + side1 + "." + side2 + "]("
-                + side1Towns.size() + "/" + side2Towns.size() + "/" +
-                surrenderedTowns.size() + ")";
+            + side1Towns.size() + "/" + side2Towns.size() + "/" +
+            surrenderedTowns.size() + ")";
     }
 
     public ArrayList<String> getSide1Players() {

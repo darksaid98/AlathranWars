@@ -1,7 +1,6 @@
 package me.ShermansWorld.AlathraWar;
 
 import com.palmergames.bukkit.towny.object.WorldCoord;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -20,10 +19,6 @@ public class Helper {
 
     public static String chatLabel() {
         return color("&6[&4AlathraWar&6]&r ");
-    }
-
-    public static void testMsg() {
-        Bukkit.broadcastMessage("test message");
     }
 
     /**
@@ -170,10 +165,10 @@ public class Helper {
         ArrayList<WorldCoord> ReturnList = new ArrayList<>();
 
         int[][] XZarray = new int[][]{
-                {-1, 0},
-                {1, 0},
-                {0, -1},
-                {0, 1}
+            {-1, 0},
+            {1, 0},
+            {0, -1},
+            {0, 1}
         }; // Array that contains relative orthogonal shifts from origin
         for (int[] pair : XZarray) {
             // Constructs new WorldCoord for comparison

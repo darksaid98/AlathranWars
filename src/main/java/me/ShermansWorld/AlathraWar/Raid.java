@@ -210,7 +210,7 @@ public class Raid {
         // Creates 10 second looping function for Raid
 
         this.bukkitId[0] = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.getInstance(),
-                getTickLoop(), 0L, incremental);
+            getTickLoop(), 0L, incremental);
 
         this.getWar().addRaid(this);
         this.save();
@@ -243,7 +243,7 @@ public class Raid {
 
         // Creates 2 second looping function for Raid, restarting this!
         this.bukkitId[0] = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.getInstance(),
-                getTickLoop(), 0L, incremental);
+            getTickLoop(), 0L, incremental);
 
     }
 
@@ -325,9 +325,9 @@ public class Raid {
     private void startTravel() {
         Raid.this.phase = RaidPhase.TRAVEL;
         Bukkit.broadcastMessage(Helper.chatLabel() + "The Raiders of "
-                + (side1AreRaiders ? Raid.this.war.getSide1() : Raid.this.war.getSide2())
-                + " are coming to raid "
-                + Raid.this.getRaidedTown().getName() + "!");
+            + (side1AreRaiders ? Raid.this.war.getSide1() : Raid.this.war.getSide2())
+            + " are coming to raid "
+            + Raid.this.getRaidedTown().getName() + "!");
         //in the case were not at that stage already, if this happens we have an issue
         Raid.this.raidTicks = RaidPhase.TRAVEL.startTick;
     }
@@ -338,9 +338,9 @@ public class Raid {
     private void startCombat() {
         Raid.this.phase = RaidPhase.COMBAT;
         Bukkit.broadcastMessage(Helper.chatLabel() + "The Raiders of "
-                + (side1AreRaiders ? Raid.this.war.getSide1() : Raid.this.war.getSide2())
-                + " have arrived at "
-                + Raid.this.getRaidedTown().getName() + " and the fighting has begun!");
+            + (side1AreRaiders ? Raid.this.war.getSide1() : Raid.this.war.getSide2())
+            + " have arrived at "
+            + Raid.this.getRaidedTown().getName() + " and the fighting has begun!");
         //in the case were not at that stage already
         Raid.this.raidTicks = RaidPhase.COMBAT.startTick;
     }
@@ -473,7 +473,7 @@ public class Raid {
         if (factor < 0) factor = 0.0;
 
         Bukkit.broadcastMessage(Helper.chatLabel() + "The raiders from " + this.raiders
-                + " have successfully raided " + this.raidedTown.getName() + "!");
+            + " have successfully raided " + this.raidedTown.getName() + "!");
 
         /*
         if town has more than 10k, 1/10th of its valuables times the factor is taken
@@ -526,9 +526,9 @@ public class Raid {
         }
 
         Bukkit.broadcastMessage("The town of " + this.raidedTown.getName() + " has been " + statement + " by " + this.getRaiderSide()
-                + " in a raid for " + String.format("$%.2f", amt));
+            + " in a raid for " + String.format("$%.2f", amt));
         Main.warLogger.log("The town of " + this.raidedTown.getName() + " has been " + statement + " by " + this.getRaiderSide()
-                + " in a raid for " + String.format("$%.2f", amt));
+            + " in a raid for " + String.format("$%.2f", amt));
         Main.econ.depositPlayer(offlinePlayer, amt);
 
         if (this.side1AreRaiders) {
@@ -560,27 +560,27 @@ public class Raid {
 
         if (factor <= 0.5) {
             Bukkit.broadcastMessage(Helper.chatLabel() + "The defenders from " + this.defenders
-                    + " have barely pushed back the raiders of " + this.raiders + ". More has been lost than gained.");
+                + " have barely pushed back the raiders of " + this.raiders + ". More has been lost than gained.");
             Bukkit.broadcastMessage(Helper.chatLabel() + this.raidedTown.getName()
-                    + " has recovered part of the attackers' raid chest, valued at $500");
+                + " has recovered part of the attackers' raid chest, valued at $500");
             Main.warLogger
-                    .log("The defenders from " + this.defenders + " have won the raid of " + this.raidedTown.getName() + "!");
+                .log("The defenders from " + this.defenders + " have won the raid of " + this.raidedTown.getName() + "!");
             this.raidedTown.getAccount().deposit(500, "Raid chest");
         } else if (factor <= 1.5) {
             Bukkit.broadcastMessage(Helper.chatLabel() + "The defenders from " + this.defenders
-                    + " have fended off the raiders of " + this.raiders + "!");
+                + " have fended off the raiders of " + this.raiders + "!");
             Bukkit.broadcastMessage(Helper.chatLabel() + this.raidedTown.getName()
-                    + " has recovered the attackers' raid chest, valued at $1000");
+                + " has recovered the attackers' raid chest, valued at $1000");
             Main.warLogger
-                    .log("The defenders from " + this.defenders + " have won the raid of " + this.raidedTown.getName() + "!");
+                .log("The defenders from " + this.defenders + " have won the raid of " + this.raidedTown.getName() + "!");
             this.raidedTown.getAccount().deposit(1000, "Raid chest");
         } else if (factor <= 3.0) {
             Bukkit.broadcastMessage(Helper.chatLabel() + "The defenders from " + this.defenders
-                    + " have wholly defeated the raiders of " + this.raiders + "! They barely broke the walls.");
+                + " have wholly defeated the raiders of " + this.raiders + "! They barely broke the walls.");
             Bukkit.broadcastMessage(Helper.chatLabel() + this.raidedTown.getName()
-                    + " has recovered the attackers' raid chest, valued at $1000.");
+                + " has recovered the attackers' raid chest, valued at $1000.");
             Main.warLogger
-                    .log("The defenders from " + this.defenders + " have won the raid of " + this.raidedTown.getName() + "!");
+                .log("The defenders from " + this.defenders + " have won the raid of " + this.raidedTown.getName() + "!");
             this.raidedTown.getAccount().deposit(1000, "Raid chest");
         }
 
@@ -600,9 +600,9 @@ public class Raid {
         //TODO finalize payout
 
         Bukkit.broadcastMessage(Helper.chatLabel() + "The defenders from " + this.defenders
-                + " didn't push back the raiders of " + this.raiders + ". Yet no loot was taken, raid considered a draw.");
+            + " didn't push back the raiders of " + this.raiders + ". Yet no loot was taken, raid considered a draw.");
         Main.warLogger
-                .log("No one won the raid of " + this.raidedTown.getName() + "!");
+            .log("No one won the raid of " + this.raidedTown.getName() + "!");
 
         stop();
     }
@@ -846,9 +846,9 @@ public class Raid {
                 //Broadcast
                 if (raidTicks % 6000 == 0) {
                     Bukkit.broadcastMessage(Helper.chatLabel() + "The raid of "
-                            + Raid.this.getRaidedTown().getName() + " will begin in " + ((RaidPhase.TRAVEL.startTick - raidTicks) / 20 / 60) + " minutes!");
+                        + Raid.this.getRaidedTown().getName() + " will begin in " + ((RaidPhase.TRAVEL.startTick - raidTicks) / 20 / 60) + " minutes!");
                     Bukkit.broadcastMessage(
-                            "The Raiders are gathering at " + getGatherTown().getName() + " before making the journey over!");
+                        "The Raiders are gathering at " + getGatherTown().getName() + " before making the journey over!");
                 }
 
 
@@ -882,9 +882,9 @@ public class Raid {
                 //Report
                 if (raidTicks % 2400 == 0) {
                     Bukkit.broadcastMessage(Helper.chatLabel() + "The Raiders of "
-                            + (side1AreRaiders ? Raid.this.war.getSide1() : Raid.this.war.getSide2())
-                            + " are on their way to raid "
-                            + Raid.this.getRaidedTown().getName() + "!");
+                        + (side1AreRaiders ? Raid.this.war.getSide1() : Raid.this.war.getSide2())
+                        + " are on their way to raid "
+                        + Raid.this.getRaidedTown().getName() + "!");
                 }
 
                 //Check if a player has arrived at the town (in it, or within 200 blocks) and if so start combat
@@ -917,13 +917,13 @@ public class Raid {
                 //Report
                 if (Raid.this.raidTicks % 6000 == 0) {
                     Bukkit.broadcastMessage(Helper.chatLabel() + "Report on the raid of "
-                            + Raid.this.getRaidedTown().getName() + ":");
+                        + Raid.this.getRaidedTown().getName() + ":");
                     Bukkit.broadcastMessage(
-                            "Raider Score - " + Raid.this.raiderScore);
+                        "Raider Score - " + Raid.this.raiderScore);
                     Bukkit.broadcastMessage(
-                            "Defender Score - " + Raid.this.defenderScore);
+                        "Defender Score - " + Raid.this.defenderScore);
                     Bukkit.broadcastMessage(
-                            "Chunks Looted - " + Raid.this.lootedChunks.size() + "/" + raidedTown.getTownBlocks().size());
+                        "Chunks Looted - " + Raid.this.lootedChunks.size() + "/" + raidedTown.getTownBlocks().size());
                 }
 
                 //Looting chunks

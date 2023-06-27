@@ -22,8 +22,7 @@ public class CommandManager {
         new WarCommand();
         new SiegeCommand();
         new RaidCommand();
-        new AdminCommands(instance);
-//        getCommand("alathrawaradmin").setTabCompleter(new AdminTabCompletion());
+        new AdminCommand();
     }
 
     public void onDisable() {

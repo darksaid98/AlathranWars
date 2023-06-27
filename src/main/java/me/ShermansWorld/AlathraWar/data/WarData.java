@@ -111,8 +111,8 @@ public class WarData {
     public static War fromMap(HashMap<String, Object> fileData) {
 
         War war = new War((String) fileData.get("name"),
-                (String) fileData.get("side1"),
-                (String) fileData.get("side2")
+            (String) fileData.get("side1"),
+            (String) fileData.get("side2")
         );
 
         war.setSide1Towns((ArrayList<String>) fileData.get("side1Towns"));

@@ -20,6 +20,7 @@ import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.data.WarData;
+import me.ShermansWorld.AlathraWar.enums.TownWarState;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -29,177 +30,170 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class RaidCommand {
 
     public RaidCommand() {
         new CommandAPICommand("raid")
-                .withSubcommands(
-                        commandRaid(),
-                        commandStop(),
-                        commandJoin(),
-                        commandLeave(),
-                        commandAbandon(),
-                        commandList(),
-                        commandHelp()
-                )
-                .executesPlayer((sender, args) -> {
-                    if (args.count() == 0)
-                        throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "Invalid Arguments. /siege help").build());
-                })
-                .register();
+            .withSubcommands(
+                commandRaid(),
+                commandStop(),
+                commandJoin(),
+                commandLeave(),
+                commandAbandon(),
+                commandList(),
+                commandHelp()
+            )
+            .executesPlayer((sender, args) -> {
+                if (args.count() == 0)
+                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "Invalid Arguments. /siege help").build());
+            })
+            .register();
     }
 
     public static CommandAPICommand commandRaid() {
         return new CommandAPICommand("raid")
-                .withArguments(
-                        new StringArgument("warname")
-                                .replaceSuggestions(
-                                        ArgumentSuggestions.strings(
-                                                WarData.getWarsNames()
-                                        )
-                                ),
-                        new StringArgument("target")
-                                .replaceSuggestions(
-                                        ArgumentSuggestions.stringCollection(info -> {
-                                                    final String warname = (String) info.previousArgs().get("warname");
-                                                    return CommandHelper.getTownyWarTowns(warname);
-                                                }
-                                        )
-                                ),
-                        new StringArgument("gathertown")
-                                .setOptional(true)
-                                .withPermission("AlathraWar.admin")
-                                .replaceSuggestions(
-                                        ArgumentSuggestions.stringCollection(info -> { // TODO Make getHostileTowns method where we reverse from list
-                                                    final String warname = (String) info.previousArgs().get("warname");
-                                                    return CommandHelper.getTownyWarTowns(warname);
-                                                }
-                                        )
-                                ),
-                        new PlayerArgument("leader")
-                                .setOptional(true)
-                                .withPermission("AlathraWar.admin"),
-                        new BooleanArgument("minutemen")
-                                .setOptional(true)
-                                .withPermission("AlathraWar.admin")
+            .withArguments(
+                new StringArgument("warname")
+                    .replaceSuggestions(
+                        ArgumentSuggestions.strings(
+                            WarData.getWarsNames()
+                        )
+                    ),
+                new StringArgument("target")
+                    .replaceSuggestions(
+                        ArgumentSuggestions.stringCollection(info -> {
+                                final String warname = (String) info.previousArgs().get("warname");
+                                return CommandHelper.getTownyWarTowns(warname);
+                            }
+                        )
+                    ),
+                new StringArgument("gathertown")
+                    .setOptional(true)
+                    .withPermission("AlathraWar.admin")
+                    .replaceSuggestions(
+                        ArgumentSuggestions.stringCollection(info -> { // TODO Make getHostileTowns method where we reverse from list
+                                final String warname = (String) info.previousArgs().get("warname");
+                                return CommandHelper.getTownyWarTowns(warname);
+                            }
+                        )
+                    ),
+                new PlayerArgument("leader")
+                    .setOptional(true)
+                    .withPermission("AlathraWar.admin"),
+                new BooleanArgument("minutemen")
+                    .setOptional(true)
+                    .withPermission("AlathraWar.admin")
 
-                )
-                .executesPlayer((Player p, CommandArguments args) -> raidStart(p, args, false));
+            )
+            .executesPlayer((Player p, CommandArguments args) -> raidStart(p, args, false));
     }
 
     public static CommandAPICommand commandStop() {
         return new CommandAPICommand("stop")
-                .withPermission("AlathraWar.admin")
-                .withArguments(
-                        new StringArgument("warname")
-                                .replaceSuggestions(
-                                        ArgumentSuggestions.stringCollection(info ->
-                                                WarData.getWarsNames()
-                                        )
-                                ),
-                        new StringArgument("town")
-                                .replaceSuggestions(
-                                        ArgumentSuggestions.stringCollection(info -> {
-                                            final String warname = (String) info.previousArgs().get("warname");
-                                            return CommandHelper.getTownyWarTowns(warname);
-                                        })
-                                )
-                )
-                .executesPlayer(RaidCommand::raidStop);
+            .withPermission("AlathraWar.admin")
+            .withArguments(
+                new StringArgument("warname")
+                    .replaceSuggestions(
+                        ArgumentSuggestions.stringCollection(info ->
+                            WarData.getWarsNames()
+                        )
+                    ),
+                new StringArgument("town")
+                    .replaceSuggestions(
+                        ArgumentSuggestions.stringCollection(info -> {
+                            final String warname = (String) info.previousArgs().get("warname");
+                            return CommandHelper.getTownyWarTowns(warname);
+                        })
+                    )
+            )
+            .executesPlayer(RaidCommand::raidStop);
     }
 
     public static CommandAPICommand commandJoin() {
         return new CommandAPICommand("join")
-                .withArguments(
-                        new StringArgument("warname")
-                                .replaceSuggestions(
-                                        ArgumentSuggestions.stringCollection(info ->
-                                                WarData.getWarsNames()
-                                        )
-                                ),
-                        new StringArgument("town")
-                                .replaceSuggestions(
-                                        ArgumentSuggestions.stringCollection(info -> {
-                                            final String warname = (String) info.previousArgs().get("warname");
-                                            return CommandHelper.getTownyWarTowns(warname);
-                                        })
-                                ),
-                        new PlayerArgument("player")
-                                .setOptional(true)
-                                .withPermission("AlathraWar.admin"),
-                        new StringArgument("side")
-                                .replaceSuggestions(
-                                        ArgumentSuggestions.stringCollection(info -> {
-                                            String warName = (String) info.previousArgs().get("warname");
+            .withArguments(
+                new StringArgument("raidname")
+                    .replaceSuggestions(
+                        ArgumentSuggestions.strings(
+                            CommandHelper.getRaids()
+                        )
+                    ),
+                new StringArgument("side")
+                    .replaceSuggestions(
+                        ArgumentSuggestions.stringCollection(info -> {
+                            final String raidname = (String) info.previousArgs().get("raidname");
 
-                                            War war = WarData.getWar(warName);
-                                            if (war != null) {
-                                                return war.getSides();
-                                            }
+                            final Raid raid = RaidData.getRaid(raidname);
 
-                                            return Collections.emptyList();
-                                        })
-                                ),
-                        new BooleanArgument("minutemen")
-                                .setOptional(true)
-                                .withPermission("AlathraWar.admin")
+                            if (raid == null) return Collections.emptyList();
 
-                )
-                .executesPlayer((Player p, CommandArguments args) -> raidJoin(p, args, false));
+                            return List.of(raid.getRaiderSide(), raid.getDefenderSide());
+                        })
+                    ),
+                new PlayerArgument("player")
+                    .setOptional(true)
+                    .withPermission("AlathraWar.admin"),
+                new BooleanArgument("minutemen")
+                    .setOptional(true)
+                    .withPermission("AlathraWar.admin")
+
+            )
+            .executesPlayer((Player p, CommandArguments args) -> raidJoin(p, args, false));
     }
 
     public static CommandAPICommand commandLeave() {
         return new CommandAPICommand("leave")
-                .withArguments(
-                        new StringArgument("warname")
-                                .replaceSuggestions(
-                                        ArgumentSuggestions.stringCollection(info ->
-                                                WarData.getWarsNames()
-                                        )
-                                ),
-                        new StringArgument("town")
-                                .replaceSuggestions(
-                                        ArgumentSuggestions.stringCollection(info -> {
-                                            final String warname = (String) info.previousArgs().get("warname");
-                                            return CommandHelper.getTownyWarTowns(warname);
-                                        })
-                                ),
-                        new PlayerArgument("player")
-                                .setOptional(true)
-                                .withPermission("AlathraWar.admin")
-                )
-                .executesPlayer((Player p, CommandArguments args) -> raidLeave(p, args, false));
+            .withArguments(
+                new StringArgument("warname")
+                    .replaceSuggestions(
+                        ArgumentSuggestions.stringCollection(info ->
+                            WarData.getWarsNames()
+                        )
+                    ),
+                new StringArgument("town")
+                    .replaceSuggestions(
+                        ArgumentSuggestions.stringCollection(info -> {
+                            final String warname = (String) info.previousArgs().get("warname");
+                            return CommandHelper.getTownyWarTowns(warname);
+                        })
+                    ),
+                new PlayerArgument("player")
+                    .setOptional(true)
+                    .withPermission("AlathraWar.admin")
+            )
+            .executesPlayer((Player p, CommandArguments args) -> raidLeave(p, args, false));
     }
 
     public static CommandAPICommand commandAbandon() {
         return new CommandAPICommand("abandon")
-                .withArguments(
-                        new StringArgument("warname")
-                                .replaceSuggestions(
-                                        ArgumentSuggestions.stringCollection(info ->
-                                                WarData.getWarsNames()
-                                        )
-                                ),
-                        new StringArgument("town")
-                                .replaceSuggestions(
-                                        ArgumentSuggestions.stringCollection(info -> {
-                                            final String warname = (String) info.previousArgs().get("warname");
-                                            return CommandHelper.getTownyWarTowns(warname);
-                                        })
-                                )
-                )
-                .executesPlayer(RaidCommand::raidAbandon);
+            .withArguments(
+                new StringArgument("warname")
+                    .replaceSuggestions(
+                        ArgumentSuggestions.stringCollection(info ->
+                            WarData.getWarsNames()
+                        )
+                    ),
+                new StringArgument("town")
+                    .replaceSuggestions(
+                        ArgumentSuggestions.stringCollection(info -> {
+                            final String warname = (String) info.previousArgs().get("warname");
+                            return CommandHelper.getTownyWarTowns(warname);
+                        })
+                    )
+            )
+            .executesPlayer(RaidCommand::raidAbandon);
     }
 
     public static CommandAPICommand commandList() {
         return new CommandAPICommand("list")
-                .executesPlayer(RaidCommand::raidsList);
+            .executesPlayer(RaidCommand::raidsList);
     }
 
     public static CommandAPICommand commandHelp() {
         return new CommandAPICommand("help")
-                .executesPlayer(RaidCommand::raidHelp);
+            .executesPlayer(RaidCommand::raidHelp);
     }
 
     /**
@@ -213,7 +207,7 @@ public class RaidCommand {
         boolean townExists = false;
 
         if (!(args.get("warname") instanceof final String argWarName))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a war name.").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cUsage: /alathrawaradmin create raid [war] [raidTown] (gatherTown/\"defaultCode\") (owner) (override)").build());
 
         for (final War war : WarData.getWars()) {
             if (war.getName().equalsIgnoreCase(argWarName)) {
@@ -413,19 +407,19 @@ public class RaidCommand {
 
                         // Player participance check
                         Town leaderTown = TownyAPI.getInstance().getResident(raidOwner).getTownOrNull();
-                        int sideR = war.getSide(leaderTown.getName().toLowerCase());
-                        if (sideR == 0) {
+                        TownWarState sideR = war.getState(leaderTown.getName().toLowerCase());
+                        if (sideR == TownWarState.NOT_PARTICIPANT) {
                             if (admin) p.sendMessage(Helper.chatLabel() + "You are not in this war.");
                             raidOwner.sendMessage(Helper.chatLabel() + "You are not in this war.");
                             return;
-                        } else if (sideR == -1) {
+                        } else if (sideR == TownWarState.SURRENDERED) {
                             if (admin) p.sendMessage(Helper.chatLabel() + "You have surrendered.");
                             raidOwner.sendMessage(Helper.chatLabel() + "You have surrendered.");
                             return;
                         }
 
                         // Attacking own side
-                        if (war.getSide(raidedTown) == sideR) {
+                        if (war.getState(raidedTown) == sideR) {
                             if (admin) p.sendMessage(Helper.chatLabel() + "You cannot attack your own towns.");
                             raidOwner.sendMessage(Helper.chatLabel() + "You cannot attack your own towns.");
                             return;
@@ -451,12 +445,15 @@ public class RaidCommand {
                         Bukkit.broadcastMessage(Helper.chatLabel() + "As part of " + war.getName() + ", forces from " + raid2.getRaiderSide() + " are gathering to raid the town of " + raidedTown.getName() + "!");
                         Bukkit.broadcastMessage(Helper.chatLabel() + "All players from the defending side have been drafted for the town's defense.");
                         Bukkit.broadcastMessage(Helper.chatLabel() + "The raid of "
-                                + raidedTown.getName() + " will begin in " + (RaidPhase.TRAVEL.startTick / 20 / 60) + " minutes!");
+                            + raidedTown.getName() + " will begin in " + (RaidPhase.TRAVEL.startTick / 20 / 60) + " minutes!");
                         Bukkit.broadcastMessage(Helper.chatLabel() +
-                                "The Raiders are gathering at " + gatherTown.getName() + " before making the journey over!");
+                            "The Raiders are gathering at " + gatherTown.getName() + " before making the journey over!");
 
                         Main.warLogger.log(raidOwner.getName() + " started a raid.");
-                        if (admin) Main.warLogger.log(raidOwner.getName() + " started a raid from admin interference.");
+                        if (admin) {
+                            Main.warLogger.log(raidOwner.getName() + " started a raid from admin interference.");
+                            p.sendMessage(Helper.color("&cForcefully started raid from the console."));
+                        }
                         Main.warLogger.log("As part of " + war.getName() + ", forces from " + raid2.getRaiderSide() + " are raiding the town of " + raidedTown.getName() + "!");
                         Main.warLogger.log("The Raiders are gathering at " + gatherTown.getName() + " before making the journey over!");
                     }
@@ -492,7 +489,7 @@ public class RaidCommand {
         }
 
         //find our desired raid and stop it
-        Raid raid = RaidData.getRaidOrNull(argWarName + "-" + argTown);
+        Raid raid = RaidData.getRaid(argWarName + "-" + argTown);
 
         if (raid != null) {
             p.sendMessage(Helper.chatLabel() + "raid cancelled");
@@ -504,101 +501,81 @@ public class RaidCommand {
     }
 
     protected static void raidJoin(Player p, CommandArguments args, boolean admin) throws WrapperCommandSyntaxException {
-        if (!(args.get("warname") instanceof final String argWarName))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a war name!").build());
+        if (!(args.get("raidname") instanceof final String argRaidName))
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a raid name!").build());
 
-        if (!(args.get("town") instanceof final String argTown))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a town name!").build());
+        if (!(args.get("side") instanceof final String argSide))
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a side!").build());
 
-        //Grab raid!
-        Raid raid = RaidData.getRaidOrNull(argWarName + "-" + argTown);
-
+        final Raid raid = RaidData.getRaid(argRaidName);
         if (raid == null)
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "No raid is gathering in this town or this town does not exist!").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cThat raid does not exist!").build());
 
-        if (raid.getWar().getName().equalsIgnoreCase(argWarName)) {
-            final Player joiner = (Player) args.getOptional("player").orElse(p);
+        final War war = raid.getWar();
+        if (war == null)
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cThe war does not exist!").build());
 
-            if (joiner == null) {
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser("Joiner is Null").build());
-            }
+        final Player joiner = (Player) args.getOptional("player").orElse(p);
+        if (joiner == null)
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser("Joiner is Null").build());
 
-            if (!(args.get("side") instanceof final String argSide))
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a side!").build());
 
-            if (admin) {
-                if (argSide != null) {
-                    if (argSide.equalsIgnoreCase(raid.getDefenderSide())) {
-                        if (!raid.getDefenderPlayers().contains(joiner.getName()))
-                            raid.getDefenderPlayers().add(joiner.getName());
+        if (admin) {
+            if (argSide != null) {
+                if (argSide.equalsIgnoreCase(raid.getDefenderSide())) {
+                    if (!raid.getDefenderPlayers().contains(joiner.getName()))
+                        raid.getDefenderPlayers().add(joiner.getName());
 
-                        p.sendMessage(Helper.chatLabel() + "Player " + joiner.getName() + " added to defender side.");
-                        Main.warLogger.log("Player " + joiner.getName() + " added to defender side.");
-                        joiner.sendMessage(Helper.chatLabel() + "You were forcefully added to the defender side against the raid party on " + raid.getRaidedTown() + " by an admin.");
-                        return;
-                    } else {
-                        if (!raid.getRaiderPlayers().contains(joiner.getName()))
-                            raid.getRaiderPlayers().add(joiner.getName());
-
-                        p.sendMessage(Helper.chatLabel() + "Player " + joiner.getName() + " added to raider side.");
-                        Main.warLogger.log("Player " + joiner.getName() + " added to raider side.");
-                        joiner.sendMessage(Helper.chatLabel() + "You were forcefully added to the raid party on " + raid.getRaidedTown() + " by an admin. Leaving the gather town will remove you from the raid party.");
-                    }
-                }
-
-            }
-
-            if (!raid.getWar().getSide1Players().contains(joiner.getName()) && !raid.getWar().getSide2Players().contains(joiner.getName())) {
-                joiner.sendMessage(Helper.chatLabel() + "You are not in this war! Type /war join [war] [side]");
-            }
-
-            //Minutemen countermeasures, 86400 * 4 time. 86400 seconds in a day, 4 days min playtime
-            //also 12 hours min platim by default
-            int minuteman = CommandHelper.isPlayerMinuteman(joiner.getName());
-            boolean minuteManOverride = (boolean) args.getOptional("minutemen").orElse(false);
-
-            if (minuteManOverride) {
-                p.sendMessage(ChatColor.RED + "Warning! Ignoring Minuteman Countermeasure!");
-            }
-
-            if (!minuteManOverride) {
-                if (minuteman != 0) {
-                    if (minuteman == 1) {
-                        //player has joined to recently
-                        if (admin)
-                            p.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayerAge") + " days from joining.");
-                        joiner.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayerAge") + " days from joining.");
-                        return;
-                    } else if (minuteman == 2) {
-                        //player has played too little
-                        if (admin)
-                            p.sendMessage(ChatColor.RED + "You have not played enough! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayTime") + " hours of play.");
-                        joiner.sendMessage(ChatColor.RED + "You have not played enough! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayTime") + " hours of play.");
-                        return;
-                    }
-                }
-            }
-
-            //check if gather phase
-            if (!admin) {
-                if (raid.getPhase() == RaidPhase.GATHER || raid.getPhase() == RaidPhase.START) {
-                    try {
-                        //check if the player is in the gather town
-                        ArrayList<WorldCoord> cluster = Helper.getCluster(raid.getGatherTown().getHomeBlock().getWorldCoord());
-                        if (cluster.contains(WorldCoord.parseWorldCoord(joiner))) {
-                            raid.addActiveRaider(joiner.getName());
-                            joiner.sendMessage(Helper.chatLabel() + "You have joined the raid on " + raid.getRaidedTown().getName() + "!");
-                            joiner.sendMessage(Helper.chatLabel() + "Leaving " + raid.getGatherTown().getName() + " will cause you to leave the raid party.");
-                        } else {
-                            joiner.sendMessage(Helper.chatLabel() + "You must be in the gathering town to join the raid on " + raid.getRaidedTown().getName() + ".");
-                        }
-                    } catch (TownyException e) {
-                        throw new RuntimeException(e);
-                    }
+                    p.sendMessage(Helper.chatLabel() + "Player " + joiner.getName() + " added to defender side.");
+                    Main.warLogger.log("Player " + joiner.getName() + " added to defender side.");
+                    joiner.sendMessage(Helper.chatLabel() + "You were forcefully added to the defender side against the raid party on " + raid.getRaidedTown() + " by an admin.");
+                    return;
                 } else {
-                    joiner.sendMessage(Helper.chatLabel() + "You cannot join the raid on " + raid.getRaidedTown().getName() + "! It has already started!");
+                    if (!raid.getRaiderPlayers().contains(joiner.getName()))
+                        raid.getRaiderPlayers().add(joiner.getName());
+
+                    p.sendMessage(Helper.chatLabel() + "Player " + joiner.getName() + " added to raider side.");
+                    Main.warLogger.log("Player " + joiner.getName() + " added to raider side.");
+                    joiner.sendMessage(Helper.chatLabel() + "You were forcefully added to the raid party on " + raid.getRaidedTown() + " by an admin. Leaving the gather town will remove you from the raid party.");
                 }
-            } else {
+            }
+
+        }
+
+        if (!raid.getWar().getSide1Players().contains(joiner.getName()) && !raid.getWar().getSide2Players().contains(joiner.getName())) {
+            joiner.sendMessage(Helper.chatLabel() + "You are not in this war! Type /war join [war] [side]");
+        }
+
+        //Minutemen countermeasures, 86400 * 4 time. 86400 seconds in a day, 4 days min playtime
+        //also 12 hours min platim by default
+        int minuteman = CommandHelper.isPlayerMinuteman(joiner.getName());
+        boolean minuteManOverride = (boolean) args.getOptional("minutemen").orElse(false);
+
+        if (minuteManOverride) {
+            p.sendMessage(ChatColor.RED + "Warning! Ignoring Minuteman Countermeasure!");
+        }
+
+        if (!minuteManOverride) {
+            if (minuteman != 0) {
+                if (minuteman == 1) {
+                    //player has joined to recently
+                    if (admin)
+                        p.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayerAge") + " days from joining.");
+                    joiner.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayerAge") + " days from joining.");
+                    return;
+                } else if (minuteman == 2) {
+                    //player has played too little
+                    if (admin)
+                        p.sendMessage(ChatColor.RED + "You have not played enough! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayTime") + " hours of play.");
+                    joiner.sendMessage(ChatColor.RED + "You have not played enough! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayTime") + " hours of play.");
+                    return;
+                }
+            }
+        }
+
+        //check if gather phase
+        if (!admin) {
+            if (raid.getPhase() == RaidPhase.GATHER || raid.getPhase() == RaidPhase.START) {
                 try {
                     //check if the player is in the gather town
                     ArrayList<WorldCoord> cluster = Helper.getCluster(raid.getGatherTown().getHomeBlock().getWorldCoord());
@@ -612,18 +589,34 @@ public class RaidCommand {
                 } catch (TownyException e) {
                     throw new RuntimeException(e);
                 }
+            } else {
+                joiner.sendMessage(Helper.chatLabel() + "You cannot join the raid on " + raid.getRaidedTown().getName() + "! It has already started!");
             }
-
-            raid.save();
+        } else {
+            try {
+                //check if the player is in the gather town
+                ArrayList<WorldCoord> cluster = Helper.getCluster(raid.getGatherTown().getHomeBlock().getWorldCoord());
+                if (cluster.contains(WorldCoord.parseWorldCoord(joiner))) {
+                    raid.addActiveRaider(joiner.getName());
+                    joiner.sendMessage(Helper.chatLabel() + "You have joined the raid on " + raid.getRaidedTown().getName() + "!");
+                    joiner.sendMessage(Helper.chatLabel() + "Leaving " + raid.getGatherTown().getName() + " will cause you to leave the raid party.");
+                } else {
+                    joiner.sendMessage(Helper.chatLabel() + "You must be in the gathering town to join the raid on " + raid.getRaidedTown().getName() + ".");
+                }
+            } catch (TownyException e) {
+                throw new RuntimeException(e);
+            }
         }
+
+        raid.save();
     }
 
     protected static void raidLeave(Player player, CommandArguments args, boolean admin) throws WrapperCommandSyntaxException {
         //Get raid!
-        final Player p = (Player) args.getOptional("leader").orElse(player);
+        final Player p = (Player) args.getOptional("player").orElse(player);
 
         if (p == null) {
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser("Raided is Null").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser("Raider is Null").build());
         }
 
         if (!(args.get("warname") instanceof final String argWarName))
@@ -633,7 +626,7 @@ public class RaidCommand {
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a town name!").build());
 
 
-        Raid raid = RaidData.getRaidOrNull(argWarName + "-" + argTown);
+        Raid raid = RaidData.getRaid(argWarName + "-" + argTown);
         if (raid == null) {
             p.sendMessage(Helper.chatLabel() + "No raid is gathering in this town or this town does not exist!");
             if (admin)
@@ -667,6 +660,11 @@ public class RaidCommand {
                     throw new RuntimeException(e);
                 }
             }
+
+            if (admin) {
+                player.sendMessage(Helper.chatLabel() + "Forced player " + p.getName() + " to leave raid on " + raid.getRaidedTown().getName() + " in war " + argWarName);
+                Main.warLogger.log("Forced player " + p.getName() + " to leave raid on " + raid.getRaidedTown().getName() + " in war " + argWarName);
+            }
         }
 
         raid.save();
@@ -687,7 +685,7 @@ public class RaidCommand {
 
 
         //Get raid
-        Raid raid = RaidData.getRaidOrNull(argWarName + "-" + argTown);
+        Raid raid = RaidData.getRaid(argWarName + "-" + argTown);
 
         if (raid == null)
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cThis raid does not exist!").build());
@@ -751,17 +749,17 @@ public class RaidCommand {
     private static void fail(CommandSender p, CommandArguments args, String type) throws WrapperCommandSyntaxException {
         switch (type) {
             case "permissions" ->
-                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou do not have permission to do this.").build());
+                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou do not have permission to do this.").build());
             case "syntax" ->
-                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cInvalid Syntax. /raid help").build());
+                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cInvalid Syntax. /raid help").build());
             case "noRaids" ->
-                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cThere are currently no Raids in progress.").build());
+                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cThere are currently no Raids in progress.").build());
             case "badName" ->
-                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cA raid could not be found with this Name! Type /raid list to view current raids.").build());
+                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cA raid could not be found with this Name! Type /raid list to view current raids.").build());
             case "owner" ->
-                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cOnly the player who started the raid can abandon it.").build());
+                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cOnly the player who started the raid can abandon it.").build());
             default ->
-                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cInvalid Arguments. /raid help").build());
+                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cInvalid Arguments. /raid help").build());
         }
     }
 }

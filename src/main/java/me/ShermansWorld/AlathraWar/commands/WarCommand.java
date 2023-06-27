@@ -13,6 +13,7 @@ import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.jorel.commandapi.executors.CommandArguments;
 import me.ShermansWorld.AlathraWar.*;
 import me.ShermansWorld.AlathraWar.data.WarData;
+import me.ShermansWorld.AlathraWar.enums.TownWarState;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -26,126 +27,125 @@ import java.util.List;
 public class WarCommand {
     public WarCommand() {
         new CommandAPICommand("war")
-                .withSubcommands(
-                        commandCreate(),
-                        commandDelete(),
-                        commandJoin(),
-                        commandSurrender(),
-                        commandList(),
-                        commandInfo(),
-                        commandHelp()
-                )
-                .executesPlayer((sender, args) -> {
-                    if (args.count() == 0)
-                        throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "Invalid Arguments. /war help").build());
-                })
-                .register();
+            .withSubcommands(
+                commandCreate(),
+                commandDelete(),
+                commandJoin(),
+                commandSurrender(),
+                commandList(),
+                commandInfo(),
+                commandHelp()
+            )
+            .executesPlayer((sender, args) -> {
+                if (args.count() == 0)
+                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "Invalid Arguments. /war help").build());
+            })
+            .register();
     }
 
     public static CommandAPICommand commandCreate() {
         return new CommandAPICommand("create")
-                .withPermission("AlathraWar.admin")
-                .withArguments(
-                        new StringArgument("warname"),
-                        new StringArgument("side1")
-                                .replaceSuggestions(
-                                        ArgumentSuggestions.stringCollection(info -> {
-                                            final List<String> nations = CommandHelper.getTownyNations();
-                                            final List<String> towns = CommandHelper.getTownyTowns();
+            .withPermission("AlathraWar.admin")
+            .withArguments(
+                new StringArgument("warname"),
+                new StringArgument("side1")
+                    .replaceSuggestions(
+                        ArgumentSuggestions.stringCollection(info -> {
+                            final List<String> nations = CommandHelper.getTownyNations();
+                            final List<String> towns = CommandHelper.getTownyTowns();
 
-                                            Collections.sort(nations);
-                                            Collections.sort(towns);
+                            Collections.sort(nations);
+                            Collections.sort(towns);
 
-                                            nations.addAll(towns);
+                            nations.addAll(towns);
 
-                                            return nations;
-                                        })
-                                ),
-                        new StringArgument("side2")
-                                .replaceSuggestions(
-                                        ArgumentSuggestions.stringCollection(info -> {
-                                            final List<String> nations = CommandHelper.getTownyNations();
-                                            final List<String> towns = CommandHelper.getTownyTowns();
+                            return nations;
+                        })
+                    ),
+                new StringArgument("side2")
+                    .replaceSuggestions(
+                        ArgumentSuggestions.stringCollection(info -> {
+                            final List<String> nations = CommandHelper.getTownyNations();
+                            final List<String> towns = CommandHelper.getTownyTowns();
 
-                                            Collections.sort(nations);
-                                            Collections.sort(towns);
+                            Collections.sort(nations);
+                            Collections.sort(towns);
 
-                                            nations.addAll(towns);
+                            nations.addAll(towns);
 
-                                            return nations;
-                                        })
-                                )
-                )
-                .executesPlayer(WarCommand::warCreate);
+                            return nations;
+                        })
+                    )
+            )
+            .executesPlayer(WarCommand::warCreate);
     }
 
     public static CommandAPICommand commandDelete() {
         return new CommandAPICommand("delete")
-                .withPermission("AlathraWar.admin")
-                .withArguments(
-                        new StringArgument("warname")
-                                .replaceSuggestions(
-                                        ArgumentSuggestions.stringCollection(info -> WarData.getWarsNames())
-                                )
-                )
-                .executesPlayer(WarCommand::warDelete);
+            .withPermission("AlathraWar.admin")
+            .withArguments(
+                new StringArgument("warname")
+                    .replaceSuggestions(
+                        ArgumentSuggestions.stringCollection(info -> WarData.getWarsNames())
+                    )
+            )
+            .executesPlayer(WarCommand::warDelete);
     }
 
     public static CommandAPICommand commandJoin() {
         return new CommandAPICommand("join")
-                .withArguments(
-                        new StringArgument("warname")
-                                .replaceSuggestions(
-                                        ArgumentSuggestions.stringCollection(info -> CommandHelper.getWarNames())
-                                ),
-                        new StringArgument("side")
-                                .replaceSuggestions(
-                                        ArgumentSuggestions.stringCollection(info -> {
-                                            String warName = (String) info.previousArgs().get("warname");
+            .withArguments(
+                new StringArgument("warname")
+                    .replaceSuggestions(
+                        ArgumentSuggestions.stringCollection(info -> CommandHelper.getWarNames())
+                    ),
+                new StringArgument("side")
+                    .replaceSuggestions(
+                        ArgumentSuggestions.stringCollection(info -> {
+                            final String warname = (String) info.previousArgs().get("warname");
 
-                                            War war = WarData.getWar(warName);
-                                            if (war != null) {
-                                                return war.getSides();
-                                            }
+                            final War war = WarData.getWar(warname);
 
-                                            return Collections.emptyList();
-                                        })
-                                ),
-                        new PlayerArgument("player").setOptional(true).withPermission("AlathraWar.admin")
-                )
-                .executesPlayer((Player p, CommandArguments args) -> warJoin(p, args, false));
+                            if (war == null) return Collections.emptyList();
+
+                            return war.getSides();
+                        })
+                    ),
+                new PlayerArgument("player").setOptional(true).withPermission("AlathraWar.admin")
+            )
+            .executesPlayer((Player p, CommandArguments args) -> warJoin(p, args, false));
     }
 
     public static CommandAPICommand commandSurrender() {
         return new CommandAPICommand("surrender")
-                .withArguments(
-                        new StringArgument("warname")
-                                .replaceSuggestions(
-                                        ArgumentSuggestions.stringCollection(info -> CommandHelper.getWarNames())
-                                ),
-                        new PlayerArgument("player")
-                                .setOptional(true)
-                                .withPermission("AlathraWar.admin")
-                )
-                .executesPlayer((Player p, CommandArguments args) -> warSurrender(p, args, false));
+            .withArguments(
+                new StringArgument("warname")
+                    .replaceSuggestions(
+                        ArgumentSuggestions.stringCollection(info -> CommandHelper.getWarNames())
+                    ),
+                new PlayerArgument("player")
+                    .setOptional(true)
+                    .withPermission("AlathraWar.admin")
+            )
+            .executesPlayer((Player p, CommandArguments args) -> warSurrender(p, args, false));
     }
 
     public static CommandAPICommand commandList() {
         return new CommandAPICommand("list")
-                .executesPlayer(WarCommand::warList);
+            .executesPlayer(WarCommand::warList);
     }
 
     public static CommandAPICommand commandInfo() {
         return new CommandAPICommand("info")
-                .withArguments(
-                        new PlayerArgument("player")
-                )
-                .executesPlayer(WarCommand::warInfo);
+            .withArguments(
+                new PlayerArgument("player")
+            )
+            .executesPlayer(WarCommand::warInfo);
     }
 
     public static CommandAPICommand commandHelp() {
         return new CommandAPICommand("help")
-                .executesPlayer(WarCommand::warHelp);
+            .executesPlayer(WarCommand::warHelp);
     }
 
     protected static void warCreate(CommandSender p, CommandArguments args) throws WrapperCommandSyntaxException {
@@ -175,12 +175,12 @@ public class WarCommand {
             war.save();
 
             Bukkit.broadcastMessage(Helper.chatLabel() + "War created with the name " + argWarName + ", "
-                    + argSide1 + " vs. " + argSide2);
+                + argSide1 + " vs. " + argSide2);
             Main.warLogger.log(p.getName() + " created a new war with the name " + argWarName + ", " + argSide1
-                    + " vs. " + argSide2);
+                + " vs. " + argSide2);
         } else {
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel()
-                    + "Invalid Arguments. /war create [name] [side1] [side2]").build());
+                + "Invalid Arguments. /war create [name] [side1] [side2]").build());
         }
 
     }
@@ -208,7 +208,7 @@ public class WarCommand {
             Main.warLogger.log(p.getName() + " deleted " + argWarName);
         } else {
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel()
-                    + "Invalid Arguments. /war delete [name]").build());
+                + "Invalid Arguments. /war delete [name]").build());
         }
     }
 
@@ -221,7 +221,7 @@ public class WarCommand {
         // Sufficient args check
         if (args.count() < 2)
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel()
-                    + "/war join [name] [side], type /war list to view current wars").build());
+                + "/war join [name] [side], type /war list to view current wars").build());
 
         if (!(args.get("warname") instanceof final String argWarName))
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a war name.").build());
@@ -233,6 +233,9 @@ public class WarCommand {
 
         if (!(args.get("side") instanceof final String argSide))
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a side.").build());
+
+        if (!war.isSideValid(argSide))
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cThat side does not exist in that war.").build());
 
         if (!(args.getOptional("player").orElse(null) instanceof @Nullable Player argPlayer))
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cPlayer not found.").build());
@@ -278,11 +281,11 @@ public class WarCommand {
         }
 
         // Side checks
-        final int side = war.getSide(town.getName().toLowerCase());
-        if (side == -1) {
+        final TownWarState side = war.getState(town.getName().toLowerCase());
+        if (side == TownWarState.SURRENDERED) {
             argPlayer.sendMessage(Helper.chatLabel() + "You've already surrendered!");
             return;
-        } else if (side > 0) {
+        } else if (side != TownWarState.NOT_PARTICIPANT) {
             argPlayer.sendMessage(Helper.chatLabel() + "You're already in this war!");
             return;
         }
@@ -318,7 +321,7 @@ public class WarCommand {
         // Sufficient args check
         if (args.count() < 1) {
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel()
-                    + "/war surrender [name], type /war list to view current wars").build());
+                + "/war surrender [name], type /war list to view current wars").build());
         }
 
         if (!(args.get("warname") instanceof final String argWarName))
@@ -328,7 +331,7 @@ public class WarCommand {
         War war = WarData.getWar(argWarName);
         if (war == null) {
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel()
-                    + "War not found. Type /war list to view current wars").build());
+                + "War not found. Type /war list to view current wars").build());
         }
 
         if (!(args.get("reason") instanceof final String argReason))
@@ -405,13 +408,13 @@ public class WarCommand {
 
         p.sendMessage(new ColorParser(Helper.chatLabel() + p.getName() + "'s wars:").build());
         for (War war : WarData.getWars()) {
-            int side = war.getSide(res.getTownOrNull());
-            if (side != 0) {
-                if (side == -1) {
+            TownWarState side = war.getState(res.getTownOrNull());
+            if (side != TownWarState.NOT_PARTICIPANT) {
+                if (side == TownWarState.SURRENDERED) {
                     p.sendMessage(war.getName() + " - Surrendered");
-                } else if (side == 1) {
+                } else if (side == TownWarState.SIDE1) {
                     p.sendMessage(war.getName() + " - " + war.getSide1());
-                } else if (side == 2) {
+                } else if (side == TownWarState.SIDE2) {
                     p.sendMessage(war.getName() + " - " + war.getSide2());
                 }
             }

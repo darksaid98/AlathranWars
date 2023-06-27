@@ -153,10 +153,10 @@ public class PlayerInteractListener implements Listener {
             if (item.equals(WarItemRegistry.getInstance().getOrNull("ram"))) {
                 if (clicked != null) {
                     if (clicked.getType().name().equals("GRASS_BLOCK")
-                            || clicked.getType().name().equals("DIRT")
-                            || clicked.getType().name().equals("COARSE_DIRT")
-                            || clicked.getType().name().equals("ROOTED_DIRT")
-                            || clicked.getType().name().equals("DIRT_PATH")) {
+                        || clicked.getType().name().equals("DIRT")
+                        || clicked.getType().name().equals("COARSE_DIRT")
+                        || clicked.getType().name().equals("ROOTED_DIRT")
+                        || clicked.getType().name().equals("DIRT_PATH")) {
                         event.setCancelled(true);
                     }
                 }

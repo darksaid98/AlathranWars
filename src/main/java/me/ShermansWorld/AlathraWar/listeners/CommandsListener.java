@@ -14,33 +14,33 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 public class CommandsListener implements Listener {
 
     final static String[] prefixes = new String[]{
-            "", "towny", "essentials", "wild", "minecraft"
+        "", "towny", "essentials", "wild", "minecraft"
     };
     final static String[] prefixesTowny = new String[]{
-            "", "towny"
+        "", "towny"
     };
     final static String[] blacklistedXLong = new String[]{
-            "n set spawn", "nat set spawn", "nation set spawn",
-            "t set spawn", "town set spawn",
-            "t set homeblock", "town set homeblock",
-            "t set name", "town set name",
-            "n set name", "nat set name", "nation set name"
+        "n set spawn", "nat set spawn", "nation set spawn",
+        "t set spawn", "town set spawn",
+        "t set homeblock", "town set homeblock",
+        "t set name", "town set name",
+        "n set name", "nat set name", "nation set name"
     };
     final static String[] blacklistedLong = new String[]{
-            "n spawn", "nat spawn", "nation spawn",
-            "t spawn", "town spawn",
-            "t outpost", "town outpost"
+        "n spawn", "nat spawn", "nation spawn",
+        "t spawn", "town spawn",
+        "t outpost", "town outpost"
     };
     final static String[] payment = new String[]{
-            "n withdraw", "nat withdraw", "nation withdraw",
-            "t withdraw", "town withdraw"
+        "n withdraw", "nat withdraw", "nation withdraw",
+        "t withdraw", "town withdraw"
     };
     final static String[] blacklistedShort = new String[]{
-            "home", "homes", "warp", "warps",
-            "wild", "rtp", "spawn", "wilderness", "wildtp",
-            "tpa", "tpahere", "tpaccept", "tpacancel",
-            "etpa", "etpahere", "etpaccept", "etpacancel",
-            "ehome", "ehomes", "ewarp", "ewarps"
+        "home", "homes", "warp", "warps",
+        "wild", "rtp", "spawn", "wilderness", "wildtp",
+        "tpa", "tpahere", "tpaccept", "tpacancel",
+        "etpa", "etpahere", "etpaccept", "etpacancel",
+        "ehome", "ehomes", "ewarp", "ewarps"
 
     };
 
@@ -101,9 +101,9 @@ public class CommandsListener implements Listener {
                                     //check if in spawn
                                     if (p.getWorld().getName().equalsIgnoreCase("world")) {
                                         if (parse.equalsIgnoreCase("n spawn") || parse.equalsIgnoreCase("nat spawn") || parse.equalsIgnoreCase("nation spawn")
-                                                || parse.equalsIgnoreCase("t spawn") || parse.equalsIgnoreCase("town spawn")
-                                                || parse.equalsIgnoreCase("towny:n spawn") || parse.equalsIgnoreCase("towny:nat spawn") || parse.equalsIgnoreCase("towny:nation spawn")
-                                                || parse.equalsIgnoreCase("towny:t spawn") || parse.equalsIgnoreCase("towny:town spawn")) {
+                                            || parse.equalsIgnoreCase("t spawn") || parse.equalsIgnoreCase("town spawn")
+                                            || parse.equalsIgnoreCase("towny:n spawn") || parse.equalsIgnoreCase("towny:nat spawn") || parse.equalsIgnoreCase("towny:nation spawn")
+                                            || parse.equalsIgnoreCase("towny:t spawn") || parse.equalsIgnoreCase("towny:town spawn")) {
                                             p.sendMessage(Helper.chatLabel() + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
                                             return;
                                         }
@@ -191,9 +191,9 @@ public class CommandsListener implements Listener {
                                     //check if in spawn
                                     if (p.getWorld().getName().equalsIgnoreCase("world")) {
                                         if (parse.equalsIgnoreCase("n spawn") || parse.equalsIgnoreCase("nat spawn") || parse.equalsIgnoreCase("nation spawn")
-                                                || parse.equalsIgnoreCase("t spawn") || parse.equalsIgnoreCase("town spawn")
-                                                || parse.equalsIgnoreCase("towny:n spawn") || parse.equalsIgnoreCase("towny:nat spawn") || parse.equalsIgnoreCase("towny:nation spawn")
-                                                || parse.equalsIgnoreCase("towny:t spawn") || parse.equalsIgnoreCase("towny:town spawn")) {
+                                            || parse.equalsIgnoreCase("t spawn") || parse.equalsIgnoreCase("town spawn")
+                                            || parse.equalsIgnoreCase("towny:n spawn") || parse.equalsIgnoreCase("towny:nat spawn") || parse.equalsIgnoreCase("towny:nation spawn")
+                                            || parse.equalsIgnoreCase("towny:t spawn") || parse.equalsIgnoreCase("towny:town spawn")) {
                                             p.sendMessage(Helper.chatLabel() + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
                                             return;
                                         }

@@ -23,7 +23,7 @@ import java.util.UUID;
 
 public final class KillsListener implements Listener {
 
-    public static final HashMap<UUID, Raid> respawnqueue = new HashMap<>();
+    public static final HashMap<UUID, Raid> respawnQueue = new HashMap<>();
 
     @EventHandler
     public void onPlayerKilled(final PlayerDeathEvent event) {
@@ -71,20 +71,20 @@ public final class KillsListener implements Listener {
                         if (raid.getDefenderPlayers().contains(killer.getName())) {
                             this.raidKill(killed, event);
                             raid.raiderKilledInCombat(event);
-                            respawnqueue.put(killed.getUniqueId(), raid);
+                            respawnQueue.put(killed.getUniqueId(), raid);
                             return;
                         }
                     } else if (raid.getPhase() != RaidPhase.COMBAT && killer != null) {
                         this.oocKill(killed, event);
                         raid.raiderKilledOutofCombat(event);
-                        respawnqueue.put(killed.getUniqueId(), raid);
+                        respawnQueue.put(killed.getUniqueId(), raid);
                         return;
                     }
                     //teleport back to gather town spawn, without damaged gear
                     //this is to disincentive people prekilling
                     this.oocKill(killed, event);
                     raid.raiderKilledOutofCombat(event);
-                    respawnqueue.put(killed.getUniqueId(), raid);
+                    respawnQueue.put(killed.getUniqueId(), raid);
                     return;
                 }
                 if ((town != null && town.equals(raid.getRaidedTown()) || playerCloseToHomeBlockRaid)) {
@@ -169,8 +169,8 @@ public final class KillsListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onRespawn(PlayerRespawnEvent event) {
-        if (respawnqueue.containsKey(event.getPlayer().getUniqueId())) {
-            Raid raid = respawnqueue.get(event.getPlayer().getUniqueId());
+        if (respawnQueue.containsKey(event.getPlayer().getUniqueId())) {
+            Raid raid = respawnQueue.get(event.getPlayer().getUniqueId());
             if (raid == null) return;
             if (raid.getActiveRaiders().contains(event.getPlayer().getName())) {
                 //do raider respawn
@@ -185,7 +185,7 @@ public final class KillsListener implements Listener {
             } else {
                 //invalid code
             }
-            respawnqueue.remove(event.getPlayer().getUniqueId());
+            respawnQueue.remove(event.getPlayer().getUniqueId());
         }
     }
 

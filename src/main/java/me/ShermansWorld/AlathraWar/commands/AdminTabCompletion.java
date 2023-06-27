@@ -12,31 +12,31 @@ import java.util.List;
 public class AdminTabCompletion implements TabCompleter {
 
     List<String> base = List.of("create",
-            "force",
-            "help",
-            "info",
-            "modify",
-            "purgebars",
-            "load",
-            "load-all",
-            "save",
-            "save-all",
-            "item");
+        "force",
+        "help",
+        "info",
+        "modify",
+        "purgebars",
+        "load",
+        "load-all",
+        "save",
+        "save-all",
+        "item");
 
     List<String> type = List.of(new String[]{
-            "raid",
-            "siege",
-            "war"
+        "raid",
+        "siege",
+        "war"
     });
 
     List<String> raidModify = List.of(new String[]{
-            "score",
-            "townspawn",
-            "gather",
-            "phase",
-            "loot",
-            "time",
-            "owner"
+        "score",
+        "townspawn",
+        "gather",
+        "phase",
+        "loot",
+        "time",
+        "owner"
 //            ,
 //            "move"
 //            ,
@@ -44,64 +44,64 @@ public class AdminTabCompletion implements TabCompleter {
     });
 
     List<String> siegeModify = List.of(new String[]{
-            "score",
-            "townspawn",
-            "time",
-            "owner"
+        "score",
+        "townspawn",
+        "time",
+        "owner"
 //            ,
 //            "move"
     });
 
     List<String> warModify = List.of(new String[]{
-            "score",
-            "side",
-            "name",
-            "add",
-            "surrender",
-            "unsurrender",
-            "raidTimeWar",
-            "raidTimeTown"
+        "score",
+        "side",
+        "name",
+        "add",
+        "surrender",
+        "unsurrender",
+        "raidTimeWar",
+        "raidTimeTown"
     });
 
     List<String> force = List.of(new String[]{
-            "end",
-            "join",
-            "leave"
+        "end",
+        "join",
+        "leave"
     });
 
     List<String> addSet = List.of(new String[]{
-            "add",
-            "set"
+        "add",
+        "set"
     });
 
     List<String> addSubSet = List.of(new String[]{
-            "add",
-            "subtract",
-            "set"
+        "add",
+        "subtract",
+        "set"
     });
 
     List<String> boolSet = List.of(new String[]{
-            "true",
-            "false"
+        "true",
+        "false"
     });
 
 
     List<String> addSetReset = List.of(new String[]{
-            "add",
-            "set",
-            "reset"
+        "add",
+        "set",
+        "reset"
     });
 
     List<String> nationTown = List.of(new String[]{
-            "town",
-            "nation"
+        "town",
+        "nation"
     });
 
     List<String> lootSet = List.of(new String[]{
-            "value",
-            "looted",
-            "ticks",
-            "reset"
+        "value",
+        "looted",
+        "ticks",
+        "reset"
     });
 
     List<String> empty = Collections.emptyList();

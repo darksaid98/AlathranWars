@@ -6,6 +6,7 @@ import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.*;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
+import me.ShermansWorld.AlathraWar.enums.TownWarState;
 import org.bukkit.*;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -45,7 +46,7 @@ public class Siege {
 
         bossBarKey = new NamespacedKey(Main.getInstance(), "siegeBar." + this.getName());
 
-        side1AreAttackers = war.getSide(town.getName()) == 2;
+        side1AreAttackers = war.getState(town.getName()) == TownWarState.SIDE2;
     }
 
     /**
@@ -167,14 +168,14 @@ public class Siege {
                             for (final String playerName : Siege.this.attackerPlayers) {
                                 try {
                                     Bukkit.getPlayer(playerName).sendMessage(Helper.chatLabel()
-                                            + "HomeBlock at " + Siege.this.town.getName() + " contested!");
+                                        + "HomeBlock at " + Siege.this.town.getName() + " contested!");
                                 } catch (NullPointerException ex5) {
                                 }
                             }
                             for (final String playerName : Siege.this.defenderPlayers) {
                                 try {
                                     Bukkit.getPlayer(playerName).sendMessage(Helper.chatLabel()
-                                            + "HomeBlock at " + Siege.this.town.getName() + " contested!");
+                                        + "HomeBlock at " + Siege.this.town.getName() + " contested!");
                                 } catch (NullPointerException ex6) {
                                 }
                             }
@@ -185,16 +186,16 @@ public class Siege {
                             for (final String playerName : Siege.this.attackerPlayers) {
                                 try {
                                     Bukkit.getPlayer(playerName).sendMessage(Helper.chatLabel()
-                                            + "Attackers have captured the HomeBlock at "
-                                            + Siege.this.town.getName() + "! +1 Attacker Points per second");
+                                        + "Attackers have captured the HomeBlock at "
+                                        + Siege.this.town.getName() + "! +1 Attacker Points per second");
                                 } catch (NullPointerException ex7) {
                                 }
                             }
                             for (final String playerName : Siege.this.defenderPlayers) {
                                 try {
                                     Bukkit.getPlayer(playerName).sendMessage(Helper.chatLabel()
-                                            + "Attackers have captured the HomeBlock at "
-                                            + Siege.this.town.getName() + "! +1 Attacker Points per second");
+                                        + "Attackers have captured the HomeBlock at "
+                                        + Siege.this.town.getName() + "! +1 Attacker Points per second");
                                 } catch (NullPointerException ex8) {
                                 }
                             }
@@ -206,16 +207,16 @@ public class Siege {
                             for (final String playerName : Siege.this.attackerPlayers) {
                                 try {
                                     Bukkit.getPlayer(playerName).sendMessage(Helper.chatLabel()
-                                            + "Defenders retain control of the HomeBlock at "
-                                            + Siege.this.town.getName() + "! +1 Defender Points per second");
+                                        + "Defenders retain control of the HomeBlock at "
+                                        + Siege.this.town.getName() + "! +1 Defender Points per second");
                                 } catch (NullPointerException ex9) {
                                 }
                             }
                             for (final String playerName : Siege.this.defenderPlayers) {
                                 try {
                                     Bukkit.getPlayer(playerName).sendMessage(Helper.chatLabel()
-                                            + "Defenders retain control of the HomeBlock at "
-                                            + Siege.this.town.getName() + "! +1 Defender Points per second");
+                                        + "Defenders retain control of the HomeBlock at "
+                                        + Siege.this.town.getName() + "! +1 Defender Points per second");
                                 } catch (NullPointerException ex10) {
                                 }
                             }
@@ -225,11 +226,11 @@ public class Siege {
                     }
                     if (Siege.this.siegeTicks % 6000 == 0) { // Updates every 5 minutes
                         Bukkit.broadcastMessage(Helper.chatLabel() + "Report on the siege of "
-                                + Siege.this.town.getName() + ":");
+                            + Siege.this.town.getName() + ":");
                         Bukkit.broadcastMessage(
-                                "Attacker Points - " + Siege.this.attackerPoints);
+                            "Attacker Points - " + Siege.this.attackerPoints);
                         Bukkit.broadcastMessage(
-                                "Defender Points - " + Siege.this.defenderPoints);
+                            "Defender Points - " + Siege.this.defenderPoints);
                     }
                     if (siegeTicks % 1200 == 0) { // Saves every minute
                         save();
@@ -253,7 +254,7 @@ public class Siege {
         }
         if (nation != null) {
             Bukkit.broadcastMessage(Helper.chatLabel() + "The town of " + this.town.getName()
-                    + " has been placed under occupation by " + nation.getName() + "!");
+                + " has been placed under occupation by " + nation.getName() + "!");
         }
         Main.econ.depositPlayer(siegeLeader, 2500.0);
         double amt = 0.0;
@@ -264,7 +265,7 @@ public class Siege {
             if (this.town.getAccount().getHoldingBalance() < 2500.0) {
                 amt = this.town.getAccount().getHoldingBalance();
                 Bukkit.broadcastMessage(Helper.chatLabel() + "The town of " + this.town.getName()
-                        + " has been destroyed by " + this.getAttackerSide() + "!");
+                    + " has been destroyed by " + this.getAttackerSide() + "!");
                 TownyUniverse.getInstance().getDataSource().deleteTown(this.town);
                 Main.econ.depositPlayer(siegeLeader, amt);
                 return;
@@ -273,9 +274,9 @@ public class Siege {
             amt = 2500.0;
         }
         Bukkit.broadcastMessage("The town of " + this.town.getName() + " has been sacked by " + this.getAttackerSide()
-                + ", valuing $" + amt);
+            + ", valuing $" + amt);
         Main.warLogger.log("The town of " + this.town.getName() + " has been sacked by " + this.getAttackerSide()
-                + ", valuing $" + amt);
+            + ", valuing $" + amt);
         Main.econ.depositPlayer(siegeLeader, amt);
 
         if (side1AreAttackers) {
@@ -292,9 +293,9 @@ public class Siege {
         this.town.getAccount().deposit(2500.0, "War chest");
         Bukkit.broadcastMessage(Helper.chatLabel() + "The defenders have won the siege of " + this.town.getName() + "!");
         Bukkit.broadcastMessage(Helper.chatLabel() + this.town.getName()
-                + " has recovered the attackers' war chest, valued at $2,500");
+            + " has recovered the attackers' war chest, valued at $2,500");
         Main.warLogger
-                .log(war.getName() + ": The defenders have won the siege of " + this.town.getName() + "!");
+            .log(war.getName() + ": The defenders have won the siege of " + this.town.getName() + "!");
 
         if (side1AreAttackers) {
             war.addSide2Points(50);
@@ -313,7 +314,7 @@ public class Siege {
         Bukkit.broadcastMessage(Helper.chatLabel() + "The siege of " + this.town.getName() + " was a draw!");
         Bukkit.broadcastMessage(Helper.chatLabel() + "No money has been recovered.");
         Main.warLogger
-                .log(war.getName() + ": No one won the siege of " + this.town.getName() + "!");
+            .log(war.getName() + ": No one won the siege of " + this.town.getName() + "!");
         stop();
         clearBeacon();
     }
@@ -337,7 +338,7 @@ public class Siege {
             }
             int homeBlockY = 253;
             final Location beaconLoc = new Location(this.town.getWorld(), homeBlockX,
-                    homeBlockY - 2, homeBlockZ);
+                homeBlockY - 2, homeBlockZ);
             while (beaconLoc.getBlock().getType().equals(Material.AIR)) {
                 --homeBlockY;
                 beaconLoc.setY(homeBlockY);
@@ -345,25 +346,25 @@ public class Siege {
             homeBlockY += 2;
             this.beaconLocs.add(new Location(world, homeBlockX, homeBlockY, homeBlockZ));
             this.beaconLocs
-                    .add(new Location(world, homeBlockX, homeBlockY + 1, homeBlockZ));
+                .add(new Location(world, homeBlockX, homeBlockY + 1, homeBlockZ));
             this.beaconLocs
-                    .add(new Location(world, homeBlockX, homeBlockY - 1, homeBlockZ));
+                .add(new Location(world, homeBlockX, homeBlockY - 1, homeBlockZ));
             this.beaconLocs.add(
-                    new Location(world, homeBlockX + 1, homeBlockY - 1, homeBlockZ));
+                new Location(world, homeBlockX + 1, homeBlockY - 1, homeBlockZ));
             this.beaconLocs.add(
-                    new Location(world, homeBlockX - 1, homeBlockY - 1, homeBlockZ));
+                new Location(world, homeBlockX - 1, homeBlockY - 1, homeBlockZ));
             this.beaconLocs.add(
-                    new Location(world, homeBlockX, homeBlockY - 1, homeBlockZ + 1));
+                new Location(world, homeBlockX, homeBlockY - 1, homeBlockZ + 1));
             this.beaconLocs.add(
-                    new Location(world, homeBlockX, homeBlockY - 1, homeBlockZ - 1));
+                new Location(world, homeBlockX, homeBlockY - 1, homeBlockZ - 1));
             this.beaconLocs.add(new Location(world, homeBlockX + 1, homeBlockY - 1,
-                    homeBlockZ + 1));
+                homeBlockZ + 1));
             this.beaconLocs.add(new Location(world, homeBlockX + 1, homeBlockY - 1,
-                    homeBlockZ - 1));
+                homeBlockZ - 1));
             this.beaconLocs.add(new Location(world, homeBlockX - 1, homeBlockY - 1,
-                    homeBlockZ + 1));
+                homeBlockZ + 1));
             this.beaconLocs.add(new Location(world, homeBlockX - 1, homeBlockY - 1,
-                    homeBlockZ - 1));
+                homeBlockZ - 1));
             for (int i = 2; i < this.beaconLocs.size(); ++i) {
                 if (this.beaconLocs.get(i).getBlock().getType() != Material.AIR) {
                     i = 1;
@@ -388,21 +389,21 @@ public class Siege {
         this.beaconLocs.add(new Location(world, homeBlockX, homeBlockY + 1, homeBlockZ));
         this.beaconLocs.add(new Location(world, homeBlockX, homeBlockY - 1, homeBlockZ));
         this.beaconLocs
-                .add(new Location(world, homeBlockX + 1, homeBlockY - 1, homeBlockZ));
+            .add(new Location(world, homeBlockX + 1, homeBlockY - 1, homeBlockZ));
         this.beaconLocs
-                .add(new Location(world, homeBlockX - 1, homeBlockY - 1, homeBlockZ));
+            .add(new Location(world, homeBlockX - 1, homeBlockY - 1, homeBlockZ));
         this.beaconLocs
-                .add(new Location(world, homeBlockX, homeBlockY - 1, homeBlockZ + 1));
+            .add(new Location(world, homeBlockX, homeBlockY - 1, homeBlockZ + 1));
         this.beaconLocs
-                .add(new Location(world, homeBlockX, homeBlockY - 1, homeBlockZ - 1));
+            .add(new Location(world, homeBlockX, homeBlockY - 1, homeBlockZ - 1));
         this.beaconLocs.add(
-                new Location(world, homeBlockX + 1, homeBlockY - 1, homeBlockZ + 1));
+            new Location(world, homeBlockX + 1, homeBlockY - 1, homeBlockZ + 1));
         this.beaconLocs.add(
-                new Location(world, homeBlockX + 1, homeBlockY - 1, homeBlockZ - 1));
+            new Location(world, homeBlockX + 1, homeBlockY - 1, homeBlockZ - 1));
         this.beaconLocs.add(
-                new Location(world, homeBlockX - 1, homeBlockY - 1, homeBlockZ + 1));
+            new Location(world, homeBlockX - 1, homeBlockY - 1, homeBlockZ + 1));
         this.beaconLocs.add(
-                new Location(world, homeBlockX - 1, homeBlockY - 1, homeBlockZ - 1));
+            new Location(world, homeBlockX - 1, homeBlockY - 1, homeBlockZ - 1));
     }
 
     public void clearBeacon() {

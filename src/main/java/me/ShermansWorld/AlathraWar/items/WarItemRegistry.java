@@ -47,11 +47,11 @@ public class WarItemRegistry {
 
     public Map<String, ItemStack> getItemRegistry() {
         return itemRegistry.entrySet()
-                .stream()
-                .filter(v -> v.getValue() != null)
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        v -> v.getValue().getItemStack()));
+            .stream()
+            .filter(v -> v.getValue() != null)
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                v -> v.getValue().getItemStack()));
     }
 
     /**
