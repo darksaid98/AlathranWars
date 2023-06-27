@@ -43,7 +43,7 @@ public class SiegeCommand {
     public static CommandAPICommand commandStart() {
         return new CommandAPICommand("start")
             .withArguments(
-                new StringArgument("warname")
+                new StringArgument("war")
                     .replaceSuggestions(
                         ArgumentSuggestions.strings(
                             WarData.getWarsNames()
@@ -52,7 +52,7 @@ public class SiegeCommand {
                 new StringArgument("town")
                     .replaceSuggestions(
                         ArgumentSuggestions.stringCollection(info -> {
-                            final String warname = (String) info.previousArgs().get("warname");
+                            final String warname = (String) info.previousArgs().get("war");
                             return CommandHelper.getTownyWarTowns(warname);
                         })
                     ),
@@ -70,7 +70,7 @@ public class SiegeCommand {
         return new CommandAPICommand("stop")
             .withPermission("AlathraWar.admin")
             .withArguments(
-                new StringArgument("warname")
+                new StringArgument("war")
                     .replaceSuggestions(
                         ArgumentSuggestions.stringCollection(info ->
                             WarData.getWarsNames()
@@ -79,7 +79,7 @@ public class SiegeCommand {
                 new StringArgument("town")
                     .replaceSuggestions(
                         ArgumentSuggestions.stringCollection(info -> {
-                            final String warname = (String) info.previousArgs().get("warname");
+                            final String warname = (String) info.previousArgs().get("war");
                             return CommandHelper.getTownyWarTowns(warname);
                         })
                     )
@@ -90,7 +90,7 @@ public class SiegeCommand {
     public static CommandAPICommand commandAbandon() {
         return new CommandAPICommand("abandon")
             .withArguments(
-                new StringArgument("warname")
+                new StringArgument("war")
                     .replaceSuggestions(
                         ArgumentSuggestions.stringCollection(info ->
                             WarData.getWarsNames()
@@ -99,7 +99,7 @@ public class SiegeCommand {
                 new StringArgument("town")
                     .replaceSuggestions(
                         ArgumentSuggestions.stringCollection(info -> {
-                            final String warname = (String) info.previousArgs().get("warname");
+                            final String warname = (String) info.previousArgs().get("war");
                             return CommandHelper.getTownyWarTowns(warname);
                         })
                     )
@@ -119,7 +119,7 @@ public class SiegeCommand {
 
 
     protected static void siegeStart(Player sender, CommandArguments args, boolean admin) throws WrapperCommandSyntaxException {
-        if (!(args.get("warname") instanceof final String argWarName))
+        if (!(args.get("war") instanceof final String argWarName))
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cUsage: /alathrawaradmin create siege [war] [town] (owner) (force).").build());
 
         //if this is admin mode use the forth arg instad of sender.
@@ -153,8 +153,8 @@ public class SiegeCommand {
         Main.warLogger.log("Siege Owner: " + siegeOwner.getName());
         sender.sendMessage("Leader Town: " + leaderTown.getName());
         sender.sendMessage("Siege Owner: " + siegeOwner.getName());
-        // TODO DEBUG PRINT
 
+        // TODO DEBUG PRINT
         for (String t : war.getSide1Towns()) {
             Main.warLogger.log("Side1 town: " + t);
             sender.sendMessage("Side1 town: " + t);
@@ -258,7 +258,7 @@ public class SiegeCommand {
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "/siege stop [town]").build());
         }
 
-        if (!(args.get("warname") instanceof final String argWarName))
+        if (!(args.get("war") instanceof final String argWarName))
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "No war name supplied. /siege stop [war] [town]").build());
 
         // War check
@@ -289,7 +289,7 @@ public class SiegeCommand {
         }
 
         // War check
-        if (!(args.get("warname") instanceof final String argWarName))
+        if (!(args.get("war") instanceof final String argWarName))
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "No war name supplied. /siege stop [war] [town]").build());
 
         // War check

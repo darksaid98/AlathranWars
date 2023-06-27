@@ -262,7 +262,7 @@ public class AdminCommand {
     private CommandAPICommand commandSave() {
         return new CommandAPICommand("save")
             .withArguments(
-                new StringArgument("warname")
+                new StringArgument("war")
                     .replaceSuggestions(
                         ArgumentSuggestions.strings(
                             WarData.getWarsNames()
@@ -270,7 +270,7 @@ public class AdminCommand {
                     )
             )
             .executes((CommandSender sender, CommandArguments args) -> {
-                if (!(args.get("warname") instanceof final String argWarName))
+                if (!(args.get("war") instanceof final String argWarName))
                     throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a war name.").build());
 
                 for (War war : WarData.getWars()) {
@@ -367,16 +367,16 @@ public class AdminCommand {
             .withSubcommands(
                 new CommandAPICommand("raid")
                     .withArguments(
-                        new StringArgument("warname")
+                        new StringArgument("war")
                             .replaceSuggestions(
                                 ArgumentSuggestions.strings(
                                     WarData.getWarsNames()
                                 )
                             ),
-                        new StringArgument("target")
+                        new StringArgument("town")
                             .replaceSuggestions(
                                 ArgumentSuggestions.stringCollection(info -> {
-                                        final String warname = (String) info.previousArgs().get("warname");
+                                        final String warname = (String) info.previousArgs().get("war");
                                         return CommandHelper.getTownyWarTowns(warname);
                                     }
                                 )
@@ -386,7 +386,7 @@ public class AdminCommand {
                             .withPermission("AlathraWar.admin")
                             .replaceSuggestions(
                                 ArgumentSuggestions.stringCollection(info -> { // TODO Make getHostileTowns method where we reverse from list
-                                        final String warname = (String) info.previousArgs().get("warname");
+                                        final String warname = (String) info.previousArgs().get("war");
                                         return CommandHelper.getTownyWarTowns(warname);
                                     }
                                 )
@@ -402,16 +402,16 @@ public class AdminCommand {
                     .executesPlayer((Player p, CommandArguments args) -> RaidCommand.raidStart(p, args, true)),
                 new CommandAPICommand("siege")
                     .withArguments(
-                        new StringArgument("warname")
+                        new StringArgument("war")
                             .replaceSuggestions(
                                 ArgumentSuggestions.strings(
                                     WarData.getWarsNames()
                                 )
                             ),
-                        new StringArgument("target")
+                        new StringArgument("town")
                             .replaceSuggestions(
                                 ArgumentSuggestions.stringCollection(info -> {
-                                    final String warname = (String) info.previousArgs().get("warname");
+                                    final String warname = (String) info.previousArgs().get("war");
                                     return CommandHelper.getTownyWarTowns(warname);
                                 })
                             ),
@@ -425,7 +425,7 @@ public class AdminCommand {
                     .executesPlayer((Player p, CommandArguments args) -> SiegeCommand.siegeStart(p, args, true)),
                 new CommandAPICommand("war")
                     .withArguments(
-                        new StringArgument("warname"),
+                        new StringArgument("war"),
                         new StringArgument("side1")
                             .replaceSuggestions(
                                 ArgumentSuggestions.stringCollection(info -> {
@@ -471,7 +471,7 @@ public class AdminCommand {
                     .withSubcommands(
                         new CommandAPICommand("war")
                             .withArguments(
-                                new StringArgument("warname")
+                                new StringArgument("war")
                                     .replaceSuggestions(
                                         ArgumentSuggestions.strings(
                                             CommandHelper.getWarNames()
@@ -481,7 +481,7 @@ public class AdminCommand {
                                     .setOptional(true)
                                     .replaceSuggestions(
                                         ArgumentSuggestions.stringCollection(info -> {
-                                            final String warname = (String) info.previousArgs().get("warname");
+                                            final String warname = (String) info.previousArgs().get("war");
 
                                             final War war = WarData.getWar(warname);
 
@@ -497,7 +497,7 @@ public class AdminCommand {
                             }),
                         new CommandAPICommand("siege")
                             .withArguments(
-                                new StringArgument("siegename")
+                                new StringArgument("siege")
                                     .replaceSuggestions(
                                         ArgumentSuggestions.strings(
                                             CommandHelper.getSieges()
@@ -507,7 +507,7 @@ public class AdminCommand {
                                     .setOptional(true)
                                     .replaceSuggestions(
                                         ArgumentSuggestions.stringCollection(info -> {
-                                            final String siegename = (String) info.previousArgs().get("siegename");
+                                            final String siegename = (String) info.previousArgs().get("siege");
 
                                             final Siege siege = SiegeData.getSiege(siegename);
 
@@ -519,7 +519,7 @@ public class AdminCommand {
                                     )
 
                             ).executesPlayer((Player sender, CommandArguments args) -> {
-                                if (!(args.get("siegename") instanceof final String argSiegeName))
+                                if (!(args.get("siege") instanceof final String argSiegeName))
                                     throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a siege!").build());
 
                                 final Siege siege = SiegeData.getSiege(argSiegeName);
@@ -567,7 +567,7 @@ public class AdminCommand {
                             }),
                         new CommandAPICommand("raid")
                             .withArguments(
-                                new StringArgument("raidname")
+                                new StringArgument("raid")
                                     .replaceSuggestions(
                                         ArgumentSuggestions.strings(
                                             CommandHelper.getRaids()
@@ -577,7 +577,7 @@ public class AdminCommand {
                                     .setOptional(true)
                                     .replaceSuggestions(
                                         ArgumentSuggestions.stringCollection(info -> {
-                                            final String raidname = (String) info.previousArgs().get("raidname");
+                                            final String raidname = (String) info.previousArgs().get("raid");
 
                                             final Raid raid = RaidData.getRaid(raidname);
 
@@ -588,7 +588,7 @@ public class AdminCommand {
                                         })
                                     )
                             ).executesPlayer((Player sender, CommandArguments args) -> {
-                                if (!(args.get("raidname") instanceof final String argRaidName))
+                                if (!(args.get("raid") instanceof final String argRaidName))
                                     throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a raid name!").build());
 
                                 final Raid raid = RaidData.getRaid(argRaidName);
@@ -640,7 +640,7 @@ public class AdminCommand {
                         new CommandAPICommand("war")
                             .withArguments(
                                 new PlayerArgument("player"),
-                                new StringArgument("warname")
+                                new StringArgument("war")
                                     .replaceSuggestions(
                                         ArgumentSuggestions.strings(
                                             CommandHelper.getWarNames()
@@ -650,7 +650,7 @@ public class AdminCommand {
                                     .setOptional(true)
                                     .replaceSuggestions(
                                         ArgumentSuggestions.stringCollection(info -> {
-                                            final String warname = (String) info.previousArgs().get("warname");
+                                            final String warname = (String) info.previousArgs().get("war");
 
                                             final War war = WarData.getWar(warname);
 
@@ -664,7 +664,7 @@ public class AdminCommand {
                         new CommandAPICommand("siege")
                             .withArguments(
                                 new PlayerArgument("player"),
-                                new StringArgument("siegename")
+                                new StringArgument("siege")
                                     .replaceSuggestions(
                                         ArgumentSuggestions.strings(
                                             CommandHelper.getSieges()
@@ -673,7 +673,7 @@ public class AdminCommand {
                                 new StringArgument("side")
                                     .replaceSuggestions(
                                         ArgumentSuggestions.stringCollection(info -> {
-                                            final String siegename = (String) info.previousArgs().get("siegename");
+                                            final String siegename = (String) info.previousArgs().get("siege");
 
                                             final Siege siege = SiegeData.getSiege(siegename);
 
@@ -690,7 +690,7 @@ public class AdminCommand {
                         new CommandAPICommand("raid")
                             .withArguments(
                                 new PlayerArgument("player"),
-                                new StringArgument("raidname")
+                                new StringArgument("raid")
                                     .replaceSuggestions(
                                         ArgumentSuggestions.strings(
                                             CommandHelper.getRaids()
@@ -699,7 +699,7 @@ public class AdminCommand {
                                 new StringArgument("side")
                                     .replaceSuggestions(
                                         ArgumentSuggestions.stringCollection(info -> {
-                                            final String raidname = (String) info.previousArgs().get("raidname");
+                                            final String raidname = (String) info.previousArgs().get("raid");
 
                                             final Raid raid = RaidData.getRaid(raidname);
 
@@ -726,7 +726,7 @@ public class AdminCommand {
                                                 })
                                         ,*/ // TODO unimplemented, original comment "determine if needed"
                         new CommandAPICommand("raid").withArguments(
-                            new StringArgument("warname")
+                            new StringArgument("war")
                                 .replaceSuggestions(
                                     ArgumentSuggestions.stringCollection(info ->
                                         WarData.getWarsNames()
@@ -735,7 +735,7 @@ public class AdminCommand {
                             new StringArgument("town")
                                 .replaceSuggestions(
                                     ArgumentSuggestions.stringCollection(info -> {
-                                        final String warname = (String) info.previousArgs().get("warname");
+                                        final String warname = (String) info.previousArgs().get("war");
                                         return CommandHelper.getTownyWarTowns(warname);
                                     })
                                 ),
@@ -767,7 +767,7 @@ public class AdminCommand {
             .withSubcommands(
                 new CommandAPICommand("war")
                     .withArguments(
-                        new StringArgument("warname")
+                        new StringArgument("war")
                             .replaceSuggestions(
                                 ArgumentSuggestions.strings(
                                     CommandHelper.getWarNames()
@@ -775,7 +775,7 @@ public class AdminCommand {
                             )
                     )
                     .executes((CommandSender sender, CommandArguments args) -> {
-                            if (!(args.get("warname") instanceof final String argWarName))
+                            if (!(args.get("war") instanceof final String argWarName))
                                 throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a war!").build());
 
                             final War war = WarData.getWar(argWarName);
@@ -836,7 +836,7 @@ public class AdminCommand {
                     ),
                 new CommandAPICommand("siege")
                     .withArguments(
-                        new StringArgument("siegename")
+                        new StringArgument("siege")
                             .replaceSuggestions(
                                 ArgumentSuggestions.strings(
                                     CommandHelper.getSieges()
@@ -844,7 +844,7 @@ public class AdminCommand {
                             )
                     )
                     .executes((CommandSender sender, CommandArguments args) -> {
-                        if (!(args.get("siegename") instanceof final String argSiegeName))
+                        if (!(args.get("siege") instanceof final String argSiegeName))
                             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a siege!").build());
 
                         final Siege siege = SiegeData.getSiege(argSiegeName);
@@ -887,7 +887,7 @@ public class AdminCommand {
                     }),
                 new CommandAPICommand("raid")
                     .withArguments(
-                        new StringArgument("raidname")
+                        new StringArgument("raid")
                             .replaceSuggestions(
                                 ArgumentSuggestions.strings(
                                     CommandHelper.getRaids()
@@ -895,7 +895,7 @@ public class AdminCommand {
                             )
                     )
                     .executes((CommandSender sender, CommandArguments args) -> {
-                        if (!(args.get("raidname") instanceof final String argRaidName))
+                        if (!(args.get("raid") instanceof final String argRaidName))
                             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a raid name!").build());
 
                         final Raid raid = RaidData.getRaid(argRaidName);
@@ -973,7 +973,7 @@ public class AdminCommand {
                                 .replaceSuggestions(
                                     ArgumentSuggestions.stringCollection(info -> List.of("add", "subtract", "set"))
                                 ),
-                            new StringArgument("warname")
+                            new StringArgument("war")
                                 .replaceSuggestions(
                                     ArgumentSuggestions.strings(
                                         CommandHelper.getWarNames()
@@ -983,7 +983,7 @@ public class AdminCommand {
                                 .setOptional(true)
                                 .replaceSuggestions(
                                     ArgumentSuggestions.stringCollection(info -> {
-                                        final String warname = (String) info.previousArgs().get("warname");
+                                        final String warname = (String) info.previousArgs().get("war");
 
                                         final War war = WarData.getWar(warname);
 
@@ -1001,7 +1001,7 @@ public class AdminCommand {
                             if (!List.of("add", "subtract", "set").contains(argAction))
                                 throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cInvalid action.").build());
 
-                            if (!(args.get("warname") instanceof final String argWarName))
+                            if (!(args.get("war") instanceof final String argWarName))
                                 throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a war.").build());
 
                             final War war = WarData.getWar(argWarName);

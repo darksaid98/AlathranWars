@@ -47,7 +47,7 @@ public class WarCommand {
         return new CommandAPICommand("create")
             .withPermission("AlathraWar.admin")
             .withArguments(
-                new StringArgument("warname"),
+                new StringArgument("war"),
                 new StringArgument("side1")
                     .replaceSuggestions(
                         ArgumentSuggestions.stringCollection(info -> {
@@ -84,7 +84,7 @@ public class WarCommand {
         return new CommandAPICommand("delete")
             .withPermission("AlathraWar.admin")
             .withArguments(
-                new StringArgument("warname")
+                new StringArgument("war")
                     .replaceSuggestions(
                         ArgumentSuggestions.stringCollection(info -> WarData.getWarsNames())
                     )
@@ -95,14 +95,14 @@ public class WarCommand {
     public static CommandAPICommand commandJoin() {
         return new CommandAPICommand("join")
             .withArguments(
-                new StringArgument("warname")
+                new StringArgument("war")
                     .replaceSuggestions(
                         ArgumentSuggestions.stringCollection(info -> CommandHelper.getWarNames())
                     ),
                 new StringArgument("side")
                     .replaceSuggestions(
                         ArgumentSuggestions.stringCollection(info -> {
-                            final String warname = (String) info.previousArgs().get("warname");
+                            final String warname = (String) info.previousArgs().get("war");
 
                             final War war = WarData.getWar(warname);
 
@@ -119,7 +119,7 @@ public class WarCommand {
     public static CommandAPICommand commandSurrender() {
         return new CommandAPICommand("surrender")
             .withArguments(
-                new StringArgument("warname")
+                new StringArgument("war")
                     .replaceSuggestions(
                         ArgumentSuggestions.stringCollection(info -> CommandHelper.getWarNames())
                     ),
@@ -150,7 +150,7 @@ public class WarCommand {
 
     protected static void warCreate(CommandSender p, CommandArguments args) throws WrapperCommandSyntaxException {
         if (args.count() >= 3) {
-            if (!(args.get("warname") instanceof final String argWarName))
+            if (!(args.get("war") instanceof final String argWarName))
                 throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a war name.").build());
 
             if (WarData.getWar(argWarName) != null)
@@ -187,7 +187,7 @@ public class WarCommand {
 
     private static void warDelete(Player p, CommandArguments args) throws WrapperCommandSyntaxException {
         if (args.count() >= 1) {
-            if (!(args.get("warname") instanceof final String argWarName))
+            if (!(args.get("war") instanceof final String argWarName))
                 throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a war name.").build());
 
             War war = WarData.getWar(argWarName);
@@ -223,7 +223,7 @@ public class WarCommand {
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel()
                 + "/war join [name] [side], type /war list to view current wars").build());
 
-        if (!(args.get("warname") instanceof final String argWarName))
+        if (!(args.get("war") instanceof final String argWarName))
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a war name.").build());
 
         War war = WarData.getWar(argWarName);
@@ -324,7 +324,7 @@ public class WarCommand {
                 + "/war surrender [name], type /war list to view current wars").build());
         }
 
-        if (!(args.get("warname") instanceof final String argWarName))
+        if (!(args.get("war") instanceof final String argWarName))
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a war name.").build());
 
         // War check

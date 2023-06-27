@@ -55,16 +55,16 @@ public class RaidCommand {
     public static CommandAPICommand commandRaid() {
         return new CommandAPICommand("raid")
             .withArguments(
-                new StringArgument("warname")
+                new StringArgument("war")
                     .replaceSuggestions(
                         ArgumentSuggestions.strings(
                             WarData.getWarsNames()
                         )
                     ),
-                new StringArgument("target")
+                new StringArgument("town")
                     .replaceSuggestions(
                         ArgumentSuggestions.stringCollection(info -> {
-                                final String warname = (String) info.previousArgs().get("warname");
+                                final String warname = (String) info.previousArgs().get("war");
                                 return CommandHelper.getTownyWarTowns(warname);
                             }
                         )
@@ -74,7 +74,7 @@ public class RaidCommand {
                     .withPermission("AlathraWar.admin")
                     .replaceSuggestions(
                         ArgumentSuggestions.stringCollection(info -> { // TODO Make getHostileTowns method where we reverse from list
-                                final String warname = (String) info.previousArgs().get("warname");
+                                final String warname = (String) info.previousArgs().get("war");
                                 return CommandHelper.getTownyWarTowns(warname);
                             }
                         )
@@ -94,7 +94,7 @@ public class RaidCommand {
         return new CommandAPICommand("stop")
             .withPermission("AlathraWar.admin")
             .withArguments(
-                new StringArgument("warname")
+                new StringArgument("war")
                     .replaceSuggestions(
                         ArgumentSuggestions.stringCollection(info ->
                             WarData.getWarsNames()
@@ -103,7 +103,7 @@ public class RaidCommand {
                 new StringArgument("town")
                     .replaceSuggestions(
                         ArgumentSuggestions.stringCollection(info -> {
-                            final String warname = (String) info.previousArgs().get("warname");
+                            final String warname = (String) info.previousArgs().get("war");
                             return CommandHelper.getTownyWarTowns(warname);
                         })
                     )
@@ -114,7 +114,7 @@ public class RaidCommand {
     public static CommandAPICommand commandJoin() {
         return new CommandAPICommand("join")
             .withArguments(
-                new StringArgument("raidname")
+                new StringArgument("raid")
                     .replaceSuggestions(
                         ArgumentSuggestions.strings(
                             CommandHelper.getRaids()
@@ -123,7 +123,7 @@ public class RaidCommand {
                 new StringArgument("side")
                     .replaceSuggestions(
                         ArgumentSuggestions.stringCollection(info -> {
-                            final String raidname = (String) info.previousArgs().get("raidname");
+                            final String raidname = (String) info.previousArgs().get("raid");
 
                             final Raid raid = RaidData.getRaid(raidname);
 
@@ -146,7 +146,7 @@ public class RaidCommand {
     public static CommandAPICommand commandLeave() {
         return new CommandAPICommand("leave")
             .withArguments(
-                new StringArgument("warname")
+                new StringArgument("war")
                     .replaceSuggestions(
                         ArgumentSuggestions.stringCollection(info ->
                             WarData.getWarsNames()
@@ -155,7 +155,7 @@ public class RaidCommand {
                 new StringArgument("town")
                     .replaceSuggestions(
                         ArgumentSuggestions.stringCollection(info -> {
-                            final String warname = (String) info.previousArgs().get("warname");
+                            final String warname = (String) info.previousArgs().get("war");
                             return CommandHelper.getTownyWarTowns(warname);
                         })
                     ),
@@ -169,7 +169,7 @@ public class RaidCommand {
     public static CommandAPICommand commandAbandon() {
         return new CommandAPICommand("abandon")
             .withArguments(
-                new StringArgument("warname")
+                new StringArgument("war")
                     .replaceSuggestions(
                         ArgumentSuggestions.stringCollection(info ->
                             WarData.getWarsNames()
@@ -178,7 +178,7 @@ public class RaidCommand {
                 new StringArgument("town")
                     .replaceSuggestions(
                         ArgumentSuggestions.stringCollection(info -> {
-                            final String warname = (String) info.previousArgs().get("warname");
+                            final String warname = (String) info.previousArgs().get("war");
                             return CommandHelper.getTownyWarTowns(warname);
                         })
                     )
@@ -206,7 +206,7 @@ public class RaidCommand {
         boolean warFound = false;
         boolean townExists = false;
 
-        if (!(args.get("warname") instanceof final String argWarName))
+        if (!(args.get("war") instanceof final String argWarName))
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cUsage: /alathrawaradmin create raid [war] [raidTown] (gatherTown/\"defaultCode\") (owner) (override)").build());
 
         for (final War war : WarData.getWars()) {
@@ -297,7 +297,7 @@ public class RaidCommand {
                     final Town raidedTown = townyWorld.getTowns().get(entry);
 
                     //if this is run as admin, shift our check forward a slot
-                    if (raidedTown.getName().equalsIgnoreCase((String) args.get("target")) && gatherTown != null) {
+                    if (raidedTown.getName().equalsIgnoreCase((String) args.get("town")) && gatherTown != null) {
 
                         Main.warLogger.log("Raided town: " + raidedTown.getName());
                         Main.warLogger.log("Gather town: " + gatherTown.getName());
@@ -476,7 +476,7 @@ public class RaidCommand {
      * @param args
      */
     private static void raidStop(Player p, CommandArguments args) throws WrapperCommandSyntaxException {
-        if (!(args.get("warname") instanceof final String argWarName))
+        if (!(args.get("war") instanceof final String argWarName))
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a war name!").build());
 
         if (!(args.get("town") instanceof final String argTown))
@@ -501,7 +501,7 @@ public class RaidCommand {
     }
 
     protected static void raidJoin(Player p, CommandArguments args, boolean admin) throws WrapperCommandSyntaxException {
-        if (!(args.get("raidname") instanceof final String argRaidName))
+        if (!(args.get("raid") instanceof final String argRaidName))
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a raid name!").build());
 
         if (!(args.get("side") instanceof final String argSide))
@@ -619,7 +619,7 @@ public class RaidCommand {
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser("Raider is Null").build());
         }
 
-        if (!(args.get("warname") instanceof final String argWarName))
+        if (!(args.get("war") instanceof final String argWarName))
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a war name!").build());
 
         if (!(args.get("town") instanceof final String argTown))
@@ -677,7 +677,7 @@ public class RaidCommand {
      * @param args
      */
     private static void raidAbandon(Player p, CommandArguments args) throws WrapperCommandSyntaxException {
-        if (!(args.get("warname") instanceof final String argWarName))
+        if (!(args.get("war") instanceof final String argWarName))
             throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a war name!").build());
 
         if (!(args.get("town") instanceof final String argTown))
