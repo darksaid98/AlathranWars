@@ -1,6 +1,5 @@
 package me.ShermansWorld.AlathraWar.items;
 
-import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.items.item.RamItem;
 import org.bukkit.inventory.ItemStack;
@@ -22,13 +21,13 @@ public class WarItemRegistry {
     public WarItemRegistry() {
         instance = this;
 
-        Main.warLogger.log(Helper.chatLabel() + "Registering AlathraWar items.");
+        Main.warLogger.log(UtilsChat.getPrefix() + "Registering AlathraWar items.");
 
         itemRegistry.put(registryName("ram"), new RamItem());
         //THIS BREAKS EVERYTHING???? TODO
 //            Bukkit.getServer().addRecipe(new RamItem().getRecipe());
 
-        Main.warLogger.log(Helper.chatLabel() + "Registered AlathraWar items.");
+        Main.warLogger.log(UtilsChat.getPrefix() + "Registered AlathraWar items.");
     }
 
     public static WarItemRegistry getInstance() {

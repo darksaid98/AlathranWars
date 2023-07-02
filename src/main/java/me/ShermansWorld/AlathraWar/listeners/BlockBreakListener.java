@@ -1,9 +1,8 @@
 package me.ShermansWorld.AlathraWar.listeners;
 
 import com.palmergames.bukkit.towny.object.WorldCoord;
-import me.ShermansWorld.AlathraWar.Helper;
-import me.ShermansWorld.AlathraWar.Raid;
-import me.ShermansWorld.AlathraWar.Siege;
+import me.ShermansWorld.AlathraWar.deprecated.OldRaid;
+import me.ShermansWorld.AlathraWar.deprecated.OldSiege;
 import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import org.bukkit.Material;
@@ -32,8 +31,8 @@ public class BlockBreakListener implements Listener {
         if (SiegeData.getSieges().isEmpty() && RaidData.getRaids().isEmpty()) {
             return;
         }
-        for (final Siege siege : SiegeData.getSieges()) {
-            if (siege.beaconLocs.contains(block.getLocation())) {
+        for (final OldSiege oldSiege : SiegeData.getSieges()) {
+            if (oldSiege.beaconLocs.contains(block.getLocation())) {
                 event.setCancelled(true);
                 return;
             }
@@ -46,16 +45,16 @@ public class BlockBreakListener implements Listener {
             return;
         }
         if (WorldCoord.parseWorldCoord(block).getTownOrNull() != null) {
-            for (final Siege siege : SiegeData.getSieges()) {
-                if (siege.getTown() == WorldCoord.parseWorldCoord(block).getTownOrNull()) {
+            for (final OldSiege oldSiege : SiegeData.getSieges()) {
+                if (oldSiege.getTown() == WorldCoord.parseWorldCoord(block).getTownOrNull()) {
                     p.sendMessage(Helper.color("&cYou can not break blocks during sieges"));
                     event.setCancelled(true);
                     return;
                 }
             }
 
-            for (final Raid raid : RaidData.getRaids()) {
-                if (raid.getRaidedTown() == WorldCoord.parseWorldCoord(block).getTownOrNull()) {
+            for (final OldRaid oldRaid : RaidData.getRaids()) {
+                if (oldRaid.getRaidedTown() == WorldCoord.parseWorldCoord(block).getTownOrNull()) {
                     p.sendMessage(Helper.color("&cYou can not break blocks during raids"));
                     event.setCancelled(true);
                     return;
@@ -78,16 +77,16 @@ public class BlockBreakListener implements Listener {
             return;
         }
         if (WorldCoord.parseWorldCoord(block).getTownOrNull() != null) {
-            for (final Siege siege : SiegeData.getSieges()) {
-                if (siege.getTown() == WorldCoord.parseWorldCoord(block).getTownOrNull()) {
+            for (final OldSiege oldSiege : SiegeData.getSieges()) {
+                if (oldSiege.getTown() == WorldCoord.parseWorldCoord(block).getTownOrNull()) {
                     p.sendMessage(Helper.color("&cYou can not place blocks during sieges"));
                     event.setCancelled(true);
                     return;
                 }
             }
 
-            for (final Raid raid : RaidData.getRaids()) {
-                if (raid.getRaidedTown() == WorldCoord.parseWorldCoord(block).getTownOrNull()) {
+            for (final OldRaid oldRaid : RaidData.getRaids()) {
+                if (oldRaid.getRaidedTown() == WorldCoord.parseWorldCoord(block).getTownOrNull()) {
                     p.sendMessage(Helper.color("&cYou can not place blocks during raids"));
                     event.setCancelled(true);
                     return;

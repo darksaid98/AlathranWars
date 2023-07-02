@@ -11,9 +11,14 @@ import dev.jorel.commandapi.arguments.PlayerArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.jorel.commandapi.executors.CommandArguments;
-import me.ShermansWorld.AlathraWar.*;
-import me.ShermansWorld.AlathraWar.data.WarData;
+import me.ShermansWorld.AlathraWar.Main;
+import me.ShermansWorld.AlathraWar.conflict.War;
+import me.ShermansWorld.AlathraWar.conflict.battle.Side;
+import me.ShermansWorld.AlathraWar.enums.BattleSide;
+import me.ShermansWorld.AlathraWar.enums.BattleTeam;
 import me.ShermansWorld.AlathraWar.enums.TownWarState;
+import me.ShermansWorld.AlathraWar.holder.WarManager;
+import me.ShermansWorld.AlathraWar.utility.UtilsChat;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -38,7 +43,7 @@ public class WarCommand {
             )
             .executesPlayer((sender, args) -> {
                 if (args.count() == 0)
-                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "Invalid Arguments. /war help").build());
+                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "Invalid Arguments. /war help").build());
             })
             .register();
     }
@@ -86,7 +91,7 @@ public class WarCommand {
             .withArguments(
                 new StringArgument("war")
                     .replaceSuggestions(
-                        ArgumentSuggestions.stringCollection(info -> WarData.getWarsNames())
+                        ArgumentSuggestions.stringCollection(info -> WarManager.getInstance().getWarsNames())
                     )
             )
             .executesPlayer(WarCommand::warDelete);
@@ -104,7 +109,7 @@ public class WarCommand {
                         ArgumentSuggestions.stringCollection(info -> {
                             final String warname = (String) info.previousArgs().get("war");
 
-                            final War war = WarData.getWar(warname);
+                            final War war = WarManager.getInstance().getWar(warname);
 
                             if (war == null) return Collections.emptyList();
 
@@ -149,65 +154,70 @@ public class WarCommand {
     }
 
     protected static void warCreate(CommandSender p, CommandArguments args) throws WrapperCommandSyntaxException {
-        if (args.count() >= 3) {
-            if (!(args.get("war") instanceof final String argWarName))
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a war name.").build());
+        if (!(args.get("war") instanceof final String argWarName))
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou need to specify a war name.").build());
 
-            if (WarData.getWar(argWarName) != null)
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cA war already exists with that name.").build());
+        if (WarManager.getInstance().getWar(argWarName) != null)
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cA war already exists with that name.").build());
 
-            if (!(args.get("side1") instanceof final String argSide1))
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a side.").build());
+        if (!(args.get("side1") instanceof final String argSide1))
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou need to specify a side.").build());
 
-            if (!(args.get("side2") instanceof final String argSide2))
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a side.").build());
+        if (!(args.get("side2") instanceof final String argSide2))
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou need to specify a side.").build());
 
-            if (argSide1.contains(argSide2))
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cCannot declare war on oneself.").build());
+        if (argSide1.contains(argSide2))
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cCannot declare war on oneself.").build());
 
-            // TODO Ensure side1 valid
-            // TODO Ensure side2 valid
-            // TODO Deep Check if war exists where the same sides are fighting???
+        // TODO Ensure side1 valid
+        // TODO Ensure side2 valid
+        // TODO Deep Check if war exists where the same sides are fighting???
 
-            // TODO Add checks here for wether the towns/nations names are valid
-            War war = new War(argWarName, argSide1, argSide2);
-            WarData.addWar(war);
-            war.save();
+        // Check if side1 is nation or town
+        // Check if side2 is nation or town
 
-            Bukkit.broadcastMessage(Helper.chatLabel() + "War created with the name " + argWarName + ", "
-                + argSide1 + " vs. " + argSide2);
-            Main.warLogger.log(p.getName() + " created a new war with the name " + argWarName + ", " + argSide1
-                + " vs. " + argSide2);
-        } else {
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel()
-                + "Invalid Arguments. /war create [name] [side1] [side2]").build());
-        }
+        // Check if opposing factions are already at war?
+
+        // TODO Add checks here for wether the towns/nations names are valid
+        Side side1 = new Side(BattleSide.ATTACKER, BattleTeam.SIDE_1, argSide1);
+        Side side2 = new Side(BattleSide.DEFENDER, BattleTeam.SIDE_2, argSide1);
+
+        // TODO Add relevant towns/nations/players to sides
+
+        War war = new War(argWarName, side1, side2);
+        WarManager.getInstance().addWar(war);
+        war.save();
+
+        Bukkit.broadcastMessage(UtilsChat.getPrefix() + "War created with the name " + argWarName + ", "
+            + argSide1 + " vs. " + argSide2);
+        Main.warLogger.log(p.getName() + " created a new war with the name " + argWarName + ", " + argSide1
+            + " vs. " + argSide2);
 
     }
 
     private static void warDelete(Player p, CommandArguments args) throws WrapperCommandSyntaxException {
         if (args.count() >= 1) {
             if (!(args.get("war") instanceof final String argWarName))
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a war name.").build());
+                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou need to specify a war name.").build());
 
-            War war = WarData.getWar(argWarName);
+            War war = WarManager.getInstance().getWar(argWarName);
 
             if (war == null)
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cWar not found. Type /war list to view current wars.").build());
+                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cWar not found. Type /war list to view current wars.").build());
 
-            for (Siege s : war.getSieges()) {
+            for (OldSiege s : war.getSieges()) {
                 s.stop();
             }
-            for (Raid r : war.getRaids()) {
+            for (OldRaid r : war.getRaids()) {
                 r.stop();
             }
 
-            WarData.removeWar(war);
+            WarManager.getInstance().removeWar(war);
 
-            Bukkit.broadcast(new ColorParser(Helper.chatLabel() + "War " + argWarName + " deleted.").build());
+            Bukkit.broadcast(new ColorParser(UtilsChat.getPrefix() + "War " + argWarName + " deleted.").build());
             Main.warLogger.log(p.getName() + " deleted " + argWarName);
         } else {
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel()
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix()
                 + "Invalid Arguments. /war delete [name]").build());
         }
     }
@@ -220,25 +230,25 @@ public class WarCommand {
     protected static void warJoin(Player p, CommandArguments args, boolean admin) throws WrapperCommandSyntaxException {
         // Sufficient args check
         if (args.count() < 2)
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel()
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix()
                 + "/war join [name] [side], type /war list to view current wars").build());
 
         if (!(args.get("war") instanceof final String argWarName))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a war name.").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou need to specify a war name.").build());
 
-        War war = WarData.getWar(argWarName);
+        War war = WarManager.getInstance().getWar(argWarName);
 
         if (war == null)
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cWar not found. /war join [name] [side], type /war list to view current wars.").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cWar not found. /war join [name] [side], type /war list to view current wars.").build());
 
         if (!(args.get("side") instanceof final String argSide))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a side.").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou need to specify a side.").build());
 
         if (!war.isSideValid(argSide))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cThat side does not exist in that war.").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cThat side does not exist in that war.").build());
 
         if (!(args.getOptional("player").orElse(null) instanceof @Nullable Player argPlayer))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cPlayer not found.").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cPlayer not found.").build());
 
         if (argPlayer == null) {
             argPlayer = p;
@@ -283,10 +293,10 @@ public class WarCommand {
         // Side checks
         final TownWarState side = war.getState(town.getName().toLowerCase());
         if (side == TownWarState.SURRENDERED) {
-            argPlayer.sendMessage(Helper.chatLabel() + "You've already surrendered!");
+            argPlayer.sendMessage(UtilsChat.getPrefix() + "You've already surrendered!");
             return;
         } else if (side != TownWarState.NOT_PARTICIPANT) {
-            argPlayer.sendMessage(Helper.chatLabel() + "You're already in this war!");
+            argPlayer.sendMessage(UtilsChat.getPrefix() + "You're already in this war!");
             return;
         }
 
@@ -294,25 +304,25 @@ public class WarCommand {
             if (res.getPlayer().hasPermission("AlathraWar.nationjoin") || res.isKing()) {
                 // Has nation declaration permission
                 war.addNation(res.getNationOrNull(), argSide);
-                res.getPlayer().sendMessage(Helper.chatLabel() + "You have joined the war for " + res.getNationOrNull().getName());
-                p.sendMessage(Helper.chatLabel() + "You have joined the war for " + res.getNationOrNull().getName());
-                Bukkit.broadcastMessage(Helper.chatLabel() + "The nation of " + res.getNationOrNull().getName() + " has joined the war on the side of " + argSide + "!");
+                res.getPlayer().sendMessage(UtilsChat.getPrefix() + "You have joined the war for " + res.getNationOrNull().getName());
+                p.sendMessage(UtilsChat.getPrefix() + "You have joined the war for " + res.getNationOrNull().getName());
+                Bukkit.broadcastMessage(UtilsChat.getPrefix() + "The nation of " + res.getNationOrNull().getName() + " has joined the war on the side of " + argSide + "!");
                 war.save();
             } else {
                 // Cannot declare nation involvement
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "You cannot declare war for your nation.").build());
+                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "You cannot declare war for your nation.").build());
             }
         } else if (res.hasTown()) {
             if (res.getPlayer().hasPermission("AlathraWar.townjoin") || res.isMayor()) {
                 // Is in indepdenent town & has declaration perms
                 war.addTown(res.getTownOrNull(), argSide);
-                res.getPlayer().sendMessage(Helper.chatLabel() + "You have joined the war for " + res.getTownOrNull().getName());
-                p.sendMessage(Helper.chatLabel() + "You have joined the war for " + res.getTownOrNull().getName());
-                Bukkit.broadcastMessage(Helper.chatLabel() + "The town of " + res.getTownOrNull().getName() + " has joined the war on the side of " + argSide + "!");
+                res.getPlayer().sendMessage(UtilsChat.getPrefix() + "You have joined the war for " + res.getTownOrNull().getName());
+                p.sendMessage(UtilsChat.getPrefix() + "You have joined the war for " + res.getTownOrNull().getName());
+                Bukkit.broadcastMessage(UtilsChat.getPrefix() + "The town of " + res.getTownOrNull().getName() + " has joined the war on the side of " + argSide + "!");
                 war.save();
             } else {
                 // No perms
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "You cannot declare war for your town.").build());
+                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "You cannot declare war for your town.").build());
             }
         }
     }
@@ -320,25 +330,25 @@ public class WarCommand {
     protected static void warSurrender(Player p, CommandArguments args, boolean admin) throws WrapperCommandSyntaxException {
         // Sufficient args check
         if (args.count() < 1) {
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel()
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix()
                 + "/war surrender [name], type /war list to view current wars").build());
         }
 
         if (!(args.get("war") instanceof final String argWarName))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a war name.").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou need to specify a war name.").build());
 
         // War check
-        War war = WarData.getWar(argWarName);
+        War war = WarManager.getInstance().getWar(argWarName);
         if (war == null) {
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel()
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix()
                 + "War not found. Type /war list to view current wars").build());
         }
 
         if (!(args.get("reason") instanceof final String argReason))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a reason.").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou need to specify a reason.").build());
 
         if (!(args.getOptional("player").orElse(null) instanceof @Nullable Player argPlayer))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cPlayer not found.").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cPlayer not found.").build());
 
         if (argPlayer == null) {
             argPlayer = p;
@@ -357,35 +367,35 @@ public class WarCommand {
             if (p.hasPermission("AlathraWar.nationsurrender") || res.isKing() || admin) {
                 // Has nation surrender permission
                 war.surrenderNation(res.getNationOrNull());
-                argPlayer.sendMessage(Helper.chatLabel() + "You have surrendered the war for " + res.getNationOrNull().getName());
-                Bukkit.broadcastMessage(Helper.chatLabel() + "The nation of " + res.getNationOrNull().getName() + " has surrendered! They were fighting for " + argReason + ".");
+                argPlayer.sendMessage(UtilsChat.getPrefix() + "You have surrendered the war for " + res.getNationOrNull().getName());
+                Bukkit.broadcastMessage(UtilsChat.getPrefix() + "The nation of " + res.getNationOrNull().getName() + " has surrendered! They were fighting for " + argReason + ".");
                 war.save();
             } else {
                 // Cannot surrender nation involvement
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "You cannot surrender war for your nation.").build());
+                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "You cannot surrender war for your nation.").build());
             }
         } else if (res.hasTown()) {
             if (p.hasPermission("AlathraWar.townsurrender") || res.isMayor() || admin) {
                 // Is in indepdenent town & has surrender perms
                 war.surrenderTown(res.getTownOrNull().getName());
-                argPlayer.sendMessage(Helper.chatLabel() + "You have surrendered the war for " + res.getTownOrNull().getName());
-                Bukkit.broadcastMessage(Helper.chatLabel() + "The town of " + res.getTownOrNull().getName() + " has surrendered! They were fighting for " + argReason + ".");
+                argPlayer.sendMessage(UtilsChat.getPrefix() + "You have surrendered the war for " + res.getTownOrNull().getName());
+                Bukkit.broadcastMessage(UtilsChat.getPrefix() + "The town of " + res.getTownOrNull().getName() + " has surrendered! They were fighting for " + argReason + ".");
                 war.save();
             } else {
                 // No perms
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "You cannot surrender war for your town.").build());
+                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "You cannot surrender war for your town.").build());
             }
         }
 
     }
 
     private static void warList(Player p, CommandArguments args) throws WrapperCommandSyntaxException {
-        ArrayList<War> wars = WarData.getWars();
+        ArrayList<War> wars = WarManager.getInstance().getWars();
 
         if (wars.isEmpty()) {
             p.sendMessage("There are no current wars.");
         } else {
-            p.sendMessage(Helper.chatLabel() + "Wars:");
+            p.sendMessage(UtilsChat.getPrefix() + "Wars:");
 
             for (War war : wars) {
                 p.sendMessage(war.getName() + " - " + war.getSide1() + " (" + war.getSide1Points() + ") vs. " + war.getSide2() + " (" + war.getSide2Points() + ")");
@@ -395,7 +405,7 @@ public class WarCommand {
 
     private static void warInfo(Player p, CommandArguments args) throws WrapperCommandSyntaxException {
         if (args.count() < 1) {
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "/war info [Player]").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "/war info [Player]").build());
         }
 
         if (!(args.get("player") instanceof Player argsPlayer))
@@ -403,11 +413,11 @@ public class WarCommand {
 
         Resident res = TownyAPI.getInstance().getResident(argsPlayer);
         if (res == null || res.getTownOrNull() == null) {
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "Invalid town resident.").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "Invalid town resident.").build());
         }
 
-        p.sendMessage(new ColorParser(Helper.chatLabel() + p.getName() + "'s wars:").build());
-        for (War war : WarData.getWars()) {
+        p.sendMessage(new ColorParser(UtilsChat.getPrefix() + p.getName() + "'s wars:").build());
+        for (War war : WarManager.getInstance().getWars()) {
             TownWarState side = war.getState(res.getTownOrNull());
             if (side != TownWarState.NOT_PARTICIPANT) {
                 if (side == TownWarState.SURRENDERED) {
@@ -434,9 +444,9 @@ public class WarCommand {
 //    private static void consoleCommand(CommandSender sender, CommandArguments args) {
 //        if (args.length < 1) return;
 //        if (args[0].equalsIgnoreCase("list")) {
-//            ArrayList<War> warList = WarData.getWars();
+//            ArrayList<War> warList = WarManager.getInstance().getWars();
 //            sender.sendMessage("Wars: " + warList.size());
-//            for (War war : WarData.getWars()) {
+//            for (War war : WarManager.getInstance().getWars()) {
 //                if (war == null) continue;
 //                sender.sendMessage(war.toString());
 //            }

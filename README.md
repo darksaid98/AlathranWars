@@ -1,13 +1,13 @@
 # AlathraWar Version: 1.3.1
 
-## A unique Towny war system for the AlathraMC server
+## A unique Towny oldWar system for the AlathraMC server
 
 ### Dependencies: Vault, Towny, SiegeWar, TAB
 
 ### Commands
 
-+ /war - war commands
-+ /siege - siege commands
++ /oldWar - oldWar commands
++ /oldSiege - oldSiege commands
 
 ## Siege Point system
 
@@ -21,6 +21,6 @@ Sieges last 90 minutes. After this time is up the side with the most points wins
 
 ## Siege Cost
 
-The attackers must put down $20,000 to start a siege. If they win they get this $20,000 back as well as 1/4th the bank
-of the town OR $20,000, whichever is higher. If the defenders win they sieze the $20,000 initially put down on the siege
+The attackers must put down $20,000 to start a oldSiege. If they win they get this $20,000 back as well as 1/4th the bank
+of the town OR $20,000, whichever is higher. If the defenders win they sieze the $20,000 initially put down on the oldSiege
 by the attackers

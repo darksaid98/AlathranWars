@@ -20,7 +20,12 @@ import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.data.WarData;
+import me.ShermansWorld.AlathraWar.deprecated.CommandHelper;
+import me.ShermansWorld.AlathraWar.deprecated.OldRaid;
+import me.ShermansWorld.AlathraWar.deprecated.OldSiege;
+import me.ShermansWorld.AlathraWar.deprecated.OldWar;
 import me.ShermansWorld.AlathraWar.enums.TownWarState;
+import me.ShermansWorld.AlathraWar.utility.Utils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -47,7 +52,7 @@ public class RaidCommand {
             )
             .executesPlayer((sender, args) -> {
                 if (args.count() == 0)
-                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "Invalid Arguments. /siege help").build());
+                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "Invalid Arguments. /siege help").build());
             })
             .register();
     }
@@ -123,13 +128,13 @@ public class RaidCommand {
                 new StringArgument("side")
                     .replaceSuggestions(
                         ArgumentSuggestions.stringCollection(info -> {
-                            final String raidname = (String) info.previousArgs().get("raid");
+                            final String raidname = (String) info.previousArgs().get("oldRaid");
 
-                            final Raid raid = RaidData.getRaid(raidname);
+                            final OldRaid oldRaid = RaidData.getRaid(raidname);
 
-                            if (raid == null) return Collections.emptyList();
+                            if (oldRaid == null) return Collections.emptyList();
 
-                            return List.of(raid.getRaiderSide(), raid.getDefenderSide());
+                            return List.of(oldRaid.getRaiderSide(), oldRaid.getDefenderSide());
                         })
                     ),
                 new PlayerArgument("player")
@@ -207,28 +212,28 @@ public class RaidCommand {
         boolean townExists = false;
 
         if (!(args.get("war") instanceof final String argWarName))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cUsage: /alathrawaradmin create raid [war] [raidTown] (gatherTown/\"defaultCode\") (owner) (override)").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cUsage: /alathrawaradmin create raid [war] [raidTown] (gatherTown/\"defaultCode\") (owner) (override)").build());
 
-        for (final War war : WarData.getWars()) {
-            if (war.getName().equalsIgnoreCase(argWarName)) {
+        for (final OldWar oldWar : WarData.getWars()) {
+            if (oldWar.getName().equalsIgnoreCase(argWarName)) {
                 warFound = true;
 
                 final Player raidOwner = (Player) args.getOptional("leader").orElse(p);
 
                 if (raidOwner == null) {
-                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser("Raid Owner is Null").build());
+                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser("OldRaid Owner is Null").build());
                 }
 
                 TownyWorld townyWorld;
                 townyWorld = WorldCoord.parseWorldCoord(raidOwner.getLocation()).getTownyWorld();
 
                 String side;
-                if (war.getSide1Players().contains(raidOwner.getName())) {
-                    side = war.getSide1();
-                } else if (war.getSide2Players().contains(raidOwner.getName())) {
-                    side = war.getSide2();
+                if (oldWar.getSide1Players().contains(raidOwner.getName())) {
+                    side = oldWar.getSide1();
+                } else if (oldWar.getSide2Players().contains(raidOwner.getName())) {
+                    side = oldWar.getSide2();
                 } else {
-                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "You are not in this war! Type /war join [war] [side]").build());
+                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "You are not in this oldWar! Type /oldWar join [oldWar] [side]").build());
                 }
 
                 //Minuteman countermeasures
@@ -272,8 +277,8 @@ public class RaidCommand {
                             gatherTown = TownyAPI.getInstance().getTown(argGatherTown);
                         } else {
                             if (admin)
-                                p.sendMessage(Helper.chatLabel() + "No valid town set for gather town, defaulting to current location");
-                            raidOwner.sendMessage(Helper.chatLabel() + "No valid town set for gather town, defaulting to current location");
+                                p.sendMessage(UtilsChat.getPrefix() + "No valid town set for gather town, defaulting to current location");
+                            raidOwner.sendMessage(UtilsChat.getPrefix() + "No valid town set for gather town, defaulting to current location");
                             gatherTown = TownyAPI.getInstance().getTownOrNull(WorldCoord.parseWorldCoord(raidOwner.getLocation()).getTownBlock());
                         }
                     } else {
@@ -281,14 +286,14 @@ public class RaidCommand {
                     }
                 } catch (NotRegisteredException e2) {
                     if (admin)
-                        p.sendMessage(Helper.chatLabel() + "You must be within a town's claim to begin a raid. That town you are in will be the gathering town.");
-                    raidOwner.sendMessage(Helper.chatLabel() + "You must be within a town's claim to begin a raid. That town you are in will be the gathering town.");
+                        p.sendMessage(UtilsChat.getPrefix() + "You must be within a town's claim to begin a raid. That town you are in will be the gathering town.");
+                    raidOwner.sendMessage(UtilsChat.getPrefix() + "You must be within a town's claim to begin a raid. That town you are in will be the gathering town.");
                     return;
                 }
                 if (gatherTown == null) {
                     if (admin)
-                        p.sendMessage(Helper.chatLabel() + "You must be within a town's claim to begin a raid. That town you are in will be the gathering town.");
-                    raidOwner.sendMessage(Helper.chatLabel() + "You must be within a town's claim to begin a raid. That town you are in will be the gathering town.");
+                        p.sendMessage(UtilsChat.getPrefix() + "You must be within a town's claim to begin a raid. That town you are in will be the gathering town.");
+                    raidOwner.sendMessage(UtilsChat.getPrefix() + "You must be within a town's claim to begin a raid. That town you are in will be the gathering town.");
                     return;
                 }
 
@@ -301,104 +306,104 @@ public class RaidCommand {
 
                         Main.warLogger.log("Raided town: " + raidedTown.getName());
                         Main.warLogger.log("Gather town: " + gatherTown.getName());
-                        Main.warLogger.log("Raid Owner: " + raidOwner.getName());
+                        Main.warLogger.log("OldRaid Owner: " + raidOwner.getName());
                         p.sendMessage("Raided town: " + raidedTown.getName());
                         p.sendMessage("Gather town: " + gatherTown.getName());
-                        p.sendMessage("Raid Owner: " + raidOwner.getName());
+                        p.sendMessage("OldRaid Owner: " + raidOwner.getName());
                         //DEBUG PRINT
-                        for (String t : war.getSide1Towns()) {
+                        for (String t : oldWar.getSide1Towns()) {
                             Main.warLogger.log("Side1 town: " + t);
                             p.sendMessage("Side1 town: " + t);
                         }
-                        for (String t : war.getSide2Towns()) {
+                        for (String t : oldWar.getSide2Towns()) {
                             Main.warLogger.log("Side2 town: " + t);
                             p.sendMessage("Side2 town: " + t);
                         }
 
-                        //check if the town were attempting to raid is in the war
-                        if (!war.getSide1Towns().contains(raidedTown.getName().toLowerCase()) && !war.getSide2Towns().contains(raidedTown.getName().toLowerCase())) {
-                            if (war.getSurrenderedTowns().contains(raidedTown.getName().toLowerCase())) {
+                        //check if the town were attempting to raid is in the oldWar
+                        if (!oldWar.getSide1Towns().contains(raidedTown.getName().toLowerCase()) && !oldWar.getSide2Towns().contains(raidedTown.getName().toLowerCase())) {
+                            if (oldWar.getSurrenderedTowns().contains(raidedTown.getName().toLowerCase())) {
                                 if (admin)
-                                    p.sendMessage(Helper.chatLabel() + "The town you are trying to raid has already surrendered!");
-                                raidOwner.sendMessage(Helper.chatLabel() + "The town you are trying to raid has already surrendered!");
+                                    p.sendMessage(UtilsChat.getPrefix() + "The town you are trying to raid has already surrendered!");
+                                raidOwner.sendMessage(UtilsChat.getPrefix() + "The town you are trying to raid has already surrendered!");
                                 return;
                             }
                             if (admin)
-                                p.sendMessage(Helper.chatLabel() + "The town you are trying to raid is not part of the war!");
-                            raidOwner.sendMessage(Helper.chatLabel() + "The town you are trying to raid is not part of the war!");
+                                p.sendMessage(UtilsChat.getPrefix() + "The town you are trying to raid is not part of the oldWar!");
+                            raidOwner.sendMessage(UtilsChat.getPrefix() + "The town you are trying to raid is not part of the oldWar!");
                             return;
                         }
 
                         // Is being sieged check
-                        for (Siege s : SiegeData.getSieges()) {
+                        for (OldSiege s : SiegeData.getSieges()) {
                             if (s.getTown().getName().equalsIgnoreCase(raidedTown.getName())) {
-                                raidOwner.sendMessage(Helper.chatLabel() + "That town is already currently being sieged! Cannot raid at this time!");
+                                raidOwner.sendMessage(UtilsChat.getPrefix() + "That town is already currently being sieged! Cannot raid at this time!");
                                 if (admin)
-                                    p.sendMessage(Helper.chatLabel() + "That town is already currently being sieged! Cannot raid at this time!");
+                                    p.sendMessage(UtilsChat.getPrefix() + "That town is already currently being sieged! Cannot raid at this time!");
                             }
                         }
 
                         townExists = true;
 
-                        Raid raid2;
-                        if (war.getSide1Players().contains(raidOwner.getName())) {
+                        OldRaid oldRaid2;
+                        if (oldWar.getSide1Players().contains(raidOwner.getName())) {
                             //Time and raid activity validity check
-                            int c = RaidData.isValidRaid(war, side, raidedTown);
+                            int c = RaidData.isValidRaid(oldWar, side, raidedTown);
                             if (c == 2) {
                                 //if were admin, see if an owner arg exists, and if so then use it
-                                raid2 = new Raid(war, raidedTown, gatherTown, true, raidOwner);
+                                oldRaid2 = new OldRaid(oldWar, raidedTown, gatherTown, true, raidOwner);
                             } else if (c == 1) {
                                 if (admin)
-                                    p.sendMessage(Helper.chatLabel() + "This town is already being raided at this time!");
-                                raidOwner.sendMessage(Helper.chatLabel() + "This town is already being raided at this time!");
+                                    p.sendMessage(UtilsChat.getPrefix() + "This town is already being raided at this time!");
+                                raidOwner.sendMessage(UtilsChat.getPrefix() + "This town is already being raided at this time!");
                                 return;
                             } else if (c == 0) {
                                 if (admin)
-                                    p.sendMessage(Helper.chatLabel() + "Your side has raided too recently!");
-                                raidOwner.sendMessage(Helper.chatLabel() + "Your side has raided too recently!");
+                                    p.sendMessage(UtilsChat.getPrefix() + "Your side has raided too recently!");
+                                raidOwner.sendMessage(UtilsChat.getPrefix() + "Your side has raided too recently!");
                                 return;
                             } else if (c == -1) {
                                 if (admin)
-                                    p.sendMessage(Helper.chatLabel() + "This town was raided too recently!");
-                                raidOwner.sendMessage(Helper.chatLabel() + "This town was raided too recently!");
+                                    p.sendMessage(UtilsChat.getPrefix() + "This town was raided too recently!");
+                                raidOwner.sendMessage(UtilsChat.getPrefix() + "This town was raided too recently!");
                                 return;
                             } else if (c == -2) {
                                 if (admin)
-                                    p.sendMessage(Helper.chatLabel() + "At least on member of the raided town must be online to defend it!");
-                                raidOwner.sendMessage(Helper.chatLabel() + "At least on member of the raided town must be online to defend it!");
+                                    p.sendMessage(UtilsChat.getPrefix() + "At least on member of the raided town must be online to defend it!");
+                                raidOwner.sendMessage(UtilsChat.getPrefix() + "At least on member of the raided town must be online to defend it!");
                                 return;
                             } else {
                                 throw new IllegalArgumentException();
                             }
                         } else {
                             //Something broke if this runs
-                            if (!war.getSide2Players().contains(raidOwner.getName())) {
-                                Bukkit.getLogger().info("Unable to find player declaring raid in the war");
+                            if (!oldWar.getSide2Players().contains(raidOwner.getName())) {
+                                Bukkit.getLogger().info("Unable to find player declaring raid in the oldWar");
                                 return;
                             }
                             //Time and raid activity validity check
-                            int c = RaidData.isValidRaid(war, side, raidedTown);
+                            int c = RaidData.isValidRaid(oldWar, side, raidedTown);
                             if (c == 2) {
-                                raid2 = new Raid(war, raidedTown, gatherTown, false, raidOwner);
+                                oldRaid2 = new OldRaid(oldWar, raidedTown, gatherTown, false, raidOwner);
                             } else if (c == 1) {
                                 if (admin)
-                                    p.sendMessage(Helper.chatLabel() + "This town is already being raided at this time!");
-                                raidOwner.sendMessage(Helper.chatLabel() + "This town is already being raided at this time!");
+                                    p.sendMessage(UtilsChat.getPrefix() + "This town is already being raided at this time!");
+                                raidOwner.sendMessage(UtilsChat.getPrefix() + "This town is already being raided at this time!");
                                 return;
                             } else if (c == 0) {
                                 if (admin)
-                                    p.sendMessage(Helper.chatLabel() + "Your side has raided too recently!");
-                                raidOwner.sendMessage(Helper.chatLabel() + "Your side has raided too recently!");
+                                    p.sendMessage(UtilsChat.getPrefix() + "Your side has raided too recently!");
+                                raidOwner.sendMessage(UtilsChat.getPrefix() + "Your side has raided too recently!");
                                 return;
                             } else if (c == -1) {
                                 if (admin)
-                                    p.sendMessage(Helper.chatLabel() + "This town was raided too recently!");
-                                raidOwner.sendMessage(Helper.chatLabel() + "This town was raided too recently!");
+                                    p.sendMessage(UtilsChat.getPrefix() + "This town was raided too recently!");
+                                raidOwner.sendMessage(UtilsChat.getPrefix() + "This town was raided too recently!");
                                 return;
                             } else if (c == -2) {
                                 if (admin)
-                                    p.sendMessage(Helper.chatLabel() + "At least on member of the raided town must be online to defend it!");
-                                raidOwner.sendMessage(Helper.chatLabel() + "At least on member of the raided town must be online to defend it!");
+                                    p.sendMessage(UtilsChat.getPrefix() + "At least on member of the raided town must be online to defend it!");
+                                raidOwner.sendMessage(UtilsChat.getPrefix() + "At least on member of the raided town must be online to defend it!");
                                 return;
                             } else {
                                 throw new IllegalArgumentException();
@@ -407,21 +412,21 @@ public class RaidCommand {
 
                         // Player participance check
                         Town leaderTown = TownyAPI.getInstance().getResident(raidOwner).getTownOrNull();
-                        TownWarState sideR = war.getState(leaderTown.getName().toLowerCase());
+                        TownWarState sideR = oldWar.getState(leaderTown.getName().toLowerCase());
                         if (sideR == TownWarState.NOT_PARTICIPANT) {
-                            if (admin) p.sendMessage(Helper.chatLabel() + "You are not in this war.");
-                            raidOwner.sendMessage(Helper.chatLabel() + "You are not in this war.");
+                            if (admin) p.sendMessage(UtilsChat.getPrefix() + "You are not in this oldWar.");
+                            raidOwner.sendMessage(UtilsChat.getPrefix() + "You are not in this oldWar.");
                             return;
                         } else if (sideR == TownWarState.SURRENDERED) {
-                            if (admin) p.sendMessage(Helper.chatLabel() + "You have surrendered.");
-                            raidOwner.sendMessage(Helper.chatLabel() + "You have surrendered.");
+                            if (admin) p.sendMessage(UtilsChat.getPrefix() + "You have surrendered.");
+                            raidOwner.sendMessage(UtilsChat.getPrefix() + "You have surrendered.");
                             return;
                         }
 
                         // Attacking own side
-                        if (war.getState(raidedTown) == sideR) {
-                            if (admin) p.sendMessage(Helper.chatLabel() + "You cannot attack your own towns.");
-                            raidOwner.sendMessage(Helper.chatLabel() + "You cannot attack your own towns.");
+                        if (oldWar.getState(raidedTown) == sideR) {
+                            if (admin) p.sendMessage(UtilsChat.getPrefix() + "You cannot attack your own towns.");
+                            raidOwner.sendMessage(UtilsChat.getPrefix() + "You cannot attack your own towns.");
                             return;
                         }
 
@@ -429,24 +434,24 @@ public class RaidCommand {
                         final OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(raidOwner.getUniqueId());
                         if (Main.econ.getBalance(offlinePlayer) <= 1000.0) {
                             if (admin)
-                                p.sendMessage(Helper.chatLabel() + "You must have at least $1000 to put up to start a raid.");
-                            raidOwner.sendMessage(Helper.chatLabel() + "You must have at least $1000 to put up to start a raid.");
+                                p.sendMessage(UtilsChat.getPrefix() + "You must have at least $1000 to put up to start a raid.");
+                            raidOwner.sendMessage(UtilsChat.getPrefix() + "You must have at least $1000 to put up to start a raid.");
                             return;
                         }
 
                         //publish raid
                         Main.econ.withdrawPlayer(offlinePlayer, 1000);
-                        raid2.addActiveRaider(raidOwner.getName());
-                        RaidData.addRaid(raid2);
-                        raid2.start(); //funny funny method haha
-                        WarData.saveWar(raid2.getWar());
+                        oldRaid2.addActiveRaider(raidOwner.getName());
+                        RaidData.addRaid(oldRaid2);
+                        oldRaid2.start(); //funny funny method haha
+                        WarData.saveWar(oldRaid2.getWar());
 
                         //broadcast
-                        Bukkit.broadcastMessage(Helper.chatLabel() + "As part of " + war.getName() + ", forces from " + raid2.getRaiderSide() + " are gathering to raid the town of " + raidedTown.getName() + "!");
-                        Bukkit.broadcastMessage(Helper.chatLabel() + "All players from the defending side have been drafted for the town's defense.");
-                        Bukkit.broadcastMessage(Helper.chatLabel() + "The raid of "
+                        Bukkit.broadcastMessage(UtilsChat.getPrefix() + "As part of " + oldWar.getName() + ", forces from " + oldRaid2.getRaiderSide() + " are gathering to raid the town of " + raidedTown.getName() + "!");
+                        Bukkit.broadcastMessage(UtilsChat.getPrefix() + "All players from the defending side have been drafted for the town's defense.");
+                        Bukkit.broadcastMessage(UtilsChat.getPrefix() + "The raid of "
                             + raidedTown.getName() + " will begin in " + (RaidPhase.TRAVEL.startTick / 20 / 60) + " minutes!");
-                        Bukkit.broadcastMessage(Helper.chatLabel() +
+                        Bukkit.broadcastMessage(UtilsChat.getPrefix() +
                             "The Raiders are gathering at " + gatherTown.getName() + " before making the journey over!");
 
                         Main.warLogger.log(raidOwner.getName() + " started a raid.");
@@ -454,18 +459,18 @@ public class RaidCommand {
                             Main.warLogger.log(raidOwner.getName() + " started a raid from admin interference.");
                             p.sendMessage(Helper.color("&cForcefully started raid from the console."));
                         }
-                        Main.warLogger.log("As part of " + war.getName() + ", forces from " + raid2.getRaiderSide() + " are raiding the town of " + raidedTown.getName() + "!");
+                        Main.warLogger.log("As part of " + oldWar.getName() + ", forces from " + oldRaid2.getRaiderSide() + " are raiding the town of " + raidedTown.getName() + "!");
                         Main.warLogger.log("The Raiders are gathering at " + gatherTown.getName() + " before making the journey over!");
                     }
                 }
             }
         }
         if (!warFound) {
-            p.sendMessage(Helper.chatLabel() + "That war does not exist! /raid start [war] [town]");
+            p.sendMessage(UtilsChat.getPrefix() + "That war does not exist! /raid start [war] [town]");
             return;
         }
         if (!townExists) {
-            p.sendMessage(Helper.chatLabel() + "That town does not exist! /raid start [war] [town]");
+            p.sendMessage(UtilsChat.getPrefix() + "That town does not exist! /raid start [war] [town]");
         }
     }
 
@@ -477,10 +482,10 @@ public class RaidCommand {
      */
     private static void raidStop(Player p, CommandArguments args) throws WrapperCommandSyntaxException {
         if (!(args.get("war") instanceof final String argWarName))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a war name!").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou need to specify a war name!").build());
 
         if (!(args.get("town") instanceof final String argTown))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a town name!").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou need to specify a town name!").build());
 
 
         //are there even any raids
@@ -488,32 +493,32 @@ public class RaidCommand {
             fail(p, args, "noRaids");
         }
 
-        //find our desired raid and stop it
-        Raid raid = RaidData.getRaid(argWarName + "-" + argTown);
+        //find our desired oldRaid and stop it
+        OldRaid oldRaid = RaidData.getRaid(argWarName + "-" + argTown);
 
-        if (raid != null) {
-            p.sendMessage(Helper.chatLabel() + "raid cancelled");
-            Bukkit.broadcastMessage(Helper.chatLabel() + "The raid of " + raid.getRaidedTown().getName() + " has been cancelled by an admin");
-            raid.stop(); //this purges itself from raids
+        if (oldRaid != null) {
+            p.sendMessage(UtilsChat.getPrefix() + "oldRaid cancelled");
+            Bukkit.broadcastMessage(UtilsChat.getPrefix() + "The oldRaid of " + oldRaid.getRaidedTown().getName() + " has been cancelled by an admin");
+            oldRaid.stop(); //this purges itself from raids
         } else {
             fail(p, args, "badName");
         }
     }
 
     protected static void raidJoin(Player p, CommandArguments args, boolean admin) throws WrapperCommandSyntaxException {
-        if (!(args.get("raid") instanceof final String argRaidName))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a raid name!").build());
+        if (!(args.get("oldRaid") instanceof final String argRaidName))
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou need to specify a oldRaid name!").build());
 
         if (!(args.get("side") instanceof final String argSide))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a side!").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou need to specify a side!").build());
 
-        final Raid raid = RaidData.getRaid(argRaidName);
-        if (raid == null)
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cThat raid does not exist!").build());
+        final OldRaid oldRaid = RaidData.getRaid(argRaidName);
+        if (oldRaid == null)
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cThat oldRaid does not exist!").build());
 
-        final War war = raid.getWar();
-        if (war == null)
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cThe war does not exist!").build());
+        final OldWar oldWar = oldRaid.getWar();
+        if (oldWar == null)
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cThe oldWar does not exist!").build());
 
         final Player joiner = (Player) args.getOptional("player").orElse(p);
         if (joiner == null)
@@ -522,28 +527,28 @@ public class RaidCommand {
 
         if (admin) {
             if (argSide != null) {
-                if (argSide.equalsIgnoreCase(raid.getDefenderSide())) {
-                    if (!raid.getDefenderPlayers().contains(joiner.getName()))
-                        raid.getDefenderPlayers().add(joiner.getName());
+                if (argSide.equalsIgnoreCase(oldRaid.getDefenderSide())) {
+                    if (!oldRaid.getDefenderPlayers().contains(joiner.getName()))
+                        oldRaid.getDefenderPlayers().add(joiner.getName());
 
-                    p.sendMessage(Helper.chatLabel() + "Player " + joiner.getName() + " added to defender side.");
+                    p.sendMessage(UtilsChat.getPrefix() + "Player " + joiner.getName() + " added to defender side.");
                     Main.warLogger.log("Player " + joiner.getName() + " added to defender side.");
-                    joiner.sendMessage(Helper.chatLabel() + "You were forcefully added to the defender side against the raid party on " + raid.getRaidedTown() + " by an admin.");
+                    joiner.sendMessage(UtilsChat.getPrefix() + "You were forcefully added to the defender side against the oldRaid party on " + oldRaid.getRaidedTown() + " by an admin.");
                     return;
                 } else {
-                    if (!raid.getRaiderPlayers().contains(joiner.getName()))
-                        raid.getRaiderPlayers().add(joiner.getName());
+                    if (!oldRaid.getRaiderPlayers().contains(joiner.getName()))
+                        oldRaid.getRaiderPlayers().add(joiner.getName());
 
-                    p.sendMessage(Helper.chatLabel() + "Player " + joiner.getName() + " added to raider side.");
+                    p.sendMessage(UtilsChat.getPrefix() + "Player " + joiner.getName() + " added to raider side.");
                     Main.warLogger.log("Player " + joiner.getName() + " added to raider side.");
-                    joiner.sendMessage(Helper.chatLabel() + "You were forcefully added to the raid party on " + raid.getRaidedTown() + " by an admin. Leaving the gather town will remove you from the raid party.");
+                    joiner.sendMessage(UtilsChat.getPrefix() + "You were forcefully added to the oldRaid party on " + oldRaid.getRaidedTown() + " by an admin. Leaving the gather town will remove you from the oldRaid party.");
                 }
             }
 
         }
 
-        if (!raid.getWar().getSide1Players().contains(joiner.getName()) && !raid.getWar().getSide2Players().contains(joiner.getName())) {
-            joiner.sendMessage(Helper.chatLabel() + "You are not in this war! Type /war join [war] [side]");
+        if (!oldRaid.getWar().getSide1Players().contains(joiner.getName()) && !oldRaid.getWar().getSide2Players().contains(joiner.getName())) {
+            joiner.sendMessage(UtilsChat.getPrefix() + "You are not in this oldWar! Type /oldWar join [oldWar] [side]");
         }
 
         //Minutemen countermeasures, 86400 * 4 time. 86400 seconds in a day, 4 days min playtime
@@ -560,14 +565,14 @@ public class RaidCommand {
                 if (minuteman == 1) {
                     //player has joined to recently
                     if (admin)
-                        p.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayerAge") + " days from joining.");
-                    joiner.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayerAge") + " days from joining.");
+                        p.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a oldRaid after " + Main.getInstance().getConfig().getInt("minimumPlayerAge") + " days from joining.");
+                    joiner.sendMessage(ChatColor.RED + "You have joined the server too recently! You can only join a oldRaid after " + Main.getInstance().getConfig().getInt("minimumPlayerAge") + " days from joining.");
                     return;
                 } else if (minuteman == 2) {
                     //player has played too little
                     if (admin)
-                        p.sendMessage(ChatColor.RED + "You have not played enough! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayTime") + " hours of play.");
-                    joiner.sendMessage(ChatColor.RED + "You have not played enough! You can only join a raid after " + Main.getInstance().getConfig().getInt("minimumPlayTime") + " hours of play.");
+                        p.sendMessage(ChatColor.RED + "You have not played enough! You can only join a oldRaid after " + Main.getInstance().getConfig().getInt("minimumPlayTime") + " hours of play.");
+                    joiner.sendMessage(ChatColor.RED + "You have not played enough! You can only join a oldRaid after " + Main.getInstance().getConfig().getInt("minimumPlayTime") + " hours of play.");
                     return;
                 }
             }
@@ -575,44 +580,44 @@ public class RaidCommand {
 
         //check if gather phase
         if (!admin) {
-            if (raid.getPhase() == RaidPhase.GATHER || raid.getPhase() == RaidPhase.START) {
+            if (oldRaid.getPhase() == RaidPhase.GATHER || oldRaid.getPhase() == RaidPhase.START) {
                 try {
                     //check if the player is in the gather town
-                    ArrayList<WorldCoord> cluster = Helper.getCluster(raid.getGatherTown().getHomeBlock().getWorldCoord());
+                    ArrayList<WorldCoord> cluster = Utils.getCluster(oldRaid.getGatherTown().getHomeBlock().getWorldCoord());
                     if (cluster.contains(WorldCoord.parseWorldCoord(joiner))) {
-                        raid.addActiveRaider(joiner.getName());
-                        joiner.sendMessage(Helper.chatLabel() + "You have joined the raid on " + raid.getRaidedTown().getName() + "!");
-                        joiner.sendMessage(Helper.chatLabel() + "Leaving " + raid.getGatherTown().getName() + " will cause you to leave the raid party.");
+                        oldRaid.addActiveRaider(joiner.getName());
+                        joiner.sendMessage(UtilsChat.getPrefix() + "You have joined the oldRaid on " + oldRaid.getRaidedTown().getName() + "!");
+                        joiner.sendMessage(UtilsChat.getPrefix() + "Leaving " + oldRaid.getGatherTown().getName() + " will cause you to leave the oldRaid party.");
                     } else {
-                        joiner.sendMessage(Helper.chatLabel() + "You must be in the gathering town to join the raid on " + raid.getRaidedTown().getName() + ".");
+                        joiner.sendMessage(UtilsChat.getPrefix() + "You must be in the gathering town to join the oldRaid on " + oldRaid.getRaidedTown().getName() + ".");
                     }
                 } catch (TownyException e) {
                     throw new RuntimeException(e);
                 }
             } else {
-                joiner.sendMessage(Helper.chatLabel() + "You cannot join the raid on " + raid.getRaidedTown().getName() + "! It has already started!");
+                joiner.sendMessage(UtilsChat.getPrefix() + "You cannot join the oldRaid on " + oldRaid.getRaidedTown().getName() + "! It has already started!");
             }
         } else {
             try {
                 //check if the player is in the gather town
-                ArrayList<WorldCoord> cluster = Helper.getCluster(raid.getGatherTown().getHomeBlock().getWorldCoord());
+                ArrayList<WorldCoord> cluster = Utils.getCluster(oldRaid.getGatherTown().getHomeBlock().getWorldCoord());
                 if (cluster.contains(WorldCoord.parseWorldCoord(joiner))) {
-                    raid.addActiveRaider(joiner.getName());
-                    joiner.sendMessage(Helper.chatLabel() + "You have joined the raid on " + raid.getRaidedTown().getName() + "!");
-                    joiner.sendMessage(Helper.chatLabel() + "Leaving " + raid.getGatherTown().getName() + " will cause you to leave the raid party.");
+                    oldRaid.addActiveRaider(joiner.getName());
+                    joiner.sendMessage(UtilsChat.getPrefix() + "You have joined the oldRaid on " + oldRaid.getRaidedTown().getName() + "!");
+                    joiner.sendMessage(UtilsChat.getPrefix() + "Leaving " + oldRaid.getGatherTown().getName() + " will cause you to leave the oldRaid party.");
                 } else {
-                    joiner.sendMessage(Helper.chatLabel() + "You must be in the gathering town to join the raid on " + raid.getRaidedTown().getName() + ".");
+                    joiner.sendMessage(UtilsChat.getPrefix() + "You must be in the gathering town to join the oldRaid on " + oldRaid.getRaidedTown().getName() + ".");
                 }
             } catch (TownyException e) {
                 throw new RuntimeException(e);
             }
         }
 
-        raid.save();
+        oldRaid.save();
     }
 
     protected static void raidLeave(Player player, CommandArguments args, boolean admin) throws WrapperCommandSyntaxException {
-        //Get raid!
+        //Get oldRaid!
         final Player p = (Player) args.getOptional("player").orElse(player);
 
         if (p == null) {
@@ -620,41 +625,41 @@ public class RaidCommand {
         }
 
         if (!(args.get("war") instanceof final String argWarName))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a war name!").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou need to specify a war name!").build());
 
         if (!(args.get("town") instanceof final String argTown))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a town name!").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou need to specify a town name!").build());
 
 
-        Raid raid = RaidData.getRaid(argWarName + "-" + argTown);
-        if (raid == null) {
-            p.sendMessage(Helper.chatLabel() + "No raid is gathering in this town or this town does not exist!");
+        OldRaid oldRaid = RaidData.getRaid(argWarName + "-" + argTown);
+        if (oldRaid == null) {
+            p.sendMessage(UtilsChat.getPrefix() + "No oldRaid is gathering in this town or this town does not exist!");
             if (admin)
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "No raid is gathering in this town or this town does not exist!").build());
+                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "No oldRaid is gathering in this town or this town does not exist!").build());
         }
 
-        if (raid.getWar().getName().equalsIgnoreCase(argWarName)) {
-            if (!raid.getWar().getSide1Players().contains(p.getName()) && !raid.getWar().getSide2Players().contains(p.getName())) {
-                p.sendMessage(Helper.chatLabel() + "You are not in this war! Type /war join [war] [side]");
+        if (oldRaid.getWar().getName().equalsIgnoreCase(argWarName)) {
+            if (!oldRaid.getWar().getSide1Players().contains(p.getName()) && !oldRaid.getWar().getSide2Players().contains(p.getName())) {
+                p.sendMessage(UtilsChat.getPrefix() + "You are not in this war! Type /war join [war] [side]");
                 if (admin)
-                    player.sendMessage(Helper.chatLabel() + "You are not in this war! Type /war join [war] [side]");
+                    player.sendMessage(UtilsChat.getPrefix() + "You are not in this war! Type /war join [war] [side]");
             }
 
             //check if gather phase
-            if (raid.getPhase() == RaidPhase.GATHER || raid.getPhase() == RaidPhase.START) {
+            if (oldRaid.getPhase() == RaidPhase.GATHER || oldRaid.getPhase() == RaidPhase.START) {
                 try {
                     //check if player is in gather town
-                    ArrayList<WorldCoord> cluster = Helper.getCluster(raid.getGatherTown().getHomeBlock().getWorldCoord());
+                    ArrayList<WorldCoord> cluster = Utils.getCluster(oldRaid.getGatherTown().getHomeBlock().getWorldCoord());
                     if (cluster.contains(WorldCoord.parseWorldCoord(p))) {
-                        raid.removeActiveRaider(p.getName());
-                        p.sendMessage(Helper.chatLabel() + "You have left the raid on " + raid.getRaidedTown().getName() + "!");
+                        oldRaid.removeActiveRaider(p.getName());
+                        p.sendMessage(UtilsChat.getPrefix() + "You have left the oldRaid on " + oldRaid.getRaidedTown().getName() + "!");
                         if (admin)
-                            player.sendMessage(Helper.chatLabel() + "You have left the raid on " + raid.getRaidedTown().getName() + "!");
+                            player.sendMessage(UtilsChat.getPrefix() + "You have left the oldRaid on " + oldRaid.getRaidedTown().getName() + "!");
 
                     } else {
-                        p.sendMessage(Helper.chatLabel() + "You cannot leave the raid on " + raid.getRaidedTown().getName() + "! It has already started!");
+                        p.sendMessage(UtilsChat.getPrefix() + "You cannot leave the oldRaid on " + oldRaid.getRaidedTown().getName() + "! It has already started!");
                         if (admin)
-                            player.sendMessage(Helper.chatLabel() + "You cannot leave the raid on " + raid.getRaidedTown().getName() + "! It has already started!");
+                            player.sendMessage(UtilsChat.getPrefix() + "You cannot leave the oldRaid on " + oldRaid.getRaidedTown().getName() + "! It has already started!");
                     }
                 } catch (TownyException e) {
                     throw new RuntimeException(e);
@@ -662,12 +667,12 @@ public class RaidCommand {
             }
 
             if (admin) {
-                player.sendMessage(Helper.chatLabel() + "Forced player " + p.getName() + " to leave raid on " + raid.getRaidedTown().getName() + " in war " + argWarName);
-                Main.warLogger.log("Forced player " + p.getName() + " to leave raid on " + raid.getRaidedTown().getName() + " in war " + argWarName);
+                player.sendMessage(UtilsChat.getPrefix() + "Forced player " + p.getName() + " to leave oldRaid on " + oldRaid.getRaidedTown().getName() + " in war " + argWarName);
+                Main.warLogger.log("Forced player " + p.getName() + " to leave oldRaid on " + oldRaid.getRaidedTown().getName() + " in war " + argWarName);
             }
         }
 
-        raid.save();
+        oldRaid.save();
     }
 
     /**
@@ -678,33 +683,33 @@ public class RaidCommand {
      */
     private static void raidAbandon(Player p, CommandArguments args) throws WrapperCommandSyntaxException {
         if (!(args.get("war") instanceof final String argWarName))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a war name!").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou need to specify a war name!").build());
 
         if (!(args.get("town") instanceof final String argTown))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a town name!").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou need to specify a town name!").build());
 
 
-        //Get raid
-        Raid raid = RaidData.getRaid(argWarName + "-" + argTown);
+        //Get oldRaid
+        OldRaid oldRaid = RaidData.getRaid(argWarName + "-" + argTown);
 
-        if (raid == null)
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cThis raid does not exist!").build());
+        if (oldRaid == null)
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cThis oldRaid does not exist!").build());
 
 
-        if (raid.getWar().getName().equalsIgnoreCase(argWarName)) {
-            if (!raid.getWar().getSide1Players().contains(p.getName()) && !raid.getWar().getSide2Players().contains(p.getName())) {
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou are not in this war! Type /war join [war] [side]").build());
+        if (oldRaid.getWar().getName().equalsIgnoreCase(argWarName)) {
+            if (!oldRaid.getWar().getSide1Players().contains(p.getName()) && !oldRaid.getWar().getSide2Players().contains(p.getName())) {
+                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou are not in this war! Type /war join [war] [side]").build());
             }
 
-            if (raid.getOwner().getName().equalsIgnoreCase(p.getName())) {
+            if (oldRaid.getOwner().getName().equalsIgnoreCase(p.getName())) {
                 //check if gather phase
-                if (raid.getPhase() == RaidPhase.GATHER || raid.getPhase() == RaidPhase.START || raid.getPhase() == RaidPhase.TRAVEL || raid.getPhase() == RaidPhase.COMBAT) {
+                if (oldRaid.getPhase() == RaidPhase.GATHER || oldRaid.getPhase() == RaidPhase.START || oldRaid.getPhase() == RaidPhase.TRAVEL || oldRaid.getPhase() == RaidPhase.COMBAT) {
                     //force defender victory
-                    Bukkit.broadcast(new ColorParser(Helper.chatLabel() + "The raid on " + raid.getRaidedTown().getName() + " has been abandoned by " + raid.getRaiderSide()).build());
-                    Main.warLogger.log(p.getName() + " abandoned the raid on " + raid.getRaidedTown().getName() + " they started at " + raid.getGatherTown().getName());
-                    raid.defendersWin(raid.getRaiderScore(), raid.getDefenderScore());
+                    Bukkit.broadcast(new ColorParser(UtilsChat.getPrefix() + "The oldRaid on " + oldRaid.getRaidedTown().getName() + " has been abandoned by " + oldRaid.getRaiderSide()).build());
+                    Main.warLogger.log(p.getName() + " abandoned the oldRaid on " + oldRaid.getRaidedTown().getName() + " they started at " + oldRaid.getGatherTown().getName());
+                    oldRaid.defendersWin(oldRaid.getRaiderScore(), oldRaid.getDefenderScore());
                 } else {
-                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou cannot abandon the raid on " + raid.getRaidedTown().getName() + "! It has a problem!").build());
+                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou cannot abandon the oldRaid on " + oldRaid.getRaidedTown().getName() + "! It has a problem!").build());
                 }
             } else {
                 fail(p, args, "owner");
@@ -714,52 +719,52 @@ public class RaidCommand {
 
     private static void raidsList(Player p, CommandArguments args) {
         if (RaidData.getRaids().isEmpty()) {
-            p.sendMessage(new ColorParser(Helper.chatLabel() + "There are currently no Raids in progress").build());
+            p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "There are currently no Raids in progress").build());
             return;
         }
 
-        p.sendMessage(new ColorParser(Helper.chatLabel() + "Raids currently in progress:").build());
-        for (final Raid raid : RaidData.getRaids()) {
-            p.sendMessage(new ColorParser("Name: " + raid.getName()).build());
-            p.sendMessage(new ColorParser("War: " + raid.getWar().getName()).build());
-            p.sendMessage(new ColorParser("Owner: " + raid.getOwner().getName()).build());
-            p.sendMessage(new ColorParser("Raiding: " + raid.getRaidedTown().getName().toLowerCase()).build());
-            p.sendMessage(new ColorParser("Gathering In: " + raid.getGatherTown().getName().toLowerCase()).build());
-            p.sendMessage(new ColorParser("Raiders: " + raid.getRaiderSide()).build());
-            p.sendMessage(new ColorParser("Defenders: " + raid.getDefenderSide()).build());
-            p.sendMessage(new ColorParser("Raider Score: " + raid.getRaiderScore()).build());
-            p.sendMessage(new ColorParser("Defender Score: " + raid.getDefenderScore()).build());
-            p.sendMessage(new ColorParser("Raid Phase: " + raid.getPhase().name()).build());
-            p.sendMessage(new ColorParser("Time Left: " + (RaidPhase.END.startTick - raid.getRaidTicks()) / 1200 + " minutes").build());
+        p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "Raids currently in progress:").build());
+        for (final OldRaid oldRaid : RaidData.getRaids()) {
+            p.sendMessage(new ColorParser("Name: " + oldRaid.getName()).build());
+            p.sendMessage(new ColorParser("OldWar: " + oldRaid.getWar().getName()).build());
+            p.sendMessage(new ColorParser("Owner: " + oldRaid.getOwner().getName()).build());
+            p.sendMessage(new ColorParser("Raiding: " + oldRaid.getRaidedTown().getName().toLowerCase()).build());
+            p.sendMessage(new ColorParser("Gathering In: " + oldRaid.getGatherTown().getName().toLowerCase()).build());
+            p.sendMessage(new ColorParser("Raiders: " + oldRaid.getRaiderSide()).build());
+            p.sendMessage(new ColorParser("Defenders: " + oldRaid.getDefenderSide()).build());
+            p.sendMessage(new ColorParser("Raider Score: " + oldRaid.getRaiderScore()).build());
+            p.sendMessage(new ColorParser("Defender Score: " + oldRaid.getDefenderScore()).build());
+            p.sendMessage(new ColorParser("OldRaid Phase: " + oldRaid.getPhase().name()).build());
+            p.sendMessage(new ColorParser("Time Left: " + (RaidPhase.END.startTick - oldRaid.getRaidTicks()) / 1200 + " minutes").build());
             p.sendMessage(new ColorParser("-=-=-=-=-=-=-=-=-=-=-=-").build());
         }
     }
 
     private static void raidHelp(Player p, CommandArguments args) {
         if (p.hasPermission("AlathraWar.admin")) {
-            p.sendMessage(new ColorParser(Helper.chatLabel() + "/raid stop [name]").build());
+            p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "/raid stop [name]").build());
         }
-        p.sendMessage(new ColorParser(Helper.chatLabel() + "/raid start [war] [town]").build());
-        p.sendMessage(new ColorParser(Helper.chatLabel() + "/raid join [war] [town]").build());
-        p.sendMessage(new ColorParser(Helper.chatLabel() + "/raid leave [war] [town]").build());
-        p.sendMessage(new ColorParser(Helper.chatLabel() + "/raid abandon [war] [town]").build());
-        p.sendMessage(new ColorParser(Helper.chatLabel() + "/raid list").build());
+        p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "/raid start [war] [town]").build());
+        p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "/raid join [war] [town]").build());
+        p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "/raid leave [war] [town]").build());
+        p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "/raid abandon [war] [town]").build());
+        p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "/raid list").build());
     }
 
     private static void fail(CommandSender p, CommandArguments args, String type) throws WrapperCommandSyntaxException {
         switch (type) {
             case "permissions" ->
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou do not have permission to do this.").build());
+                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou do not have permission to do this.").build());
             case "syntax" ->
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cInvalid Syntax. /raid help").build());
+                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cInvalid Syntax. /raid help").build());
             case "noRaids" ->
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cThere are currently no Raids in progress.").build());
+                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cThere are currently no Raids in progress.").build());
             case "badName" ->
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cA raid could not be found with this Name! Type /raid list to view current raids.").build());
+                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cA raid could not be found with this Name! Type /raid list to view current raids.").build());
             case "owner" ->
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cOnly the player who started the raid can abandon it.").build());
+                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cOnly the player who started the raid can abandon it.").build());
             default ->
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cInvalid Arguments. /raid help").build());
+                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cInvalid Arguments. /raid help").build());
         }
     }
 }

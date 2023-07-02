@@ -1,10 +1,11 @@
-package me.ShermansWorld.AlathraWar;
+package me.ShermansWorld.AlathraWar.deprecated;
 
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.*;
+import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.enums.TownWarState;
 import org.bukkit.*;
@@ -15,7 +16,8 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
-public class Siege {
+@Deprecated
+public class OldSiege {
 
     public static final int maxSiegeTicks = 72000; // 60 minute tick constant
     public final NamespacedKey bossBarKey;
@@ -23,7 +25,7 @@ public class Siege {
     public ArrayList<String> defenderPlayers;
     public ArrayList<Location> beaconLocs;
     int[] bukkitId;
-    private War war; // War which siege belongs to
+    private OldWar oldWar; // OldWar which siege belongs to
     private Town town; // Town of the siege
     private boolean side1AreAttackers; // bool of if side1 being attacker
     private int attackerPoints;
@@ -34,19 +36,19 @@ public class Siege {
     private Location townSpawn;
 
 
-    public Siege(final War war, final Town town, OfflinePlayer siegeLeader) {
+    public OldSiege(final OldWar oldWar, final Town town, OfflinePlayer siegeLeader) {
         this.siegeTicks = 0;
         this.bukkitId = new int[1];
         this.attackerPlayers = new ArrayList<>();
         this.defenderPlayers = new ArrayList<>();
         this.beaconLocs = new ArrayList<>();
-        this.war = war;
+        this.oldWar = oldWar;
         this.town = town;
         this.siegeLeader = siegeLeader;
 
         bossBarKey = new NamespacedKey(Main.getInstance(), "siegeBar." + this.getName());
 
-        side1AreAttackers = war.getState(town.getName()) == TownWarState.SIDE2;
+        side1AreAttackers = oldWar.getState(town.getName()) == TownWarState.SIDE2;
     }
 
     /**
@@ -85,7 +87,7 @@ public class Siege {
     public void stop() {
         deleteDisplayBar();
         Bukkit.getScheduler().cancelTask(this.bukkitId[0]);
-        this.war.getSieges().remove(this);
+        this.oldWar.getSieges().remove(this);
         SiegeData.removeSiege(this);
 
     }
@@ -100,26 +102,26 @@ public class Siege {
                     town.setHomeBlock(homeBlock);
                     town.setSpawn(townSpawn);
                 }
-                if (Siege.this.side1AreAttackers) {
-                    Siege.this.attackerPlayers = Siege.this.war.getSide1Players();
-                    Siege.this.defenderPlayers = Siege.this.war.getSide2Players();
+                if (OldSiege.this.side1AreAttackers) {
+                    OldSiege.this.attackerPlayers = OldSiege.this.oldWar.getSide1Players();
+                    OldSiege.this.defenderPlayers = OldSiege.this.oldWar.getSide2Players();
                 } else {
-                    Siege.this.attackerPlayers = Siege.this.war.getSide2Players();
-                    Siege.this.defenderPlayers = Siege.this.war.getSide1Players();
+                    OldSiege.this.attackerPlayers = OldSiege.this.oldWar.getSide2Players();
+                    OldSiege.this.defenderPlayers = OldSiege.this.oldWar.getSide1Players();
                 }
-                if (Siege.this.siegeTicks >= maxSiegeTicks) {
-                    Bukkit.getServer().getScheduler().cancelTask(Siege.this.bukkitId[0]);
-                    SiegeData.removeSiege(Siege.this);
-                    if (Siege.this.attackerPoints > Siege.this.defenderPoints) {
-                        Siege.this.attackersWin(Siege.this.siegeLeader);
+                if (OldSiege.this.siegeTicks >= maxSiegeTicks) {
+                    Bukkit.getServer().getScheduler().cancelTask(OldSiege.this.bukkitId[0]);
+                    SiegeData.removeSiege(OldSiege.this);
+                    if (OldSiege.this.attackerPoints > OldSiege.this.defenderPoints) {
+                        OldSiege.this.attackersWin(OldSiege.this.siegeLeader);
                     } else {
-                        Siege.this.defendersWin();
+                        OldSiege.this.defendersWin();
                     }
                 } else {
                     boolean attackersAreOnHomeBlock = false;
                     boolean defendersAreOnHomeBlock = false;
                     siegeTicks = siegeTicks + 200;
-                    for (final String playerName : Siege.this.attackerPlayers) {
+                    for (final String playerName : OldSiege.this.attackerPlayers) {
                         Player pl = Main.getInstance().getServer().getPlayer(playerName);
                         try {
                             if (pl != null) {
@@ -138,10 +140,10 @@ public class Siege {
                                 }
                             }
                         } catch (NotRegisteredException ignored) {
-                            Main.warLogger.log(Helper.chatLabel() + "Attempting to look for town at " + WorldCoord.parseWorldCoord(pl));
+                            Main.warLogger.log(UtilsChat.getPrefix() + "Attempting to look for town at " + WorldCoord.parseWorldCoord(pl));
                         }
                     }
-                    for (final String playerName : Siege.this.defenderPlayers) {
+                    for (final String playerName : OldSiege.this.defenderPlayers) {
                         Player pl = Main.getInstance().getServer().getPlayer(playerName);
                         try {
                             if (pl != null) {
@@ -160,22 +162,22 @@ public class Siege {
                                 }
                             }
                         } catch (NotRegisteredException ignored) {
-                            Main.warLogger.log(Helper.chatLabel() + "Attempting to look for town at " + WorldCoord.parseWorldCoord(pl));
+                            Main.warLogger.log(UtilsChat.getPrefix() + "Attempting to look for town at " + WorldCoord.parseWorldCoord(pl));
                         }
                     }
                     if (attackersAreOnHomeBlock && defendersAreOnHomeBlock) { // Contested
                         if (this.homeBlockControl != 1) {
-                            for (final String playerName : Siege.this.attackerPlayers) {
+                            for (final String playerName : OldSiege.this.attackerPlayers) {
                                 try {
-                                    Bukkit.getPlayer(playerName).sendMessage(Helper.chatLabel()
-                                        + "HomeBlock at " + Siege.this.town.getName() + " contested!");
+                                    Bukkit.getPlayer(playerName).sendMessage(UtilsChat.getPrefix()
+                                        + "HomeBlock at " + OldSiege.this.town.getName() + " contested!");
                                 } catch (NullPointerException ex5) {
                                 }
                             }
-                            for (final String playerName : Siege.this.defenderPlayers) {
+                            for (final String playerName : OldSiege.this.defenderPlayers) {
                                 try {
-                                    Bukkit.getPlayer(playerName).sendMessage(Helper.chatLabel()
-                                        + "HomeBlock at " + Siege.this.town.getName() + " contested!");
+                                    Bukkit.getPlayer(playerName).sendMessage(UtilsChat.getPrefix()
+                                        + "HomeBlock at " + OldSiege.this.town.getName() + " contested!");
                                 } catch (NullPointerException ex6) {
                                 }
                             }
@@ -183,54 +185,54 @@ public class Siege {
                         this.homeBlockControl = 1;
                     } else if (attackersAreOnHomeBlock && !defendersAreOnHomeBlock) { // Attackers
                         if (this.homeBlockControl != 2) {
-                            for (final String playerName : Siege.this.attackerPlayers) {
+                            for (final String playerName : OldSiege.this.attackerPlayers) {
                                 try {
-                                    Bukkit.getPlayer(playerName).sendMessage(Helper.chatLabel()
+                                    Bukkit.getPlayer(playerName).sendMessage(UtilsChat.getPrefix()
                                         + "Attackers have captured the HomeBlock at "
-                                        + Siege.this.town.getName() + "! +1 Attacker Points per second");
+                                        + OldSiege.this.town.getName() + "! +1 Attacker Points per second");
                                 } catch (NullPointerException ex7) {
                                 }
                             }
-                            for (final String playerName : Siege.this.defenderPlayers) {
+                            for (final String playerName : OldSiege.this.defenderPlayers) {
                                 try {
-                                    Bukkit.getPlayer(playerName).sendMessage(Helper.chatLabel()
+                                    Bukkit.getPlayer(playerName).sendMessage(UtilsChat.getPrefix()
                                         + "Attackers have captured the HomeBlock at "
-                                        + Siege.this.town.getName() + "! +1 Attacker Points per second");
+                                        + OldSiege.this.town.getName() + "! +1 Attacker Points per second");
                                 } catch (NullPointerException ex8) {
                                 }
                             }
                         }
                         this.homeBlockControl = 2;
-                        Siege.this.addPointsToAttackers(10);
+                        OldSiege.this.addPointsToAttackers(10);
                     } else { // Defenders / None
                         if (this.homeBlockControl != 3) {
-                            for (final String playerName : Siege.this.attackerPlayers) {
+                            for (final String playerName : OldSiege.this.attackerPlayers) {
                                 try {
-                                    Bukkit.getPlayer(playerName).sendMessage(Helper.chatLabel()
+                                    Bukkit.getPlayer(playerName).sendMessage(UtilsChat.getPrefix()
                                         + "Defenders retain control of the HomeBlock at "
-                                        + Siege.this.town.getName() + "! +1 Defender Points per second");
+                                        + OldSiege.this.town.getName() + "! +1 Defender Points per second");
                                 } catch (NullPointerException ex9) {
                                 }
                             }
-                            for (final String playerName : Siege.this.defenderPlayers) {
+                            for (final String playerName : OldSiege.this.defenderPlayers) {
                                 try {
-                                    Bukkit.getPlayer(playerName).sendMessage(Helper.chatLabel()
+                                    Bukkit.getPlayer(playerName).sendMessage(UtilsChat.getPrefix()
                                         + "Defenders retain control of the HomeBlock at "
-                                        + Siege.this.town.getName() + "! +1 Defender Points per second");
+                                        + OldSiege.this.town.getName() + "! +1 Defender Points per second");
                                 } catch (NullPointerException ex10) {
                                 }
                             }
                         }
-                        Siege.this.addPointsToDefenders(10);
+                        OldSiege.this.addPointsToDefenders(10);
                         this.homeBlockControl = 3;
                     }
-                    if (Siege.this.siegeTicks % 6000 == 0) { // Updates every 5 minutes
-                        Bukkit.broadcastMessage(Helper.chatLabel() + "Report on the siege of "
-                            + Siege.this.town.getName() + ":");
+                    if (OldSiege.this.siegeTicks % 6000 == 0) { // Updates every 5 minutes
+                        Bukkit.broadcastMessage(UtilsChat.getPrefix() + "Report on the siege of "
+                            + OldSiege.this.town.getName() + ":");
                         Bukkit.broadcastMessage(
-                            "Attacker Points - " + Siege.this.attackerPoints);
+                            "Attacker Points - " + OldSiege.this.attackerPoints);
                         Bukkit.broadcastMessage(
-                            "Defender Points - " + Siege.this.defenderPoints);
+                            "Defender Points - " + OldSiege.this.defenderPoints);
                     }
                     if (siegeTicks % 1200 == 0) { // Saves every minute
                         save();
@@ -247,30 +249,30 @@ public class Siege {
     public void attackersWin(final OfflinePlayer siegeLeader) {
         final Resident resident = TownyAPI.getInstance().getResident(siegeLeader.getUniqueId());
         Nation nation = null;
-        Bukkit.broadcastMessage(Helper.chatLabel() + "The attackers have won the siege of " + this.town.getName() + "!");
+        Bukkit.broadcastMessage(UtilsChat.getPrefix() + "The attackers have won the siege of " + this.town.getName() + "!");
         try {
             nation = resident.getTown().getNation();
         } catch (Exception e) {
         }
         if (nation != null) {
-            Bukkit.broadcastMessage(Helper.chatLabel() + "The town of " + this.town.getName()
+            Bukkit.broadcastMessage(UtilsChat.getPrefix() + "The town of " + this.town.getName()
                 + " has been placed under occupation by " + nation.getName() + "!");
         }
         Main.econ.depositPlayer(siegeLeader, 2500.0);
         double amt = 0.0;
         if (this.town.getAccount().getHoldingBalance() > 10000.0) {
             amt = Math.floor(this.town.getAccount().getHoldingBalance()) / 4.0;
-            this.town.getAccount().withdraw(amt, "war loot");
+            this.town.getAccount().withdraw(amt, "oldWar loot");
         } else {
             if (this.town.getAccount().getHoldingBalance() < 2500.0) {
                 amt = this.town.getAccount().getHoldingBalance();
-                Bukkit.broadcastMessage(Helper.chatLabel() + "The town of " + this.town.getName()
+                Bukkit.broadcastMessage(UtilsChat.getPrefix() + "The town of " + this.town.getName()
                     + " has been destroyed by " + this.getAttackerSide() + "!");
                 TownyUniverse.getInstance().getDataSource().deleteTown(this.town);
                 Main.econ.depositPlayer(siegeLeader, amt);
                 return;
             }
-            this.town.getAccount().withdraw(2500.0, "war loot");
+            this.town.getAccount().withdraw(2500.0, "oldWar loot");
             amt = 2500.0;
         }
         Bukkit.broadcastMessage("The town of " + this.town.getName() + " has been sacked by " + this.getAttackerSide()
@@ -280,9 +282,9 @@ public class Siege {
         Main.econ.depositPlayer(siegeLeader, amt);
 
         if (side1AreAttackers) {
-            war.addSide1Points(50);
+            oldWar.addSide1Points(50);
         } else {
-            war.addSide2Points(50);
+            oldWar.addSide2Points(50);
         }
 
         stop();
@@ -290,17 +292,17 @@ public class Siege {
     }
 
     public void defendersWin() {
-        this.town.getAccount().deposit(2500.0, "War chest");
-        Bukkit.broadcastMessage(Helper.chatLabel() + "The defenders have won the siege of " + this.town.getName() + "!");
-        Bukkit.broadcastMessage(Helper.chatLabel() + this.town.getName()
-            + " has recovered the attackers' war chest, valued at $2,500");
+        this.town.getAccount().deposit(2500.0, "OldWar chest");
+        Bukkit.broadcastMessage(UtilsChat.getPrefix() + "The defenders have won the siege of " + this.town.getName() + "!");
+        Bukkit.broadcastMessage(UtilsChat.getPrefix() + this.town.getName()
+            + " has recovered the attackers' oldWar chest, valued at $2,500");
         Main.warLogger
-            .log(war.getName() + ": The defenders have won the siege of " + this.town.getName() + "!");
+            .log(oldWar.getName() + ": The defenders have won the siege of " + this.town.getName() + "!");
 
         if (side1AreAttackers) {
-            war.addSide2Points(50);
+            oldWar.addSide2Points(50);
         } else {
-            war.addSide1Points(50);
+            oldWar.addSide1Points(50);
         }
 
         stop();
@@ -311,10 +313,10 @@ public class Siege {
      * No winnder declared
      */
     public void noWinner() {
-        Bukkit.broadcastMessage(Helper.chatLabel() + "The siege of " + this.town.getName() + " was a draw!");
-        Bukkit.broadcastMessage(Helper.chatLabel() + "No money has been recovered.");
+        Bukkit.broadcastMessage(UtilsChat.getPrefix() + "The siege of " + this.town.getName() + " was a draw!");
+        Bukkit.broadcastMessage(UtilsChat.getPrefix() + "No money has been recovered.");
         Main.warLogger
-            .log(war.getName() + ": No one won the siege of " + this.town.getName() + "!");
+            .log(oldWar.getName() + ": No one won the siege of " + this.town.getName() + "!");
         stop();
         clearBeacon();
     }
@@ -420,12 +422,12 @@ public class Siege {
         this.defenderPoints += points;
     }
 
-    public War getWar() {
-        return this.war;
+    public OldWar getWar() {
+        return this.oldWar;
     }
 
-    public void setWar(final War war) {
-        this.war = war;
+    public void setWar(final OldWar oldWar) {
+        this.oldWar = oldWar;
     }
 
     public Town getTown() {
@@ -449,9 +451,9 @@ public class Siege {
      */
     public String getAttackerSide() {
         if (side1AreAttackers) {
-            return war.getSide1();
+            return oldWar.getSide1();
         } else {
-            return war.getSide2();
+            return oldWar.getSide2();
         }
     }
 
@@ -460,9 +462,9 @@ public class Siege {
      */
     public String getDefenderSide() {
         if (side1AreAttackers) {
-            return war.getSide2();
+            return oldWar.getSide2();
         } else {
-            return war.getSide1();
+            return oldWar.getSide1();
         }
     }
 
@@ -470,7 +472,7 @@ public class Siege {
         BossBar bossBar = Bukkit.getBossBar(bossBarKey);
         if (bossBar == null) bossBar = createNewDisplayBar();
 
-        bossBar.setTitle(String.format("%d -- Attackers -Siege Score- Defenders -- %d", this.attackerPoints, this.defenderPoints));
+        bossBar.setTitle(String.format("%d -- Attackers -OldSiege Score- Defenders -- %d", this.attackerPoints, this.defenderPoints));
         bossBar.setProgress((this.attackerPoints + 0.5D) / ((this.attackerPoints + this.defenderPoints) + 1.0D));
 
         for (String s : this.getAttackerPlayers()) {
@@ -516,7 +518,7 @@ public class Siege {
 
 
     public BossBar createNewDisplayBar() {
-        return Bukkit.createBossBar(bossBarKey, String.format("%d -- Attackers -Siege Score- Defenders -- %d", this.attackerPoints, this.defenderPoints), BarColor.YELLOW, BarStyle.SOLID);
+        return Bukkit.createBossBar(bossBarKey, String.format("%d -- Attackers -OldSiege Score- Defenders -- %d", this.attackerPoints, this.defenderPoints), BarColor.YELLOW, BarStyle.SOLID);
     }
 
     public int getAttackerPoints() {

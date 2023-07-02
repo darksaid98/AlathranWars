@@ -4,12 +4,12 @@ import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.WorldCoord;
-import me.ShermansWorld.AlathraWar.Helper;
-import me.ShermansWorld.AlathraWar.Raid;
-import me.ShermansWorld.AlathraWar.Siege;
+import me.ShermansWorld.AlathraWar.deprecated.OldRaid;
+import me.ShermansWorld.AlathraWar.deprecated.OldSiege;
 import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
+import me.ShermansWorld.AlathraWar.utility.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,7 +23,7 @@ import java.util.UUID;
 
 public final class KillsListener implements Listener {
 
-    public static final HashMap<UUID, Raid> respawnQueue = new HashMap<>();
+    public static final HashMap<UUID, OldRaid> respawnQueue = new HashMap<>();
 
     @EventHandler
     public void onPlayerKilled(final PlayerDeathEvent event) {
@@ -40,54 +40,54 @@ public final class KillsListener implements Listener {
         boolean playerCloseToHomeBlockRaid = false;
 
         try {
-            //Raid logic
-            for (final Raid raid : RaidData.getRaids()) {
-                final int homeBlockXCoordRaided = raid.getRaidedTown().getHomeBlock().getCoord().getX() * 16;
-                final int homeBlockZCoordRaided = raid.getRaidedTown().getHomeBlock().getCoord().getZ() * 16;
-//                final int homeBlockXCoordGather = raid.getGatherTown().getHomeBlock().getCoord().getX() * 16;
-//                final int homeBlockZCoordGather = raid.getGatherTown().getHomeBlock().getCoord().getZ() * 16;
+            //OldRaid logic
+            for (final OldRaid oldRaid : RaidData.getRaids()) {
+                final int homeBlockXCoordRaided = oldRaid.getRaidedTown().getHomeBlock().getCoord().getX() * 16;
+                final int homeBlockZCoordRaided = oldRaid.getRaidedTown().getHomeBlock().getCoord().getZ() * 16;
+//                final int homeBlockXCoordGather = oldRaid.getGatherTown().getHomeBlock().getCoord().getX() * 16;
+//                final int homeBlockZCoordGather = oldRaid.getGatherTown().getHomeBlock().getCoord().getZ() * 16;
                 //Carryover from sieges
                 if (Math.abs(killed.getLocation().getBlockX() - homeBlockXCoordRaided) <= 200 && Math.abs(killed.getLocation().getBlockZ() - homeBlockZCoordRaided) <= 200) {
                     playerCloseToHomeBlockRaid = true;
                 }
 
-                if (raid.getDefenderPlayers().contains(killed.getName()) && ((town != null && town.equals(raid.getRaidedTown())) || playerCloseToHomeBlockRaid)) {
+                if (oldRaid.getDefenderPlayers().contains(killed.getName()) && ((town != null && town.equals(oldRaid.getRaidedTown())) || playerCloseToHomeBlockRaid)) {
                     //There is seperate behavior if combat hasnt started
-                    if (raid.getPhase() == RaidPhase.COMBAT && killer != null) {
-                        if (raid.getActiveRaiders().contains(killer.getName())) {
+                    if (oldRaid.getPhase() == RaidPhase.COMBAT && killer != null) {
+                        if (oldRaid.getActiveRaiders().contains(killer.getName())) {
                             this.raidKill(killed, event);
-                            raid.defenderKilledInCombat(event);
+                            oldRaid.defenderKilledInCombat(event);
                             return;
                         }
                     }
                     //teleport back to raided spawn, without damaged gear
                     this.oocKill(killed, event);
-                    raid.defenderKilledOutofCombat(event);
+                    oldRaid.defenderKilledOutofCombat(event);
                     return;
                 }
-                if (raid.getActiveRaiders().contains(killed.getName()) && ((town != null && town.equals(raid.getRaidedTown())) || playerCloseToHomeBlockRaid)) {
+                if (oldRaid.getActiveRaiders().contains(killed.getName()) && ((town != null && town.equals(oldRaid.getRaidedTown())) || playerCloseToHomeBlockRaid)) {
                     //There is seperate behavior if combat hasnt started
-                    if (raid.getPhase() == RaidPhase.COMBAT && killer != null) {
-                        if (raid.getDefenderPlayers().contains(killer.getName())) {
+                    if (oldRaid.getPhase() == RaidPhase.COMBAT && killer != null) {
+                        if (oldRaid.getDefenderPlayers().contains(killer.getName())) {
                             this.raidKill(killed, event);
-                            raid.raiderKilledInCombat(event);
-                            respawnQueue.put(killed.getUniqueId(), raid);
+                            oldRaid.raiderKilledInCombat(event);
+                            respawnQueue.put(killed.getUniqueId(), oldRaid);
                             return;
                         }
-                    } else if (raid.getPhase() != RaidPhase.COMBAT && killer != null) {
+                    } else if (oldRaid.getPhase() != RaidPhase.COMBAT && killer != null) {
                         this.oocKill(killed, event);
-                        raid.raiderKilledOutofCombat(event);
-                        respawnQueue.put(killed.getUniqueId(), raid);
+                        oldRaid.raiderKilledOutofCombat(event);
+                        respawnQueue.put(killed.getUniqueId(), oldRaid);
                         return;
                     }
                     //teleport back to gather town spawn, without damaged gear
                     //this is to disincentive people prekilling
                     this.oocKill(killed, event);
-                    raid.raiderKilledOutofCombat(event);
-                    respawnQueue.put(killed.getUniqueId(), raid);
+                    oldRaid.raiderKilledOutofCombat(event);
+                    respawnQueue.put(killed.getUniqueId(), oldRaid);
                     return;
                 }
-                if ((town != null && town.equals(raid.getRaidedTown()) || playerCloseToHomeBlockRaid)) {
+                if ((town != null && town.equals(oldRaid.getRaidedTown()) || playerCloseToHomeBlockRaid)) {
                     this.raidKill(killed, event);
                     return;
                 }
@@ -96,29 +96,29 @@ public final class KillsListener implements Listener {
 
             if (killer == null) return;
 
-            for (final Siege siege : SiegeData.getSieges()) {
-                final int homeBlockXCoord = siege.getTown().getHomeBlock().getCoord().getX() * 16;
-                final int homeBlockZCoord = siege.getTown().getHomeBlock().getCoord().getZ() * 16;
+            for (final OldSiege oldSiege : SiegeData.getSieges()) {
+                final int homeBlockXCoord = oldSiege.getTown().getHomeBlock().getCoord().getX() * 16;
+                final int homeBlockZCoord = oldSiege.getTown().getHomeBlock().getCoord().getZ() * 16;
                 if (Math.abs(killed.getLocation().getBlockX() - homeBlockXCoord) <= 300 && Math.abs(killed.getLocation().getBlockZ() - homeBlockZCoord) <= 300) {
                     playerCloseToHomeBlockSiege = true;
                 }
-                if (siege.getAttackerPlayers().contains(killer.getName()) && ((town != null && town.equals(siege.getTown())) || playerCloseToHomeBlockSiege)) {
-                    if (siege.getDefenderPlayers().contains(killed.getName())) {
-                        siege.addPointsToAttackers(20);
-                        for (final String playerName : siege.getAttackerPlayers()) {
+                if (oldSiege.getAttackerPlayers().contains(killer.getName()) && ((town != null && town.equals(oldSiege.getTown())) || playerCloseToHomeBlockSiege)) {
+                    if (oldSiege.getDefenderPlayers().contains(killed.getName())) {
+                        oldSiege.addPointsToAttackers(20);
+                        for (final String playerName : oldSiege.getAttackerPlayers()) {
                             try {
                                 Player p = Bukkit.getPlayer(playerName);
                                 if (p != null)
-                                    p.sendMessage(Helper.chatLabel() + "Defender killed! + 20 Attacker Points");
+                                    p.sendMessage(UtilsChat.getPrefix() + "Defender killed! + 20 Attacker Points");
                             } catch (NullPointerException ignored) {
                                 ignored.printStackTrace();
                             }
                         }
-                        for (final String playerName : siege.getDefenderPlayers()) {
+                        for (final String playerName : oldSiege.getDefenderPlayers()) {
                             try {
                                 Player p = Bukkit.getPlayer(playerName);
                                 if (p != null)
-                                    p.sendMessage(Helper.chatLabel() + "Defender killed! + 20 Attacker Points");
+                                    p.sendMessage(UtilsChat.getPrefix() + "Defender killed! + 20 Attacker Points");
                             } catch (NullPointerException ignored) {
                                 ignored.printStackTrace();
                             }
@@ -127,23 +127,23 @@ public final class KillsListener implements Listener {
                     this.siegeKill(killed, event);
                     return;
                 }
-                if (siege.getDefenderPlayers().contains(killer.getName()) && ((town != null && town.equals(siege.getTown())) || playerCloseToHomeBlockSiege)) {
-                    if (siege.getAttackerPlayers().contains(killed.getName())) {
-                        siege.addPointsToDefenders(20);
-                        for (final String playerName : siege.getAttackerPlayers()) {
+                if (oldSiege.getDefenderPlayers().contains(killer.getName()) && ((town != null && town.equals(oldSiege.getTown())) || playerCloseToHomeBlockSiege)) {
+                    if (oldSiege.getAttackerPlayers().contains(killed.getName())) {
+                        oldSiege.addPointsToDefenders(20);
+                        for (final String playerName : oldSiege.getAttackerPlayers()) {
                             try {
                                 Player p = Bukkit.getPlayer(playerName);
                                 if (p != null)
-                                    p.sendMessage(Helper.chatLabel() + "Attacker killed! + 20 Defender Points");
+                                    p.sendMessage(UtilsChat.getPrefix() + "Attacker killed! + 20 Defender Points");
                             } catch (NullPointerException ex3) {
                                 ex3.printStackTrace();
                             }
                         }
-                        for (final String playerName : siege.getDefenderPlayers()) {
+                        for (final String playerName : oldSiege.getDefenderPlayers()) {
                             try {
                                 Player p = Bukkit.getPlayer(playerName);
                                 if (p != null)
-                                    p.sendMessage(Helper.chatLabel() + "Attacker killed! + 20 Defender Points");
+                                    p.sendMessage(UtilsChat.getPrefix() + "Attacker killed! + 20 Defender Points");
                             } catch (NullPointerException ex4) {
                                 ex4.printStackTrace();
                             }
@@ -152,7 +152,7 @@ public final class KillsListener implements Listener {
                     this.siegeKill(killed, event);
                     return;
                 }
-                if ((town != null && town.equals(siege.getTown()) || playerCloseToHomeBlockSiege)) {
+                if ((town != null && town.equals(oldSiege.getTown()) || playerCloseToHomeBlockSiege)) {
                     this.siegeKill(killed, event);
                 }
             }
@@ -170,17 +170,17 @@ public final class KillsListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onRespawn(PlayerRespawnEvent event) {
         if (respawnQueue.containsKey(event.getPlayer().getUniqueId())) {
-            Raid raid = respawnQueue.get(event.getPlayer().getUniqueId());
-            if (raid == null) return;
-            if (raid.getActiveRaiders().contains(event.getPlayer().getName())) {
+            OldRaid oldRaid = respawnQueue.get(event.getPlayer().getUniqueId());
+            if (oldRaid == null) return;
+            if (oldRaid.getActiveRaiders().contains(event.getPlayer().getName())) {
                 //do raider respawn
                 try {
-                    event.setRespawnLocation(raid.getGatherTown().getSpawn());
-                    event.getPlayer().sendMessage(Helper.chatLabel() + "You died " + (raid.getPhase().equals(RaidPhase.COMBAT) ? "raiding" : "before combat") + " and have been teleported back to the gather point.");
+                    event.setRespawnLocation(oldRaid.getGatherTown().getSpawn());
+                    event.getPlayer().sendMessage(UtilsChat.getPrefix() + "You died " + (oldRaid.getPhase().equals(RaidPhase.COMBAT) ? "raiding" : "before combat") + " and have been teleported back to the gather point.");
                 } catch (TownyException e) {
                     throw new RuntimeException(e);
                 }
-            } else if (raid.getDefenderSide().contains(event.getPlayer().getName())) {
+            } else if (oldRaid.getDefenderSide().contains(event.getPlayer().getName())) {
                 //do defender respawn ?
             } else {
                 //invalid code
@@ -199,9 +199,9 @@ public final class KillsListener implements Listener {
      */
     private void siegeKill(final Player killed, final PlayerDeathEvent event) {
         //Helper
-        Helper.damageAllGear(killed);
+        Utils.damageAllGear(killed);
 
-        //Siege specific
+        //OldSiege specific
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "spawn " + killed.getName());
         event.setKeepInventory(true);
         event.getDrops().clear();
@@ -217,9 +217,9 @@ public final class KillsListener implements Listener {
      */
     private void raidKill(final Player killed, final PlayerDeathEvent event) {
         //Helper
-        Helper.damageAllGear(killed);
+        Utils.damageAllGear(killed);
 
-        //Siege specific
+        //OldSiege specific
 //        Bukkit.dispatchCommand((CommandSender)Bukkit.getConsoleSender(), "spawn " + killed.getName());
         event.setKeepInventory(true);
         event.getDrops().clear();
@@ -234,7 +234,7 @@ public final class KillsListener implements Listener {
      * @param event  event
      */
     private void oocKill(final Player killed, final PlayerDeathEvent event) {
-        //Siege specific
+        //OldSiege specific
 //        Bukkit.dispatchCommand((CommandSender)Bukkit.getConsoleSender(), "spawn " + killed.getName());
         event.setKeepInventory(true);
         event.getDrops().clear();

@@ -1,4 +1,4 @@
-package me.ShermansWorld.AlathraWar.commands;
+package me.ShermansWorld.AlathraWar.deprecated;
 
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
@@ -10,6 +10,9 @@ import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.data.WarData;
+import me.ShermansWorld.AlathraWar.deprecated.OldRaid;
+import me.ShermansWorld.AlathraWar.deprecated.OldSiege;
+import me.ShermansWorld.AlathraWar.deprecated.OldWar;
 import me.ShermansWorld.AlathraWar.items.WarItemRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
@@ -21,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+@Deprecated
 public class CommandHelper {
 
     /**
@@ -30,7 +34,7 @@ public class CommandHelper {
      */
     public static List<String> getWarNames() {
         List<String> out = new ArrayList<>();
-        for (War w : WarData.getWars()) {
+        for (OldWar w : WarData.getWars()) {
             out.add(w.getName());
         }
         return out;
@@ -43,7 +47,7 @@ public class CommandHelper {
      */
     public static List<String> getSieges() {
         List<String> out = new ArrayList<>();
-        for (Siege s : SiegeData.getSieges()) {
+        for (OldSiege s : SiegeData.getSieges()) {
             out.add(s.getName());
         }
         return out;
@@ -56,7 +60,7 @@ public class CommandHelper {
      */
     public static List<String> getRaids() {
         List<String> out = new ArrayList<>();
-        for (Raid r : RaidData.getRaids()) {
+        for (OldRaid r : RaidData.getRaids()) {
             out.add(r.getName());
         }
         return out;
@@ -70,7 +74,7 @@ public class CommandHelper {
      */
     public static List<String> getWarSides(String name) {
         List<String> out = new ArrayList<>();
-        for (War w : WarData.getWars()) {
+        for (OldWar w : WarData.getWars()) {
             if (w.getName().equalsIgnoreCase(name)) {
                 out.add(w.getSide1());
                 out.add(w.getSide2());
@@ -81,7 +85,7 @@ public class CommandHelper {
     }
 
     /**
-     * get list of all towny towns
+     * getInstance list of all towny towns
      *
      * @return list of all towns
      */
@@ -94,13 +98,13 @@ public class CommandHelper {
     }
 
     /**
-     * get list of all towny towns in a war
+     * getInstance list of all towny towns in a war
      *
      * @return list of all towns in a war
      */
     public static List<String> getTownyWarTowns(String war) {
         List<String> out = new ArrayList<>();
-        War w = WarData.getWar(war);
+        OldWar w = WarData.getWar(war);
         if (w == null) return Collections.emptyList();
         for (Town t : TownyAPI.getInstance().getTowns()) {
             if (w.getSide2Towns().contains(t.getName().toLowerCase()) || w.getSide1Towns().contains(t.getName().toLowerCase())) {
@@ -111,13 +115,13 @@ public class CommandHelper {
     }
 
     /**
-     * get list of all towny towns in a war
+     * getInstance list of all towny towns in a war
      *
      * @return list of all nations in a war
      */
     public static List<String> getTownyWarNations(String war) {
         List<String> out = new ArrayList<>();
-        War w = WarData.getWar(war);
+        OldWar w = WarData.getWar(war);
         if (w == null) return Collections.emptyList();
         for (Town t : TownyAPI.getInstance().getTowns()) {
             if (w.getSide2Towns().contains(t.getName().toLowerCase()) || w.getSide1Towns().contains(t.getName().toLowerCase())) {
@@ -134,13 +138,13 @@ public class CommandHelper {
     }
 
     /**
-     * get list of all towny towns on a side in a war
+     * getInstance list of all towny towns on a side in a war
      *
      * @return list of all towns in a side of a war
      */
     public static List<String> getTownyWarTowns(String war, String side) {
         List<String> out = new ArrayList<>();
-        War w = WarData.getWar(war);
+        OldWar w = WarData.getWar(war);
         if (w == null) return Collections.emptyList();
         for (Town t : TownyAPI.getInstance().getTowns()) {
             if (side.equalsIgnoreCase(w.getSide1())) {
@@ -163,7 +167,7 @@ public class CommandHelper {
      */
     public static List<String> getRaidTowns() {
         List<String> out = new ArrayList<>();
-        for (Raid r : RaidData.getRaids()) {
+        for (OldRaid r : RaidData.getRaids()) {
             out.add(r.getRaidedTown().getName());
         }
         return out;
@@ -176,14 +180,14 @@ public class CommandHelper {
      */
     public static List<String> getSiegeTowns() {
         List<String> out = new ArrayList<>();
-        for (Siege r : SiegeData.getSieges()) {
+        for (OldSiege r : SiegeData.getSieges()) {
             out.add(r.getTown().getName());
         }
         return out;
     }
 
     /**
-     * get list of all towny nations
+     * getInstance list of all towny nations
      *
      * @return list of all nations
      */
@@ -201,7 +205,7 @@ public class CommandHelper {
     }
 
     /**
-     * get a list of all online players
+     * getInstance a list of all online players
      *
      * @return list of all players online
      */
@@ -215,7 +219,7 @@ public class CommandHelper {
     }
 
     /**
-     * get a list of all raid phases
+     * getInstance a list of all raid phases
      *
      * @return list of all raid phases
      */
@@ -234,7 +238,7 @@ public class CommandHelper {
     public static int isPlayerMinuteman(String player) {
         Resident res = TownyAPI.getInstance().getResident(player);
         if (res != null) {
-            //get registration time
+            //getInstance registration time
             long regTime = res.getRegistered();
             int playTicks = Bukkit.getPlayer(res.getUUID()).getStatistic(Statistic.PLAY_ONE_MINUTE);
             int out = 0;
@@ -267,7 +271,7 @@ public class CommandHelper {
         for (String s : args) {
             log.append(" ").append(s);
         }
-        Main.warLogger.log(Helper.chatLabel() + sender.getName() + " ran command: " + log);
+        Main.warLogger.log(UtilsChat.getPrefix() + sender.getName() + " ran command: " + log);
     }
 
     /**

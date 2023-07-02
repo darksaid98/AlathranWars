@@ -3,7 +3,7 @@ package me.ShermansWorld.AlathraWar.listeners;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
-import me.ShermansWorld.AlathraWar.War;
+import me.ShermansWorld.AlathraWar.deprecated.OldWar;
 import me.ShermansWorld.AlathraWar.data.WarData;
 import me.ShermansWorld.AlathraWar.hooks.TABHook;
 import org.bukkit.entity.Player;
@@ -22,12 +22,12 @@ public class JoinListener implements Listener {
         String townName = town.getName();
         boolean inWar = false;
 
-        for (final War war : WarData.getWars()) {
-            if (war.getSide1Towns().contains(townName.toLowerCase())) {
-                TABHook.assignSide1WarSuffix(p, war);
+        for (final OldWar oldWar : WarData.getWars()) {
+            if (oldWar.getSide1Towns().contains(townName.toLowerCase())) {
+                TABHook.assignSide1WarSuffix(p, oldWar);
                 inWar = true;
-            } else if (war.getSide2Towns().contains(townName.toLowerCase())) {
-                TABHook.assignSide2WarSuffix(p, war);
+            } else if (oldWar.getSide2Towns().contains(townName.toLowerCase())) {
+                TABHook.assignSide2WarSuffix(p, oldWar);
                 inWar = true;
             }
         }

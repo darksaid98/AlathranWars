@@ -1,7 +1,7 @@
 package me.ShermansWorld.AlathraWar.hooks;
 
-import me.ShermansWorld.AlathraWar.Helper;
-import me.ShermansWorld.AlathraWar.War;
+import com.github.milkdrinkers.colorparser.ColorParser;
+import me.ShermansWorld.AlathraWar.deprecated.OldWar;
 import me.ShermansWorld.AlathraWar.listeners.JoinListener;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
@@ -12,8 +12,8 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 public class TABHook {
-    public static boolean enabled = false;
-    public static TabAPI tabAPI;
+    private static boolean enabled = false;
+    private static TabAPI tabAPI;
 
     public static void init() {
         if (enabled) return;
@@ -37,7 +37,7 @@ public class TABHook {
         });
     }
 
-    public static void assignSide1WarSuffix(Player p, War war) {
+    public static void assignSide1WarSuffix(Player p, OldWar oldWar) {
         if (!enabled) return;
 
         TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
@@ -45,21 +45,20 @@ public class TABHook {
         if (tabAPI.getTabListFormatManager() == null) return;
 
         tabAPI.getTabListFormatManager().setSuffix(tabPlayer,
-            Helper.color(" &c[") + war.getSide1() + "]&r");
+            new ColorParser(" &c[" + oldWar.getSide1() + "]&r").parseLegacy().build());
     }
 
-    public static void assignSide2WarSuffix(Player p, War war) {
+    public static void assignSide2WarSuffix(Player p, OldWar oldWar) {
         if (!enabled) return;
 
         TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
 
         if (tabAPI.getTabListFormatManager() == null) return;
 
-        tabAPI.getTabListFormatManager().setSuffix(tabPlayer,
-            Helper.color(" &9[") + war.getSide2() + "]&r");
+        tabAPI.getTabListFormatManager().setSuffix(tabPlayer, Helper.color(" &9[") + oldWar.getSide2() + "]&r");
     }
 
-    public static void assignSide1WarSuffixMerc(Player p, War war) {
+    public static void assignSide1WarSuffixMerc(Player p, OldWar oldWar) {
         if (!enabled) return;
 
         TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
@@ -67,10 +66,10 @@ public class TABHook {
         if (tabAPI.getTabListFormatManager() == null) return;
 
         tabAPI.getTabListFormatManager().setSuffix(tabPlayer,
-            Helper.color(" &a[M]&c[") + war.getSide1() + "]&r");
+            Helper.color(" &a[M]&c[") + oldWar.getSide1() + "]&r");
     }
 
-    public static void assignSide2WarSuffixMerc(Player p, War war) {
+    public static void assignSide2WarSuffixMerc(Player p, OldWar oldWar) {
         if (!enabled) return;
 
         TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
@@ -78,7 +77,7 @@ public class TABHook {
         if (tabAPI.getTabListFormatManager() == null) return;
 
         tabAPI.getTabListFormatManager().setSuffix(tabPlayer,
-            Helper.color(" &a[M]&9[") + war.getSide2() + "]&r");
+            Helper.color(" &a[M]&9[") + oldWar.getSide2() + "]&r");
     }
 
     public static void resetSuffix(Player p) {

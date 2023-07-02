@@ -1,20 +1,20 @@
 package me.ShermansWorld.AlathraWar.commands;
 
 import com.github.milkdrinkers.colorparser.ColorParser;
+import com.palmergames.bukkit.towny.object.Town;
 import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.*;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.jorel.commandapi.executors.CommandArguments;
-import me.ShermansWorld.AlathraWar.*;
-import me.ShermansWorld.AlathraWar.data.RaidData;
-import me.ShermansWorld.AlathraWar.data.SiegeData;
-import me.ShermansWorld.AlathraWar.data.WarData;
+import me.ShermansWorld.AlathraWar.Main;
+import me.ShermansWorld.AlathraWar.conflict.War;
+import me.ShermansWorld.AlathraWar.conflict.battle.Side;
 import me.ShermansWorld.AlathraWar.enums.AdminCommandFailEnum;
+import me.ShermansWorld.AlathraWar.holder.WarManager;
 import me.ShermansWorld.AlathraWar.items.WarItemRegistry;
+import me.ShermansWorld.AlathraWar.utility.UtilsChat;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.boss.KeyedBossBar;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -22,7 +22,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.sql.Timestamp;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 public class AdminCommand {
@@ -107,11 +106,11 @@ public class AdminCommand {
             .withPermission("AlathraWar.admin")
             .withSubcommands(
                 commandItem(),
-                commandPurgeBars(),
-                commandSave(),
-                commandSaveAll(),
+//                commandPurgeBars(),
+//                commandSave(),
+//                commandSaveAll(),
                 commandLoad(),
-                commandLoadAll(),
+//                commandLoadAll(),
                 commandCreate(),
                 commandForce(),
                 commandHelp(),
@@ -124,10 +123,10 @@ public class AdminCommand {
             .register();
     }
 
-    @NotNull
-    private static StringBuilder getDefenderPlayers(Raid raid) {
+    /*@NotNull
+    private static StringBuilder getDefenderPlayers(OldRaid oldRaid) {
         StringBuilder defenderPlayers = new StringBuilder();
-        for (String pl : raid.getDefenderPlayers()) {
+        for (String pl : oldRaid.getDefenderPlayers()) {
             defenderPlayers.append(pl);
             defenderPlayers.append(", ");
         }
@@ -138,9 +137,9 @@ public class AdminCommand {
     }
 
     @NotNull
-    private static StringBuilder getActiveRaiders(Raid raid) {
+    private static StringBuilder getActiveRaiders(OldRaid oldRaid) {
         StringBuilder activeRaiders = new StringBuilder();
-        for (String pl : raid.getActiveRaiders()) {
+        for (String pl : oldRaid.getActiveRaiders()) {
             activeRaiders.append(pl);
             activeRaiders.append(", ");
         }
@@ -148,13 +147,13 @@ public class AdminCommand {
         if (activeRaiders.length() > 2)
             activeRaiders = new StringBuilder(activeRaiders.substring(0, activeRaiders.length() - 2));
         return activeRaiders;
-    }
+    }*/
 
     @NotNull
     private static StringBuilder getSurrenderedTowns(War war) {
         StringBuilder surrenderedTowns = new StringBuilder();
-        for (String t : war.getSurrenderedTowns()) {
-            surrenderedTowns.append(t);
+        for (Town t : war.getSurrenderedTowns()) {
+            surrenderedTowns.append(t.getName());
             surrenderedTowns.append(", ");
         }
         //cut off last two characters
@@ -167,27 +166,28 @@ public class AdminCommand {
     private static boolean fail(CommandSender p, CommandArguments args, AdminCommandFailEnum type) throws WrapperCommandSyntaxException {
         switch (type) {
             case PERMISSIONS -> {
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + Helper.color("&cYou do not have permission to do this.")).build());
+                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou do not have permission to do this.").build());
             }
             case SYNTAX -> {
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "Invalid Arguments. /alathrawaradmin help").build());
+                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "Invalid Arguments. /alathrawaradmin help").build());
             }
             default -> {
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "Something wrong. /alathrawaradmin help").build());
+                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "Something wrong. /alathrawaradmin help").build());
             }
         }
     }
 
-    private static void finalizeRaid(Raid raid) {
-        raid.save();
+    /*private static void finalizeRaid(OldRaid oldRaid) {
+        oldRaid.save();
     }
 
-    private static void finalizeSiege(Siege siege) {
-        siege.save();
-    }
+    private static void finalizeSiege(Siege oldSiege) {
+        oldSiege.save();
+    }*/
 
     private static void finalizeWar(War war) {
-        war.save();
+//        war.save();
+        // TODO Saving logic
     }
 
     private CommandAPICommand commandItem() {
@@ -196,7 +196,7 @@ public class AdminCommand {
                 new StringArgument("item")
                     .replaceSuggestions(
                         ArgumentSuggestions.strings(
-                            CommandHelper.getWarItems()
+                            CommandUtil.getWarItems()
                         )
                     ),
                 new IntegerArgument("amount").setOptional(true),
@@ -205,7 +205,7 @@ public class AdminCommand {
             .executesPlayer((Player sender, CommandArguments args) -> {
                 // Parse item
                 if (!(args.get("item") instanceof String argItem))
-                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cInvalid item argument.").build());
+                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cInvalid item argument.").build());
 
                 ItemStack stack;
                 if (argItem.contains(Main.getInstance().getName().toLowerCase())) {
@@ -215,7 +215,7 @@ public class AdminCommand {
                 }
 
                 if (stack == null)
-                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cThe item is not an AlathraWar item.").build());
+                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cThe item is not an AlathraWar item.").build());
 
                 // Parse amount
                 int argAmount = (int) args.getOptional("amount").orElse(1);
@@ -235,12 +235,12 @@ public class AdminCommand {
 
                 //log
                 final Component name = stack.getItemMeta() == null ? new ColorParser(stack.toString()).build() : stack.getItemMeta().displayName();
-                sender.sendMessage(Helper.chatLabel() + Helper.color("Gave " + stack.getAmount() + "x " + name + " to " + argPlayer.getName()));
-                Main.warLogger.log(Helper.chatLabel() + Helper.color("Gave " + stack.getAmount() + "x " + name + " to " + argPlayer.getName()));
+                sender.sendMessage(UtilsChat.getPrefix() + "Gave " + stack.getAmount() + "x " + name + " to " + argPlayer.getName());
+                Main.warLogger.log(UtilsChat.getPrefix() + "Gave " + stack.getAmount() + "x " + name + " to " + argPlayer.getName());
             });
     }
 
-    private CommandAPICommand commandPurgeBars() {
+    /*private CommandAPICommand commandPurgeBars() {
         return new CommandAPICommand("purgebars")
             .executes((CommandSender sender, CommandArguments args) -> {
                 for (Iterator<KeyedBossBar> it = Bukkit.getBossBars(); it.hasNext(); ) {
@@ -252,60 +252,60 @@ public class AdminCommand {
                     }
                 }
 
-                sender.sendMessage(Helper.chatLabel() + Helper.color("&cCleared all boss bars that have been registered with AlathraWar."));
-                sender.sendMessage(Helper.chatLabel() + Helper.color("&cNote: If any remain, please contact the plugin author or open an issue on GitHub. The data can be found under the tag CustomBossEvents: in level.dat! You will need an NBT Editing program to delete it manually."));
+                sender.sendMessage(UtilsChat.getPrefix() + "&cCleared all boss bars that have been registered with AlathraWar.");
+                sender.sendMessage(UtilsChat.getPrefix() + "&cNote: If any remain, please contact the plugin author or open an issue on GitHub. The data can be found under the tag CustomBossEvents: in level.dat! You will need an NBT Editing program to delete it manually.");
 
                 saveAll(sender, args);
             });
-    }
+    }*/
 
-    private CommandAPICommand commandSave() {
+    /*private CommandAPICommand commandSave() {
         return new CommandAPICommand("save")
             .withArguments(
                 new StringArgument("war")
                     .replaceSuggestions(
                         ArgumentSuggestions.strings(
-                            WarData.getWarsNames()
+                            WarManager.getInstance().getWarNames()
                         )
                     )
             )
             .executes((CommandSender sender, CommandArguments args) -> {
                 if (!(args.get("war") instanceof final String argWarName))
-                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a war name.").build());
+                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou need to specify a war name.").build());
 
-                for (War war : WarData.getWars()) {
+                for (War war : WarManager.getInstance().getWars()) {
                     if (war.getName().equalsIgnoreCase(argWarName)) {
-                        WarData.saveWar(war);
-                        sender.sendMessage(Helper.chatLabel() + Helper.color("&cForced Save of war: " + war.getName()));
+                        WarManager.getInstance().saveWar(war);
+                        sender.sendMessage(UtilsChat.getPrefix() + "&cForced Save of war: " + war.getName());
                         return;
                     }
                 }
 
-                sender.sendMessage(Helper.chatLabel() + Helper.color("&cWar does not exist!"));
+                sender.sendMessage(UtilsChat.getPrefix() + "&cWar does not exist!");
             });
-    }
+    }*/
 
-    private CommandAPICommand commandSaveAll() {
+    /*private CommandAPICommand commandSaveAll() {
         return new CommandAPICommand("save-all")
             .executes((CommandSender sender, CommandArguments args) -> {
-                for (War war : WarData.getWars()) WarData.saveWar(war);
-                sender.sendMessage(Helper.chatLabel() + Helper.color("&cForced Save of all wars"));
+                for (War war : WarManager.getInstance().getWars()) WarManager.getInstance().saveWar(war);
+                sender.sendMessage(UtilsChat.getPrefix() + "&cForced Save of all wars");
             });
-    }
+    }*/
 
     private CommandAPICommand commandLoad() {
         return new CommandAPICommand("load")
             .executes((CommandSender sender, CommandArguments args) -> {
-                sender.sendMessage(new ColorParser(Helper.chatLabel() + "&cSupport for loading wars individually is currently unimplemented. Use /awa load-all instead").build());
+                sender.sendMessage(new ColorParser(UtilsChat.getPrefix() + "&cSupport for loading wars individually is currently unimplemented. Use /awa load-all instead").build());
             });
 
                 /*if (args.length >= 3) {
                     if(Boolean.parseBoolean(args[2])) {
-                        for (War war : WarData.getWars()) {
+                        for (War war : WarManager.getInstance().getWars()) {
                             int index = -1;
                             if(war.getName().equalsIgnoreCase(args[1])) {
                                 //kill raids
-                                for (Raid raid : war.getRaids()) {
+                                for (OldRaid raid : war.getRaids()) {
                                     raid.stop();
                                 }
                                 //kill sieges
@@ -313,71 +313,71 @@ public class AdminCommand {
                                     siege.stop();
                                 }
                                 //delete wars
-                                index = WarData.getWars().lastIndexOf(war);
-                                WarData.getWars().remove(war);
+                                index = WarManager.getInstance().getWars().lastIndexOf(war);
+                                WarManager.getInstance().getWars().remove(war);
                             }
                             if(index < 0) {
-                                sender.sendMessage(Helper.chatLabel() + Helper.color("&cError! Failed to delete war, forcing end."));
+                                sender.sendMessage(UtilsChat.getPrefix() + "&cError! Failed to delete war, forcing end."));
                                 return true;
                             }
                             //reload data
                             ;
-                            sender.sendMessage(Helper.chatLabel() + Helper.color("&cForcefully Reloaded all Wars!"));
+                            sender.sendMessage(UtilsChat.getPrefix() + "&cForcefully Reloaded all Wars!"));
                             return true;
                         }
                     }
                 }*/
     }
 
-    private CommandAPICommand commandLoadAll() {
+    /*private CommandAPICommand commandLoadAll() {
         return new CommandAPICommand("load-all")
             .withArguments(new BooleanArgument("boolean").setOptional(true))
             .executes((CommandSender sender, CommandArguments args) -> {
                 boolean argsBoolean = (boolean) args.getOptional("boolean").orElse(false);
 
                 if (argsBoolean) {
-                    for (War war : WarData.getWars()) {
+                    for (War war : WarManager.getInstance().getWars()) {
                         //kill raids
-                        for (Raid raid : war.getRaids()) {
-                            raid.stop();
+                        for (OldRaid oldRaid : war.getRaids()) {
+                            oldRaid.stop();
                         }
 
                         //kill sieges
-                        for (Siege siege : war.getSieges()) {
-                            siege.stop();
+                        for (Siege oldSiege : war.getSieges()) {
+                            oldSiege.stop();
                         }
 
                         //delete wars
-                        WarData.getWars().remove(war);
+                        WarManager.getInstance().getWars().remove(war);
                     }
 
                     //reload data
                     Main.initData();
-                    sender.sendMessage(Helper.chatLabel() + Helper.color("&cForcefully Reloaded all Wars!"));
+                    sender.sendMessage(UtilsChat.getPrefix() + "&cForcefully Reloaded all Wars!");
                 }
 
-                sender.sendMessage(Helper.chatLabel() + Helper.color("Are you sure you want to do this?"));
-                sender.sendMessage(Helper.chatLabel() + Helper.color("Doing this will forcefully stop and reload every war live. It can be very dangerous and may not work as intended."));
-                sender.sendMessage(Helper.chatLabel() + Helper.color("To confirm do /awa load-all true"));
+                sender.sendMessage(UtilsChat.getPrefix() + "Are you sure you want to do this?");
+                sender.sendMessage(UtilsChat.getPrefix() + "Doing this will forcefully stop and reload every war live. It can be very dangerous and may not work as intended.");
+                sender.sendMessage(UtilsChat.getPrefix() + "To confirm do /awa load-all true");
             });
-    }
+    }*/
 
     private CommandAPICommand commandCreate() {
         return new CommandAPICommand("create")
             .withSubcommands(
-                new CommandAPICommand("raid")
+                /*new CommandAPICommand("raid")
                     .withArguments(
                         new StringArgument("war")
                             .replaceSuggestions(
                                 ArgumentSuggestions.strings(
-                                    WarData.getWarsNames()
+                                    WarManager.getInstance().getWarsNames()
                                 )
                             ),
                         new StringArgument("town")
                             .replaceSuggestions(
                                 ArgumentSuggestions.stringCollection(info -> {
                                         final String warname = (String) info.previousArgs().get("war");
-                                        return CommandHelper.getTownyWarTowns(warname);
+                                        return CommandUtil.getTownyWarTowns(warname);
                                     }
                                 )
                             ),
@@ -387,7 +387,7 @@ public class AdminCommand {
                             .replaceSuggestions(
                                 ArgumentSuggestions.stringCollection(info -> { // TODO Make getHostileTowns method where we reverse from list
                                         final String warname = (String) info.previousArgs().get("war");
-                                        return CommandHelper.getTownyWarTowns(warname);
+                                        return CommandUtil.getTownyWarTowns(warname);
                                     }
                                 )
                             ),
@@ -399,22 +399,11 @@ public class AdminCommand {
                             .withPermission("AlathraWar.admin")
 
                     )
-                    .executesPlayer((Player p, CommandArguments args) -> RaidCommand.raidStart(p, args, true)),
+                    .executesPlayer((Player p, CommandArguments args) -> RaidCommand.raidStart(p, args, true)),*/
                 new CommandAPICommand("siege")
                     .withArguments(
-                        new StringArgument("war")
-                            .replaceSuggestions(
-                                ArgumentSuggestions.strings(
-                                    WarData.getWarsNames()
-                                )
-                            ),
-                        new StringArgument("town")
-                            .replaceSuggestions(
-                                ArgumentSuggestions.stringCollection(info -> {
-                                    final String warname = (String) info.previousArgs().get("war");
-                                    return CommandHelper.getTownyWarTowns(warname);
-                                })
-                            ),
+                        CommandUtil.warWarArgument("war", false, false, ""),
+                        CommandUtil.customTownInWarArgument("town", "war"),
                         new PlayerArgument("leader")
                             .setOptional(true)
                             .withPermission("AlathraWar.admin"),
@@ -425,36 +414,15 @@ public class AdminCommand {
                     .executesPlayer((Player p, CommandArguments args) -> SiegeCommand.siegeStart(p, args, true)),
                 new CommandAPICommand("war")
                     .withArguments(
-                        new StringArgument("war"),
-                        new StringArgument("side1")
+                        CommandUtil.warSideCreateArgument("side1", "war", true, false, ""),
+                        CommandUtil.warSideCreateArgument("side2", "war", true, false, ""),
+                        new GreedyStringArgument("warlabel")
                             .replaceSuggestions(
-                                ArgumentSuggestions.stringCollection(info -> {
-                                        final List<String> nations = CommandHelper.getTownyNations();
-                                        final List<String> towns = CommandHelper.getTownyTowns();
-
-                                        Collections.sort(nations);
-                                        Collections.sort(towns);
-
-                                        nations.addAll(towns);
-
-                                        return nations;
-                                    }
-                                )
-                            ),
-                        new StringArgument("side2")
-                            .replaceSuggestions(
-                                ArgumentSuggestions.stringCollection(info -> {
-                                        final List<String> nations = CommandHelper.getTownyNations();
-                                        final List<String> towns = CommandHelper.getTownyTowns();
-
-                                        Collections.sort(nations);
-                                        Collections.sort(towns);
-
-                                        nations.addAll(towns);
-
-                                        return nations;
-                                    }
-                                )
+                                ArgumentSuggestions.stringCollection(info -> List.of(
+                                    "Nations War of Conquest",
+                                    "Nations War for Survival",
+                                    "Nations War of Liberation"
+                                ))
                             )
                     )
                     .executesPlayer(WarCommand::warCreate)
@@ -471,247 +439,237 @@ public class AdminCommand {
                     .withSubcommands(
                         new CommandAPICommand("war")
                             .withArguments(
-                                new StringArgument("war")
-                                    .replaceSuggestions(
-                                        ArgumentSuggestions.strings(
-                                            CommandHelper.getWarNames()
-                                        )
-                                    ),
-                                new StringArgument("victor")
+                                CommandUtil.warWarArgument("war", false, false, "player"),
+                                CommandUtil.warSideCreateArgument("victor", "war", true, false, "")
                                     .setOptional(true)
-                                    .replaceSuggestions(
-                                        ArgumentSuggestions.stringCollection(info -> {
-                                            final String warname = (String) info.previousArgs().get("war");
-
-                                            final War war = WarData.getWar(warname);
-
-                                            if (war == null)
-                                                return Collections.emptyList();
-
-                                            return war.getSides();
-                                        })
-                                    )
                             ).executesPlayer((Player sender, CommandArguments args) -> {
                                 //TODO determine if needed
-                                sender.sendMessage(Helper.color("&cUnused! use /war delete"));
-                            }),
-                        new CommandAPICommand("siege")
+                                sender.sendMessage("&cUnused! use /war delete");
+                            })/*,
+                        new CommandAPICommand("siege") // TODO Very needed
                             .withArguments(
                                 new StringArgument("siege")
                                     .replaceSuggestions(
                                         ArgumentSuggestions.strings(
-                                            CommandHelper.getSieges()
+                                            CommandUtil.getSieges()
                                         )
                                     ),
                                 new StringArgument("victor")
                                     .setOptional(true)
                                     .replaceSuggestions(
                                         ArgumentSuggestions.stringCollection(info -> {
-                                            final String siegename = (String) info.previousArgs().get("siege");
+                                            final String siegename = (String) info.previousArgs().get("oldSiege");
 
-                                            final Siege siege = SiegeData.getSiege(siegename);
+                                            final Siege oldSiege = SiegeData.getSiege(siegename);
 
-                                            if (siege == null)
+                                            if (oldSiege == null)
                                                 return Collections.emptyList();
 
-                                            return List.of(siege.getAttackerSide(), siege.getDefenderSide(), "none");
+                                            return List.of(oldSiege.getAttackerSide(), oldSiege.getDefenderSide(), "none");
                                         })
                                     )
 
                             ).executesPlayer((Player sender, CommandArguments args) -> {
-                                if (!(args.get("siege") instanceof final String argSiegeName))
-                                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a siege!").build());
+                                if (!(args.get("oldSiege") instanceof final String argSiegeName))
+                                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou need to specify a oldSiege!").build());
 
-                                final Siege siege = SiegeData.getSiege(argSiegeName);
-                                if (siege == null)
-                                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cThat siege does not exist!").build());
+                                final Siege oldSiege = SiegeData.getSiege(argSiegeName);
+                                if (oldSiege == null)
+                                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cThat oldSiege does not exist!").build());
 
-                                final War war = siege.getWar();
+                                final War war = oldSiege.getWar();
                                 if (war == null)
-                                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cThe war does not exist!").build());
+                                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cThe war does not exist!").build());
 
                                 final String argSide = (String) args.getOptional("victor").orElse("none");
 
                                 // If tie
                                 if (argSide.equals("none")) {
-                                    siege.noWinner();
-                                    sender.sendMessage(Helper.chatLabel() + "The siege has forcefully been lifted at %s in war %s with no victor.".formatted(siege.getTown().getName(), war.getName()));
-                                    Main.warLogger.log("Siege of %s forcefully ended in war %s with no victor.".formatted(siege.getTown().getName(), war.getName()));
+                                    oldSiege.noWinner();
+                                    sender.sendMessage(UtilsChat.getPrefix() + "The oldSiege has forcefully been lifted at %s in war %s with no victor.".formatted(oldSiege.getTown().getName(), war.getName()));
+                                    Main.warLogger.log("Siege of %s forcefully ended in war %s with no victor.".formatted(oldSiege.getTown().getName(), war.getName()));
                                     return;
                                 }
 
-                                final String message = "The siege has forcefully been lifted at %s in war %s with the %s declared as victors.";
+                                final String message = "The oldSiege has forcefully been lifted at %s in war %s with the %s declared as victors.";
                                 String victor;
 
                                 // Figure who won & lost
-                                if (siege.getSide1AreAttackers()) {
+                                if (oldSiege.getSide1AreAttackers()) {
                                     if (argSide.equalsIgnoreCase(war.getSide1())) {
-                                        siege.attackersWin(siege.getSiegeOwner());
+                                        oldSiege.attackersWin(oldSiege.getSiegeOwner());
                                         victor = "(attackers)";
                                     } else {
-                                        siege.defendersWin();
+                                        oldSiege.defendersWin();
                                         victor = "(defenders)";
                                     }
                                 } else {
                                     if (argSide.equalsIgnoreCase(war.getSide1())) {
-                                        siege.defendersWin();
+                                        oldSiege.defendersWin();
                                         victor = "(defenders)";
                                     } else {
-                                        siege.attackersWin(siege.getSiegeOwner());
+                                        oldSiege.attackersWin(oldSiege.getSiegeOwner());
                                         victor = "(attackers)";
                                     }
                                 }
 
-                                sender.sendMessage(Helper.chatLabel() + message.formatted(siege.getTown().getName(), war.getName(), victor));
-                                Main.warLogger.log("Siege of %s forcefully ended in war %s with %s declared as victor.".formatted(siege.getTown().getName(), war.getName(), victor));
-                            }),
+                                sender.sendMessage(UtilsChat.getPrefix() + message.formatted(oldSiege.getTown().getName(), war.getName(), victor));
+                                Main.warLogger.log("Siege of %s forcefully ended in war %s with %s declared as victor.".formatted(oldSiege.getTown().getName(), war.getName(), victor));
+                            })*/ /*,
                         new CommandAPICommand("raid")
                             .withArguments(
                                 new StringArgument("raid")
                                     .replaceSuggestions(
                                         ArgumentSuggestions.strings(
-                                            CommandHelper.getRaids()
+                                            CommandUtil.getRaids()
                                         )
                                     ),
                                 new StringArgument("victor")
                                     .setOptional(true)
                                     .replaceSuggestions(
                                         ArgumentSuggestions.stringCollection(info -> {
-                                            final String raidname = (String) info.previousArgs().get("raid");
+                                            final String raidname = (String) info.previousArgs().get("oldRaid");
 
-                                            final Raid raid = RaidData.getRaid(raidname);
+                                            final OldRaid oldRaid = RaidData.getRaid(raidname);
 
-                                            if (raid == null)
+                                            if (oldRaid == null)
                                                 return Collections.emptyList();
 
-                                            return List.of(raid.getRaiderSide(), raid.getDefenderSide(), "none");
+                                            return List.of(oldRaid.getRaiderSide(), oldRaid.getDefenderSide(), "none");
                                         })
                                     )
                             ).executesPlayer((Player sender, CommandArguments args) -> {
-                                if (!(args.get("raid") instanceof final String argRaidName))
-                                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a raid name!").build());
+                                if (!(args.get("oldRaid") instanceof final String argRaidName))
+                                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou need to specify a oldRaid name!").build());
 
-                                final Raid raid = RaidData.getRaid(argRaidName);
-                                if (raid == null)
-                                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cThat raid does not exist!").build());
+                                final OldRaid oldRaid = RaidData.getRaid(argRaidName);
+                                if (oldRaid == null)
+                                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cThat oldRaid does not exist!").build());
 
-                                final War war = raid.getWar();
+                                final War war = oldRaid.getWar();
                                 if (war == null)
-                                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cThe war does not exist!").build());
+                                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cThe war does not exist!").build());
 
                                 final String argSide = (String) args.getOptional("victor").orElse("none");
 
                                 // If tie
                                 if (argSide.equals("none")) {
-                                    raid.noWinner();
-                                    sender.sendMessage(Helper.chatLabel() + "The raid has forcefully been ended at %s in war %s with no victor.".formatted(raid.getRaidedTown().getName(), war.getName()));
-                                    Main.warLogger.log("Raid of %s forcefully ended in war %s with no victor.".formatted(raid.getRaidedTown().getName(), war.getName()));
+                                    oldRaid.noWinner();
+                                    sender.sendMessage(UtilsChat.getPrefix() + "The oldRaid has forcefully been ended at %s in war %s with no victor.".formatted(oldRaid.getRaidedTown().getName(), war.getName()));
+                                    Main.warLogger.log("OldRaid of %s forcefully ended in war %s with no victor.".formatted(oldRaid.getRaidedTown().getName(), war.getName()));
                                     return;
                                 }
 
-                                final String message = "The raid has forcefully been ended at %s in war %s with the %s declared as victors.";
+                                final String message = "The oldRaid has forcefully been ended at %s in war %s with the %s declared as victors.";
                                 String victor;
 
                                 // Figure who won & lost
-                                if (raid.getSide1AreRaiders()) {
+                                if (oldRaid.getSide1AreRaiders()) {
                                     if (argSide.equalsIgnoreCase(war.getSide1())) {
-                                        raid.raidersWin(raid.getOwner(), raid.getRaiderScore(), raid.getDefenderScore());
+                                        oldRaid.raidersWin(oldRaid.getOwner(), oldRaid.getRaiderScore(), oldRaid.getDefenderScore());
                                         victor = "(raiders)";
                                     } else {
-                                        raid.defendersWin(raid.getRaiderScore(), raid.getDefenderScore());
+                                        oldRaid.defendersWin(oldRaid.getRaiderScore(), oldRaid.getDefenderScore());
                                         victor = "(defenders)";
                                     }
                                 } else {
                                     if (argSide.equalsIgnoreCase(war.getSide1())) {
-                                        raid.defendersWin(raid.getRaiderScore(), raid.getDefenderScore());
+                                        oldRaid.defendersWin(oldRaid.getRaiderScore(), oldRaid.getDefenderScore());
                                         victor = "(defenders)";
                                     } else {
-                                        raid.raidersWin(raid.getOwner(), raid.getRaiderScore(), raid.getDefenderScore());
+                                        oldRaid.raidersWin(oldRaid.getOwner(), oldRaid.getRaiderScore(), oldRaid.getDefenderScore());
                                         victor = "(raiders)";
                                     }
                                 }
 
-                                sender.sendMessage(Helper.chatLabel() + message.formatted(raid.getRaidedTown().getName(), war.getName(), victor));
-                                Main.warLogger.log("Raid of %s forcefully ended in war %s with %s declared as victor.".formatted(raid.getRaidedTown().getName(), war.getName(), victor));
-                            })
+                                sender.sendMessage(UtilsChat.getPrefix() + message.formatted(oldRaid.getRaidedTown().getName(), war.getName(), victor));
+                                Main.warLogger.log("OldRaid of %s forcefully ended in war %s with %s declared as victor.".formatted(oldRaid.getRaidedTown().getName(), war.getName(), victor));
+                            })*/
                     ),
                 new CommandAPICommand("join")
                     .withSubcommands(
                         new CommandAPICommand("war")
                             .withArguments(
                                 new PlayerArgument("player"),
-                                new StringArgument("war")
-                                    .replaceSuggestions(
-                                        ArgumentSuggestions.strings(
-                                            CommandHelper.getWarNames()
-                                        )
-                                    ),
-                                new StringArgument("side")
+                                CommandUtil.warWarArgument(
+                                    "war",
+                                    true,
+                                    true,
+                                    "player"
+                                ),
+                                CommandUtil.warSideCreateArgument(
+                                    "side",
+                                    "war",
+                                    true,
+                                    true,
+                                    "player"
+                                ).setOptional(true)
+                                /*new StringArgument("side")
                                     .setOptional(true)
                                     .replaceSuggestions(
                                         ArgumentSuggestions.stringCollection(info -> {
                                             final String warname = (String) info.previousArgs().get("war");
 
-                                            final War war = WarData.getWar(warname);
+                                            final War war = WarManager.getInstance().getWar(warname);
 
                                             if (war == null)
                                                 return Collections.emptyList();
 
                                             return war.getSides();
                                         })
-                                    )
-                            ).executesPlayer((Player sender, CommandArguments args) -> WarCommand.warJoin(sender, args, true)),
-                        new CommandAPICommand("siege")
+                                    )*/
+                            ).executesPlayer((Player sender, CommandArguments args) -> WarCommand.warJoin(sender, args, true))/*,
+                        new CommandAPICommand("siege") // TODO Very needed
                             .withArguments(
                                 new PlayerArgument("player"),
                                 new StringArgument("siege")
                                     .replaceSuggestions(
                                         ArgumentSuggestions.strings(
-                                            CommandHelper.getSieges()
+                                            CommandUtil.getSieges()
                                         )
                                     ),
                                 new StringArgument("side")
                                     .replaceSuggestions(
                                         ArgumentSuggestions.stringCollection(info -> {
-                                            final String siegename = (String) info.previousArgs().get("siege");
+                                            final String siegename = (String) info.previousArgs().get("oldSiege");
 
-                                            final Siege siege = SiegeData.getSiege(siegename);
+                                            final Siege oldSiege = SiegeData.getSiege(siegename);
 
-                                            if (siege == null)
+                                            if (oldSiege == null)
                                                 return Collections.emptyList();
 
-                                            return List.of(siege.getAttackerSide(), siege.getDefenderSide());
+                                            return List.of(oldSiege.getAttackerSide(), oldSiege.getDefenderSide());
                                         })
                                     )
                             ).executesPlayer((Player sender, CommandArguments args) -> {
-                                sender.sendMessage(Helper.color("&cError! Unimplemented!"));
+                                sender.sendMessage("&cError! Unimplemented!");
                                 // TODO implement siege force joining?
-                            }),
+                            })*/ /*,
                         new CommandAPICommand("raid")
                             .withArguments(
                                 new PlayerArgument("player"),
                                 new StringArgument("raid")
                                     .replaceSuggestions(
                                         ArgumentSuggestions.strings(
-                                            CommandHelper.getRaids()
+                                            CommandUtil.getRaids()
                                         )
                                     ),
                                 new StringArgument("side")
                                     .replaceSuggestions(
                                         ArgumentSuggestions.stringCollection(info -> {
-                                            final String raidname = (String) info.previousArgs().get("raid");
+                                            final String raidname = (String) info.previousArgs().get("oldRaid");
 
-                                            final Raid raid = RaidData.getRaid(raidname);
+                                            final OldRaid oldRaid = RaidData.getRaid(raidname);
 
-                                            if (raid == null)
+                                            if (oldRaid == null)
                                                 return Collections.emptyList();
 
-                                            return List.of(raid.getRaiderSide(), raid.getDefenderSide());
+                                            return List.of(oldRaid.getRaiderSide(), oldRaid.getDefenderSide());
                                         })
                                     ),
                                 new BooleanArgument("minutemen")
                                     .setOptional(true)
-                            ).executesPlayer((Player sender, CommandArguments args) -> RaidCommand.raidJoin(sender, args, true))
+                            ).executesPlayer((Player sender, CommandArguments args) -> RaidCommand.raidJoin(sender, args, true))*/
                     ),
                 new CommandAPICommand("leave")
                     .withSubcommands(
@@ -725,22 +683,22 @@ public class AdminCommand {
 
                                                 })
                                         ,*/ // TODO unimplemented, original comment "determine if needed"
-                        new CommandAPICommand("raid").withArguments(
+                        /*new CommandAPICommand("raid").withArguments(
                             new StringArgument("war")
                                 .replaceSuggestions(
                                     ArgumentSuggestions.stringCollection(info ->
-                                        WarData.getWarsNames()
+                                        WarManager.getInstance().getWarsNames()
                                     )
                                 ),
                             new StringArgument("town")
                                 .replaceSuggestions(
                                     ArgumentSuggestions.stringCollection(info -> {
                                         final String warname = (String) info.previousArgs().get("war");
-                                        return CommandHelper.getTownyWarTowns(warname);
+                                        return CommandUtil.getTownyWarTowns(warname);
                                     })
                                 ),
                             new PlayerArgument("player")
-                        ).executesPlayer((Player sender, CommandArguments args) -> RaidCommand.raidLeave(sender, args, true))
+                        ).executesPlayer((Player sender, CommandArguments args) -> RaidCommand.raidLeave(sender, args, true))*/
                     )
             )
             .executes((CommandSender sender, CommandArguments args) -> fail(sender, args, AdminCommandFailEnum.SYNTAX));
@@ -749,16 +707,16 @@ public class AdminCommand {
     private CommandAPICommand commandHelp() {
         return new CommandAPICommand("help")
             .executes((CommandSender sender, CommandArguments args) -> {
-                sender.sendMessage(Helper.chatLabel() + "/awa create");
-                sender.sendMessage(Helper.chatLabel() + "/awa force");
-                sender.sendMessage(Helper.chatLabel() + "/awa help");
-                sender.sendMessage(Helper.chatLabel() + "/awa info");
-                sender.sendMessage(Helper.chatLabel() + "/awa modify");
-                sender.sendMessage(Helper.chatLabel() + "/awa purgebars");
-                sender.sendMessage(Helper.chatLabel() + "/awa save");
-                sender.sendMessage(Helper.chatLabel() + "/awa save-all");
-                sender.sendMessage(Helper.chatLabel() + "/awa load-all");
-                sender.sendMessage(Helper.chatLabel() + "/awa item");
+                sender.sendMessage(UtilsChat.getPrefix() + "/awa create");
+                sender.sendMessage(UtilsChat.getPrefix() + "/awa force");
+                sender.sendMessage(UtilsChat.getPrefix() + "/awa help");
+                sender.sendMessage(UtilsChat.getPrefix() + "/awa info");
+                sender.sendMessage(UtilsChat.getPrefix() + "/awa modify");
+                sender.sendMessage(UtilsChat.getPrefix() + "/awa purgebars");
+                sender.sendMessage(UtilsChat.getPrefix() + "/awa save");
+                sender.sendMessage(UtilsChat.getPrefix() + "/awa save-all");
+                sender.sendMessage(UtilsChat.getPrefix() + "/awa load-all");
+                sender.sendMessage(UtilsChat.getPrefix() + "/awa item");
             });
     }
 
@@ -767,174 +725,178 @@ public class AdminCommand {
             .withSubcommands(
                 new CommandAPICommand("war")
                     .withArguments(
-                        new StringArgument("war")
-                            .replaceSuggestions(
-                                ArgumentSuggestions.strings(
-                                    CommandHelper.getWarNames()
-                                )
-                            )
+                        CommandUtil.warWarArgument(
+                            "war",
+                            false,
+                            false,
+                            ""
+                        )
                     )
                     .executes((CommandSender sender, CommandArguments args) -> {
-                            if (!(args.get("war") instanceof final String argWarName))
-                                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a war!").build());
+                            if (!(args.get("war") instanceof final War war))
+                                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou need to specify a war!").build());
 
-                            final War war = WarData.getWar(argWarName);
-                            if (war == null)
-                                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cThat war does not exist!").build());
+//                            final War war = WarManager.getInstance().getWar(argWarName);
+//                            if (war == null)
+//                                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cThat war does not exist!").build());
 
-                            sender.sendMessage(Helper.chatLabel() + "Info dump for war: " + war.getName());
-                            sender.sendMessage(Helper.chatLabel() + "oOo------------===------------oOo");
-                            sender.sendMessage(Helper.chatLabel() + "Name: " + war.getName());
-                            sender.sendMessage(Helper.chatLabel() + "Side 1: " + war.getSide1());
-                            sender.sendMessage(Helper.chatLabel() + "Side 2: " + war.getSide2());
-                            sender.sendMessage(Helper.chatLabel() + "Side 1 Score: " + war.getSide1Points());
-                            sender.sendMessage(Helper.chatLabel() + "Side 2 Score: " + war.getSide2Points());
-                            sender.sendMessage(Helper.chatLabel() + "Last Raid for Side 1: " + new Timestamp(((long) war.getLastRaidTimeSide1()) * 1000L));
-                            sender.sendMessage(Helper.chatLabel() + "Last Raid for Side 2: " + new Timestamp(((long) war.getLastRaidTimeSide2()) * 1000L));
-                            sender.sendMessage(Helper.chatLabel() + "oOo------------===------------oOo");
+                            sender.sendMessage(UtilsChat.getPrefix() + "Info dump for war: " + war.getName());
+                            sender.sendMessage(UtilsChat.getPrefix() + "oOo------------===------------oOo");
+                            sender.sendMessage(UtilsChat.getPrefix() + "Name: " + war.getName());
+                            sender.sendMessage(UtilsChat.getPrefix() + "Side 1: " + war.getSide1());
+                            sender.sendMessage(UtilsChat.getPrefix() + "Side 2: " + war.getSide2());
+                            sender.sendMessage(UtilsChat.getPrefix() + "Side 1 Score: " + war.getSide1().getScore());
+                            sender.sendMessage(UtilsChat.getPrefix() + "Side 2 Score: " + war.getSide2().getScore());
+//                            sender.sendMessage(UtilsChat.getPrefix() + "Last Raid for Side 1: " + new Timestamp(((long) war.getLastRaidTimeSide1()) * 1000L)); // TODO
+//                            sender.sendMessage(UtilsChat.getPrefix() + "Last Raid for Side 2: " + new Timestamp(((long) war.getLastRaidTimeSide2()) * 1000L));
+                            sender.sendMessage(UtilsChat.getPrefix() + "oOo------------===------------oOo");
                             StringBuilder side1Towns = new StringBuilder();
                             StringBuilder side1Players = new StringBuilder();
-                            for (String t : war.getSide1Towns()) {
-                                side1Towns.append(t);
+
+                            for (Town town : war.getSide1().getTowns()) {
+                                side1Towns.append(town.getName());
                                 side1Towns.append(", ");
                             }
-                            for (String pl : war.getSide1Players()) {
-                                side1Players.append(pl);
+                            for (Player player : war.getSide1().getPlayers()) {
+                                side1Players.append(player.getName());
                                 side1Players.append(", ");
                             }
+
                             //cut off last two characters
                             if (side1Towns.length() > 2)
                                 side1Towns = new StringBuilder(side1Towns.substring(0, side1Towns.length() - 2));
                             if (side1Players.length() > 2)
                                 side1Players = new StringBuilder(side1Players.substring(0, side1Players.length() - 2));
-                            sender.sendMessage(Helper.chatLabel() + war.getSide1() + " Towns: " + side1Towns);
-                            sender.sendMessage(Helper.chatLabel() + war.getSide1() + " Players: " + side1Players);
+                            sender.sendMessage(UtilsChat.getPrefix() + war.getSide1() + " Towns: " + side1Towns);
+                            sender.sendMessage(UtilsChat.getPrefix() + war.getSide1() + " Players: " + side1Players);
 
-                            sender.sendMessage(Helper.chatLabel() + "oOo------------===------------oOo");
+                            sender.sendMessage(UtilsChat.getPrefix() + "oOo------------===------------oOo");
                             StringBuilder side2Towns = new StringBuilder();
                             StringBuilder side2Players = new StringBuilder();
-                            for (String t : war.getSide2Towns()) {
-                                side2Towns.append(t);
+
+                            for (Town town : war.getSide2().getTowns()) {
+                                side2Towns.append(town);
                                 side2Towns.append(", ");
                             }
-                            for (String pl : war.getSide2Players()) {
-                                side2Players.append(pl);
+                            for (Player player : war.getSide2().getPlayers()) {
+                                side2Players.append(player);
                                 side2Players.append(", ");
                             }
+
                             //cut off last two characters
                             if (side2Towns.length() > 2)
                                 side2Towns = new StringBuilder(side2Towns.substring(0, side2Towns.length() - 2));
                             if (side2Players.length() > 2)
                                 side2Players = new StringBuilder(side2Players.substring(0, side2Players.length() - 2));
-                            sender.sendMessage(Helper.chatLabel() + war.getSide2() + " Towns: " + side2Towns);
-                            sender.sendMessage(Helper.chatLabel() + war.getSide2() + " Players: " + side2Players);
+                            sender.sendMessage(UtilsChat.getPrefix() + war.getSide2() + " Towns: " + side2Towns);
+                            sender.sendMessage(UtilsChat.getPrefix() + war.getSide2() + " Players: " + side2Players);
 
-                            sender.sendMessage(Helper.chatLabel() + "oOo------------===------------oOo");
+                            sender.sendMessage(UtilsChat.getPrefix() + "oOo------------===------------oOo");
                             final StringBuilder surrenderedTowns = getSurrenderedTowns(war);
-                            sender.sendMessage(Helper.chatLabel() + "Surrendered Towns: " + surrenderedTowns);
+                            sender.sendMessage(UtilsChat.getPrefix() + "Surrendered Towns: " + surrenderedTowns);
                         }
-                    ),
+                    )/*,
                 new CommandAPICommand("siege")
                     .withArguments(
                         new StringArgument("siege")
                             .replaceSuggestions(
                                 ArgumentSuggestions.strings(
-                                    CommandHelper.getSieges()
+                                    CommandUtil.getSieges()
                                 )
                             )
                     )
-                    .executes((CommandSender sender, CommandArguments args) -> {
-                        if (!(args.get("siege") instanceof final String argSiegeName))
-                            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a siege!").build());
+                    .executes((CommandSender sender, CommandArguments args) -> { // TODO Needed
+                        if (!(args.get("oldSiege") instanceof final String argSiegeName))
+                            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou need to specify a oldSiege!").build());
 
-                        final Siege siege = SiegeData.getSiege(argSiegeName);
-                        if (siege == null)
-                            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cThat siege does not exist!").build());
+                        final Siege oldSiege = SiegeData.getSiege(argSiegeName);
+                        if (oldSiege == null)
+                            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cThat oldSiege does not exist!").build());
 
 
-                        sender.sendMessage(Helper.chatLabel() + "Info dump for siege: " + siege.getName());
-                        sender.sendMessage(Helper.chatLabel() + "oOo------------===------------oOo");
-                        sender.sendMessage(Helper.chatLabel() + "Name: " + siege.getName());
-                        sender.sendMessage(Helper.chatLabel() + "Attackers: " + siege.getAttackerSide());
-                        sender.sendMessage(Helper.chatLabel() + "Defenders: " + siege.getDefenderSide());
-                        sender.sendMessage(Helper.chatLabel() + "Attacker points: " + siege.getAttackerPoints());
-                        sender.sendMessage(Helper.chatLabel() + "Defender points: " + siege.getDefenderPoints());
-                        sender.sendMessage(Helper.chatLabel() + "War: " + siege.getWar().getName());
-                        sender.sendMessage(Helper.chatLabel() + "Attacked Town: " + siege.getTown().getName());
-                        sender.sendMessage(Helper.chatLabel() + "Max Ticks: " + siege.getMaxSiegeTicks());
-                        sender.sendMessage(Helper.chatLabel() + "Tick progress: " + siege.getSiegeTicks());
-                        sender.sendMessage(Helper.chatLabel() + "Owner: " + siege.getSiegeOwner());
-                        sender.sendMessage(Helper.chatLabel() + "Homeblock: " + siege.getHomeBlock().toString());
-                        sender.sendMessage(Helper.chatLabel() + "oOo------------===------------oOo");
+                        sender.sendMessage(UtilsChat.getPrefix() + "Info dump for oldSiege: " + oldSiege.getName());
+                        sender.sendMessage(UtilsChat.getPrefix() + "oOo------------===------------oOo");
+                        sender.sendMessage(UtilsChat.getPrefix() + "Name: " + oldSiege.getName());
+                        sender.sendMessage(UtilsChat.getPrefix() + "Attackers: " + oldSiege.getAttackerSide());
+                        sender.sendMessage(UtilsChat.getPrefix() + "Defenders: " + oldSiege.getDefenderSide());
+                        sender.sendMessage(UtilsChat.getPrefix() + "Attacker points: " + oldSiege.getAttackerPoints());
+                        sender.sendMessage(UtilsChat.getPrefix() + "Defender points: " + oldSiege.getDefenderPoints());
+                        sender.sendMessage(UtilsChat.getPrefix() + "War: " + oldSiege.getWar().getName());
+                        sender.sendMessage(UtilsChat.getPrefix() + "Attacked Town: " + oldSiege.getTown().getName());
+                        sender.sendMessage(UtilsChat.getPrefix() + "Max Ticks: " + oldSiege.getMaxSiegeTicks());
+                        sender.sendMessage(UtilsChat.getPrefix() + "Tick progress: " + oldSiege.getSiegeTicks());
+                        sender.sendMessage(UtilsChat.getPrefix() + "Owner: " + oldSiege.getSiegeOwner());
+                        sender.sendMessage(UtilsChat.getPrefix() + "Homeblock: " + oldSiege.getHomeBlock().toString());
+                        sender.sendMessage(UtilsChat.getPrefix() + "oOo------------===------------oOo");
                         StringBuilder attackers = new StringBuilder();
-                        for (String pl : siege.getAttackerPlayers()) {
+                        for (String pl : oldSiege.getAttackerPlayers()) {
                             attackers.append(pl);
                             attackers.append(", ");
                         }
                         //cut off last two characters
                         if (attackers.length() > 2)
                             attackers = new StringBuilder(attackers.substring(0, attackers.length() - 2));
-                        sender.sendMessage(Helper.chatLabel() + "Attacking Players: " + attackers);
+                        sender.sendMessage(UtilsChat.getPrefix() + "Attacking Players: " + attackers);
                         StringBuilder defenders = new StringBuilder();
-                        for (String pl : siege.getDefenderPlayers()) {
+                        for (String pl : oldSiege.getDefenderPlayers()) {
                             defenders.append(pl);
                             defenders.append(", ");
                         }
                         //cut off last two characters
                         if (defenders.length() > 2)
                             defenders = new StringBuilder(defenders.substring(0, defenders.length() - 2));
-                        sender.sendMessage(Helper.chatLabel() + "Defending Players: " + defenders);
-                    }),
+                        sender.sendMessage(UtilsChat.getPrefix() + "Defending Players: " + defenders);
+                    })*/ /*,
                 new CommandAPICommand("raid")
                     .withArguments(
                         new StringArgument("raid")
                             .replaceSuggestions(
                                 ArgumentSuggestions.strings(
-                                    CommandHelper.getRaids()
+                                    CommandUtil.getRaids()
                                 )
                             )
                     )
                     .executes((CommandSender sender, CommandArguments args) -> {
-                        if (!(args.get("raid") instanceof final String argRaidName))
-                            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a raid name!").build());
+                        if (!(args.get("oldRaid") instanceof final String argRaidName))
+                            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou need to specify a oldRaid name!").build());
 
-                        final Raid raid = RaidData.getRaid(argRaidName);
-                        if (raid == null)
-                            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cThat raid does not exist!").build());
+                        final OldRaid oldRaid = RaidData.getRaid(argRaidName);
+                        if (oldRaid == null)
+                            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cThat oldRaid does not exist!").build());
 
-                        sender.sendMessage(Helper.chatLabel() + "Info dump for raid: " + raid.getName());
-                        sender.sendMessage(Helper.chatLabel() + "oOo------------===------------oOo");
-                        sender.sendMessage(Helper.chatLabel() + "Name: " + raid.getName());
-                        sender.sendMessage(Helper.chatLabel() + "Raiders: " + raid.getRaiderSide());
-                        sender.sendMessage(Helper.chatLabel() + "Defenders: " + raid.getDefenderSide());
-                        sender.sendMessage(Helper.chatLabel() + "Side1Raiders: " + raid.getSide1AreRaiders());
-                        sender.sendMessage(Helper.chatLabel() + "Raider Score: " + raid.getRaiderScore());
-                        sender.sendMessage(Helper.chatLabel() + "Defender Score: " + raid.getDefenderScore());
-                        sender.sendMessage(Helper.chatLabel() + "War: " + raid.getWar().getName());
-                        sender.sendMessage(Helper.chatLabel() + "Raided Town: " + raid.getRaidedTown().getName());
-                        sender.sendMessage(Helper.chatLabel() + "Gather Town: " + raid.getGatherTown().getName());
-                        sender.sendMessage(Helper.chatLabel() + "Current Phase: " + raid.getPhase().name());
-                        sender.sendMessage(Helper.chatLabel() + "Tick progress: " + raid.getRaidTicks());
-                        sender.sendMessage(Helper.chatLabel() + "Owner: " + raid.getOwner().getName());
-                        sender.sendMessage(Helper.chatLabel() + "Gather Homeblock: " + (raid.getHomeBlockGather() == null ? "NONE" : raid.getHomeBlockGather().toString()));
-                        sender.sendMessage(Helper.chatLabel() + "Raided Homeblock: " + (raid.getHomeBlockRaided() == null ? "NONE" : raid.getHomeBlockRaided().toString()));
-                        sender.sendMessage(Helper.chatLabel() + "oOo------------===------------oOo");
-                        final StringBuilder activeRaiders = getActiveRaiders(raid);
-                        sender.sendMessage(Helper.chatLabel() + "Raiding Players: " + activeRaiders);
+                        sender.sendMessage(UtilsChat.getPrefix() + "Info dump for oldRaid: " + oldRaid.getName());
+                        sender.sendMessage(UtilsChat.getPrefix() + "oOo------------===------------oOo");
+                        sender.sendMessage(UtilsChat.getPrefix() + "Name: " + oldRaid.getName());
+                        sender.sendMessage(UtilsChat.getPrefix() + "Raiders: " + oldRaid.getRaiderSide());
+                        sender.sendMessage(UtilsChat.getPrefix() + "Defenders: " + oldRaid.getDefenderSide());
+                        sender.sendMessage(UtilsChat.getPrefix() + "Side1Raiders: " + oldRaid.getSide1AreRaiders());
+                        sender.sendMessage(UtilsChat.getPrefix() + "Raider Score: " + oldRaid.getRaiderScore());
+                        sender.sendMessage(UtilsChat.getPrefix() + "Defender Score: " + oldRaid.getDefenderScore());
+                        sender.sendMessage(UtilsChat.getPrefix() + "War: " + oldRaid.getWar().getName());
+                        sender.sendMessage(UtilsChat.getPrefix() + "Raided Town: " + oldRaid.getRaidedTown().getName());
+                        sender.sendMessage(UtilsChat.getPrefix() + "Gather Town: " + oldRaid.getGatherTown().getName());
+                        sender.sendMessage(UtilsChat.getPrefix() + "Current Phase: " + oldRaid.getPhase().name());
+                        sender.sendMessage(UtilsChat.getPrefix() + "Tick progress: " + oldRaid.getRaidTicks());
+                        sender.sendMessage(UtilsChat.getPrefix() + "Owner: " + oldRaid.getOwner().getName());
+                        sender.sendMessage(UtilsChat.getPrefix() + "Gather Homeblock: " + (oldRaid.getHomeBlockGather() == null ? "NONE" : oldRaid.getHomeBlockGather().toString()));
+                        sender.sendMessage(UtilsChat.getPrefix() + "Raided Homeblock: " + (oldRaid.getHomeBlockRaided() == null ? "NONE" : oldRaid.getHomeBlockRaided().toString()));
+                        sender.sendMessage(UtilsChat.getPrefix() + "oOo------------===------------oOo");
+                        final StringBuilder activeRaiders = getActiveRaiders(oldRaid);
+                        sender.sendMessage(UtilsChat.getPrefix() + "Raiding Players: " + activeRaiders);
 
-                        sender.sendMessage(Helper.chatLabel() + "oOo------------===------------oOo");
-                        final StringBuilder defenderPlayers = getDefenderPlayers(raid);
-                        sender.sendMessage(Helper.chatLabel() + "Defending Players: " + defenderPlayers);
-                    })
+                        sender.sendMessage(UtilsChat.getPrefix() + "oOo------------===------------oOo");
+                        final StringBuilder defenderPlayers = getDefenderPlayers(oldRaid);
+                        sender.sendMessage(UtilsChat.getPrefix() + "Defending Players: " + defenderPlayers);
+                    })*/
             )
             .executes((CommandSender sender, CommandArguments args) -> fail(sender, args, AdminCommandFailEnum.SYNTAX));
     }
 
-    private void saveAll(CommandSender sender, CommandArguments args) {
-        for (War war : WarData.getWars())
-            WarData.saveWar(war);
-        sender.sendMessage(Helper.chatLabel() + Helper.color("&cForced Save of all wars."));
-    }
+    /*private void saveAll(CommandSender sender, CommandArguments args) {
+        for (War war : WarManager.getInstance().getWars())
+            WarManager.getInstance().saveWar(war);
+        sender.sendMessage(UtilsChat.getPrefix() + "&cForced Save of all wars.");
+    }*/
 
     /**
      * //edit war/event in real time, side can be "both" to effect both
@@ -973,79 +935,65 @@ public class AdminCommand {
                                 .replaceSuggestions(
                                     ArgumentSuggestions.stringCollection(info -> List.of("add", "subtract", "set"))
                                 ),
-                            new StringArgument("war")
-                                .replaceSuggestions(
-                                    ArgumentSuggestions.strings(
-                                        CommandHelper.getWarNames()
-                                    )
-                                ),
-                            new StringArgument("side")
-                                .setOptional(true)
-                                .replaceSuggestions(
-                                    ArgumentSuggestions.stringCollection(info -> {
-                                        final String warname = (String) info.previousArgs().get("war");
-
-                                        final War war = WarData.getWar(warname);
-
-                                        if (war == null)
-                                            return Collections.emptyList();
-
-                                        return war.getSides();
-                                    })
-                                ),
+                            CommandUtil.warWarArgument(
+                                "war",
+                                true,
+                                false,
+                                ""
+                            ),
+                            CommandUtil.warSideCreateArgument(
+                                "side",
+                                "war",
+                                true,
+                                false,
+                                ""
+                            ),
                             new IntegerArgument("amount", 1, 10000)
                         ).executesPlayer((Player p, CommandArguments args) -> {
                             if (!(args.get("action") instanceof final String argAction))
-                                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify an action.").build());
+                                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cYou need to specify an action.").build());
 
                             if (!List.of("add", "subtract", "set").contains(argAction))
-                                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cInvalid action.").build());
+                                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cInvalid action.").build());
 
-                            if (!(args.get("war") instanceof final String argWarName))
-                                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a war.").build());
+                            if (!(args.get("war") instanceof final War war))
+                                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cThe war does not exist!").build());
 
-                            final War war = WarData.getWar(argWarName);
-                            if (war == null)
-                                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cThe war does not exist!").build());
-
-                            if (!(args.get("side") instanceof final String argSide))
-                                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cYou need to specify a side.").build());
-
-                            if (!war.isSideValid(argSide))
-                                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cThe side does not exist.").build());
+                            if (!(args.get("side") instanceof final Side side))
+                                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cThe side does not exist.").build());
 
                             final int amount = (int) args.get("amount");
 
                             switch (argAction) {
                                 case "add" -> {
-                                    if (war.getSide1().equals(argSide)) {
-                                        war.addSide1Points(amount);
+                                    if (war.getSide1().equals(side)) {
+                                        war.getSide1().addScore(amount);
                                     } else {
-                                        war.addSide2Points(amount);
+                                        war.getSide2().addScore(amount);
                                     }
 
-                                    p.sendMessage(Helper.chatLabel() + "Added " + amount + " points to the raid war in the war " + war.getName() + " on side " + argSide);
-                                    Main.warLogger.log("Added " + amount + " points to the raid war in the war " + war.getName() + " on side " + argSide);
+                                    p.sendMessage(UtilsChat.getPrefix() + "Added " + amount + " points to the war in the war " + war.getName() + " on side " + side);
+                                    Main.warLogger.log("Added " + amount + " points to the war in the war " + war.getName() + " on side " + side);
                                 }
                                 case "subtract" -> {
-                                    if (war.getSide1().equals(argSide)) {
-                                        war.addSide1Points(-amount);
+                                    if (war.getSide1().equals(side)) {
+                                        war.getSide1().addScore(-amount);
                                     } else {
-                                        war.addSide2Points(-amount);
+                                        war.getSide2().addScore(-amount);
                                     }
 
-                                    p.sendMessage(Helper.chatLabel() + "Subtracted " + amount + " points to the war score in the war " + war.getName() + " on side " + argSide);
-                                    Main.warLogger.log("Subtracted " + amount + " points to the war score in the war " + war.getName() + " on side " + argSide);
+                                    p.sendMessage(UtilsChat.getPrefix() + "Subtracted " + amount + " points to the war score in the war " + war.getName() + " on side " + side);
+                                    Main.warLogger.log("Subtracted " + amount + " points to the war score in the war " + war.getName() + " on side " + side);
                                 }
                                 case "set" -> {
-                                    if (war.getSide1().equals(argSide)) {
-                                        war.setSide1Points(amount);
+                                    if (war.getSide1().equals(side)) {
+                                        war.getSide1().addScore(amount);
                                     } else {
-                                        war.setSide2Points(amount);
+                                        war.getSide2().addScore(amount);
                                     }
 
-                                    p.sendMessage(Helper.chatLabel() + "Set " + amount + " points as the war score in the war " + war.getName() + " on side " + argSide);
-                                    Main.warLogger.log("Set " + amount + " points as the war score in the war " + war.getName() + " on side " + argSide);
+                                    p.sendMessage(UtilsChat.getPrefix() + "Set " + amount + " points as the war score in the war " + war.getName() + " on side " + side);
+                                    Main.warLogger.log("Set " + amount + " points as the war score in the war " + war.getName() + " on side " + side);
                                 }
                             }
 

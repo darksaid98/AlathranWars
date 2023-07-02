@@ -15,6 +15,10 @@ import me.ShermansWorld.AlathraWar.*;
 import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.data.WarData;
+import me.ShermansWorld.AlathraWar.deprecated.CommandHelper;
+import me.ShermansWorld.AlathraWar.deprecated.OldRaid;
+import me.ShermansWorld.AlathraWar.deprecated.OldSiege;
+import me.ShermansWorld.AlathraWar.deprecated.OldWar;
 import me.ShermansWorld.AlathraWar.enums.TownWarState;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -35,7 +39,7 @@ public class SiegeCommand {
             )
             .executesPlayer((sender, args) -> {
                 if (args.count() == 0)
-                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "Invalid Arguments. /siege help").build());
+                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "Invalid Arguments. /siege help").build());
             })
             .register();
     }
@@ -120,7 +124,7 @@ public class SiegeCommand {
 
     protected static void siegeStart(Player sender, CommandArguments args, boolean admin) throws WrapperCommandSyntaxException {
         if (!(args.get("war") instanceof final String argWarName))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "&cUsage: /alathrawaradmin create siege [war] [town] (owner) (force).").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "&cUsage: /alathrawaradmin create oldSiege [oldWar] [town] (owner) (force).").build());
 
         //if this is admin mode use the forth arg instad of sender.
         //if player is null after this then force end
@@ -131,46 +135,46 @@ public class SiegeCommand {
         
 
         /*if (args.length < 3) {
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "/war siege [war] [town]").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "/oldWar oldSiege [oldWar] [town]").build());
         }*/
 
-        // War check
-        War war = WarData.getWar(argWarName);
-        if (war == null) {
-            siegeOwner.sendMessage(Helper.chatLabel() + "That war does not exist! /siege start [war] [town]");
+        // OldWar check
+        OldWar oldWar = WarData.getWar(argWarName);
+        if (oldWar == null) {
+            siegeOwner.sendMessage(UtilsChat.getPrefix() + "That oldWar does not exist! /oldSiege start [oldWar] [town]");
             if (admin)
-                sender.sendMessage(Helper.chatLabel() + "That war does not exist! /siege start [war] [town]");
+                sender.sendMessage(UtilsChat.getPrefix() + "That oldWar does not exist! /oldSiege start [oldWar] [town]");
             return;
         }
 
 
         // Player participance check
         Town leaderTown = TownyAPI.getInstance().getResident(siegeOwner).getTownOrNull();
-        TownWarState side = war.getState(leaderTown.getName().toLowerCase());
+        TownWarState side = oldWar.getState(leaderTown.getName().toLowerCase());
 
         // TODO DEBUG PRINT
         Main.warLogger.log("Leader Town: " + leaderTown.getName());
-        Main.warLogger.log("Siege Owner: " + siegeOwner.getName());
+        Main.warLogger.log("OldSiege Owner: " + siegeOwner.getName());
         sender.sendMessage("Leader Town: " + leaderTown.getName());
-        sender.sendMessage("Siege Owner: " + siegeOwner.getName());
+        sender.sendMessage("OldSiege Owner: " + siegeOwner.getName());
 
         // TODO DEBUG PRINT
-        for (String t : war.getSide1Towns()) {
+        for (String t : oldWar.getSide1Towns()) {
             Main.warLogger.log("Side1 town: " + t);
             sender.sendMessage("Side1 town: " + t);
         }
-        for (String t : war.getSide2Towns()) {
+        for (String t : oldWar.getSide2Towns()) {
             Main.warLogger.log("Side2 town: " + t);
             sender.sendMessage("Side2 town: " + t);
         }
 
         if (side == TownWarState.NOT_PARTICIPANT) {
-            siegeOwner.sendMessage(Helper.chatLabel() + "You are not in this war.");
-            if (admin) sender.sendMessage(Helper.chatLabel() + "You are not in this war.");
+            siegeOwner.sendMessage(UtilsChat.getPrefix() + "You are not in this oldWar.");
+            if (admin) sender.sendMessage(UtilsChat.getPrefix() + "You are not in this oldWar.");
             return;
         } else if (side == TownWarState.SURRENDERED) {
-            siegeOwner.sendMessage(Helper.chatLabel() + "You have surrendered.");
-            if (admin) sender.sendMessage(Helper.chatLabel() + "You have surrendered.");
+            siegeOwner.sendMessage(UtilsChat.getPrefix() + "You have surrendered.");
+            if (admin) sender.sendMessage(UtilsChat.getPrefix() + "You have surrendered.");
             return;
         }
 
@@ -203,142 +207,142 @@ public class SiegeCommand {
         }
 
         if (!(args.get("town") instanceof final String argTownName))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "Specify a town! /siege start [war] [town]").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "Specify a town! /oldSiege start [oldWar] [town]").build());
 
         // Town check
         Town town = TownyAPI.getInstance().getTown(argTownName);
         if (town == null) {
-            siegeOwner.sendMessage(Helper.chatLabel() + "That town does not exist! /siege start [war] [town]");
+            siegeOwner.sendMessage(UtilsChat.getPrefix() + "That town does not exist! /oldSiege start [oldWar] [town]");
             if (admin)
-                sender.sendMessage(Helper.chatLabel() + "That town does not exist! /siege start [war] [town]");
+                sender.sendMessage(UtilsChat.getPrefix() + "That town does not exist! /oldSiege start [oldWar] [town]");
             return;
         }
 
         // Is being raided check
-        for (Raid r : RaidData.getRaids()) {
+        for (OldRaid r : RaidData.getRaids()) {
             if (r.getRaidedTown().getName().equalsIgnoreCase(town.getName())) {
-                siegeOwner.sendMessage(Helper.chatLabel() + "That town is already currently being raided! Cannot siege at this time!");
+                siegeOwner.sendMessage(UtilsChat.getPrefix() + "That town is already currently being raided! Cannot oldSiege at this time!");
                 if (admin)
-                    sender.sendMessage(Helper.chatLabel() + "That town is already currently being raided! Cannot siege at this time!");
+                    sender.sendMessage(UtilsChat.getPrefix() + "That town is already currently being raided! Cannot oldSiege at this time!");
                 return;
             }
         }
 
         // Attacking own side
-        if (war.getState(town) == side) {
-            siegeOwner.sendMessage(Helper.chatLabel() + "You cannot attack your own towns.");
-            if (admin) sender.sendMessage(Helper.chatLabel() + "You cannot attack your own towns.");
+        if (oldWar.getState(town) == side) {
+            siegeOwner.sendMessage(UtilsChat.getPrefix() + "You cannot attack your own towns.");
+            if (admin) sender.sendMessage(UtilsChat.getPrefix() + "You cannot attack your own towns.");
             return;
         }
 
-        Siege siege = new Siege(war, town, siegeOwner);
-        SiegeData.addSiege(siege);
-        war.addSiege(siege);
+        OldSiege oldSiege = new OldSiege(oldWar, town, siegeOwner);
+        SiegeData.addSiege(oldSiege);
+        oldWar.addSiege(oldSiege);
 
-        Bukkit.broadcastMessage(Helper.chatLabel() + siege.getTown() + " has been put to siege by " + siege.getAttackerSide() + "!");
+        Bukkit.broadcastMessage(UtilsChat.getPrefix() + oldSiege.getTown() + " has been put to oldSiege by " + oldSiege.getAttackerSide() + "!");
 
         if (admin)
-            sender.sendMessage(Helper.color("&cForcefully started siege from the console."));
+            sender.sendMessage(Helper.color("&cForcefully started oldSiege from the console."));
 
         // TODO Debug logs...
         Main.warLogger.log("Attacked Town: " + town.getName().toLowerCase());
         sender.sendMessage("Attacked Town: " + town.getName().toLowerCase());
 
-        war.save();
-        siege.start();
+        oldWar.save();
+        oldSiege.start();
     }
 
     private static void siegeStop(Player sender, CommandArguments args) throws WrapperCommandSyntaxException {
-        final HashSet<Siege> sieges = SiegeData.getSieges();
-        if (sieges.isEmpty()) {
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "There are currently no sieges in progress").build());
+        final HashSet<OldSiege> oldSieges = SiegeData.getSieges();
+        if (oldSieges.isEmpty()) {
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "There are currently no oldSieges in progress").build());
         }
 
         if (args.count() < 2) {
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "/siege stop [town]").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "/siege stop [town]").build());
         }
 
         if (!(args.get("war") instanceof final String argWarName))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "No war name supplied. /siege stop [war] [town]").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "No oldWar name supplied. /siege stop [oldWar] [town]").build());
 
-        // War check
-        War war = WarData.getWar(argWarName);
-        if (war == null) {
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "That war does not exist! /siege stop [war] [town]").build());
+        // OldWar check
+        OldWar oldWar = WarData.getWar(argWarName);
+        if (oldWar == null) {
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "That oldWar does not exist! /siege stop [oldWar] [town]").build());
         }
 
         if (!(args.get("town") instanceof final String argTownName))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "No war name supplied. /siege stop [war] [town]").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "No oldWar name supplied. /siege stop [oldWar] [town]").build());
 
-        for (Siege siege : sieges) {
-            if (siege.getTown().getName().equalsIgnoreCase(argTownName) && siege.getWar().equals(war)) {
-                sender.sendMessage(new ColorParser(Helper.chatLabel() + "siege cancelled").build());
-                Bukkit.broadcast(new ColorParser(Helper.chatLabel() + "The siege at " + siege.getTown().getName() + " has been cancelled by an admin.").build());
-                //siege.clearBeacon();
-                siege.stop();
+        for (OldSiege oldSiege : oldSieges) {
+            if (oldSiege.getTown().getName().equalsIgnoreCase(argTownName) && oldSiege.getWar().equals(oldWar)) {
+                sender.sendMessage(new ColorParser(UtilsChat.getPrefix() + "oldSiege cancelled").build());
+                Bukkit.broadcast(new ColorParser(UtilsChat.getPrefix() + "The oldSiege at " + oldSiege.getTown().getName() + " has been cancelled by an admin.").build());
+                //oldSiege.clearBeacon();
+                oldSiege.stop();
                 return;
             }
         }
 
-        throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "A siege could not be found with this town name! Type /siege list to view current sieges").build());
+        throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "A siege could not be found with this town name! Type /siege list to view current oldSieges").build());
     }
 
     private static void siegeAbandon(Player p, CommandArguments args) throws WrapperCommandSyntaxException {
         if (args.count() < 2) {
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "/siege abandon [town]").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "/oldSiege abandon [town]").build());
         }
 
-        // War check
+        // OldWar check
         if (!(args.get("war") instanceof final String argWarName))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "No war name supplied. /siege stop [war] [town]").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "No oldWar name supplied. /oldSiege stop [oldWar] [town]").build());
 
-        // War check
-        War war = WarData.getWar(argWarName);
-        if (war == null) {
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "That war does not exist! /siege abandon [war] [town]").build());
+        // OldWar check
+        OldWar oldWar = WarData.getWar(argWarName);
+        if (oldWar == null) {
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "That oldWar does not exist! /oldSiege abandon [oldWar] [town]").build());
         }
 
         if (!(args.get("town") instanceof final String argTown))
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "No town name supplied. /siege stop [war] [town]").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "No town name supplied. /oldSiege stop [oldWar] [town]").build());
 
-        Siege siege = SiegeData.getSiege(argTown);
-        if (siege == null) {
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "Invalid siege").build());
+        OldSiege oldSiege = SiegeData.getSiege(argTown);
+        if (oldSiege == null) {
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "Invalid oldSiege").build());
         }
 
-        OfflinePlayer oPlayer = siege.getSiegeLeader();
+        OfflinePlayer oPlayer = oldSiege.getSiegeLeader();
         if (oPlayer != p) {
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "You are not the leader of this siege.").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "You are not the leader of this oldSiege.").build());
         }
 
-        Bukkit.broadcast(new ColorParser(Helper.chatLabel() + "The siege at " + siege.getTown().getName() + " has been abandoned.").build());
-        Main.warLogger.log(p.getName() + " abandoned the siege they started at " + siege.getTown().getName());
-        siege.defendersWin();
+        Bukkit.broadcast(new ColorParser(UtilsChat.getPrefix() + "The oldSiege at " + oldSiege.getTown().getName() + " has been abandoned.").build());
+        Main.warLogger.log(p.getName() + " abandoned the oldSiege they started at " + oldSiege.getTown().getName());
+        oldSiege.defendersWin();
     }
 
     private static void siegeList(Player sender, CommandArguments args) throws WrapperCommandSyntaxException {
-        HashSet<Siege> sieges = SiegeData.getSieges();
-        if (sieges.isEmpty())
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(Helper.chatLabel() + "There are currently no sieges in progress").build());
+        HashSet<OldSiege> oldSieges = SiegeData.getSieges();
+        if (oldSieges.isEmpty())
+            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "There are currently no oldSieges in progress").build());
 
-        sender.sendMessage(new ColorParser(Helper.chatLabel() + "Sieges currently in progress:").build());
-        for (Siege siege : sieges) {
-            War war = siege.getWar();
-            String color = (siege.getSide1AreAttackers() && (war.getState(siege.getTown().getName().toLowerCase()) == TownWarState.SIDE1)) ? "&c" : "&9";
-            sender.sendMessage(new ColorParser(war.getName() + " - " + color + siege.getTown().getName().toLowerCase()).build());
-            sender.sendMessage(new ColorParser(war.getSide1() + " - " + (siege.getSide1AreAttackers() ? siege.getAttackerPoints() : siege.getDefenderPoints())).build());
-            sender.sendMessage(new ColorParser(war.getSide2() + " - " + (siege.getSide1AreAttackers() ? siege.getDefenderPoints() : siege.getAttackerPoints())).build());
-            sender.sendMessage(new ColorParser("Time Left: " + (Siege.maxSiegeTicks - siege.getSiegeTicks()) / 1200 + " minutes").build());
+        sender.sendMessage(new ColorParser(UtilsChat.getPrefix() + "Sieges currently in progress:").build());
+        for (OldSiege oldSiege : oldSieges) {
+            OldWar oldWar = oldSiege.getWar();
+            String color = (oldSiege.getSide1AreAttackers() && (oldWar.getState(oldSiege.getTown().getName().toLowerCase()) == TownWarState.SIDE1)) ? "&c" : "&9";
+            sender.sendMessage(new ColorParser(oldWar.getName() + " - " + color + oldSiege.getTown().getName().toLowerCase()).build());
+            sender.sendMessage(new ColorParser(oldWar.getSide1() + " - " + (oldSiege.getSide1AreAttackers() ? oldSiege.getAttackerPoints() : oldSiege.getDefenderPoints())).build());
+            sender.sendMessage(new ColorParser(oldWar.getSide2() + " - " + (oldSiege.getSide1AreAttackers() ? oldSiege.getDefenderPoints() : oldSiege.getAttackerPoints())).build());
+            sender.sendMessage(new ColorParser("Time Left: " + (OldSiege.maxSiegeTicks - oldSiege.getSiegeTicks()) / 1200 + " minutes").build());
             sender.sendMessage(new ColorParser("-=-=-=-=-=-=-=-=-=-=-=-").build());
         }
     }
 
     private static void siegeHelp(Player sender, CommandArguments args) {
         if (sender.hasPermission("AlathraWar.admin")) {
-            sender.sendMessage(new ColorParser(Helper.chatLabel() + "/siege stop [war] [town]").build());
+            sender.sendMessage(new ColorParser(UtilsChat.getPrefix() + "/siege stop [war] [town]").build());
         }
-        sender.sendMessage(new ColorParser(Helper.chatLabel() + "/siege start [war] [town]").build());
-        sender.sendMessage(new ColorParser(Helper.chatLabel() + "/siege abandon [war] [town]").build());
-        sender.sendMessage(new ColorParser(Helper.chatLabel() + "/siege list").build());
+        sender.sendMessage(new ColorParser(UtilsChat.getPrefix() + "/siege start [war] [town]").build());
+        sender.sendMessage(new ColorParser(UtilsChat.getPrefix() + "/siege abandon [war] [town]").build());
+        sender.sendMessage(new ColorParser(UtilsChat.getPrefix() + "/siege list").build());
     }
 }

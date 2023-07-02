@@ -7,7 +7,7 @@ public enum RaidPhase {
     COMBAT(3, 24000),
     END(4, 72000);
 
-    //Start phase starts when the command to start a raid is ran, it allows the raiders to join, and for people to get geared up
+    //Start phase starts when the command to start a raid is ran, it allows the raiders to join, and for people to getInstance geared up
     //after 15 minutes travel phase begins, where the raiders start travelling and moving to the new town.
     //no killing can occur during these two phases.
     //Once at least one player has stepped into the defending town, or 5 min have passed during the travel phase,

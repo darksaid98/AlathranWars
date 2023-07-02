@@ -13,6 +13,7 @@ import java.util.logging.Level;
 /**
  * Manages file IO & Deletion for other data classes.
  */
+@Deprecated
 public class DataManager {
     private static final String dataFolder = "plugins" + File.separator + "AlathraWar" + File.separator + "data";
     private static DumperOptions options;

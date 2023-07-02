@@ -2,10 +2,9 @@ package me.ShermansWorld.AlathraWar.listeners;
 
 import com.palmergames.bukkit.towny.object.TownBlock;
 import com.palmergames.bukkit.towny.object.WorldCoord;
-import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.Main;
-import me.ShermansWorld.AlathraWar.Raid;
-import me.ShermansWorld.AlathraWar.Siege;
+import me.ShermansWorld.AlathraWar.deprecated.OldRaid;
+import me.ShermansWorld.AlathraWar.deprecated.OldSiege;
 import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
 import me.ShermansWorld.AlathraWar.items.WarItemRegistry;
@@ -70,7 +69,7 @@ public class PlayerInteractListener implements Listener {
                     if (item.equals(WarItemRegistry.getInstance().getOrNull("ram"))) {
                         boolean inSiegeOrRaid = false;
                         //siege check
-                        for (Siege s : SiegeData.getSieges()) {
+                        for (OldSiege s : SiegeData.getSieges()) {
                             for (TownBlock townBlock : s.getTown().getTownBlocks()) {
                                 if (WorldCoord.parseWorldCoord(clicked).equals(townBlock.getWorldCoord())) {
                                     // if we find one, just end no need to continue
@@ -82,7 +81,7 @@ public class PlayerInteractListener implements Listener {
 
                         //if it wasnt in a siege, then
                         if (!inSiegeOrRaid) {
-                            for (Raid r : RaidData.getRaids()) {
+                            for (OldRaid r : RaidData.getRaids()) {
                                 for (TownBlock townBlock : r.getRaidedTown().getTownBlocks()) {
                                     if (WorldCoord.parseWorldCoord(clicked).equals(townBlock.getWorldCoord())) {
                                         // if we find one, just end no need to continue
@@ -97,18 +96,18 @@ public class PlayerInteractListener implements Listener {
 
                             // Returns if already broken.
                             if (doorBroken(clicked, door)) {
-                                player.sendMessage(Helper.chatLabel() + Helper.color("&cThe door is already broken!"));
+                                player.sendMessage(UtilsChat.getPrefix() + Helper.color("&cThe door is already broken!"));
                                 event.setCancelled(true);
                                 return;
                             }
-                            player.sendMessage(Helper.chatLabel() + Helper.color("&eBreak it down alright!"));
+                            player.sendMessage(UtilsChat.getPrefix() + Helper.color("&eBreak it down alright!"));
                             brokenDoors.put(getDoorPos(clicked, door), System.currentTimeMillis() + (1000L * Main.getInstance().getConfig().getInt("batteringRamEffectiveness")));
                             door.setOpen(!door.isOpen());
                             clicked.setBlockData(door);
                             player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
                             Main.warLogger.log("User " + player.getName() + " has broken down door" + clicked.getLocation());
                         } else {
-                            player.sendMessage(Helper.chatLabel() + Helper.color("&cThis item can only be used in a siege or raid!"));
+                            player.sendMessage(UtilsChat.getPrefix() + Helper.color("&cThis item can only be used in a siege or raid!"));
                         }
                         event.setCancelled(true);
                     }
@@ -142,7 +141,7 @@ public class PlayerInteractListener implements Listener {
                 if (doors.contains(clicked.getType())) {
                     Door door = (Door) clicked.getBlockData();
                     if (doorBroken(clicked, door)) {
-                        player.sendMessage(Helper.chatLabel() + Helper.color("Door is broken!"));
+                        player.sendMessage(UtilsChat.getPrefix() + Helper.color("Door is broken!"));
                         event.setCancelled(true);
 
                         return;

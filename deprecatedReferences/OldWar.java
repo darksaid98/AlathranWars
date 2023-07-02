@@ -1,10 +1,10 @@
-package me.ShermansWorld.AlathraWar;
+package me.ShermansWorld.AlathraWar.deprecated;
 
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
-import me.ShermansWorld.AlathraWar.commands.CommandHelper;
+import me.ShermansWorld.AlathraWar.Main;
 import me.ShermansWorld.AlathraWar.data.DataManager;
 import me.ShermansWorld.AlathraWar.data.WarData;
 import me.ShermansWorld.AlathraWar.enums.TownWarState;
@@ -14,11 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class War {
+@Deprecated
+public class OldWar {
 
     // References
-    private final ArrayList<Siege> sieges = new ArrayList<>();
-    private final ArrayList<Raid> raids = new ArrayList<>();
+    private final ArrayList<OldSiege> oldSieges = new ArrayList<>();
+    private final ArrayList<OldRaid> oldRaids = new ArrayList<>();
     // Object Fields
     private final UUID uuid; // TODO Actually convert to using UUID for identifying this war
     private String name;
@@ -33,13 +34,13 @@ public class War {
     private int lastRaidTimeSide2 = 0;
 
     /**
-     * War Constructor
+     * OldWar Constructor
      *
      * @param name  - Name of war
      * @param side1 - Side 1 name
      * @param side2 - Side 2 name
      */
-    public War(final String name, final String side1, final String side2) {
+    public OldWar(final String name, final String side1, final String side2) {
         this.uuid = generateUUID();
         this.name = name;
         this.side1 = side1;
@@ -52,7 +53,7 @@ public class War {
             Town town = TownyAPI.getInstance().getTown(townString);
             if (town != null) {
                 for (Resident res : town.getResidents()) {
-                    //Minuteman countermeasure! if they are they get skipped
+                    //Minuteman countermeasure! if they are they getInstance skipped
                     if (CommandHelper.isPlayerMinuteman(res.getName()) == 0) {
                         returnList.add(res.getName());
                     }
@@ -252,20 +253,20 @@ public class War {
         surrenderedTowns = towns;
     }
 
-    public ArrayList<Siege> getSieges() {
-        return sieges;
+    public ArrayList<OldSiege> getSieges() {
+        return oldSieges;
     }
 
-    public void addSiege(Siege siege) {
-        sieges.add(siege);
+    public void addSiege(OldSiege oldSiege) {
+        oldSieges.add(oldSiege);
     }
 
-    public ArrayList<Raid> getRaids() {
-        return raids;
+    public ArrayList<OldRaid> getRaids() {
+        return oldRaids;
     }
 
-    public void addRaid(Raid raid) {
-        raids.add(raid);
+    public void addRaid(OldRaid oldRaid) {
+        oldRaids.add(oldRaid);
     }
 
     /**
@@ -329,8 +330,8 @@ public class War {
         side2Points += points;
     }
 
-    public boolean equals(War war) {
-        return getUUID().equals(war.getUUID());
+    public boolean equals(OldWar oldWar) {
+        return getUUID().equals(oldWar.getUUID());
     }
 
     public boolean equals(UUID uuid) {

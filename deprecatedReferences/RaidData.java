@@ -7,8 +7,8 @@ import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.palmergames.bukkit.towny.object.metadata.CustomDataField;
 import com.palmergames.bukkit.towny.object.metadata.LongDataField;
 import me.ShermansWorld.AlathraWar.Main;
-import me.ShermansWorld.AlathraWar.Raid;
-import me.ShermansWorld.AlathraWar.War;
+import me.ShermansWorld.AlathraWar.deprecated.OldRaid;
+import me.ShermansWorld.AlathraWar.deprecated.OldWar;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
@@ -17,18 +17,19 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.Nonnull;
 import java.util.*;
 
+@Deprecated
 public class RaidData {
-    // Static Raid list for all active raids
-    private static final ArrayList<Raid> raids = new ArrayList<>();
+    // Static OldRaid list for all active OLD_RAIDS
+    private static final ArrayList<OldRaid> OLD_RAIDS = new ArrayList<>();
 
 
-    public static ArrayList<Raid> getRaids() {
-        return raids;
+    public static ArrayList<OldRaid> getRaids() {
+        return OLD_RAIDS;
     }
 
-    public static void setRaids(ArrayList<Raid> raids) {
-        for (Raid raid : raids) {
-            addRaid(raid);
+    public static void setRaids(ArrayList<OldRaid> oldRaids) {
+        for (OldRaid oldRaid : oldRaids) {
+            addRaid(oldRaid);
         }
     }
 
@@ -36,38 +37,38 @@ public class RaidData {
      * Gets a raid with a specific name
      *
      * @param name - Name to check
-     * @return Raid or Null
+     * @return OldRaid or Null
      */
-    public static @Nullable Raid getRaid(String name) {
-        for (Raid raid : raids) {
-            if (raid.getName().equalsIgnoreCase(name)) return raid;
+    public static @Nullable OldRaid getRaid(String name) {
+        for (OldRaid oldRaid : OLD_RAIDS) {
+            if (oldRaid.getName().equalsIgnoreCase(name)) return oldRaid;
         }
         return null;
     }
 
-    public static void addRaid(Raid raid) {
-        if (raid == null) {
-            Main.warLogger.log("Attempted to add NULL to raid list.");
+    public static void addRaid(OldRaid oldRaid) {
+        if (oldRaid == null) {
+            Main.warLogger.log("Attempted to add NULL to oldRaid list.");
             return;
         }
-        raids.add(raid);
+        OLD_RAIDS.add(oldRaid);
     }
 
-    public static void removeRaid(Raid raid) {
-        raid.getWar().getRaids().remove(raid);
-        raids.remove(raid);
+    public static void removeRaid(OldRaid oldRaid) {
+        oldRaid.getWar().getRaids().remove(oldRaid);
+        OLD_RAIDS.remove(oldRaid);
 
-        //deleteRaid(raid);
+        //deleteRaid(oldRaid);
     }
 
     /**
      * Creates a raid object from a provided HashMap
      *
      * @param fileData
-     * @return Raid object
+     * @return OldRaid object
      */
     @SuppressWarnings("unchecked")
-    public static Raid fromMap(War war, HashMap<String, Object> fileData) {
+    public static OldRaid fromMap(OldWar oldWar, HashMap<String, Object> fileData) {
 
         if (fileData.get("raidedTown") == null || fileData.get("gatherTown") == null || fileData.get("side1AreRaiders") == null) {
             return null;
@@ -82,17 +83,17 @@ public class RaidData {
         if (raidedTown == null || gatherTown == null) {
             return null;
         }
-        Raid raid = new Raid(war, raidedTown, gatherTown, attackBoolean, offlinePlayer);
+        OldRaid oldRaid = new OldRaid(oldWar, raidedTown, gatherTown, attackBoolean, offlinePlayer);
 
-        //Extra properties, if any are missing the raid doesnt exist yet
+        //Extra properties, if any are missing the oldRaid doesnt exist yet
         if (fileData.get("raiderScore") != null && fileData.get("defenderScore") != null && fileData.get("raidTicks") != null && fileData.get("raidPhase") != null && fileData.get("activeRaiders") != null && fileData.get("lootedChunks") != null && fileData.get("side1AreRaiders") != null) {
             //active properties
-            raid.setRaidPhase(RaidPhase.getByName((String) fileData.get("raidPhase")));
-            raid.setRaidTicks((int) fileData.get("raidTicks"));
-            raid.setActiveRaiders((ArrayList<String>) fileData.get("activeRaiders"));
-            raid.setRaiderScore((int) fileData.get("raiderScore"));
-            raid.setDefenderScore((int) fileData.get("defenderScore"));
-            raid.setSide1AreRaiders(Boolean.parseBoolean((String) fileData.get("side1AreRaiders")));
+            oldRaid.setRaidPhase(RaidPhase.getByName((String) fileData.get("raidPhase")));
+            oldRaid.setRaidTicks((int) fileData.get("raidTicks"));
+            oldRaid.setActiveRaiders((ArrayList<String>) fileData.get("activeRaiders"));
+            oldRaid.setRaiderScore((int) fileData.get("raiderScore"));
+            oldRaid.setDefenderScore((int) fileData.get("defenderScore"));
+            oldRaid.setSide1AreRaiders(Boolean.parseBoolean((String) fileData.get("side1AreRaiders")));
 
             //looted chunks
             ArrayList<Object> o = (ArrayList<Object>) fileData.get("lootedChunks");
@@ -109,24 +110,24 @@ public class RaidData {
                 boolean finished = (boolean) chunk.get("finished");
 
                 //put
-                Raid.LootBlock lb = new Raid.LootBlock(worldCoordc, ticks, value, finished);
-                raid.getLootedChunks().put(worldCoordc, lb);
+                OldRaid.LootBlock lb = new OldRaid.LootBlock(worldCoordc, ticks, value, finished);
+                oldRaid.getLootedChunks().put(worldCoordc, lb);
             }
         }
 
-        return raid;
+        return oldRaid;
     }
 
-    public static ArrayList<Raid> createRaids(War war, Collection<HashMap<String, Object>> raidMaps) {
-        ArrayList<Raid> returnList = new ArrayList<>();
+    public static ArrayList<OldRaid> createRaids(OldWar oldWar, Collection<HashMap<String, Object>> raidMaps) {
+        ArrayList<OldRaid> returnList = new ArrayList<>();
         for (HashMap<String, Object> map : raidMaps) {
             Town town = TownyAPI.getInstance().getTown((String) map.get("raidedTown"));
             if (town == null) continue;
 
-            Raid raid = fromMap(war, map);
-            returnList.add(raid);
-            RaidData.addRaid(raid);
-            raid.resume();
+            OldRaid oldRaid = fromMap(oldWar, map);
+            returnList.add(oldRaid);
+            RaidData.addRaid(oldRaid);
+            oldRaid.resume();
         }
         return returnList;
     }
@@ -135,17 +136,17 @@ public class RaidData {
     /**
      * Saves the war into files.
      *
-     * @param raid - War to be saved.
+     * @param oldRaid - OldWar to be saved.
      */
-    public static void saveRaid(Raid raid) {
-        War war = raid.getWar();
-        war.save();
+    public static void saveRaid(OldRaid oldRaid) {
+        OldWar oldWar = oldRaid.getWar();
+        oldWar.save();
     }
 
 //    /**
 //     * deletes raid, unused
 //     */
-//    private static void deleteRaid(War war) {
+//    private static void deleteRaid(OldWar war) {
 //        File[] files = new File(dataFolderPath + File.separator + "wars").listFiles(ymlFilter);
 //
 //        for (File file : files) {
@@ -156,28 +157,28 @@ public class RaidData {
 //    }
 
     /**
-     * Turns a raid into a map
+     * Turns a oldRaid into a map
      *
-     * @param raid - Raid
+     * @param oldRaid - OldRaid
      * @return Map
      */
-    public static HashMap<String, Object> raidToMap(Raid raid) {
+    public static HashMap<String, Object> raidToMap(OldRaid oldRaid) {
         HashMap<String, Object> returnMap = new HashMap<>();
         // Shoves everything into a map.
-        returnMap.put("name", raid.getName());
-        returnMap.put("raidedTown", raid.getRaidedTown().getName());
-        returnMap.put("gatherTown", raid.getGatherTown().getName());
-        returnMap.put("raidTicks", raid.getRaidTicks());
-        returnMap.put("raidPhase", raid.getPhase().name());
-        returnMap.put("raiderScore", raid.getRaiderScore());
-        returnMap.put("defenderScore", raid.getDefenderScore());
-        returnMap.put("side1AreRaiders", Boolean.toString(raid.getSide1AreRaiders()));
-        returnMap.put("activeRaiders", raid.getActiveRaiders());
+        returnMap.put("name", oldRaid.getName());
+        returnMap.put("raidedTown", oldRaid.getRaidedTown().getName());
+        returnMap.put("gatherTown", oldRaid.getGatherTown().getName());
+        returnMap.put("raidTicks", oldRaid.getRaidTicks());
+        returnMap.put("raidPhase", oldRaid.getPhase().name());
+        returnMap.put("raiderScore", oldRaid.getRaiderScore());
+        returnMap.put("defenderScore", oldRaid.getDefenderScore());
+        returnMap.put("side1AreRaiders", Boolean.toString(oldRaid.getSide1AreRaiders()));
+        returnMap.put("activeRaiders", oldRaid.getActiveRaiders());
         //THIS MAY OR MAY NOT WORK
-        returnMap.put("owner", raid.getOwner().getUniqueId().toString());
+        returnMap.put("owner", oldRaid.getOwner().getUniqueId().toString());
 
         //create a list from the looted chunks
-        final List<Object> chunkList = getChunkList(raid);
+        final List<Object> chunkList = getChunkList(oldRaid);
 
         returnMap.put("lootedChunks", chunkList);
 
@@ -185,9 +186,9 @@ public class RaidData {
     }
 
     @NotNull
-    private static List<Object> getChunkList(Raid raid) {
+    private static List<Object> getChunkList(OldRaid oldRaid) {
         List<Object> chunkList = new ArrayList<>();
-        for (Raid.LootBlock b : raid.getLootedChunks().values()) {
+        for (OldRaid.LootBlock b : oldRaid.getLootedChunks().values()) {
             HashMap<String, Object> blockMap = new HashMap<>();
             //worldcoord
             HashMap<String, Object> wcMap = new HashMap<>();
@@ -207,13 +208,13 @@ public class RaidData {
     /**
      * Creates a map of raid maps
      *
-     * @param war - War to map
+     * @param oldWar - OldWar to map
      * @return Map of Maps
      */
-    public static HashMap<String, Object> getRaidMap(War war) {
+    public static HashMap<String, Object> getRaidMap(OldWar oldWar) {
         HashMap<String, Object> returnMap = new HashMap<>();
-        for (Raid raid : war.getRaids()) {
-            returnMap.put(raid.getRaidedTown().getName(), raidToMap(raid));
+        for (OldRaid oldRaid : oldWar.getRaids()) {
+            returnMap.put(oldRaid.getRaidedTown().getName(), raidToMap(oldRaid));
         }
         return returnMap;
     }
@@ -241,9 +242,9 @@ public class RaidData {
     /**
      * @return
      * @Isaac this is for getting if a town can be raided, return (-2, -1, 0, 1, 2) based on status
-     * (no players online, 24 hours town cooldown, 6 hour war cooldown, town being raided already, valid time to raid)
+     * (no players online, 24 hours town cooldown, 6 hour oldWar cooldown, town being raided already, valid time to raid)
      */
-    public static int isValidRaid(War war, String side, @Nonnull Town town) {
+    public static int isValidRaid(OldWar oldWar, String side, @Nonnull Town town) {
         long townTime = whenTownLastRaided(town);
 
         //24 hours town cooldown
@@ -251,8 +252,8 @@ public class RaidData {
             return -1;
         }
 
-        //6 hour raid cooldown for war
-        if ((System.currentTimeMillis() / 1000) - (side.equalsIgnoreCase(war.getSide1()) ? war.getLastRaidTimeSide1() : war.getLastRaidTimeSide2()) <= 21600) {
+        //6 hour raid cooldown for oldWar
+        if ((System.currentTimeMillis() / 1000) - (side.equalsIgnoreCase(oldWar.getSide1()) ? oldWar.getLastRaidTimeSide1() : oldWar.getLastRaidTimeSide2()) <= 21600) {
             return 0;
         }
 
@@ -266,8 +267,8 @@ public class RaidData {
         if (!onlinePlayer) return -2;
 
         //check if being raided
-        for (Raid raid : war.getRaids()) {
-            if (raid.getRaidedTown().getName().equalsIgnoreCase(town.getName())) {
+        for (OldRaid oldRaid : oldWar.getRaids()) {
+            if (oldRaid.getRaidedTown().getName().equalsIgnoreCase(town.getName())) {
                 return 1;
             }
 

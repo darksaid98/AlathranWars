@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "me.ShermansWorld.AlathraWar"
-version = "2.1.0"
+version = "3.0.0-SNAPSHOT"
 description = ""
 
 java {
@@ -47,19 +47,21 @@ repositories {
 dependencies {
     implementation("org.jetbrains:annotations:24.0.1")
 
-    compileOnly("io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
 
-    implementation("com.github.milkdrinkers:colorparser:1.0.5")
+    implementation("com.github.milkdrinkers:colorparser:1.0.7")
 
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
 
-    compileOnly("com.palmergames.bukkit.towny:towny:0.98.6.0")
+    compileOnly("com.palmergames.bukkit.towny:towny:0.99.2.5")
 
     compileOnly("me.neznamy:tab-api:4.0.0")
 
     implementation("dev.jorel:commandapi-bukkit-shade:9.0.3")
     compileOnly("dev.jorel:commandapi-annotations:9.0.3")
     annotationProcessor("dev.jorel:commandapi-annotations:9.0.3")
+
+    compileOnly("com.zaxxer:HikariCP:5.0.1")
 
     compileOnly("me.clip:placeholderapi:2.11.3")
 }
@@ -91,11 +93,12 @@ tasks {
         fun reloc(originPkg: String, targetPkg: String) = relocate(originPkg, "${project.group}.${targetPkg}")
 
         reloc("dev.jorel.commandapi", "commandapi")
+        reloc("com.zaxxer.hikari", "hikaricp")
     }
 
     runServer {
         // Configure the Minecraft version for our task.
-        minecraftVersion("1.19.3")
+        minecraftVersion("1.19.4")
     }
 }
 
@@ -108,32 +111,12 @@ bukkit {
     prefix = "AlathraWar"
     version = "${project.version}"
     description = "${project.description}"
-    authors = listOf("ShermansWorld", "NinjaMandalorian", "AubriTheHuman")
-    contributors = listOf("darksaid98")
+    authors = listOf("ShermansWorld", "NinjaMandalorian", "AubriTheHuman", "darksaid98")
+    contributors = listOf()
     apiVersion = "1.19"
 
     // Misc properties
     load = net.minecrell.pluginyml.bukkit.BukkitPluginDescription.PluginLoadOrder.POSTWORLD // STARTUP or POSTWORLD
     depend = listOf("Vault", "Towny")
     softDepend = listOf("TAB")
-
-    commands {
-        register("war") {
-            description = "Used to create, delete, join and leave wars"
-            usage = "Just use /war!"
-        }
-        register("siege") {
-            description = "Used to start, end, and view sieges"
-            usage = "Just use /siege!"
-        }
-        register("raid") {
-            description = "Used to start, end, and view raids"
-            usage = "Just use /raid!"
-        }
-        register("alathrawaradmin") {
-            description = "Used to administrate wars and modify existing events"
-            usage = "Just use /alathrawaradmin!"
-            aliases = listOf("awa")
-        }
-    }
 }

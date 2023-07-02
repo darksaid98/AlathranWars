@@ -1,4 +1,4 @@
-package me.ShermansWorld.AlathraWar.commands;
+package me.ShermansWorld.AlathraWar.deprecated;
 
 import com.palmergames.bukkit.towny.utils.NameUtil;
 import org.bukkit.command.Command;
@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import java.util.Collections;
 import java.util.List;
 
+@Deprecated
 public class AdminTabCompletion implements TabCompleter {
 
     List<String> base = List.of("create",

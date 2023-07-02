@@ -1,8 +1,7 @@
 package me.ShermansWorld.AlathraWar.listeners;
 
-import me.ShermansWorld.AlathraWar.Helper;
-import me.ShermansWorld.AlathraWar.Raid;
-import me.ShermansWorld.AlathraWar.Siege;
+import me.ShermansWorld.AlathraWar.deprecated.OldRaid;
+import me.ShermansWorld.AlathraWar.deprecated.OldSiege;
 import me.ShermansWorld.AlathraWar.data.RaidData;
 import me.ShermansWorld.AlathraWar.data.RaidPhase;
 import me.ShermansWorld.AlathraWar.data.SiegeData;
@@ -61,11 +60,11 @@ public class CommandsListener implements Listener {
 
         allow n spawn and t spawn for defenders trapped in spawn
          */
-        for (Raid raid : RaidData.getRaids()) {
+        for (OldRaid oldRaid : RaidData.getRaids()) {
             //Only do this during regular phases, start and end ignored in case something breaks
-            if (raid.getPhase() == RaidPhase.COMBAT || raid.getPhase() == RaidPhase.TRAVEL || raid.getPhase() == RaidPhase.GATHER) {
+            if (oldRaid.getPhase() == RaidPhase.COMBAT || oldRaid.getPhase() == RaidPhase.TRAVEL || oldRaid.getPhase() == RaidPhase.GATHER) {
                 //only do for active raiders and any defenders
-                if (raid.getActiveRaiders().contains(p.getName()) || raid.getDefenderPlayers().contains(p.getName())) {
+                if (oldRaid.getActiveRaiders().contains(p.getName()) || oldRaid.getDefenderPlayers().contains(p.getName())) {
                     //set spawn and properties
                     if (args.length >= 3) {
                         String parse = (args[0].charAt(0) == '/' ? args[0].substring(1) : args[0]) + " " + args[1] + " " + args[2];
@@ -73,7 +72,7 @@ public class CommandsListener implements Listener {
                             //payment check
                             for (String cmd : blacklistedXLong) {
                                 if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
-                                    p.sendMessage(Helper.chatLabel() + Helper.color("&cYou cannot modify this property during a raid!"));
+                                    p.sendMessage(UtilsChat.getPrefix() + Helper.color("&cYou cannot modify this property during a oldRaid!"));
                                     event.setCancelled(true);
                                     return;
                                 }
@@ -89,7 +88,7 @@ public class CommandsListener implements Listener {
                             for (String cmd : payment) {
                                 //check for each prefix
                                 if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
-                                    p.sendMessage(Helper.chatLabel() + Helper.color("&cYou cannot withdraw money whilst in a raid!"));
+                                    p.sendMessage(UtilsChat.getPrefix() + Helper.color("&cYou cannot withdraw money whilst in a oldRaid!"));
                                     event.setCancelled(true);
                                     return;
                                 }
@@ -104,17 +103,17 @@ public class CommandsListener implements Listener {
                                             || parse.equalsIgnoreCase("t spawn") || parse.equalsIgnoreCase("town spawn")
                                             || parse.equalsIgnoreCase("towny:n spawn") || parse.equalsIgnoreCase("towny:nat spawn") || parse.equalsIgnoreCase("towny:nation spawn")
                                             || parse.equalsIgnoreCase("towny:t spawn") || parse.equalsIgnoreCase("towny:town spawn")) {
-                                            p.sendMessage(Helper.chatLabel() + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
+                                            p.sendMessage(UtilsChat.getPrefix() + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
                                             return;
                                         }
-                                        p.sendMessage(Helper.chatLabel() + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
-                                        p.sendMessage(Helper.chatLabel() + Helper.color("&eUse /t spawn, or /n spawn"));
+                                        p.sendMessage(UtilsChat.getPrefix() + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
+                                        p.sendMessage(UtilsChat.getPrefix() + Helper.color("&eUse /t spawn, or /n spawn"));
                                         event.setCancelled(true);
                                         return;
                                     }
 
                                     //else
-                                    p.sendMessage(Helper.chatLabel() + Helper.color("&cYou cannot teleport whilst in a raid!"));
+                                    p.sendMessage(UtilsChat.getPrefix() + Helper.color("&cYou cannot teleport whilst in a oldRaid!"));
                                     event.setCancelled(true);
                                     return;
                                 }
@@ -131,13 +130,13 @@ public class CommandsListener implements Listener {
                                 if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
                                     //spawn world check
                                     if (p.getWorld().getName().equalsIgnoreCase("world")) {
-                                        p.sendMessage(Helper.chatLabel() + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
-                                        p.sendMessage(Helper.chatLabel() + Helper.color("&eUse /t spawn, or /n spawn"));
+                                        p.sendMessage(UtilsChat.getPrefix() + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
+                                        p.sendMessage(UtilsChat.getPrefix() + Helper.color("&eUse /t spawn, or /n spawn"));
                                         event.setCancelled(true);
                                         return;
                                     }
 
-                                    p.sendMessage(Helper.chatLabel() + Helper.color("&cYou cannot teleport whilst in a raid!"));
+                                    p.sendMessage(UtilsChat.getPrefix() + Helper.color("&cYou cannot teleport whilst in a oldRaid!"));
                                     event.setCancelled(true);
                                     return;
                                 }
@@ -151,11 +150,11 @@ public class CommandsListener implements Listener {
             /*
             Prevent players from teleporting during a siege
              */
-        for (Siege siege : SiegeData.getSieges()) {
+        for (OldSiege oldSiege : SiegeData.getSieges()) {
             //Only do this during regular phases, start and end ignored in case something breaks
-            if (siege.getSiegeTicks() > 0) {
+            if (oldSiege.getSiegeTicks() > 0) {
                 //only do for active raiders and any defenders
-                if (siege.getAttackerPlayers().contains(p.getName()) || siege.getDefenderPlayers().contains(p.getName())) {
+                if (oldSiege.getAttackerPlayers().contains(p.getName()) || oldSiege.getDefenderPlayers().contains(p.getName())) {
                     //set spawn and properties
                     if (args.length >= 3) {
                         String parse = (args[0].charAt(0) == '/' ? args[0].substring(1) : args[0]) + " " + args[1] + " " + args[2];
@@ -163,7 +162,7 @@ public class CommandsListener implements Listener {
                             //payment check
                             for (String cmd : blacklistedXLong) {
                                 if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
-                                    p.sendMessage(Helper.chatLabel() + Helper.color("&cYou cannot modify this property during a siege!"));
+                                    p.sendMessage(UtilsChat.getPrefix() + Helper.color("&cYou cannot modify this property during a oldSiege!"));
                                     event.setCancelled(true);
                                     return;
                                 }
@@ -179,7 +178,7 @@ public class CommandsListener implements Listener {
                             for (String cmd : payment) {
                                 //check for each prefix
                                 if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
-                                    p.sendMessage(Helper.chatLabel() + Helper.color("&cYou cannot withdraw money whilst in a siege!"));
+                                    p.sendMessage(UtilsChat.getPrefix() + Helper.color("&cYou cannot withdraw money whilst in a oldSiege!"));
                                     event.setCancelled(true);
                                     return;
                                 }
@@ -194,17 +193,17 @@ public class CommandsListener implements Listener {
                                             || parse.equalsIgnoreCase("t spawn") || parse.equalsIgnoreCase("town spawn")
                                             || parse.equalsIgnoreCase("towny:n spawn") || parse.equalsIgnoreCase("towny:nat spawn") || parse.equalsIgnoreCase("towny:nation spawn")
                                             || parse.equalsIgnoreCase("towny:t spawn") || parse.equalsIgnoreCase("towny:town spawn")) {
-                                            p.sendMessage(Helper.chatLabel() + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
+                                            p.sendMessage(UtilsChat.getPrefix() + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
                                             return;
                                         }
-                                        p.sendMessage(Helper.chatLabel() + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
-                                        p.sendMessage(Helper.chatLabel() + Helper.color("&eUse /t spawn, or /n spawn"));
+                                        p.sendMessage(UtilsChat.getPrefix() + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
+                                        p.sendMessage(UtilsChat.getPrefix() + Helper.color("&eUse /t spawn, or /n spawn"));
                                         event.setCancelled(true);
                                         return;
                                     }
 
                                     //else
-                                    p.sendMessage(Helper.chatLabel() + Helper.color("&cYou cannot teleport whilst in a siege!"));
+                                    p.sendMessage(UtilsChat.getPrefix() + Helper.color("&cYou cannot teleport whilst in a oldSiege!"));
                                     event.setCancelled(true);
                                     return;
                                 }
@@ -221,13 +220,13 @@ public class CommandsListener implements Listener {
                                 if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
                                     //spawn world check
                                     if (p.getWorld().getName().equalsIgnoreCase("world")) {
-                                        p.sendMessage(Helper.chatLabel() + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
-                                        p.sendMessage(Helper.chatLabel() + Helper.color("&eUse /t spawn, or /n spawn"));
+                                        p.sendMessage(UtilsChat.getPrefix() + Helper.color("&eYou are stuck in spawn and are allowed to teleport to your town or nation."));
+                                        p.sendMessage(UtilsChat.getPrefix() + Helper.color("&eUse /t spawn, or /n spawn"));
                                         event.setCancelled(true);
                                         return;
                                     }
 
-                                    p.sendMessage(Helper.chatLabel() + Helper.color("&cYou cannot teleport whilst in a siege!"));
+                                    p.sendMessage(UtilsChat.getPrefix() + Helper.color("&cYou cannot teleport whilst in a oldSiege!"));
                                     event.setCancelled(true);
                                     return;
                                 }

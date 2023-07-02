@@ -1,6 +1,5 @@
 package me.ShermansWorld.AlathraWar.items;
 
-import me.ShermansWorld.AlathraWar.Helper;
 import me.ShermansWorld.AlathraWar.Main;
 import org.bukkit.inventory.Recipe;
 
@@ -15,11 +14,11 @@ public class WarRecipeRegistry {
     public WarRecipeRegistry() {
         instance = this;
 
-        Main.warLogger.log(Helper.chatLabel() + "Registering AlathraWar recipes.");
+        Main.warLogger.log(UtilsChat.getPrefix() + "Registering AlathraWar recipes.");
 
 //        register(WarItemRegistry.registryName("ram"), new RamItem().getRecipes());
 
-        Main.warLogger.log(Helper.chatLabel() + "Registered AlathraWar recipes.");
+        Main.warLogger.log(UtilsChat.getPrefix() + "Registered AlathraWar recipes.");
     }
 
     public static WarRecipeRegistry getInstance() {
