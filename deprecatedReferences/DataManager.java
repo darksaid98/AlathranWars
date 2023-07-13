@@ -1,6 +1,6 @@
-package me.ShermansWorld.AlathraWar.data;
+package me.ShermansWorld.AlathranWars.data;
 
-import me.ShermansWorld.AlathraWar.Main;
+import me.ShermansWorld.AlathranWars.Main;
 import org.bukkit.Bukkit;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -15,7 +15,7 @@ import java.util.logging.Level;
  */
 @Deprecated
 public class DataManager {
-    private static final String dataFolder = "plugins" + File.separator + "AlathraWar" + File.separator + "data";
+    private static final String dataFolder = "plugins" + File.separator + "AlathranWars" + File.separator + "data";
     private static DumperOptions options;
 
     public DataManager() {

@@ -1,4 +1,4 @@
-# AlathraWar Version: 1.3.1
+# AlathranWars Version: 1.3.1
 
 ## A unique Towny oldWar system for the AlathraMC server
 

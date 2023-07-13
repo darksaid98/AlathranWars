@@ -1,19 +1,19 @@
-package me.ShermansWorld.AlathraWar.deprecated;
+package me.ShermansWorld.AlathranWars.deprecated;
 
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
-import me.ShermansWorld.AlathraWar.*;
-import me.ShermansWorld.AlathraWar.data.RaidData;
-import me.ShermansWorld.AlathraWar.data.RaidPhase;
-import me.ShermansWorld.AlathraWar.data.SiegeData;
-import me.ShermansWorld.AlathraWar.data.WarData;
-import me.ShermansWorld.AlathraWar.deprecated.OldRaid;
-import me.ShermansWorld.AlathraWar.deprecated.OldSiege;
-import me.ShermansWorld.AlathraWar.deprecated.OldWar;
-import me.ShermansWorld.AlathraWar.items.WarItemRegistry;
+import me.ShermansWorld.AlathranWars.*;
+import me.ShermansWorld.AlathranWars.data.RaidData;
+import me.ShermansWorld.AlathranWars.data.RaidPhase;
+import me.ShermansWorld.AlathranWars.data.SiegeData;
+import me.ShermansWorld.AlathranWars.data.WarData;
+import me.ShermansWorld.AlathranWars.deprecated.OldRaid;
+import me.ShermansWorld.AlathranWars.deprecated.OldSiege;
+import me.ShermansWorld.AlathranWars.deprecated.OldWar;
+import me.ShermansWorld.AlathranWars.items.WarItemRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
 import org.bukkit.command.CommandSender;
@@ -275,9 +275,9 @@ public class CommandHelper {
     }
 
     /**
-     * return list of all alathrawar items with namespace
+     * return list of all alathranwars items with namespace
      *
-     * @return list of all alathrawar items namespaced
+     * @return list of all alathranwars items namespaced
      */
     public static List<String> getWarItems() {
         return new ArrayList<>(WarItemRegistry.getInstance().getItemRegistry().keySet());

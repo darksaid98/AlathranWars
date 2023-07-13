@@ -1,14 +1,14 @@
-package me.ShermansWorld.AlathraWar.deprecated;
+package me.ShermansWorld.AlathranWars.deprecated;
 
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.palmergames.bukkit.towny.object.metadata.LongDataField;
-import me.ShermansWorld.AlathraWar.Main;
-import me.ShermansWorld.AlathraWar.data.RaidData;
-import me.ShermansWorld.AlathraWar.data.RaidPhase;
-import me.ShermansWorld.AlathraWar.utility.Utils;
+import me.ShermansWorld.AlathranWars.Main;
+import me.ShermansWorld.AlathranWars.data.RaidData;
+import me.ShermansWorld.AlathranWars.data.RaidPhase;
+import me.ShermansWorld.AlathranWars.utility.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -60,7 +60,7 @@ v/ Raiders on death are teleported to their town spawn.
 */
 
 /**
- * Implementation of Raids for alathrawar
+ * Implementation of Raids for alathranwars
  *
  * @author AubriTheHuman
  * @author NinjaMandalorian

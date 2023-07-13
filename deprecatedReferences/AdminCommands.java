@@ -1,4 +1,4 @@
-package me.ShermansWorld.AlathraWar.deprecated;
+package me.ShermansWorld.AlathranWars.deprecated;
 
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
@@ -7,16 +7,16 @@ import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.palmergames.bukkit.towny.object.metadata.LongDataField;
-import me.ShermansWorld.AlathraWar.*;
-import me.ShermansWorld.AlathraWar.commands.RaidCommand;
-import me.ShermansWorld.AlathraWar.commands.SiegeCommand;
-import me.ShermansWorld.AlathraWar.commands.WarCommand;
-import me.ShermansWorld.AlathraWar.data.RaidData;
-import me.ShermansWorld.AlathraWar.data.RaidPhase;
-import me.ShermansWorld.AlathraWar.data.SiegeData;
-import me.ShermansWorld.AlathraWar.data.WarData;
-import me.ShermansWorld.AlathraWar.enums.TownWarState;
-import me.ShermansWorld.AlathraWar.items.WarItemRegistry;
+import me.ShermansWorld.AlathranWars.*;
+import me.ShermansWorld.AlathranWars.commands.RaidCommand;
+import me.ShermansWorld.AlathranWars.commands.SiegeCommand;
+import me.ShermansWorld.AlathranWars.commands.WarCommand;
+import me.ShermansWorld.AlathranWars.data.RaidData;
+import me.ShermansWorld.AlathranWars.data.RaidPhase;
+import me.ShermansWorld.AlathranWars.data.SiegeData;
+import me.ShermansWorld.AlathranWars.data.WarData;
+import me.ShermansWorld.AlathranWars.enums.TownWarState;
+import me.ShermansWorld.AlathranWars.items.WarItemRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.boss.KeyedBossBar;
@@ -37,7 +37,7 @@ import java.util.Random;
 public class AdminCommands implements CommandExecutor {
 
     public AdminCommands(final Main plugin) {
-        plugin.getCommand("alathrawaradmin").setExecutor(this);
+        plugin.getCommand("alathranwarsadmin").setExecutor(this);
         plugin.getCommand("awa").setExecutor(this);
     }
 
@@ -52,7 +52,7 @@ public class AdminCommands implements CommandExecutor {
             }
             // item not real!
             if (stack == null) {
-                sender.sendMessage(UtilsChat.getPrefix() + Helper.color("&cNot an AlathraWar item."));
+                sender.sendMessage(UtilsChat.getPrefix() + Helper.color("&cNot an AlathranWars item."));
                 return true;
             }
 
@@ -109,7 +109,7 @@ public class AdminCommands implements CommandExecutor {
             }
         }
 
-        sender.sendMessage(UtilsChat.getPrefix() + Helper.color("&cCleared all boss bars that have been registered with AlathraWar."));
+        sender.sendMessage(UtilsChat.getPrefix() + Helper.color("&cCleared all boss bars that have been registered with AlathranWars."));
         sender.sendMessage(UtilsChat.getPrefix() + Helper.color("&cNote: If any remain, please contact the plugin author or open an issue on GitHub. The data can be found under the tag CustomBossEvents: in level.dat! You will need an NBT Editing program to delete it manually."));
 
         return saveAll(sender, args);
@@ -211,7 +211,7 @@ public class AdminCommands implements CommandExecutor {
                     p.sendMessage(Helper.color("&cForcefully started raid from the console."));
                 } else {
                     //defaultCode will bypass the custom gather town to force set owner
-                    p.sendMessage(Helper.color("&cUsage: /alathrawaradmin create raid [war] [raidTown] (gatherTown/\"defaultCode\") (owner) (override)"));
+                    p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin create raid [war] [raidTown] (gatherTown/\"defaultCode\") (owner) (override)"));
                 }
                 return true;
             } else if (args[1].equalsIgnoreCase("siege")) {
@@ -227,7 +227,7 @@ public class AdminCommands implements CommandExecutor {
 //                    p.sendMessage(UtilsChat.getPrefix() + "Try again later!");
                     p.sendMessage(Helper.color("&cForcefully started siege from the console."));
                 } else {
-                    p.sendMessage(Helper.color("&cUsage: /alathrawaradmin create siege [war] [town] (owner) (force)"));
+                    p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin create siege [war] [town] (owner) (force)"));
                 }
                 return true;
             } else if (args[1].equalsIgnoreCase("war")) {
@@ -243,7 +243,7 @@ public class AdminCommands implements CommandExecutor {
                     WarCommand.warCreate(p, adjusted);
                     p.sendMessage(Helper.color("&cForcefully started war from the console."));
                 } else {
-                    p.sendMessage(Helper.color("&cUsage: /alathrawaradmin create war [name] [side1] [side2]"));
+                    p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin create war [name] [side1] [side2]"));
                 }
                 return true;
             }
@@ -317,7 +317,7 @@ public class AdminCommands implements CommandExecutor {
                                     return true;
                                 }
                             } else {
-                                p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force end raid [war] [town] (side)"));
+                                p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin force end raid [war] [town] (side)"));
                                 return true;
                             }
                         }
@@ -368,7 +368,7 @@ public class AdminCommands implements CommandExecutor {
                                     return true;
                                 }
                             } else {
-                                p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force end siege [war] [town] (side)"));
+                                p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin force end siege [war] [town] (side)"));
                                 return true;
                             }
                         }
@@ -379,11 +379,11 @@ public class AdminCommands implements CommandExecutor {
                         p.sendMessage(Helper.color("&cUnused! use /war delete"));
                         return true;
                     } else {
-                        p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force end [raid/siege]"));
+                        p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin force end [raid/siege]"));
                         return true;
                     }
                 } else {
-                    p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force end [raid/siege]"));
+                    p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin force end [raid/siege]"));
                     return true;
                 }
             } else if (args[1].equalsIgnoreCase("join")) {
@@ -401,7 +401,7 @@ public class AdminCommands implements CommandExecutor {
                             RaidCommand.raidJoin(p, adjusted.toArray(new String[6]), true);
                             return true;
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force join raid [player] [war] [town] [side] (ignoreIssues)"));
+                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin force join raid [player] [war] [town] [side] (ignoreIssues)"));
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("siege")) {
@@ -409,7 +409,7 @@ public class AdminCommands implements CommandExecutor {
                             //TODO
                             p.sendMessage(Helper.color("&cError! Unimplemented!"));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force join siege [player] [war] [town] (side)"));
+                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin force join siege [player] [war] [town] (side)"));
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("war")) {
@@ -425,22 +425,22 @@ public class AdminCommands implements CommandExecutor {
                             if (Bukkit.getPlayer(args[3]) != null) {
                             } else {
                                 p.sendMessage(Helper.color("c") + args[3] + " does not exist!");
-                                p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force join war [player] [war] [side]"));
+                                p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin force join war [player] [war] [side]"));
                                 return true;
                             }
                             WarCommand.warJoin(p, adjusted, true);
                             p.sendMessage(Helper.color("&cForced " + args[3] + " to join the war " + args[4] + " on side " + args[5]));
                             Main.warLogger.log("Forced " + args[3] + " to join the war " + args[4] + " on side " + args[5]);
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force join war [player] [war] [side]"));
+                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin force join war [player] [war] [side]"));
                         }
                         return true;
                     } else {
-                        p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force join [raid/siege/war]"));
+                        p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin force join [raid/siege/war]"));
                         return true;
                     }
                 } else {
-                    p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force join [raid/siege/war]"));
+                    p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin force join [raid/siege/war]"));
                     return true;
                 }
             } else if (args[1].equalsIgnoreCase("leave")) {
@@ -468,7 +468,7 @@ public class AdminCommands implements CommandExecutor {
                             }
                             p.sendMessage(Helper.color("&cRaid not found!"));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force leave raid [war] [town] [player]"));
+                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin force leave raid [war] [town] [player]"));
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("siege")) {
@@ -480,11 +480,11 @@ public class AdminCommands implements CommandExecutor {
                         p.sendMessage(Helper.color("&cUnused! use /war surrender"));
                         return true;
                     } else {
-                        p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force leave [raid/siege/war]"));
+                        p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin force leave [raid/siege/war]"));
                         return true;
                     }
                 } else {
-                    p.sendMessage(Helper.color("&cUsage: /alathrawaradmin force leave [raid/siege/war]"));
+                    p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin force leave [raid/siege/war]"));
                     return true;
                 }
             } else {
@@ -495,16 +495,16 @@ public class AdminCommands implements CommandExecutor {
     }
 
     private static boolean help(CommandSender p, String[] args) {
-        p.sendMessage(UtilsChat.getPrefix() + "/alathrawaradmin create");
-        p.sendMessage(UtilsChat.getPrefix() + "/alathrawaradmin force");
-        p.sendMessage(UtilsChat.getPrefix() + "/alathrawaradmin help");
-        p.sendMessage(UtilsChat.getPrefix() + "/alathrawaradmin info");
-        p.sendMessage(UtilsChat.getPrefix() + "/alathrawaradmin modify");
-        p.sendMessage(UtilsChat.getPrefix() + "/alathrawaradmin purgebars");
-        p.sendMessage(UtilsChat.getPrefix() + "/alathrawaradmin save");
-        p.sendMessage(UtilsChat.getPrefix() + "/alathrawaradmin save-all");
-        p.sendMessage(UtilsChat.getPrefix() + "/alathrawaradmin load-all");
-        p.sendMessage(UtilsChat.getPrefix() + "/alathrawaradmin item");
+        p.sendMessage(UtilsChat.getPrefix() + "/alathranwarsadmin create");
+        p.sendMessage(UtilsChat.getPrefix() + "/alathranwarsadmin force");
+        p.sendMessage(UtilsChat.getPrefix() + "/alathranwarsadmin help");
+        p.sendMessage(UtilsChat.getPrefix() + "/alathranwarsadmin info");
+        p.sendMessage(UtilsChat.getPrefix() + "/alathranwarsadmin modify");
+        p.sendMessage(UtilsChat.getPrefix() + "/alathranwarsadmin purgebars");
+        p.sendMessage(UtilsChat.getPrefix() + "/alathranwarsadmin save");
+        p.sendMessage(UtilsChat.getPrefix() + "/alathranwarsadmin save-all");
+        p.sendMessage(UtilsChat.getPrefix() + "/alathranwarsadmin load-all");
+        p.sendMessage(UtilsChat.getPrefix() + "/alathranwarsadmin item");
         return true;
     }
 
@@ -581,7 +581,7 @@ public class AdminCommands implements CommandExecutor {
                     }
                     p.sendMessage(Helper.color("&cError war not found!"));
                 } else {
-                    p.sendMessage(Helper.color("&cUsage: /alathrawaradmin info [raid/siege/war]"));
+                    p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin info [raid/siege/war]"));
                 }
                 return true;
             } else if (args[1].equalsIgnoreCase("raid")) {
@@ -616,7 +616,7 @@ public class AdminCommands implements CommandExecutor {
                     }
                     p.sendMessage(Helper.color("&cError OldRaid not found!"));
                 } else {
-                    p.sendMessage(Helper.color("&cUsage: /alathrawaradmin info [raid/siege/war]"));
+                    p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin info [raid/siege/war]"));
                 }
                 return true;
             } else if (args[1].equalsIgnoreCase("siege")) {
@@ -660,7 +660,7 @@ public class AdminCommands implements CommandExecutor {
                     }
                     p.sendMessage(Helper.color("&cError OldSiege not found!"));
                 } else {
-                    p.sendMessage(Helper.color("&cUsage: /alathrawaradmin info [raid/siege/war]"));
+                    p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin info [raid/siege/war]"));
                 }
                 return true;
             } else {
@@ -766,7 +766,7 @@ public class AdminCommands implements CommandExecutor {
                                                 Main.warLogger.log("Set " + args[7] + " points as the raid score in the war " + args[3] + " on town " + args[4]);
                                                 return finalizeRaid(r);
                                             } else {
-                                                p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid score [add/subtract/set] [war] [town] [side] [value]"));
+                                                p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify raid score [add/subtract/set] [war] [town] [side] [value]"));
                                                 return true;
                                             }
                                         } else {
@@ -786,7 +786,7 @@ public class AdminCommands implements CommandExecutor {
                                                 Main.warLogger.log("Set " + args[7] + " points as the raid score in the war " + args[3] + " on town " + args[4]);
                                                 return finalizeRaid(r);
                                             } else {
-                                                p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid score [add/subtract/set] [war] [town] [side] [value]"));
+                                                p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify raid score [add/subtract/set] [war] [town] [side] [value]"));
                                                 return true;
                                             }
                                         }
@@ -808,7 +808,7 @@ public class AdminCommands implements CommandExecutor {
                                                 Main.warLogger.log("Set " + args[7] + " points as the raid score in the war " + args[3] + " on town " + args[4]);
                                                 return finalizeRaid(r);
                                             } else {
-                                                p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid score [add/subtract/set] [war] [town] [side] [value]"));
+                                                p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify raid score [add/subtract/set] [war] [town] [side] [value]"));
                                                 return true;
                                             }
                                         } else {
@@ -828,7 +828,7 @@ public class AdminCommands implements CommandExecutor {
                                                 Main.warLogger.log("Set " + args[7] + " points as the raid score in the war " + args[3] + " on town " + args[4]);
                                                 return finalizeRaid(r);
                                             } else {
-                                                p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid score [war] [town] [add/subtract/set] [side] [value]"));
+                                                p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify raid score [war] [town] [add/subtract/set] [side] [value]"));
                                                 return true;
                                             }
                                         }
@@ -840,7 +840,7 @@ public class AdminCommands implements CommandExecutor {
                             }
                             p.sendMessage(UtilsChat.getPrefix() + Helper.color("&cRaid cannot be found."));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid score [war] [town] [add/subtract/set] [side] [value]"));
+                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify raid score [war] [town] [add/subtract/set] [side] [value]"));
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("townspawn")) {
@@ -848,7 +848,7 @@ public class AdminCommands implements CommandExecutor {
                             for (OldRaid r : RaidData.getRaids()) {
                                 if (r.getWar().getName().equalsIgnoreCase(args[3]) && r.getRaidedTown().getName().equalsIgnoreCase(args[4])) {
                                     if (args.length == 6 || args.length == 7) {
-                                        p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid townspawn [war] [town] (x) (y) (Z)"));
+                                        p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify raid townspawn [war] [town] (x) (y) (Z)"));
                                         return true;
                                     }
                                     Town t = r.getRaidedTown();
@@ -918,7 +918,7 @@ public class AdminCommands implements CommandExecutor {
                             }
                             p.sendMessage(UtilsChat.getPrefix() + Helper.color("&cRaid cannot be found."));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid townspawn [war] [town] (x) (y) (Z)"));
+                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify raid townspawn [war] [town] (x) (y) (Z)"));
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("gather")) {
@@ -946,7 +946,7 @@ public class AdminCommands implements CommandExecutor {
                             }
                             p.sendMessage(UtilsChat.getPrefix() + Helper.color("&cRaid cannot be found."));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid gather [war] [town] [town]"));
+                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify raid gather [war] [town] [town]"));
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("phase")) {
@@ -977,7 +977,7 @@ public class AdminCommands implements CommandExecutor {
                             }
                             p.sendMessage(UtilsChat.getPrefix() + Helper.color("&cRaid cannot be found."));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid phase [war] [town] [phase]"));
+                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify raid phase [war] [town] [phase]"));
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("loot")) {
@@ -1037,11 +1037,11 @@ public class AdminCommands implements CommandExecutor {
                                             Main.warLogger.log("Reset loot for a chunk [" + args[7] + "," + args[8] + "] in raid against " + args[4] + " in war " + args[3]);
                                             return finalizeRaid(r);
                                         } else {
-                                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid loot [war] [town] [value,looted,ticks,reset] [amt] (x) (z)"));
+                                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify raid loot [war] [town] [value,looted,ticks,reset] [amt] (x) (z)"));
                                             return true;
                                         }
                                     } else if (args.length == 8) {
-                                        p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid loot [war] [town] [value,looted,ticks,reset] [amt] (x) (z)"));
+                                        p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify raid loot [war] [town] [value,looted,ticks,reset] [amt] (x) (z)"));
                                         return true;
                                     } else {
                                         if (args[5].equalsIgnoreCase("value")) {
@@ -1072,7 +1072,7 @@ public class AdminCommands implements CommandExecutor {
                                             Main.warLogger.log("Reset Loot for a chunk [" + runner.getLocation().getX() + "," + runner.getLocation().getZ() + "] in raid against " + args[4] + " in war " + args[3]);
                                             return finalizeRaid(r);
                                         } else {
-                                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid loot [war] [town] [value,looted,ticks,reset] [amt] (x) (z)"));
+                                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify raid loot [war] [town] [value,looted,ticks,reset] [amt] (x) (z)"));
                                             return true;
                                         }
                                     }
@@ -1080,7 +1080,7 @@ public class AdminCommands implements CommandExecutor {
                             }
                             p.sendMessage(UtilsChat.getPrefix() + Helper.color("&cRaid cannot be found."));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid loot [war] [town] [value,looted,ticks,reset] [amt] (x) (z)"));
+                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify raid loot [war] [town] [value,looted,ticks,reset] [amt] (x) (z)"));
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("time")) {
@@ -1101,18 +1101,18 @@ public class AdminCommands implements CommandExecutor {
                                             Main.warLogger.log("Set time for raid against " + args[4] + " in war " + args[3] + " to " + args[6]);
                                             return finalizeRaid(r);
                                         } else {
-                                            p.sendMessage(UtilsChat.getPrefix() + Helper.color("&cTime set before current phase, use \"/alathrawaradmin modify raid phase\" instead"));
+                                            p.sendMessage(UtilsChat.getPrefix() + Helper.color("&cTime set before current phase, use \"/alathranwarsadmin modify raid phase\" instead"));
                                             return true;
                                         }
                                     } else {
-                                        p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid time [war] [town] [add/set] [value]"));
+                                        p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify raid time [war] [town] [add/set] [value]"));
                                         return true;
                                     }
                                 }
                             }
                             p.sendMessage(UtilsChat.getPrefix() + Helper.color("&cRaid cannot be found."));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid time [war] [town] [add/set] [value]"));
+                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify raid time [war] [town] [add/set] [value]"));
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("owner")) {
@@ -1138,7 +1138,7 @@ public class AdminCommands implements CommandExecutor {
                             }
                             p.sendMessage(UtilsChat.getPrefix() + Helper.color("&cRaid cannot be found."));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid owner [war] [town] [player]"));
+                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify raid owner [war] [town] [player]"));
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("move")) {
@@ -1150,11 +1150,11 @@ public class AdminCommands implements CommandExecutor {
                         p.sendMessage(Helper.color("&cError! Not implemented!"));
                         return true;
                     } else {
-                        p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid [propery]"));
+                        p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify raid [propery]"));
                         return true;
                     }
                 } else {
-                    p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify [raid/siege/war] [propery]"));
+                    p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify [raid/siege/war] [propery]"));
                     return true;
                 }
             } else if (args[1].equalsIgnoreCase("siege")) {
@@ -1210,17 +1210,17 @@ public class AdminCommands implements CommandExecutor {
                                             return true;
                                         }
                                     } else {
-                                        p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify siege score [war] [town] [add/set] [side] [amt]"));
+                                        p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify siege score [war] [town] [add/set] [side] [amt]"));
                                         return true;
                                     }
                                 } else {
-                                    p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify siege score [war] [town] [add/set] [side] [amt]"));
+                                    p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify siege score [war] [town] [add/set] [side] [amt]"));
                                     return true;
                                 }
                             }
                             p.sendMessage(UtilsChat.getPrefix() + Helper.color("&cSiege cannot be found."));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify siege score [war] [town] [add/set] [side] [amt]"));
+                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify siege score [war] [town] [add/set] [side] [amt]"));
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("townspawn")) {
@@ -1228,7 +1228,7 @@ public class AdminCommands implements CommandExecutor {
                             for (OldSiege s : SiegeData.getSieges()) {
                                 if (s.getWar().getName().equalsIgnoreCase(args[3]) && s.getTown().getName().equalsIgnoreCase(args[4])) {
                                     if (args.length == 6 || args.length == 7) {
-                                        p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify siege townspawn [war] [town] (x) (y) (Z)"));
+                                        p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify siege townspawn [war] [town] (x) (y) (Z)"));
                                         return true;
                                     }
                                     Town t = s.getTown();
@@ -1292,7 +1292,7 @@ public class AdminCommands implements CommandExecutor {
                                                 return true;
                                             }
                                         } else {
-                                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify siege townspawn [war] [town] (x) (y) (Z)"));
+                                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify siege townspawn [war] [town] (x) (y) (Z)"));
                                             return true;
                                         }
                                     }
@@ -1300,7 +1300,7 @@ public class AdminCommands implements CommandExecutor {
                             }
                             p.sendMessage(UtilsChat.getPrefix() + Helper.color("&cSiege cannot be found."));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify siege townspawn [war] [town] (x) (y) (Z)"));
+                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify siege townspawn [war] [town] (x) (y) (Z)"));
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("time")) {
@@ -1319,14 +1319,14 @@ public class AdminCommands implements CommandExecutor {
                                         Main.warLogger.log("Set time for siege against " + args[4] + " in war " + args[3] + " to " + args[6]);
                                         return finalizeSiege(s);
                                     } else {
-                                        p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify raid time [war] [town] [add/set] [value]"));
+                                        p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify raid time [war] [town] [add/set] [value]"));
                                         return true;
                                     }
                                 }
                             }
                             p.sendMessage(UtilsChat.getPrefix() + Helper.color("&cSiege cannot be found."));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify siege time [war] [town] [add/set] [value]"));
+                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify siege time [war] [town] [add/set] [value]"));
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("owner")) {
@@ -1352,7 +1352,7 @@ public class AdminCommands implements CommandExecutor {
                             }
                             p.sendMessage(UtilsChat.getPrefix() + Helper.color("&cSiege cannot be found."));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify siege owner [war] [town] [newOwner]"));
+                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify siege owner [war] [town] [newOwner]"));
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("move")) {
@@ -1360,11 +1360,11 @@ public class AdminCommands implements CommandExecutor {
                         p.sendMessage(Helper.color("&cError!"));
                         return true;
                     } else {
-                        p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify [raid/siege/war] [propery]"));
+                        p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify [raid/siege/war] [propery]"));
                         return true;
                     }
                 } else {
-                    p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify [raid/siege/war] [propery]"));
+                    p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify [raid/siege/war] [propery]"));
                     return true;
                 }
             } else if (args[1].equalsIgnoreCase("war")) {
@@ -1390,7 +1390,7 @@ public class AdminCommands implements CommandExecutor {
                                             Main.warLogger.log("Set " + args[6] + " points as the war score in the war " + args[3] + " on side " + args[4]);
                                             return finalizeWar(w);
                                         } else {
-                                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war score [war] [side] [add/subtract/set] [amt]"));
+                                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify war score [war] [side] [add/subtract/set] [amt]"));
                                             return true;
                                         }
                                     } else if (args[4].equalsIgnoreCase(w.getSide2())) {
@@ -1410,7 +1410,7 @@ public class AdminCommands implements CommandExecutor {
                                             Main.warLogger.log("Set " + args[6] + " points as the war score in the war " + args[3] + " on side " + args[4]);
                                             return finalizeWar(w);
                                         } else {
-                                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war score [war] [side] [add/subtract/set] [amt]"));
+                                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify war score [war] [side] [add/subtract/set] [amt]"));
                                             return true;
                                         }
                                     } else {
@@ -1421,7 +1421,7 @@ public class AdminCommands implements CommandExecutor {
                             }
                             p.sendMessage(Helper.color("&cError: OldWar not found!"));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war score [war] [side] [add/subtract/set] [amt]"));
+                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify war score [war] [side] [add/subtract/set] [amt]"));
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("side")) {
@@ -1448,7 +1448,7 @@ public class AdminCommands implements CommandExecutor {
                             }
                             p.sendMessage(Helper.color("&cError: OldWar not found!"));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war side [war] [side] [name]"));
+                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify war side [war] [side] [name]"));
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("name")) {
@@ -1463,7 +1463,7 @@ public class AdminCommands implements CommandExecutor {
                             }
                             p.sendMessage(Helper.color("&cError: OldWar not found!"));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war name [war] [name]"));
+                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify war name [war] [name]"));
                         }
                         return true;
                     }
@@ -1568,14 +1568,14 @@ public class AdminCommands implements CommandExecutor {
                                             return true;
                                         }
                                     } else {
-                                        p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war add [war] [side] town/nation [town/nation] [force]"));
+                                        p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify war add [war] [side] town/nation [town/nation] [force]"));
                                         return true;
                                     }
                                 }
                             }
                             p.sendMessage(Helper.color("&cError: OldWar not found!"));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war add [war] [side] town/nation [town/nation] [force] "));
+                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify war add [war] [side] town/nation [town/nation] [force] "));
                         }
                         return true;
                     }
@@ -1591,7 +1591,7 @@ public class AdminCommands implements CommandExecutor {
                                                 w.unSurrenderTown(args[5]);
                                                 p.sendMessage(UtilsChat.getPrefix() + "Un-surrendered town " + args[5]);
                                                 Main.warLogger.log(UtilsChat.getPrefix() + "Un-surrendered town " + args[5]);
-                                                p.sendMessage(Helper.color("&cTo re-add, use: /alathrawaradmin modify war add, or have the town loader join."));
+                                                p.sendMessage(Helper.color("&cTo re-add, use: /alathranwarsadmin modify war add, or have the town loader join."));
                                                 return true;
                                             }
                                             p.sendMessage(UtilsChat.getPrefix() + "Town " + args[5] + " not already surrendered, ignoring.");
@@ -1614,22 +1614,22 @@ public class AdminCommands implements CommandExecutor {
 
                                             p.sendMessage(UtilsChat.getPrefix() + "Un-surrendered nation " + args[5] + " in war " + args[3]);
                                             Main.warLogger.log(UtilsChat.getPrefix() + "Un-surrendered nation " + args[5] + " in war " + args[3]);
-                                            p.sendMessage(Helper.color("&cTo re-add, use: /alathrawaradmin modify war add, or have the nation loader join."));
+                                            p.sendMessage(Helper.color("&cTo re-add, use: /alathranwarsadmin modify war add, or have the nation loader join."));
                                             return finalizeWar(w);
                                         } else {
                                             p.sendMessage(Helper.color("&cError: Nation not found!"));
                                             return true;
                                         }
                                     } else {
-                                        p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war unsurrender [war] town/nation [town/nation]"));
-                                        p.sendMessage(Helper.color("&cTo re-add, use: /alathrawaradmin modify war add, or have the town/nation loader join."));
+                                        p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify war unsurrender [war] town/nation [town/nation]"));
+                                        p.sendMessage(Helper.color("&cTo re-add, use: /alathranwarsadmin modify war add, or have the town/nation loader join."));
                                         return true;
                                     }
                                 }
                             }
                             p.sendMessage(Helper.color("&cError: OldWar not found!"));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war unsurrender [war] town/nation [town/nation]"));
+                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify war unsurrender [war] town/nation [town/nation]"));
                         }
                         return true;
                     }
@@ -1702,14 +1702,14 @@ public class AdminCommands implements CommandExecutor {
                                             return true;
                                         }
                                     } else {
-                                        p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war surrender [war] [side] town/nation [town/nation]"));
+                                        p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify war surrender [war] [side] town/nation [town/nation]"));
                                         return true;
                                     }
                                 }
                             }
                             p.sendMessage(Helper.color("&cError: OldWar not found!"));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war surrender town [war] [town]"));
+                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify war surrender town [war] [town]"));
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("raidTimeWar")) {
@@ -1733,7 +1733,7 @@ public class AdminCommands implements CommandExecutor {
                                                 return true;
                                             }
                                         } else {
-                                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war raidTimeWar [add,set,reset] [town/war] [amt] [side]"));
+                                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify war raidTimeWar [add,set,reset] [town/war] [amt] [side]"));
                                             return true;
                                         }
                                     } else if (args[3].equalsIgnoreCase("set")) {
@@ -1753,7 +1753,7 @@ public class AdminCommands implements CommandExecutor {
                                                 return true;
                                             }
                                         } else {
-                                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war raidTimeWar [add,set,reset] [town/war] [amt] [side]"));
+                                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify war raidTimeWar [add,set,reset] [town/war] [amt] [side]"));
                                             return true;
                                         }
                                     } else if (args[3].equalsIgnoreCase("reset")) {
@@ -1774,18 +1774,18 @@ public class AdminCommands implements CommandExecutor {
                                                 return true;
                                             }
                                         } else {
-                                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war raidTimeWar [add,set,reset] [town/war] [amt] [side]"));
+                                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify war raidTimeWar [add,set,reset] [town/war] [amt] [side]"));
                                             return true;
                                         }
                                     } else {
-                                        p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war raidTimeWar [add,set,reset] [town/war] [amt] [side]"));
+                                        p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify war raidTimeWar [add,set,reset] [town/war] [amt] [side]"));
                                         return true;
                                     }
                                 }
                             }
                             p.sendMessage(Helper.color("&cError: OldWar not found!"));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war raidTimeWar [add,set,reset] [war] [amt] [side]"));
+                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify war raidTimeWar [add,set,reset] [war] [amt] [side]"));
                         }
                         return true;
                     } else if (args[2].equalsIgnoreCase("raidTimeTown")) {
@@ -1803,7 +1803,7 @@ public class AdminCommands implements CommandExecutor {
                                             p.sendMessage(UtilsChat.getPrefix() + "Added " + args[6] + " to last raid time in war " + args[3]);
                                             Main.warLogger.log(UtilsChat.getPrefix() + "Added " + args[6] + " to last raid time in war " + args[3]);
                                         } else {
-                                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war raidTimeTown [add,set,reset] [town/war] [amt] [side]"));
+                                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify war raidTimeTown [add,set,reset] [town/war] [amt] [side]"));
                                         }
                                         return true;
                                     } else if (args[3].equalsIgnoreCase("set")) {
@@ -1812,7 +1812,7 @@ public class AdminCommands implements CommandExecutor {
                                             p.sendMessage(UtilsChat.getPrefix() + "Set last raid time in war " + args[4] + " to " + args[6]);
                                             Main.warLogger.log(UtilsChat.getPrefix() + "Set last raid time in war " + args[4] + " to " + args[6]);
                                         } else {
-                                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war raidTimeTown [add,set,reset] [town/war] [amt] [side]"));
+                                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify war raidTimeTown [add,set,reset] [town/war] [amt] [side]"));
                                         }
                                         return true;
                                     } else if (args[3].equalsIgnoreCase("reset")) {
@@ -1821,18 +1821,18 @@ public class AdminCommands implements CommandExecutor {
                                         Main.warLogger.log(UtilsChat.getPrefix() + "Reset last raid time in war " + args[4]);
                                         return true;
                                     } else {
-                                        p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify war raidTimeTown [add,set,reset] [town] [amt]"));
+                                        p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify war raidTimeTown [add,set,reset] [town] [amt]"));
                                         return true;
                                     }
                                 }
                             }
                             p.sendMessage(Helper.color("&cError: Town not found!"));
                         } else {
-                            p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify [raid/siege/war] [propery]"));
+                            p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify [raid/siege/war] [propery]"));
                         }
                         return true;
                     } else {
-                        p.sendMessage(Helper.color("&cUsage: /alathrawaradmin modify [raid/siege/war] [propery]"));
+                        p.sendMessage(Helper.color("&cUsage: /alathranwarsadmin modify [raid/siege/war] [propery]"));
                         return true;
                     }
                 } else {
@@ -1868,11 +1868,11 @@ public class AdminCommands implements CommandExecutor {
                 return true;
             }
             case "syntax" -> {
-                p.sendMessage(UtilsChat.getPrefix() + "Invalid Arguments. /alathrawaradmin help");
+                p.sendMessage(UtilsChat.getPrefix() + "Invalid Arguments. /alathranwarsadmin help");
                 return true;
             }
             default -> {
-                p.sendMessage(UtilsChat.getPrefix() + "Something wrong. /alathrawaradmin help");
+                p.sendMessage(UtilsChat.getPrefix() + "Something wrong. /alathranwarsadmin help");
                 return true;
             }
         }
@@ -1966,7 +1966,7 @@ public class AdminCommands implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         CommandHelper.logCommand(sender, label, args);
-        if (!sender.hasPermission("AlathraWar.admin")) {
+        if (!sender.hasPermission("AlathranWars.admin")) {
             return fail(sender, args, "permissions");
         }
 

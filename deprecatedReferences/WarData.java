@@ -1,9 +1,9 @@
-package me.ShermansWorld.AlathraWar.data;
+package me.ShermansWorld.AlathranWars.data;
 
-import me.ShermansWorld.AlathraWar.Main;
-import me.ShermansWorld.AlathraWar.deprecated.OldRaid;
-import me.ShermansWorld.AlathraWar.deprecated.OldSiege;
-import me.ShermansWorld.AlathraWar.deprecated.OldWar;
+import me.ShermansWorld.AlathranWars.Main;
+import me.ShermansWorld.AlathranWars.deprecated.OldRaid;
+import me.ShermansWorld.AlathranWars.deprecated.OldSiege;
+import me.ShermansWorld.AlathranWars.deprecated.OldWar;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -12,7 +12,7 @@ import java.util.*;
 @Deprecated
 public class WarData {
 
-    private final static String dataFolderPath = "plugins" + File.separator + "AlathraWar" + File.separator + "data";
+    private final static String dataFolderPath = "plugins" + File.separator + "AlathranWars" + File.separator + "data";
     // Filter for only accessing yml files
     private static final FilenameFilter ymlFilter = (dir, name) -> name.endsWith(".yml");
     // Static OldWar list for all active oldWars

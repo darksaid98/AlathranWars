@@ -1,10 +1,10 @@
-package me.ShermansWorld.AlathraWar.data;
+package me.ShermansWorld.AlathranWars.data;
 
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Town;
-import me.ShermansWorld.AlathraWar.Main;
-import me.ShermansWorld.AlathraWar.deprecated.OldSiege;
-import me.ShermansWorld.AlathraWar.deprecated.OldWar;
+import me.ShermansWorld.AlathranWars.Main;
+import me.ShermansWorld.AlathranWars.deprecated.OldSiege;
+import me.ShermansWorld.AlathranWars.deprecated.OldWar;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 

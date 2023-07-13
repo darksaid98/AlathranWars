@@ -1,4 +1,4 @@
-package me.ShermansWorld.AlathraWar.data;
+package me.ShermansWorld.AlathranWars.data;
 
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Resident;
@@ -6,9 +6,9 @@ import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.palmergames.bukkit.towny.object.metadata.CustomDataField;
 import com.palmergames.bukkit.towny.object.metadata.LongDataField;
-import me.ShermansWorld.AlathraWar.Main;
-import me.ShermansWorld.AlathraWar.deprecated.OldRaid;
-import me.ShermansWorld.AlathraWar.deprecated.OldWar;
+import me.ShermansWorld.AlathranWars.Main;
+import me.ShermansWorld.AlathranWars.deprecated.OldRaid;
+import me.ShermansWorld.AlathranWars.deprecated.OldWar;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
@@ -225,8 +225,8 @@ public class RaidData {
      */
     @SuppressWarnings("rawtypes")
     public static long whenTownLastRaided(Town town) {
-        if (town.hasMeta("AlathraWar-lastRaided")) {
-            CustomDataField field = town.getMetadata("AlathraWar-lastRaided");
+        if (town.hasMeta("AlathranWars-lastRaided")) {
+            CustomDataField field = town.getMetadata("AlathranWars-lastRaided");
             if (field != null) {
                 if (field instanceof LongDataField) {
                     return ((LongDataField) field).getValue();
@@ -234,7 +234,7 @@ public class RaidData {
             }
             return -1L;
         } else {
-            town.addMetaData(new LongDataField("AlathraWar-lastRaided", 0L));
+            town.addMetaData(new LongDataField("AlathranWars-lastRaided", 0L));
         }
         return -1L;
     }

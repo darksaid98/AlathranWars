@@ -4,4 +4,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = "AlathraWar"
+rootProject.name = "AlathranWars"

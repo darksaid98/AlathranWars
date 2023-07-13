@@ -6,7 +6,7 @@ plugins {
     id("net.minecrell.plugin-yml.bukkit") version "0.6.0" // Automatic plugin.yml generation
 }
 
-group = "me.ShermansWorld.AlathraWar"
+group = "me.ShermansWorld.AlathranWars"
 version = "3.0.0-SNAPSHOT"
 description = ""
 
@@ -47,13 +47,13 @@ repositories {
 dependencies {
     implementation("org.jetbrains:annotations:24.0.1")
 
-    compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
 
     implementation("com.github.milkdrinkers:colorparser:1.0.7")
 
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
 
-    compileOnly("com.palmergames.bukkit.towny:towny:0.99.2.5")
+    compileOnly("com.palmergames.bukkit.towny:towny:0.99.5.0")
 
     compileOnly("me.neznamy:tab-api:4.0.0")
 
@@ -98,7 +98,7 @@ tasks {
 
     runServer {
         // Configure the Minecraft version for our task.
-        minecraftVersion("1.19.4")
+        minecraftVersion("1.20.1")
     }
 }
 
@@ -108,7 +108,7 @@ bukkit {
 
     // Plugin Information
     name = project.name
-    prefix = "AlathraWar"
+    prefix = "AlathranWars"
     version = "${project.version}"
     description = "${project.description}"
     authors = listOf("ShermansWorld", "NinjaMandalorian", "AubriTheHuman", "darksaid98")

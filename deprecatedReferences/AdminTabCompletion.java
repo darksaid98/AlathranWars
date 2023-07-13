@@ -1,4 +1,4 @@
-package me.ShermansWorld.AlathraWar.deprecated;
+package me.ShermansWorld.AlathranWars.deprecated;
 
 import com.palmergames.bukkit.towny.utils.NameUtil;
 import org.bukkit.command.Command;
@@ -181,7 +181,7 @@ public class AdminTabCompletion implements TabCompleter {
      */
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission("AlathraWar.admin")) {
+        if (!sender.hasPermission("AlathranWars.admin")) {
             return empty;
         }
 
@@ -633,7 +633,7 @@ public class AdminTabCompletion implements TabCompleter {
                                         return NameUtil.filterByStart(CommandHelper.getWarNames(), args[3]);
                                     }
                                 }
-                                //alathrawaradmin modify war raidTimeTown [add,set,reset] [town/war] [amt] [side]
+                                //alathranwarsadmin modify war raidTimeTown [add,set,reset] [town/war] [amt] [side]
                                 case "raidTimeTown" -> {
                                     if (args.length > 4) {
                                         if (args.length > 5) {
@@ -645,7 +645,7 @@ public class AdminTabCompletion implements TabCompleter {
                                         return NameUtil.filterByStart(addSetReset, args[3]);
                                     }
                                 }
-                                //alathrawaradmin modify war raidTimeWar [add,set,reset] [war] [amt] [side]
+                                //alathranwarsadmin modify war raidTimeWar [add,set,reset] [war] [amt] [side]
                                 case "raidTimeWar" -> {
                                     if (args.length > 4) {
                                         if (args.length > 5) {

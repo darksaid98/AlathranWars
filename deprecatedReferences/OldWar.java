@@ -1,13 +1,13 @@
-package me.ShermansWorld.AlathraWar.deprecated;
+package me.ShermansWorld.AlathranWars.deprecated;
 
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
-import me.ShermansWorld.AlathraWar.Main;
-import me.ShermansWorld.AlathraWar.data.DataManager;
-import me.ShermansWorld.AlathraWar.data.WarData;
-import me.ShermansWorld.AlathraWar.enums.TownWarState;
+import me.ShermansWorld.AlathranWars.Main;
+import me.ShermansWorld.AlathranWars.data.DataManager;
+import me.ShermansWorld.AlathranWars.data.WarData;
+import me.ShermansWorld.AlathranWars.enums.TownWarState;
 
 import java.io.File;
 import java.util.ArrayList;

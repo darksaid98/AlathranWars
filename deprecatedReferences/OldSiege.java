@@ -1,13 +1,13 @@
-package me.ShermansWorld.AlathraWar.deprecated;
+package me.ShermansWorld.AlathranWars.deprecated;
 
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.*;
-import me.ShermansWorld.AlathraWar.Main;
-import me.ShermansWorld.AlathraWar.data.SiegeData;
-import me.ShermansWorld.AlathraWar.enums.TownWarState;
+import me.ShermansWorld.AlathranWars.Main;
+import me.ShermansWorld.AlathranWars.data.SiegeData;
+import me.ShermansWorld.AlathranWars.enums.TownWarState;
 import org.bukkit.*;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
