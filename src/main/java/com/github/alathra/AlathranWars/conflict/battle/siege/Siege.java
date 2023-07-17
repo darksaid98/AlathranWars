@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 public class Siege extends Battle {
     public static final int MAX_SIEGE_TICKS = 72000; // 60 minute tick constant
     public static final Duration SIEGE_DURATION = Duration.ofMinutes(60);
-    private static final int MAX_SIEGE_PROGRESS_MINUTES = 8;
+    public static final int MAX_SIEGE_PROGRESS_MINUTES = 8;
     public static final int MAX_SIEGE_PROGRESS = 60 * MAX_SIEGE_PROGRESS_MINUTES; // On reaching this, the attackers win. 1 point is added per second
     public static final Duration ATTACKERS_MUST_TOUCH_END = Duration.ofMinutes(40); // If point is not touched in this much time, defenders win
     public static final Duration ATTACKERS_MUST_TOUCH_REVERT = Duration.ofMinutes(2); // If point is not touched in this much time, siege progress reverts
@@ -107,7 +107,7 @@ public class Siege extends Battle {
         war.removeSiege(this);
     }
 
-    public void  attackersWin(final OfflinePlayer siegeLeader) {
+    public void attackersWin(final OfflinePlayer siegeLeader) {
         final Resident resident = TownyAPI.getInstance().getResident(siegeLeader.getUniqueId());
         Nation nation = null;
         Bukkit.broadcast(new ColorParser(UtilsChat.getPrefix() + "The attackers have won the siege of " + town.getName() + "!").build());
@@ -199,12 +199,12 @@ public class Siege extends Battle {
         return siegeProgress;
     }
 
-    public float getSiegeProgressPercentage() {
-        return (getSiegeProgress() * 1.0f) / MAX_SIEGE_PROGRESS;
-    }
-
     public void setSiegeProgress(int siegeProgress) {
         this.siegeProgress = siegeProgress;
+    }
+
+    public float getSiegeProgressPercentage() {
+        return (getSiegeProgress() * 1.0f) / MAX_SIEGE_PROGRESS;
     }
 
     @NotNull
@@ -241,6 +241,8 @@ public class Siege extends Battle {
         return side1AreAttackers ? war.getSide2() : war.getSide1();
     }
 
+    // SECTION Display Bar
+
     public void updateDisplayBar(CaptureProgressDirection progressDirection) {
         if (activeBossBar == null)
             createNewDisplayBar();
@@ -249,7 +251,7 @@ public class Siege extends Battle {
 
         }*/
         for (Player p : Bukkit.getOnlinePlayers()) {
-            activeBossBar.removeViewer(p);
+            p.hideBossBar(activeBossBar);
         }
 
         for (Player p : this.getAttackers()) {
@@ -290,7 +292,7 @@ public class Siege extends Battle {
             activeBossBar.name(
                 new ColorParser("<gray>Capture Progress: %s<progress> <gray>Time: %s<time>min".formatted(color, color))
                     .parseMinimessagePlaceholder("progress", "%.0f%%".formatted(getSiegeProgressPercentage() * 100))
-                    .parseMinimessagePlaceholder("time", String.valueOf(Duration.between(Instant.now() , getEndTime()).toMinutes()))
+                    .parseMinimessagePlaceholder("time", String.valueOf(Duration.between(Instant.now(), getEndTime()).toMinutes()))
                     .build()
             );
         } else {
@@ -304,7 +306,7 @@ public class Siege extends Battle {
     public void createNewDisplayBar() {
         final Component text = new ColorParser("<gray>Capture Progress: <yellow><progress> <gray>Time: <yellow><time>min")
             .parseMinimessagePlaceholder("progress", "%.0f%%".formatted(getSiegeProgressPercentage() * 100))
-            .parseMinimessagePlaceholder("time", String.valueOf(Duration.between(Instant.now() , getEndTime()).toMinutesPart()))
+            .parseMinimessagePlaceholder("time", String.valueOf(Duration.between(Instant.now(), getEndTime()).toMinutesPart()))
             .build();
 
         this.activeBossBar = BossBar.bossBar(text, 0, BossBar.Color.YELLOW, BossBar.Overlay.NOTCHED_10);
@@ -313,7 +315,7 @@ public class Siege extends Battle {
     public void deleteDisplayBar() {
         if (activeBossBar != null) {
             for (Player p : Bukkit.getOnlinePlayers()) {
-                activeBossBar.removeViewer(p);
+                p.hideBossBar(activeBossBar);
             }
 
             activeBossBar = null;
@@ -346,7 +348,7 @@ public class Siege extends Battle {
         return getUUID().equals(siege.getUUID());
     }
 
-    // Accessors & Getters
+    // SECTION Accessors & Getters
 
     @Nullable
     public TownBlock getHomeBlock() {
@@ -367,7 +369,7 @@ public class Siege extends Battle {
     }
 
     public boolean getSide1AreAttackers() {
-        return this.side1AreAttackers;
+        return side1AreAttackers;
     }
 
     public void setSide1AreAttackers(final boolean side1AreAttackers) {
@@ -376,22 +378,22 @@ public class Siege extends Battle {
 
     @NotNull
     public Set<Player> getAttackers() {
-        return this.attackers;
+        return attackers;
     }
 
     @NotNull
     public Set<Player> getDefenders() {
-        return this.defenders;
+        return defenders;
     }
 
     @NotNull
     public Set<Player> getAttackerPlayers() {
-        return this.attackerPlayers;
+        return attackerPlayers;
     }
 
     @NotNull
     public Set<Player> getDefenderPlayers() {
-        return this.defenderPlayers;
+        return defenderPlayers;
     }
 
     @NotNull
@@ -404,19 +406,19 @@ public class Siege extends Battle {
     }
 
     @NotNull
-    public String getName() {
-        return this.getWar().getName() + "-" + this.getTown();
+    public String getName() { // TODO Make better siegenames
+        return getWar().getName() + "-" + getTown();
     }
 
     // SECTION Time management
 
-    public void setEndTime(Instant time) {
-        endTime = time;
-    }
-
     @NotNull
     public Instant getEndTime() {
         return endTime;
+    }
+
+    public void setEndTime(Instant time) {
+        endTime = time;
     }
 
     // SECTION Player management
@@ -525,14 +527,18 @@ public class Siege extends Battle {
 
     public void calculateBattlefieldPlayers(Location location) {
         final Set<Player> attackersOnBattlefield = attackerPlayers.stream()
-            .filter(p -> p.isOnline() && location.distance(p.getLocation()) < BATTLEFIELD_RANGE)
+            .filter(OfflinePlayer::isOnline)
+            .filter(p -> location.getWorld().equals(p.getLocation().getWorld()))
+            .filter(p -> location.distance(p.getLocation()) < BATTLEFIELD_RANGE)
             .collect(Collectors.toSet());
 
         attackers.clear();
         attackers.addAll(attackersOnBattlefield);
 
         final Set<Player> defendersOnBattlefield = defenderPlayers.stream()
-            .filter(p -> p.isOnline() && location.distance(p.getLocation()) < BATTLEFIELD_RANGE)
+            .filter(OfflinePlayer::isOnline)
+            .filter(p -> location.getWorld().equals(p.getLocation().getWorld()))
+            .filter(p -> location.distance(p.getLocation()) < BATTLEFIELD_RANGE)
             .collect(Collectors.toSet());
 
         defenders.clear();

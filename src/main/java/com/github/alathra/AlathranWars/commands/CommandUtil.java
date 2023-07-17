@@ -3,6 +3,7 @@ package com.github.alathra.AlathranWars.commands;
 import com.github.alathra.AlathranWars.Main;
 import com.github.alathra.AlathranWars.conflict.Side;
 import com.github.alathra.AlathranWars.conflict.War;
+import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.holder.WarManager;
 import com.github.alathra.AlathranWars.hooks.TownyHook;
 import com.github.alathra.AlathranWars.items.WarItemRegistry;
@@ -17,13 +18,14 @@ import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.CustomArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
-import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -260,15 +262,15 @@ public class CommandUtil {
                 return nationNames;
 
             final List<String> removeNames = Stream.concat( // Create a list of all nations & towns in war
-                    war.getNations().stream().map(Nation::getName),
+                war.getNations().stream().map(Nation::getName),
+                Stream.concat(
+                    war.getSurrenderedNations().stream().map(Nation::getName),
                     Stream.concat(
-                        war.getSurrenderedNations().stream().map(Nation::getName),
-                        Stream.concat(
-                            war.getTowns().stream().map(Town::getName),
-                            war.getSurrenderedTowns().stream().map(Town::getName)
-                        )
+                        war.getTowns().stream().map(Town::getName),
+                        war.getSurrenderedTowns().stream().map(Town::getName)
                     )
-                ).toList();
+                )
+            ).toList();
 
             nationNames.removeAll(removeNames);
 
@@ -440,7 +442,7 @@ public class CommandUtil {
 
             return side;
         }).replaceSuggestions(ArgumentSuggestions.stringCollection(info -> {
-                 if (!(info.previousArgs().get(warNodeName) instanceof War war))
+                if (!(info.previousArgs().get(warNodeName) instanceof War war))
                     return Collections.emptyList();
 
                 final List<String> sideNames = new ArrayList<>();

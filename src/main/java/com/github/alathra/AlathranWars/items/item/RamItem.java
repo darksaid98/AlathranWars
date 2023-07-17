@@ -1,8 +1,8 @@
 package com.github.alathra.AlathranWars.items.item;
 
 import com.github.alathra.AlathranWars.Main;
-import com.github.alathra.AlathranWars.items.WarItemRegistry;
 import com.github.alathra.AlathranWars.items.IWarItem;
+import com.github.alathra.AlathranWars.items.WarItemRegistry;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;

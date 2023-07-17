@@ -1,7 +1,5 @@
 package com.github.alathra.AlathranWars.listeners.war;
 
-import com.palmergames.bukkit.towny.event.nation.NationKingChangeEvent;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 public class NationListener implements Listener {

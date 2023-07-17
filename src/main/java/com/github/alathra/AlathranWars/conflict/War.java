@@ -1,6 +1,10 @@
 package com.github.alathra.AlathranWars.conflict;
 
 import com.github.alathra.AlathranWars.conflict.battle.raid.Raid;
+import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
+import com.github.alathra.AlathranWars.enums.BattleSide;
+import com.github.alathra.AlathranWars.enums.BattleTeam;
+import com.github.alathra.AlathranWars.holder.WarManager;
 import com.github.alathra.AlathranWars.listeners.war.PlayerJoinListener;
 import com.github.alathra.AlathranWars.utility.SQLQueries;
 import com.github.alathra.AlathranWars.utility.UUIDUtil;
@@ -10,10 +14,6 @@ import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
 import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
-import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
-import com.github.alathra.AlathranWars.enums.BattleSide;
-import com.github.alathra.AlathranWars.enums.BattleTeam;
-import com.github.alathra.AlathranWars.holder.WarManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -32,7 +32,7 @@ import java.util.stream.Stream;
 public class War extends Conflict {
     private final UUID uuid;
     private final String name; // Used in commands and such, like "TidalHaven.vs.Meme"
-    private final String label; 
+    private final String label;
     private final ConflictType conflictType = ConflictType.WAR;
 
     private final Side side1;
@@ -71,9 +71,9 @@ public class War extends Conflict {
     /**
      * Instantiates a new New war.
      *
-     * @param label  the name
+     * @param label     the name
      * @param aggressor the side 1
-     * @param victim the side 2
+     * @param victim    the side 2
      */
     public War(final String label, Town aggressor, Town victim) throws WrapperCommandSyntaxException {
         this.uuid = UUIDUtil.generateWarUUID();
@@ -338,28 +338,28 @@ public class War extends Conflict {
     @NotNull
     public Set<Player> getPlayers() {
         return Stream.concat(
-            getSide1().getPlayers().stream(),
-            getSide2().getPlayers().stream()
-        )
-        .collect(Collectors.toSet());
+                getSide1().getPlayers().stream(),
+                getSide2().getPlayers().stream()
+            )
+            .collect(Collectors.toSet());
     }
 
     @NotNull
     public Set<OfflinePlayer> getPlayersIncludingOffline() {
         return Stream.concat(
-            getSide1().getPlayersIncludingOffline().stream().map(Bukkit::getOfflinePlayer),
-            getSide2().getPlayersIncludingOffline().stream().map(Bukkit::getOfflinePlayer)
-        )
-        .collect(Collectors.toSet());
+                getSide1().getPlayersIncludingOffline().stream().map(Bukkit::getOfflinePlayer),
+                getSide2().getPlayersIncludingOffline().stream().map(Bukkit::getOfflinePlayer)
+            )
+            .collect(Collectors.toSet());
     }
 
     @NotNull
     public Set<OfflinePlayer> getSurrenderedPlayers() {
         return Stream.concat(
-            getSide1().getSurrenderedPlayersIncludingOffline().stream().map(Bukkit::getOfflinePlayer),
-            getSide2().getSurrenderedPlayersIncludingOffline().stream().map(Bukkit::getOfflinePlayer)
-        )
-        .collect(Collectors.toSet());
+                getSide1().getSurrenderedPlayersIncludingOffline().stream().map(Bukkit::getOfflinePlayer),
+                getSide2().getSurrenderedPlayersIncludingOffline().stream().map(Bukkit::getOfflinePlayer)
+            )
+            .collect(Collectors.toSet());
     }
 
     public boolean isPlayerInWar(Player p) {

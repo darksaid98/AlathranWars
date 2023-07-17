@@ -3,7 +3,6 @@ package com.github.alathra.AlathranWars.commands;
 import com.github.alathra.AlathranWars.conflict.Side;
 import com.github.alathra.AlathranWars.conflict.War;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
-import com.github.alathra.AlathranWars.data.DataManager;
 import com.github.alathra.AlathranWars.enums.BattleTeam;
 import com.github.alathra.AlathranWars.holder.WarManager;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
@@ -19,7 +18,6 @@ import dev.jorel.commandapi.executors.CommandArguments;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -204,14 +202,15 @@ public class SiegeCommand {
         // Attacking own side
         if (side.isTownOnSide(town)) {
             siegeOwner.sendMessage(new ColorParser(UtilsChat.getPrefix() + "You cannot attack your own towns.").build());
-            if (admin) sender.sendMessage(new ColorParser(UtilsChat.getPrefix() + "You cannot attack your own towns.").build());
+            if (admin)
+                sender.sendMessage(new ColorParser(UtilsChat.getPrefix() + "You cannot attack your own towns.").build());
             return;
         }
 
         Siege siege = new Siege(war, town, siegeOwner);
         war.addSiege(siege);
 
-        Bukkit.broadcast(new ColorParser(UtilsChat.getPrefix() + siege.getTown() + " has been put to siege by " + siege.getAttackerSide() + "!").build());
+        Bukkit.broadcast(new ColorParser(UtilsChat.getPrefix() + siege.getTown() + " has been put to siege by " + siege.getAttackerSide().getName() + "!").build());
 
         if (admin)
             sender.sendMessage(new ColorParser("<red>Forcefully started siege from the console.").build());
@@ -295,10 +294,10 @@ public class SiegeCommand {
 
             sender.sendMessage(
                 new ColorParser(
-                 color + siege.getTown().getName() + "  <gray>- Progress: <progress> - Time: <time>min"
+                    color + siege.getTown().getName() + "  <gray>- Progress: <progress> - Time: <time>min"
                 )
                     .parseMinimessagePlaceholder("progress", "%.0f%%".formatted(siege.getSiegeProgressPercentage() * 100))
-                    .parseMinimessagePlaceholder("time", String.valueOf(Duration.between(Instant.now() , siege.getEndTime()).toMinutes()))
+                    .parseMinimessagePlaceholder("time", String.valueOf(Duration.between(Instant.now(), siege.getEndTime()).toMinutes()))
                     .build()
             );
 //            sender.sendMessage(new ColorParser(war.getName() + " - " + color + siege.getTown().getName().toLowerCase()).build()); // TODO Fix info

@@ -16,13 +16,16 @@ import java.time.Instant;
 
 import static com.github.alathra.AlathranWars.conflict.battle.siege.Siege.*;
 
-public class SiegeRunnable implements Runnable{
+public class SiegeRunnable implements Runnable {
+    // Settings
     private static final Duration ANNOUNCEMENT_COOLDOWN = Duration.ofMinutes(5);
-
+    private final static int CAPTURE_MAX_ELEVATION = 10;
+    private final static int CAPTURE_RANGE = 10;
+    private final Siege siege;
+    // Variables
     private CaptureProgressDirection oldProgressDirection = CaptureProgressDirection.NONE;
     private Instant nextAnnouncement;
     private int taskId = -1;
-    private final Siege siege;
     private Laser beam;
 
     /**
@@ -48,7 +51,7 @@ public class SiegeRunnable implements Runnable{
     /**
      * Resume a siege at tick
      *
-     * @param siege      the siege
+     * @param siege         the siege
      * @param siegeProgress the siege ticks
      */
     public SiegeRunnable(Siege siege, int siegeProgress) {
@@ -96,13 +99,13 @@ public class SiegeRunnable implements Runnable{
         siege.calculateBattlefieldPlayers(townSpawn.toCenterLocation());
 
         // Progress the siege
-        final CaptureProgressDirection progressDirection = getSiegeProgressDirection(town, townSpawn);
+        final CaptureProgressDirection progressDirection = getSiegeProgressDirection(townSpawn);
 
         // Siege is past max time or attackers haven't touched in time, defenders won
         if (
-             !progressDirection.equals(CaptureProgressDirection.UP) &&
-                 (Instant.now().isAfter(siege.getEndTime()) ||
-            Instant.now().isAfter(siege.getLastTouched().plus(ATTACKERS_MUST_TOUCH_END)))
+            !progressDirection.equals(CaptureProgressDirection.UP) &&
+                (Instant.now().isAfter(siege.getEndTime()) ||
+                    Instant.now().isAfter(siege.getLastTouched().plus(ATTACKERS_MUST_TOUCH_END)))
         ) {
             cancel();
             siege.defendersWin();
@@ -163,17 +166,6 @@ public class SiegeRunnable implements Runnable{
             }
         }
 
-        oldProgressDirection = progressDirection;
-
-        /*Bukkit.broadcast(
-            new ColorParser("<prefix>Progress: <progress> <progress2> <test> <score>")
-                .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
-                .parseMinimessagePlaceholder("progress", "%.0f%%".formatted(siege.getSiegeProgressPercentage() * 100))
-                .parseMinimessagePlaceholder("progress2", String.valueOf(siege.getSiegeProgressPercentage()))
-                .parseMinimessagePlaceholder("test", progressDirection.name())
-                .parseMinimessagePlaceholder("score", String.valueOf(siege.getSiegeProgress()))
-                .build()
-        );*/
 
         if (Instant.now().isAfter(nextAnnouncement)) {
             nextAnnouncement = Instant.now().plus(ANNOUNCEMENT_COOLDOWN);
@@ -181,52 +173,42 @@ public class SiegeRunnable implements Runnable{
             siege.getAttackers().forEach(p -> p.sendMessage(
                 new ColorParser("<prefix>Siege time remaining: <time> minutes.")
                     .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
-                    .parseMinimessagePlaceholder("time", String.valueOf(Duration.between(Instant.now() , siege.getEndTime()).toMinutesPart()))
+                    .parseMinimessagePlaceholder("time", String.valueOf(Duration.between(Instant.now(), siege.getEndTime()).toMinutesPart()))
                     .build()
             ));
             siege.getDefenders().forEach(p -> p.sendMessage(
                 new ColorParser("<prefix>Siege time remaining: <time> minutes.")
                     .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
-                    .parseMinimessagePlaceholder("time", String.valueOf(Duration.between(Instant.now() , siege.getEndTime()).toMinutesPart()))
+                    .parseMinimessagePlaceholder("time", String.valueOf(Duration.between(Instant.now(), siege.getEndTime()).toMinutesPart()))
                     .build()
             ));
         }
 
         siege.updateDisplayBar(progressDirection);
+        oldProgressDirection = progressDirection;
     }
 
-    private final static int CAPTURE_MAX_ELEVATION = 10;
-    private final static int CAPTURE_RANGE = 10;
-
-    public int getPeopleOnPoint(Town town, Location townSpawn, BattleSide battleSide) {
+    public int getPeopleOnPoint(Location townSpawn, BattleSide battleSide) {
         int onPoint = 0;
 
         for (final Player p : (battleSide.equals(BattleSide.ATTACKER) ? siege.getAttackers() : siege.getDefenders())) {
-//            WorldCoord wc = WorldCoord.parseWorldCoord(p);
-//            if (!Objects.equals(wc.getTownOrNull(), town))
-//                continue;
+            if (p.isDead())
+                continue;
 
-//            @Nullable TownBlock homeBlock = town.getHomeBlockOrNull();
-//            if (homeBlock == null)
-//                continue;
-
-            if (/*!homeBlock.getWorldCoord().equals(wc) || */p.isDead())
+            if (townSpawn.getWorld().equals(p.getLocation().getWorld()))
                 continue;
 
             if (townSpawn.distance(p.getLocation()) <= CAPTURE_RANGE) {
                 onPoint += 1;
             }
-//            if ((Math.abs(p.getLocation().getBlockY() - townSpawn.getBlockY())) < CAPTURE_MAX_ELEVATION) {
-//                onPoint += 1;
-//            }
         }
 
         return onPoint;
     }
 
-    public CaptureProgressDirection getSiegeProgressDirection(Town town, Location townSpawn) {
-        int attackersOnPoint = getPeopleOnPoint(town, townSpawn, BattleSide.ATTACKER);
-        int defendersOnPoint = getPeopleOnPoint(town, townSpawn, BattleSide.DEFENDER);
+    public CaptureProgressDirection getSiegeProgressDirection(Location townSpawn) {
+        int attackersOnPoint = getPeopleOnPoint(townSpawn, BattleSide.ATTACKER);
+        int defendersOnPoint = getPeopleOnPoint(townSpawn, BattleSide.DEFENDER);
         final boolean attackersAreOnPoint = attackersOnPoint > 0;
         final boolean defendersAreOnPoint = defendersOnPoint > 0;
 
@@ -263,10 +245,8 @@ public class SiegeRunnable implements Runnable{
             Location loc1 = siege.getTownSpawn();
             Location loc2 = new Location(loc1.getWorld(), loc1.getX(), loc1.getY() + 350D, loc1.getZ());
 
-            beam = new Laser.CrystalLaser(loc1, loc2, -1, BATTLEFIELD_RANGE);
-
-            if (beam != null)
-                beam.start(Main.getInstance());
+            beam = new Laser.CrystalLaser(loc1, loc2, -1, -1);
+            beam.start(Main.getInstance());
         } catch (ReflectiveOperationException ignored) {
         }
     }

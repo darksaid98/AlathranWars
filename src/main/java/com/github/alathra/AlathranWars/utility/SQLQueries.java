@@ -146,7 +146,7 @@ public class SQLQueries {
         try (
             Connection con = DB.get();
             PreparedStatement warStatement = con.prepareStatement("INSERT INTO `wars_list` (`uuid`, `name`, `label`, `side1`, `side2`) VALUES (?, ?, ?, ?, ?) "
-            + "ON DUPLICATE KEY UPDATE `name` = ?, `label` = ?, `side1` = ?, `side2` = ?")
+                + "ON DUPLICATE KEY UPDATE `name` = ?, `label` = ?, `side1` = ?, `side2` = ?")
         ) {
             // Save wars
             for (War war : WarManager.getInstance().getWars()) {
@@ -184,8 +184,7 @@ public class SQLQueries {
         try (
             PreparedStatement sideStatement = con.prepareStatement("INSERT INTO `wars_sides` (`war`, `uuid`, `side`, `team`, `name`, `town`, `siegeGrace`, `raidGrace`) VALUES (?, ?, ?, ?, ?, ?, ?, ?) "
                 + "ON DUPLICATE KEY UPDATE `side` = ?, `team` = ?, `name` = ?, `town` = ?, `siegeGrace` = ?, `raidGrace` = ?");
-        )
-        {
+        ) {
             // Insert
             sideStatement.setString(1, side.getWar().getUUID().toString());
             sideStatement.setString(2, side.getUUID().toString());
@@ -239,7 +238,7 @@ public class SQLQueries {
 
                 // Transaction end
                 con.commit();
-            } catch(Exception e) {
+            } catch (Exception e) {
                 con.rollback();
             } finally {
                 con.setAutoCommit(true);
@@ -269,7 +268,7 @@ public class SQLQueries {
 
                 // Transaction end
                 con.commit();
-            } catch(Exception e) {
+            } catch (Exception e) {
                 con.rollback();
             } finally {
                 con.setAutoCommit(true);
@@ -299,7 +298,7 @@ public class SQLQueries {
 
                 // Transaction end
                 con.commit();
-            } catch(Exception e) {
+            } catch (Exception e) {
                 con.rollback();
             } finally {
                 con.setAutoCommit(true);

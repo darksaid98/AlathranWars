@@ -6,7 +6,6 @@ import com.github.alathra.AlathranWars.utility.SQLQueries;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.jetbrains.annotations.NotNull;
-import org.mariadb.jdbc.MariaDbDataSource;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +14,7 @@ import java.sql.SQLException;
 
 public class DataManager {
     private Main instance;
-//    private static DataManager instance;
+    //    private static DataManager instance;
     private HikariConfig hikariConfig;
     private HikariDataSource hikariDataSource;
 
@@ -63,7 +62,7 @@ public class DataManager {
     public HikariDataSource getDataSource() {
         return hikariDataSource;
     }
-    
+
     public void openConnection() {
         if (hikariDataSource != null)
             return;
@@ -126,7 +125,7 @@ public class DataManager {
 
     public void closeDatabaseConnection() {
         instance.getLogger().info("Closing database connection...");
-        
+
         if (hikariDataSource != null) {
             if (!hikariDataSource.isClosed()) {
                 try {

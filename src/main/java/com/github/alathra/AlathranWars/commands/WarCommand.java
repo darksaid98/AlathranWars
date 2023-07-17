@@ -1,8 +1,10 @@
 package com.github.alathra.AlathranWars.commands;
 
 import com.github.alathra.AlathranWars.conflict.Side;
+import com.github.alathra.AlathranWars.conflict.War;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.enums.BattleSide;
+import com.github.alathra.AlathranWars.holder.WarManager;
 import com.github.alathra.AlathranWars.listeners.war.PlayerJoinListener;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
@@ -17,8 +19,6 @@ import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import dev.jorel.commandapi.arguments.PlayerArgument;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.jorel.commandapi.executors.CommandArguments;
-import com.github.alathra.AlathranWars.conflict.War;
-import com.github.alathra.AlathranWars.holder.WarManager;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -80,7 +80,7 @@ public class WarCommand {
             .withArguments(
                 CommandUtil.warWarArgument("war", false, true, ""),
                 CommandUtil.warSideCreateArgument("side", "war", false, true, ""),
-                new PlayerArgument("player").setOptional(true).withPermission("AlathranWars.admin")
+                new PlayerArgument("player").setOptional(true).withPermission("AlathranWars.admin.join")
             )
             .executesPlayer((Player p, CommandArguments args) -> warJoinPlayer(p, args, false));
     }

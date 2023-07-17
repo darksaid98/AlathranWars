@@ -1,14 +1,9 @@
 package com.github.alathra.AlathranWars.listeners;
 
 import com.github.alathra.AlathranWars.utility.Utils;
-import com.github.alathra.AlathranWars.utility.UtilsChat;
-import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
-import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.WorldCoord;
-import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
-import com.github.alathra.AlathranWars.holder.WarManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -33,7 +28,7 @@ public final class KillsListener implements Listener {
         boolean playerCloseToHomeBlockRaid = false;
 
 //        try {
-            //OldRaid logic
+        //OldRaid logic
             /*for (final OldRaid oldRaid : RaidData.getRaids()) {
                 final int homeBlockXCoordRaided = oldRaid.getRaidedTown().getHomeBlock().getCoord().getX() * 16;
                 final int homeBlockZCoordRaided = oldRaid.getRaidedTown().getHomeBlock().getCoord().getZ() * 16;

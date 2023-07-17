@@ -7,7 +7,6 @@ import com.github.alathra.AlathranWars.holder.WarManager;
 import com.github.alathra.AlathranWars.hooks.HookManager;
 import com.github.alathra.AlathranWars.items.WarItemRegistry;
 import com.github.alathra.AlathranWars.listeners.ListenerHandler;
-import com.github.alathra.AlathranWars.utility.DB;
 import com.github.alathra.AlathranWars.utility.SQLQueries;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -63,7 +62,6 @@ public class Main extends JavaPlugin {
         }
         warLogger = new AlathranWarsLogger();
     }*/
-
     @SuppressWarnings("rawtypes")
     private boolean setupEconomy() {
         if (this.getServer().getPluginManager().getPlugin("Vault") == null) {

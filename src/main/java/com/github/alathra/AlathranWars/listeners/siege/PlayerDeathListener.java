@@ -1,19 +1,9 @@
 package com.github.alathra.AlathranWars.listeners.siege;
 
 import com.github.alathra.AlathranWars.utility.Utils;
-import com.github.alathra.AlathranWars.utility.UtilsChat;
-import com.github.milkdrinkers.colorparser.ColorParser;
-import com.palmergames.bukkit.towny.object.Town;
-import com.palmergames.bukkit.towny.object.TownBlock;
-import com.palmergames.bukkit.towny.object.WorldCoord;
-import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
-import com.github.alathra.AlathranWars.holder.WarManager;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.jetbrains.annotations.Nullable;
 
 public class PlayerDeathListener implements Listener {
     private final static int BATTLE_RADIUS = 300;
@@ -90,7 +80,7 @@ public class PlayerDeathListener implements Listener {
      * They don't lose items from death.
      *
      * @param victim killed player
-     * @param e  event
+     * @param e      event
      */
     private void siegeKill(Player victim, PlayerDeathEvent e) {
         //Helper
@@ -108,7 +98,7 @@ public class PlayerDeathListener implements Listener {
      * They don't lose items from death.
      *
      * @param victim killed player
-     * @param e  event
+     * @param e      event
      */
     private void oocKill(Player victim, PlayerDeathEvent e) {
         //Siege specific

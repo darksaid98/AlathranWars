@@ -1,8 +1,8 @@
 package com.github.alathra.AlathranWars.hooks;
 
+import com.github.alathra.AlathranWars.conflict.War;
 import com.github.alathra.AlathranWars.listeners.war.PlayerJoinListener;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
-import com.github.alathra.AlathranWars.conflict.War;
 import me.neznamy.tab.api.TabAPI;
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.event.EventBus;

@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.github.alathra.AlathranWars"
-version = "3.0.0-SNAPSHOT"
+version = "3.0.1-SNAPSHOT"
 description = ""
 
 java {
@@ -47,7 +47,7 @@ repositories {
 dependencies {
     implementation("org.jetbrains:annotations:24.0.1")
 
-    compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
 
     implementation("com.github.milkdrinkers:simplixstorage:3.2.7")
     implementation("com.github.milkdrinkers:colorparser:1.0.7")

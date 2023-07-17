@@ -2,6 +2,8 @@ package com.github.alathra.AlathranWars.commands;
 
 import com.github.alathra.AlathranWars.Main;
 import com.github.alathra.AlathranWars.conflict.Side;
+import com.github.alathra.AlathranWars.conflict.War;
+import com.github.alathra.AlathranWars.enums.AdminCommandFailEnum;
 import com.github.alathra.AlathranWars.items.WarItemRegistry;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
@@ -11,8 +13,6 @@ import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.*;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.jorel.commandapi.executors.CommandArguments;
-import com.github.alathra.AlathranWars.conflict.War;
-import com.github.alathra.AlathranWars.enums.AdminCommandFailEnum;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -954,7 +954,7 @@ public class AdminCommand {
                                 throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>Invalid action.").build());
 
                             if (!(args.get("war") instanceof final War war))
-                                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The war does not exist!").build());
+                                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The war does not exist!").build());
 
                             if (!(args.get("side") instanceof final Side side))
                                 throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The side does not exist.").build());

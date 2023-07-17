@@ -1,13 +1,12 @@
 package com.github.alathra.AlathranWars.conflict;
 
-import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
+import com.github.alathra.AlathranWars.enums.BattleSide;
+import com.github.alathra.AlathranWars.enums.BattleTeam;
+import com.github.alathra.AlathranWars.holder.WarManager;
 import com.github.alathra.AlathranWars.listeners.war.PlayerJoinListener;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
-import com.github.alathra.AlathranWars.enums.BattleSide;
-import com.github.alathra.AlathranWars.enums.BattleTeam;
-import com.github.alathra.AlathranWars.holder.WarManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -21,25 +20,22 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class Side {
+    private static final Duration SIEGE_COOLDOWN = Duration.ofMinutes(120);
+    private static final Duration RAID_COOLDOWN = Duration.ofMinutes(30);
     private final UUID warUUID;
     private final UUID uuid;
     private final BattleSide side;
     private final BattleTeam team;
     private final String name; // A town name
-
     // TODO Use Town & Nation UUID's when saving to config
     private final Town town; // The initiating town or capital of the nation
     private final Set<Town> towns; // A list of participating Towns
     private final Set<Nation> nations; // A list of participating Nations
     private final Set<UUID> playersIncludingOffline; // A list of all participating player UUID, (Online & Offline)
     private final Set<Player> players; // A list of the players who are currently online
-
     private final Set<Town> surrenderedTowns;
     private final Set<Nation> surrenderedNations;
     private final Set<UUID> surrenderedPlayersIncludingOffline;
-
-    private static final Duration SIEGE_COOLDOWN = Duration.ofMinutes(120);
-    private static final Duration RAID_COOLDOWN = Duration.ofMinutes(30);
     private Instant siegeGrace = Instant.now().minus(SIEGE_COOLDOWN); // The time after which this side can be besieged
     private Instant raidGrace = Instant.now().minus(RAID_COOLDOWN); // The time after which this side can be raided
 

@@ -13,6 +13,29 @@ import java.util.Collections;
 import java.util.List;
 
 public class Utils {
+    private static final ArrayList<Material> weaponList = new ArrayList<>(List.of(
+        Material.NETHERITE_SWORD,
+        Material.NETHERITE_AXE,
+        Material.DIAMOND_SWORD,
+        Material.DIAMOND_AXE,
+        Material.IRON_SWORD,
+        Material.IRON_AXE
+    ));
+    private static final ArrayList<Material> armorList = new ArrayList<>(List.of(
+        Material.NETHERITE_HELMET,
+        Material.NETHERITE_CHESTPLATE,
+        Material.NETHERITE_LEGGINGS,
+        Material.NETHERITE_BOOTS,
+        Material.DIAMOND_HELMET,
+        Material.DIAMOND_CHESTPLATE,
+        Material.DIAMOND_LEGGINGS,
+        Material.DIAMOND_BOOTS,
+        Material.IRON_HELMET,
+        Material.IRON_CHESTPLATE,
+        Material.IRON_LEGGINGS,
+        Material.IRON_BOOTS
+    ));
+
     /**
      * Damages all gear in a players inventory
      *
@@ -40,30 +63,6 @@ public class Utils {
             }
         }
     }
-
-    private static final ArrayList<Material> weaponList = new ArrayList<>(List.of(
-        Material.NETHERITE_SWORD,
-        Material.NETHERITE_AXE,
-        Material.DIAMOND_SWORD,
-        Material.DIAMOND_AXE,
-        Material.IRON_SWORD,
-        Material.IRON_AXE
-    ));
-
-    private static final ArrayList<Material> armorList = new ArrayList<>(List.of(
-        Material.NETHERITE_HELMET,
-        Material.NETHERITE_CHESTPLATE,
-        Material.NETHERITE_LEGGINGS,
-        Material.NETHERITE_BOOTS,
-        Material.DIAMOND_HELMET,
-        Material.DIAMOND_CHESTPLATE,
-        Material.DIAMOND_LEGGINGS,
-        Material.DIAMOND_BOOTS,
-        Material.IRON_HELMET,
-        Material.IRON_CHESTPLATE,
-        Material.IRON_LEGGINGS,
-        Material.IRON_BOOTS
-    ));
 
     private static void setArmorDurability(@Nullable ItemStack itemStack) {
         if (itemStack == null)
@@ -168,7 +167,7 @@ public class Utils {
             return;
 
         switch (itemStack.getType()) {
-            case NETHERITE_SWORD, NETHERITE_AXE ->  {
+            case NETHERITE_SWORD, NETHERITE_AXE -> {
                 damageable.setDamage(damageable.getDamage() + 507);
                 if (damageable.getDamage() > 2000) {
                     damageable.setDamage(2030);
