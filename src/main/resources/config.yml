@@ -6,3 +6,11 @@ minimumPlayerAge: 4
 minimumPlayTime: 12
 #How long should a bettering ram open a door (in seconds)
 batteringRamEffectiveness: 10
+
+# Database Settings
+mysql:
+  enabled: false
+  host: "127.0.0.1:3306" # Must include port
+  database: "database_name"
+  user: "name"
+  pass: "123"

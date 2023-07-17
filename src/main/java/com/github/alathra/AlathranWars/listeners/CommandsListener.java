@@ -1,0 +1,240 @@
+package com.github.alathra.AlathranWars.listeners;
+
+import com.github.alathra.AlathranWars.utility.UtilsChat;
+import com.github.milkdrinkers.colorparser.ColorParser;
+import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
+import com.github.alathra.AlathranWars.holder.WarManager;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+
+import java.time.Instant;
+
+public class CommandsListener implements Listener {
+
+    final static String[] PREFIXES = new String[]{
+        "", "towny", "essentials", "wild", "minecraft"
+    };
+    final static String[] PREFIXES_TOWNY = new String[]{
+        "", "towny"
+    };
+    final static String[] BLACKLISTED_X_LONG = new String[]{
+        "n set spawn", "nat set spawn", "nation set spawn",
+        "t set spawn", "town set spawn",
+        "t set homeblock", "town set homeblock",
+        "t set name", "town set name",
+        "n set name", "nat set name", "nation set name"
+    };
+    final static String[] BLACKLISTED_LONG = new String[]{
+        "n spawn", "nat spawn", "nation spawn",
+        "t spawn", "town spawn",
+        "t outpost", "town outpost"
+    };
+    final static String[] PAYMENT = new String[]{
+        "n withdraw", "nat withdraw", "nation withdraw",
+        "t withdraw", "town withdraw"
+    };
+    final static String[] BLACKLISTED_SHORT = new String[]{
+        "home", "homes", "warp", "warps",
+        "wild", "rtp", "spawn", "wilderness", "wildtp",
+        "tpa", "tpahere", "tpaccept", "tpacancel",
+        "etpa", "etpahere", "etpaccept", "etpacancel",
+        "ehome", "ehomes", "ewarp", "ewarps"
+
+    };
+
+    @EventHandler
+    public void onCommandSend(final PlayerCommandPreprocessEvent event) {
+
+        Player p = event.getPlayer();
+
+        //if player is admin, ignore this behavior
+//        if (p.hasPermission("!AlathranWars.admin")) return;
+
+        String[] args = event.getMessage().split(" ");
+
+        /*
+        Prevent any teleport command events from occurring
+        If using PlayerTeleportEvent, it breaks the death logic
+
+        allow n spawn and t spawn for defenders trapped in spawn
+         */
+        /*for (OldRaid oldRaid : RaidData.getRaids()) {
+            //Only do this during regular phases, start and end ignored in case something breaks
+            if (oldRaid.getPhase() == RaidPhase.COMBAT || oldRaid.getPhase() == RaidPhase.TRAVEL || oldRaid.getPhase() == RaidPhase.GATHER) {
+                //only do for active raiders and any defenders
+                if (oldRaid.getActiveRaiders().contains(p.getName()) || oldRaid.getDefenderPlayers().contains(p.getName())) {
+                    //set spawn and properties
+                    if (args.length >= 3) {
+                        String parse = (args[0].charAt(0) == '/' ? args[0].substring(1) : args[0]) + " " + args[1] + " " + args[2];
+                        for (String prefix : prefixesTowny) {
+                            //payment check
+                            for (String cmd : blacklistedXLong) {
+                                if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
+                                    p.sendMessage(UtilsChat.getPrefix() + Helper.color("<red>You cannot modify this property during a oldRaid!"));
+                                    event.setCancelled(true);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    //n spawn and t spawn
+                    if (args.length >= 2) {
+                        //parse what we have, remove the starting sslash
+                        String parse = (args[0].charAt(0) == '/' ? args[0].substring(1) : args[0]) + " " + args[1];
+                        for (String prefix : prefixesTowny) {
+                            //payment check
+                            for (String cmd : payment) {
+                                //check for each prefix
+                                if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
+                                    p.sendMessage(UtilsChat.getPrefix() + Helper.color("<red>You cannot withdraw money whilst in a oldRaid!"));
+                                    event.setCancelled(true);
+                                    return;
+                                }
+                            }
+
+                            for (String cmd : blacklistedLong) {
+                                //check for each prefix
+                                if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
+                                    //check if in spawn
+                                    if (p.getWorld().getName().equalsIgnoreCase("world")) {
+                                        if (parse.equalsIgnoreCase("n spawn") || parse.equalsIgnoreCase("nat spawn") || parse.equalsIgnoreCase("nation spawn")
+                                            || parse.equalsIgnoreCase("t spawn") || parse.equalsIgnoreCase("town spawn")
+                                            || parse.equalsIgnoreCase("towny:n spawn") || parse.equalsIgnoreCase("towny:nat spawn") || parse.equalsIgnoreCase("towny:nation spawn")
+                                            || parse.equalsIgnoreCase("towny:t spawn") || parse.equalsIgnoreCase("towny:town spawn")) {
+                                            p.sendMessage(UtilsChat.getPrefix() + Helper.color("<yellow>You are stuck in spawn and are allowed to teleport to your town or nation."));
+                                            return;
+                                        }
+                                        p.sendMessage(UtilsChat.getPrefix() + Helper.color("<yellow>You are stuck in spawn and are allowed to teleport to your town or nation."));
+                                        p.sendMessage(UtilsChat.getPrefix() + Helper.color("<yellow>Use /t spawn, or /n spawn"));
+                                        event.setCancelled(true);
+                                        return;
+                                    }
+
+                                    //else
+                                    p.sendMessage(UtilsChat.getPrefix() + Helper.color("<red>You cannot teleport whilst in a oldRaid!"));
+                                    event.setCancelled(true);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    //random tp commands
+                    if (args.length >= 1) {
+                        //parse what we have, remove the starting slash
+                        String parse = args[0].charAt(0) == '/' ? args[0].substring(1) : args[0];
+                        for (String prefix : prefixes) {
+                            for (String cmd : blacklistedShort) {
+                                //check for each prefix
+                                if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
+                                    //spawn world check
+                                    if (p.getWorld().getName().equalsIgnoreCase("world")) {
+                                        p.sendMessage(UtilsChat.getPrefix() + Helper.color("<yellow>You are stuck in spawn and are allowed to teleport to your town or nation."));
+                                        p.sendMessage(UtilsChat.getPrefix() + Helper.color("<yellow>Use /t spawn, or /n spawn"));
+                                        event.setCancelled(true);
+                                        return;
+                                    }
+
+                                    p.sendMessage(UtilsChat.getPrefix() + Helper.color("<red>You cannot teleport whilst in a oldRaid!"));
+                                    event.setCancelled(true);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+*/
+        /*
+        Prevent players from teleporting during a siege
+         */
+        for (Siege siege : WarManager.getInstance().getSieges()) {
+            //Only do this during regular phases, start and end ignored in case something breaks
+            if (siege.getEndTime().isAfter(Instant.now())) {
+                //only do for active raiders and any defenders
+                if (siege.getAttackerPlayers().contains(p) || siege.getDefenderPlayers().contains(p)) {
+                    //set spawn and properties
+                    if (args.length >= 3) {
+                        String parse = (args[0].charAt(0) == '/' ? args[0].substring(1) : args[0]) + " " + args[1] + " " + args[2];
+                        for (String prefix : PREFIXES_TOWNY) {
+                            //payment check
+                            for (String cmd : BLACKLISTED_X_LONG) {
+                                if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
+                                    p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "<red>You cannot modify this property during a oldSiege!").parseLegacy().build());
+                                    event.setCancelled(true);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    //n spawn and t spawn
+                    if (args.length >= 2) {
+                        //parse what we have, remove the starting sslash
+                        String parse = (args[0].charAt(0) == '/' ? args[0].substring(1) : args[0]) + " " + args[1];
+                        for (String prefix : PREFIXES_TOWNY) {
+                            //payment check
+                            for (String cmd : PAYMENT) {
+                                //check for each prefix
+                                if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
+                                    p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "<red>You cannot withdraw money whilst in a oldSiege!").parseLegacy().build());
+                                    event.setCancelled(true);
+                                    return;
+                                }
+                            }
+
+                            for (String cmd : BLACKLISTED_LONG) {
+                                //check for each prefix
+                                if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
+                                    //check if in spawn
+                                    if (p.getWorld().getName().equalsIgnoreCase("world")) {
+                                        if (parse.equalsIgnoreCase("n spawn") || parse.equalsIgnoreCase("nat spawn") || parse.equalsIgnoreCase("nation spawn")
+                                            || parse.equalsIgnoreCase("t spawn") || parse.equalsIgnoreCase("town spawn")
+                                            || parse.equalsIgnoreCase("towny:n spawn") || parse.equalsIgnoreCase("towny:nat spawn") || parse.equalsIgnoreCase("towny:nation spawn")
+                                            || parse.equalsIgnoreCase("towny:t spawn") || parse.equalsIgnoreCase("towny:town spawn")) {
+                                            p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "<yellow>You are stuck in spawn and are allowed to teleport to your town or nation.").parseLegacy().build());
+                                            return;
+                                        }
+                                        p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "<yellow>You are stuck in spawn and are allowed to teleport to your town or nation.").parseLegacy().build());
+                                        p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "<yellow>Use /t spawn, or /n spawn").parseLegacy().build());
+                                        event.setCancelled(true);
+                                        return;
+                                    }
+
+                                    //else
+                                    p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "<red>You cannot teleport whilst in a oldSiege!").parseLegacy().build());
+                                    event.setCancelled(true);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    //random tp commands
+                    if (args.length >= 1) {
+                        //parse what we have, remove the starting slash
+                        String parse = args[0].charAt(0) == '/' ? args[0].substring(1) : args[0];
+                        for (String prefix : PREFIXES) {
+                            for (String cmd : BLACKLISTED_SHORT) {
+                                //check for each prefix
+                                if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
+                                    //spawn world check
+                                    if (p.getWorld().getName().equalsIgnoreCase("world")) {
+                                        p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "<yellow>You are stuck in spawn and are allowed to teleport to your town or nation.").parseLegacy().build());
+                                        p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "<yellow>Use /t spawn, or /n spawn").parseLegacy().build());
+                                        event.setCancelled(true);
+                                        return;
+                                    }
+
+                                    p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "<red>You cannot teleport whilst in a oldSiege!").parseLegacy().build());
+                                    event.setCancelled(true);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

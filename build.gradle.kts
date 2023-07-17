@@ -6,7 +6,7 @@ plugins {
     id("net.minecrell.plugin-yml.bukkit") version "0.6.0" // Automatic plugin.yml generation
 }
 
-group = "me.ShermansWorld.AlathranWars"
+group = "com.github.alathra.AlathranWars"
 version = "3.0.0-SNAPSHOT"
 description = ""
 
@@ -49,7 +49,9 @@ dependencies {
 
     compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
 
+    implementation("com.github.milkdrinkers:simplixstorage:3.2.7")
     implementation("com.github.milkdrinkers:colorparser:1.0.7")
+    implementation("io.github.skytasul:guardianbeam:2.3.3")
 
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
 
@@ -61,7 +63,8 @@ dependencies {
     compileOnly("dev.jorel:commandapi-annotations:9.0.3")
     annotationProcessor("dev.jorel:commandapi-annotations:9.0.3")
 
-    compileOnly("com.zaxxer:HikariCP:5.0.1")
+    implementation("com.zaxxer:HikariCP:5.0.1")
+    implementation("org.mariadb.jdbc:mariadb-java-client:3.1.0")
 
     compileOnly("me.clip:placeholderapi:2.11.3")
 }
@@ -92,8 +95,10 @@ tasks {
         // helper function to relocate a package into our package
         fun reloc(originPkg: String, targetPkg: String) = relocate(originPkg, "${project.group}.${targetPkg}")
 
+        reloc("de.leonhard.storage", "storageapi")
         reloc("dev.jorel.commandapi", "commandapi")
         reloc("com.zaxxer.hikari", "hikaricp")
+        reloc("io.github.skytasul", "guardianbeam")
     }
 
     runServer {
