@@ -13,15 +13,12 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.arim.morepaperlib.MorePaperLib;
 
 public class Main extends JavaPlugin {
-    public static @Nullable Economy econ;
-    private static Main instance;
-
-    static {
-        instance = null;
-        econ = null;
-    }
+    public static @Nullable Economy econ = null;
+    private static Main instance = null;
+    private static MorePaperLib paperLib;
 
     private ConfigManager configManager;
     private DataManager dataManager;
@@ -32,6 +29,9 @@ public class Main extends JavaPlugin {
     @NotNull
     public static Main getInstance() {
         return instance;
+    }
+    public static MorePaperLib getPaperLib() {
+        return paperLib;
     }
 
     @SuppressWarnings("rawtypes")
@@ -50,7 +50,8 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        Main.instance = this;
+        instance = this;
+        paperLib = new MorePaperLib(getInstance());
         WarManager.getInstance();
         configManager = new ConfigManager(getInstance());
         dataManager = new DataManager(getInstance());
@@ -81,6 +82,7 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        getPaperLib().scheduling().cancelGlobalTasks();
         SQLQueries.saveAll();
         configManager.onDisable();
         commandManager.onDisable();
