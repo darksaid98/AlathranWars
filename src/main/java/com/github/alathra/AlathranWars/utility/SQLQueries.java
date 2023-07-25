@@ -9,6 +9,10 @@ import com.github.alathra.AlathranWars.holder.WarManager;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.*;
@@ -111,6 +115,7 @@ public class SQLQueries {
                       `town` uuid NOT NULL,
                       `siegeLeader` uuid NOT NULL,
                       `endTime` timestamp NOT NULL,
+                      `lastTouched` timestamp NOT NULL,
                       `siegeProgress` int(11) NOT NULL,
                       PRIMARY KEY (`uuid`),
                       KEY `siege_war` (`war`),
@@ -144,12 +149,12 @@ public class SQLQueries {
 
     public static void saveAll() {
         try (
-            Connection con = DB.get();
+            @NotNull Connection con = DB.get();
             PreparedStatement warStatement = con.prepareStatement("INSERT INTO `wars_list` (`uuid`, `name`, `label`, `side1`, `side2`) VALUES (?, ?, ?, ?, ?) "
                 + "ON DUPLICATE KEY UPDATE `name` = ?, `label` = ?, `side1` = ?, `side2` = ?")
         ) {
             // Save wars
-            for (War war : WarManager.getInstance().getWars()) {
+            for (@NotNull War war : WarManager.getInstance().getWars()) {
                 // Insert
                 warStatement.setString(1, war.getUUID().toString());
                 warStatement.setString(2, war.getName());
@@ -166,24 +171,24 @@ public class SQLQueries {
                 warStatement.executeUpdate();
 
                 // Save sides
-                for (Side side : war.getSides()) {
+                for (@NotNull Side side : war.getSides()) {
                     saveSide(con, side);
                 }
 
-                // TODO Save sieges
-//                for (Siege siege : war.getSieges()) {
-//
-//                }
+                // Save sieges
+                for (@NotNull Siege siege : war.getSieges()) {
+                    saveSiege(con, siege);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private static void saveSide(Connection con, Side side) throws SQLException {
+    private static void saveSide(@NotNull Connection con, @NotNull Side side) {
         try (
             PreparedStatement sideStatement = con.prepareStatement("INSERT INTO `wars_sides` (`war`, `uuid`, `side`, `team`, `name`, `town`, `siegeGrace`, `raidGrace`) VALUES (?, ?, ?, ?, ?, ?, ?, ?) "
-                + "ON DUPLICATE KEY UPDATE `side` = ?, `team` = ?, `name` = ?, `town` = ?, `siegeGrace` = ?, `raidGrace` = ?");
+                + "ON DUPLICATE KEY UPDATE `side` = ?, `team` = ?, `name` = ?, `town` = ?, `siegeGrace` = ?, `raidGrace` = ?")
         ) {
             // Insert
             sideStatement.setString(1, side.getWar().getUUID().toString());
@@ -216,10 +221,10 @@ public class SQLQueries {
         }
     }
 
-    private static void saveSideNations(Connection con, Side side, boolean surrendered) throws SQLException {
+    private static void saveSideNations(@NotNull Connection con, @NotNull Side side, boolean surrendered) throws SQLException {
         try (
             PreparedStatement deleteStatement = con.prepareStatement("DELETE FROM `%s` WHERE `side` = ?".formatted(surrendered ? "wars_sides_nations_surrendered" : "wars_sides_nations"));
-            PreparedStatement insertStatement = con.prepareStatement("INSERT INTO `%s` (`side`, `nation`) VALUES (?, ?)".formatted(surrendered ? "wars_sides_nations_surrendered" : "wars_sides_nations"));
+            PreparedStatement insertStatement = con.prepareStatement("INSERT INTO `%s` (`side`, `nation`) VALUES (?, ?)".formatted(surrendered ? "wars_sides_nations_surrendered" : "wars_sides_nations"))
         ) {
             try {
                 // Transaction start
@@ -230,7 +235,7 @@ public class SQLQueries {
                 deleteStatement.executeUpdate();
 
                 // Insert new
-                for (Nation nation : (surrendered ? side.getSurrenderedNations() : side.getNations())) {
+                for (@NotNull Nation nation : (surrendered ? side.getSurrenderedNations() : side.getNations())) {
                     insertStatement.setString(1, side.getUUID().toString());
                     insertStatement.setString(2, nation.getUUID().toString());
                     insertStatement.executeUpdate();
@@ -246,10 +251,10 @@ public class SQLQueries {
         }
     }
 
-    private static void saveSideTowns(Connection con, Side side, boolean surrendered) throws SQLException {
+    private static void saveSideTowns(@NotNull Connection con, @NotNull Side side, boolean surrendered) throws SQLException {
         try (
             PreparedStatement deleteStatement = con.prepareStatement("DELETE FROM `%s` WHERE `side` = ?".formatted(surrendered ? "wars_sides_towns_surrendered" : "wars_sides_towns"));
-            PreparedStatement insertStatement = con.prepareStatement("INSERT INTO `%s` (`side`, `town`) VALUES (?, ?)".formatted(surrendered ? "wars_sides_towns_surrendered" : "wars_sides_towns"));
+            PreparedStatement insertStatement = con.prepareStatement("INSERT INTO `%s` (`side`, `town`) VALUES (?, ?)".formatted(surrendered ? "wars_sides_towns_surrendered" : "wars_sides_towns"))
         ) {
             try {
                 // Transaction start
@@ -260,7 +265,7 @@ public class SQLQueries {
                 deleteStatement.executeUpdate();
 
                 // Insert new
-                for (Town town : (surrendered ? side.getSurrenderedTowns() : side.getTowns())) {
+                for (@NotNull Town town : (surrendered ? side.getSurrenderedTowns() : side.getTowns())) {
                     insertStatement.setString(1, side.getUUID().toString());
                     insertStatement.setString(2, town.getUUID().toString());
                     insertStatement.executeUpdate();
@@ -276,10 +281,10 @@ public class SQLQueries {
         }
     }
 
-    private static void saveSidePlayers(Connection con, Side side, boolean surrendered) throws SQLException {
+    private static void saveSidePlayers(@NotNull Connection con, @NotNull Side side, boolean surrendered) throws SQLException {
         try (
             PreparedStatement deleteStatement = con.prepareStatement("DELETE FROM `%s` WHERE `side` = ?".formatted(surrendered ? "wars_sides_players_surrendered" : "wars_sides_players"));
-            PreparedStatement insertStatement = con.prepareStatement("INSERT INTO `%s` (`side`, `player`) VALUES (?, ?)".formatted(surrendered ? "wars_sides_players_surrendered" : "wars_sides_players"));
+            PreparedStatement insertStatement = con.prepareStatement("INSERT INTO `%s` (`side`, `player`) VALUES (?, ?)".formatted(surrendered ? "wars_sides_players_surrendered" : "wars_sides_players"))
         ) {
             try {
                 // Transaction start
@@ -290,7 +295,7 @@ public class SQLQueries {
                 deleteStatement.executeUpdate();
 
                 // Insert new
-                for (UUID uuid : (surrendered ? side.getSurrenderedPlayersIncludingOffline() : side.getPlayersIncludingOffline())) {
+                for (@NotNull UUID uuid : (surrendered ? side.getSurrenderedPlayersIncludingOffline() : side.getPlayersIncludingOffline())) {
                     insertStatement.setString(1, side.getUUID().toString());
                     insertStatement.setString(2, uuid.toString());
                     insertStatement.executeUpdate();
@@ -306,11 +311,11 @@ public class SQLQueries {
         }
     }
 
-    public static Set<War> loadAll() {
-        Set<War> wars = new HashSet<>();
+    public static @NotNull Set<War> loadAll() {
+        @NotNull Set<War> wars = new HashSet<>();
 
         try (
-            Connection con = DB.get();
+            @NotNull Connection con = DB.get();
             PreparedStatement warStatement = con.prepareStatement("SELECT * FROM `wars_list`")
         ) {
             // Load all wars
@@ -321,15 +326,13 @@ public class SQLQueries {
 
             while (warsResult.next()) {
                 // War data
-                UUID uuid = UUID.fromString(warsResult.getString("uuid"));
+                @NotNull UUID uuid = UUID.fromString(warsResult.getString("uuid"));
                 String name = warsResult.getString("name");
                 String label = warsResult.getString("label");
-                UUID side1UUID = UUID.fromString(warsResult.getString("side1"));
-                UUID side2UUID = UUID.fromString(warsResult.getString("side2"));
-                Side side1 = loadSide(con, uuid, side1UUID);
-                Side side2 = loadSide(con, uuid, side2UUID);
-
-                // TODO Siege data
+                @NotNull UUID side1UUID = UUID.fromString(warsResult.getString("side1"));
+                @NotNull UUID side2UUID = UUID.fromString(warsResult.getString("side2"));
+                @NotNull Side side1 = loadSide(con, uuid, side1UUID);
+                @NotNull Side side2 = loadSide(con, uuid, side2UUID);
 
                 wars.add(new War(
                     uuid,
@@ -341,6 +344,11 @@ public class SQLQueries {
                     new HashSet<>()
                 ));
             }
+
+            for (War war : wars) {
+                @NotNull Set<Siege> sieges = loadSieges(con, war);
+                war.setSieges(sieges);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -348,7 +356,8 @@ public class SQLQueries {
         return wars;
     }
 
-    public static Side loadSide(Connection con, UUID warUUID, UUID uuid) {
+    @Contract("_, _, _ -> new")
+    public static @NotNull Side loadSide(@NotNull Connection con, @NotNull UUID warUUID, @NotNull UUID uuid) {
         try (PreparedStatement warStatement = con.prepareStatement("SELECT * FROM `wars_sides` WHERE `war` = ? AND `uuid` = ?")) {
             // Load side
             warStatement.setString(1, warUUID.toString());
@@ -361,19 +370,19 @@ public class SQLQueries {
             sideResult.next();
 
             // Side data
-            BattleSide side = BattleSide.valueOf(sideResult.getString("side"));
-            BattleTeam team = BattleTeam.valueOf(sideResult.getString("team"));
+            @NotNull BattleSide side = BattleSide.valueOf(sideResult.getString("side"));
+            @NotNull BattleTeam team = BattleTeam.valueOf(sideResult.getString("team"));
             String name = sideResult.getString("name");
-            Town town = TownyAPI.getInstance().getTown(UUID.fromString(sideResult.getString("town")));
+            @Nullable Town town = TownyAPI.getInstance().getTown(UUID.fromString(sideResult.getString("town")));
             Instant siegeGrace = sideResult.getTimestamp("siegeGrace").toInstant();
             Instant raidGrace = sideResult.getTimestamp("raidGrace").toInstant();
 
-            Set<UUID> players = loadSidePlayers(con, uuid, false);
-            Set<UUID> playersSurrendered = loadSidePlayers(con, uuid, true);
-            Set<Nation> nations = loadSideNations(con, uuid, false);
-            Set<Nation> nationsSurrendered = loadSideNations(con, uuid, true);
-            Set<Town> towns = loadSideTowns(con, uuid, false);
-            Set<Town> townsSurrendered = loadSideTowns(con, uuid, true);
+            @NotNull Set<UUID> players = loadSidePlayers(con, uuid, false);
+            @NotNull Set<UUID> playersSurrendered = loadSidePlayers(con, uuid, true);
+            @NotNull Set<Nation> nations = loadSideNations(con, uuid, false);
+            @NotNull Set<Nation> nationsSurrendered = loadSideNations(con, uuid, true);
+            @NotNull Set<Town> towns = loadSideTowns(con, uuid, false);
+            @NotNull Set<Town> townsSurrendered = loadSideTowns(con, uuid, true);
 
             return new Side(
                 warUUID,
@@ -397,8 +406,8 @@ public class SQLQueries {
         }
     }
 
-    public static Set<UUID> loadSidePlayers(Connection con, UUID sideUUID, boolean surrendered) {
-        Set<UUID> players = new HashSet<>();
+    public static @NotNull Set<UUID> loadSidePlayers(@NotNull Connection con, @NotNull UUID sideUUID, boolean surrendered) {
+        @NotNull Set<UUID> players = new HashSet<>();
 
         try (PreparedStatement warStatement = con.prepareStatement("SELECT * FROM `%s` WHERE `side` = ?".formatted(surrendered ? "wars_sides_players_surrendered" : "wars_sides_players"))) {
             warStatement.setString(1, sideUUID.toString());
@@ -417,8 +426,8 @@ public class SQLQueries {
         return players;
     }
 
-    public static Set<Nation> loadSideNations(Connection con, UUID sideUUID, boolean surrendered) {
-        Set<Nation> nations = new HashSet<>();
+    public static @NotNull Set<Nation> loadSideNations(@NotNull Connection con, @NotNull UUID sideUUID, boolean surrendered) {
+        @NotNull Set<Nation> nations = new HashSet<>();
 
         try (PreparedStatement warStatement = con.prepareStatement("SELECT * FROM `%s` WHERE `side` = ?".formatted(surrendered ? "wars_sides_nations_surrendered" : "wars_sides_nations"))) {
             warStatement.setString(1, sideUUID.toString());
@@ -428,7 +437,7 @@ public class SQLQueries {
                 throw new SQLException("Failed to get nations from DB");
 
             while (warsResult.next()) {
-                final UUID uuid = UUID.fromString(warsResult.getString("nation"));
+                final @NotNull UUID uuid = UUID.fromString(warsResult.getString("nation"));
 
                 @Nullable Nation nation = TownyAPI.getInstance().getNation(uuid);
                 if (nation == null) continue;
@@ -442,8 +451,8 @@ public class SQLQueries {
         return nations;
     }
 
-    public static Set<Town> loadSideTowns(Connection con, UUID sideUUID, boolean surrendered) {
-        Set<Town> towns = new HashSet<>();
+    public static @NotNull Set<Town> loadSideTowns(@NotNull Connection con, @NotNull UUID sideUUID, boolean surrendered) {
+        @NotNull Set<Town> towns = new HashSet<>();
 
         try (PreparedStatement warStatement = con.prepareStatement("SELECT * FROM `%s` WHERE `side` = ?".formatted(surrendered ? "wars_sides_towns_surrendered" : "wars_sides_towns"))) {
             warStatement.setString(1, sideUUID.toString());
@@ -453,7 +462,7 @@ public class SQLQueries {
                 throw new SQLException("Failed to get towns from DB");
 
             while (warsResult.next()) {
-                final UUID uuid = UUID.fromString(warsResult.getString("town"));
+                final @NotNull UUID uuid = UUID.fromString(warsResult.getString("town"));
 
                 @Nullable Town town = TownyAPI.getInstance().getTown(uuid);
                 if (town == null) continue;
@@ -467,10 +476,71 @@ public class SQLQueries {
         return towns;
     }
 
-    public static void deleteWar(War war) {
+    public static @NotNull Set<Siege> loadSieges(@NotNull Connection con, @NotNull War war) {
+        @NotNull Set<Siege> sieges = new HashSet<>();
+
+        try (PreparedStatement siegesStatement = con.prepareStatement("SELECT * FROM `wars_sieges` WHERE `war` = ?")) {
+            siegesStatement.setString(1, war.getUUID().toString());
+            ResultSet siegesResults = siegesStatement.executeQuery();
+
+            if (siegesResults == null)
+                throw new SQLException("Failed to get sieges from DB");
+
+            while (siegesResults.next()) {
+                final UUID uuid = UUID.fromString(siegesResults.getString("uuid"));
+                final @Nullable Town town = TownyAPI.getInstance().getTown(UUID.fromString(siegesResults.getString("town")));
+                final OfflinePlayer siegeLeader = Bukkit.getOfflinePlayer(UUID.fromString(siegesResults.getString("siegeLeader")));
+                final Instant endTime = siegesResults.getTimestamp("endTime").toInstant();
+                final Instant lastTouched = siegesResults.getTimestamp("lastTouched").toInstant();
+                final int siegeProgress = siegesResults.getInt("siegeProgress");
+                final Set<UUID> attackersIncludingOffline = loadSiegePlayers(con, uuid, true);
+                final Set<UUID> defendersIncludingOffline = loadSiegePlayers(con, uuid, false);
+
+                if (town == null) continue;
+
+                sieges.add(new Siege(
+                    war,
+                    uuid,
+                    town,
+                    siegeLeader,
+                    endTime,
+                    lastTouched,
+                    siegeProgress,
+                    attackersIncludingOffline,
+                    defendersIncludingOffline
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return sieges;
+    }
+
+    public static @NotNull Set<UUID> loadSiegePlayers(@NotNull Connection con, @NotNull UUID siegeUUID, boolean getAttackers) {
+        @NotNull Set<UUID> players = new HashSet<>();
+
+        try (PreparedStatement siegeStatement = con.prepareStatement("SELECT * FROM `%s` WHERE `siege` = ?".formatted(getAttackers ? "wars_sieges_players_attackers" : "wars_sieges_players_defenders"))) {
+            siegeStatement.setString(1, siegeUUID.toString());
+            ResultSet playersResult = siegeStatement.executeQuery();
+
+            if (playersResult == null)
+                throw new SQLException("Failed to get players from DB");
+
+            while (playersResult.next()) {
+                players.add(UUID.fromString(playersResult.getString("player")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return players;
+    }
+
+    public static void deleteWar(@NotNull War war) {
         try (
-            Connection con = DB.get();
-            PreparedStatement warStatement = con.prepareStatement("DELETE FROM `wars_list` WHERE `uuid` = ?");
+            @NotNull Connection con = DB.get();
+            PreparedStatement warStatement = con.prepareStatement("DELETE FROM `wars_list` WHERE `uuid` = ?")
         ) {
             // Delete war data
             warStatement.setString(1, war.getUUID().toString());
@@ -480,16 +550,77 @@ public class SQLQueries {
         }
     }
 
-    public static void deleteSiege(Siege siege) {
+    public static void deleteSiege(@NotNull Siege siege) {
         try (
-            Connection con = DB.get();
-            PreparedStatement siegesStatement = con.prepareStatement("DELETE FROM `wars_sieges` WHERE `uuid` = ?");
+            @NotNull Connection con = DB.get();
+            PreparedStatement siegesStatement = con.prepareStatement("DELETE FROM `wars_sieges` WHERE `uuid` = ?")
         ) {
             // Delete siege data
             siegesStatement.setString(1, siege.getUUID().toString());
             siegesStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void saveSiege(@NotNull Connection con, @NotNull Siege siege) {
+        try (
+            PreparedStatement siegeStatement = con.prepareStatement("INSERT INTO `wars_sieges` (`war`, `uuid`, `town`, `siegeLeader`, `endTime`, `lastTouched`, `siegeProgress`) VALUES (?, ?, ?, ?, ?, ?, ?) "
+                + "ON DUPLICATE KEY UPDATE `war` = ?, `town` = ?, `siegeLeader` = ?, `endTime` = ?, `lastTouched` = ?, `siegeProgress` = ?")
+        ) {
+            // Insert
+            siegeStatement.setString(1, siege.getWar().getUUID().toString());
+            siegeStatement.setString(2, siege.getUUID().toString());
+            siegeStatement.setString(3, siege.getTown().getUUID().toString());
+            siegeStatement.setString(4, siege.getSiegeLeader().getUniqueId().toString());
+            siegeStatement.setTimestamp(5, Timestamp.from(siege.getEndTime()));
+            siegeStatement.setTimestamp(6, Timestamp.from(siege.getLastTouched()));
+            siegeStatement.setInt(7, siege.getSiegeProgress());
+
+            // Update
+            siegeStatement.setString(8, siege.getWar().getUUID().toString());
+            siegeStatement.setString(9, siege.getTown().getUUID().toString());
+            siegeStatement.setString(10, siege.getSiegeLeader().getUniqueId().toString());
+            siegeStatement.setTimestamp(11, Timestamp.from(siege.getEndTime()));
+            siegeStatement.setTimestamp(12, Timestamp.from(siege.getLastTouched()));
+            siegeStatement.setInt(13, siege.getSiegeProgress());
+
+            siegeStatement.executeUpdate();
+
+            saveSiegePlayers(con, siege, false);
+            saveSiegePlayers(con, siege, true);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void saveSiegePlayers(@NotNull Connection con, @NotNull Siege siege, boolean isAttacker) throws SQLException {
+        try (
+            PreparedStatement deleteStatement = con.prepareStatement("DELETE FROM `%s` WHERE `siege` = ?".formatted(isAttacker ? "wars_sieges_players_attackers" : "wars_sieges_players_defenders"));
+            PreparedStatement insertStatement = con.prepareStatement("INSERT INTO `%s` (`siege`, `player`) VALUES (?, ?)".formatted(isAttacker ? "wars_sieges_players_attackers" : "wars_sieges_players_defenders"))
+        ) {
+            try {
+                // Transaction start
+                con.setAutoCommit(false);
+
+                // Delete old
+                deleteStatement.setString(1, siege.getUUID().toString());
+                deleteStatement.executeUpdate();
+
+                // Insert new
+                for (@NotNull UUID uuid : (isAttacker ? siege.getAttackerPlayersIncludingOffline() : siege.getDefenderPlayersIncludingOffline())) {
+                    insertStatement.setString(1, siege.getUUID().toString());
+                    insertStatement.setString(2, uuid.toString());
+                    insertStatement.executeUpdate();
+                }
+
+                // Transaction end
+                con.commit();
+            } catch (Exception e) {
+                con.rollback();
+            } finally {
+                con.setAutoCommit(true);
+            }
         }
     }
 }

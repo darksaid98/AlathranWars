@@ -1,5 +1,8 @@
 package com.github.alathra.AlathranWars.data;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 public enum RaidPhase {
     START(0, 0),
     GATHER(1, 0),
@@ -27,8 +30,8 @@ public enum RaidPhase {
      * @param name
      * @return
      */
-    public static RaidPhase getByName(String name) {
-        for (RaidPhase p : RaidPhase.values()) {
+    public static @Nullable RaidPhase getByName(String name) {
+        for (@NotNull RaidPhase p : RaidPhase.values()) {
             if (p.name().equalsIgnoreCase(name)) return p;
         }
         return null;
@@ -40,14 +43,14 @@ public enum RaidPhase {
      * @param id
      * @return
      */
-    public static RaidPhase getByID(int id) {
-        for (RaidPhase p : RaidPhase.values()) {
+    public static @Nullable RaidPhase getByID(int id) {
+        for (@NotNull RaidPhase p : RaidPhase.values()) {
             if (p.id == id) return p;
         }
         return null;
     }
 
-    public static RaidPhase getNext(RaidPhase phase) {
+    public static @Nullable RaidPhase getNext(@NotNull RaidPhase phase) {
         switch (phase) {
             case START -> {
                 return GATHER;

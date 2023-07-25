@@ -19,10 +19,10 @@ public class CommandManager {
         CommandAPI.onEnable();
 
         // Register commands
-        new WarCommand();
-        new SiegeCommand();
+        new WarCommands();
+        new SiegeCommands();
 //        new RaidCommand();
-        new AdminCommand();
+//        new AdminCommand();
     }
 
     public void onDisable() {

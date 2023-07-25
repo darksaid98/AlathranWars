@@ -4,6 +4,8 @@ import com.github.alathra.AlathranWars.Main;
 import com.github.alathra.AlathranWars.conflict.Side;
 import com.github.alathra.AlathranWars.conflict.War;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
+import com.github.alathra.AlathranWars.enums.CommandArgsSiege;
+import com.github.alathra.AlathranWars.enums.CommandArgsWar;
 import com.github.alathra.AlathranWars.holder.WarManager;
 import com.github.alathra.AlathranWars.hooks.TownyHook;
 import com.github.alathra.AlathranWars.items.WarItemRegistry;
@@ -14,23 +16,28 @@ import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownyObject;
+import dev.jorel.commandapi.SuggestionInfo;
 import dev.jorel.commandapi.arguments.Argument;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.CustomArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CommandUtil {
+import static com.github.alathra.AlathranWars.enums.CommandArgsSiege.*;
 
+public class CommandUtil {
     /*public Argument<World> customWorldArgument(String nodeName) {
 
         // Construct our CustomArgument that takes in a String input and returns a World object
@@ -54,11 +61,11 @@ public class CommandUtil {
             final String argNationName = info.input();
 
             if (TownyAPI.getInstance().getNation(argNationName) == null)
-                throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The nation does not exist!").parseLegacy().build());
+                throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The nation does not exist!").parseLegacy().build());
 
             return TownyAPI.getInstance().getNation(argNationName);
         }).replaceSuggestions(ArgumentSuggestions.stringCollection(info -> {
-            final List<String> nationNames = TownyHook.getNations()
+            final @NotNull List<String> nationNames = TownyHook.getNations()
                 .stream()
                 .map(Nation::getName)
                 .sorted()
@@ -73,11 +80,11 @@ public class CommandUtil {
             final String argTownName = info.input();
 
             if (TownyAPI.getInstance().getTown(argTownName) == null)
-                throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The town does not exist!").parseLegacy().build());
+                throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The town does not exist!").parseLegacy().build());
 
             return TownyAPI.getInstance().getTown(argTownName);
         }).replaceSuggestions(ArgumentSuggestions.stringCollection(info -> {
-            final List<String> townNames = TownyHook.getTowns()
+            final @NotNull List<String> townNames = TownyHook.getTowns()
                 .stream()
                 .map(Town::getName)
                 .sorted()
@@ -92,28 +99,28 @@ public class CommandUtil {
             final String argNationName = info.input();
 
             if (TownyAPI.getInstance().getNation(argNationName) == null)
-                throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The nation does not exist!").parseLegacy().build());
+                throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The nation does not exist!").parseLegacy().build());
 
             if (!hideNationsInWar || !(info.previousArgs().get(warNodeName) instanceof War war))
                 return TownyAPI.getInstance().getNation(argNationName);
 
-            Nation nation = TownyAPI.getInstance().getNation(argNationName);
+            @Nullable Nation nation = TownyAPI.getInstance().getNation(argNationName);
 
             if (war.getNations().contains(nation) || war.getSurrenderedNations().contains(nation))
                 return nation;
 
-            throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The nation is already at war!").parseLegacy().build());
+            throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The nation is already at war!").parseLegacy().build());
         }).replaceSuggestions(ArgumentSuggestions.stringCollection(info -> {
-            final List<String> nationNames = TownyHook.getNations()
+            final @NotNull List<String> nationNames = TownyHook.getNations()
                 .stream()
                 .map(Nation::getName)
                 .sorted()
                 .collect(Collectors.toList());
-            final List<String> townNames = TownyHook.getTowns()
+            final @NotNull List<String> townNames = TownyHook.getTowns()
                 .stream()
                 .map(Town::getName)
                 .sorted()
-                .collect(Collectors.toList());
+                .toList();
 
             nationNames.addAll(townNames);
 
@@ -121,7 +128,7 @@ public class CommandUtil {
             if (!hideNationsInWar || !(info.previousArgs().get(warNodeName) instanceof War war))
                 return nationNames;
 
-            final List<String> removeNames = Stream.concat( // Create a list of all nations in war
+            final @NotNull List<String> removeNames = Stream.concat( // Create a list of all nations in war
                 war.getNations().stream().map(Nation::getName),
                 war.getSurrenderedNations().stream().map(Nation::getName)
             ).toList();
@@ -137,19 +144,19 @@ public class CommandUtil {
             final String argTownName = info.input();
 
             if (TownyAPI.getInstance().getTown(argTownName) == null)
-                throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The town does not exist!").parseLegacy().build());
+                throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The town does not exist!").parseLegacy().build());
 
             if (!hideTownsInWar || !(info.previousArgs().get(warNodeName) instanceof War war))
                 return TownyAPI.getInstance().getTown(argTownName);
 
-            Town town = TownyAPI.getInstance().getTown(argTownName);
+            @Nullable Town town = TownyAPI.getInstance().getTown(argTownName);
 
             if (war.getTowns().contains(town) || war.getSurrenderedTowns().contains(town))
                 return town;
 
-            throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The town is already at war!").parseLegacy().build());
+            throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The town is already at war!").parseLegacy().build());
         }).replaceSuggestions(ArgumentSuggestions.stringCollection(info -> {
-            final List<String> townNames = TownyHook.getTowns()
+            final @NotNull List<String> townNames = TownyHook.getTowns()
                 .stream()
                 .map(Town::getName)
                 .sorted()
@@ -159,7 +166,7 @@ public class CommandUtil {
             if (!hideTownsInWar || !(info.previousArgs().get(warNodeName) instanceof War war))
                 return townNames;
 
-            final List<String> removeNames = Stream.concat( // Create a list of all nations & towns in war
+            final @NotNull List<String> removeNames = Stream.concat( // Create a list of all nations & towns in war
                 war.getTowns().stream().map(Town::getName),
                 war.getSurrenderedTowns().stream().map(Town::getName)
             ).toList();
@@ -173,15 +180,15 @@ public class CommandUtil {
     static public Argument<Nation> customNationInWarArgument(String nodeName, String warNodeName) {
         return new CustomArgument<>(new StringArgument(nodeName), info -> {
             if (!(info.previousArgs().get(warNodeName) instanceof War war))
-                throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The war does not exist!").parseLegacy().build());
+                throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The war does not exist!").parseLegacy().build());
 
-            Nation nation = TownyAPI.getInstance().getNation(info.input());
+            @Nullable Nation nation = TownyAPI.getInstance().getNation(info.input());
 
             if (nation == null)
-                throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The nation does not exist!").parseLegacy().build());
+                throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The nation does not exist!").parseLegacy().build());
 
             if (!war.isNationInWar(nation))
-                throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The nation is not in that war!").parseLegacy().build());
+                throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The nation is not in that war!").parseLegacy().build());
 
             return nation;
         }).replaceSuggestions(ArgumentSuggestions.stringCollection(info -> {
@@ -198,15 +205,15 @@ public class CommandUtil {
     static public Argument<Town> customTownInWarArgument(String nodeName, String warNodeName) {
         return new CustomArgument<>(new StringArgument(nodeName), info -> {
             if (!(info.previousArgs().get(warNodeName) instanceof War war))
-                throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The war does not exist!").parseLegacy().build());
+                throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The war does not exist!").parseLegacy().build());
 
-            Town town = TownyAPI.getInstance().getTown(info.input());
+            @Nullable Town town = TownyAPI.getInstance().getTown(info.input());
 
             if (town == null)
-                throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The town does not exist!").parseLegacy().build());
+                throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The town does not exist!").parseLegacy().build());
 
             if (!war.isTownInWar(town))
-                throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The town is not in that war!").parseLegacy().build());
+                throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The town is not in that war!").parseLegacy().build());
 
             return town;
         }).replaceSuggestions(ArgumentSuggestions.stringCollection(info -> {
@@ -227,33 +234,38 @@ public class CommandUtil {
      * @param nodeName       the node name
      * @param warNodeName    the war node name
      * @param hideTownsInWar the hide towns in war
-     * @return the argument
+     * @return the town or nation UUID
      */
-    static public Argument<String> customTownAndNationsArgument(String nodeName, String warNodeName, boolean hideTownsInWar) {
+    static public Argument<UUID> customTownAndNationArgument(String nodeName, String warNodeName, boolean hideTownsInWar) {
         return new CustomArgument<>(new StringArgument(nodeName), info -> {
             final String argTownOrNationName = info.input();
 
             @Nullable Town town = TownyAPI.getInstance().getTown(argTownOrNationName);
 
             if (town != null)
-                return town.getName();
+                return town.getUUID();
 
             @Nullable Nation nation = TownyAPI.getInstance().getNation(argTownOrNationName);
-            if (nation != null)
-                return nation.getName();
 
-            throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The town or nation does not exist!").parseLegacy().build());
+            if (nation != null)
+                return nation.getUUID();
+
+            throw CustomArgument.CustomArgumentException.fromAdventureComponent(
+                ColorParser.of(UtilsChat.getPrefix() + "<red>The town or nation <name> does not exist!")
+                    .parseMinimessagePlaceholder("name", argTownOrNationName)
+                    .build()
+            );
         }).replaceSuggestions(ArgumentSuggestions.stringCollection(info -> {
-            final List<String> nationNames = TownyHook.getNations()
+            final @NotNull List<String> nationNames = TownyHook.getNations()
                 .stream()
                 .map(Nation::getName)
                 .sorted()
                 .collect(Collectors.toList());
-            final List<String> townNames = TownyHook.getTowns()
+            final @NotNull List<String> townNames = TownyHook.getTowns()
                 .stream()
                 .map(Town::getName)
                 .sorted()
-                .collect(Collectors.toList());
+                .toList();
 
             nationNames.addAll(townNames);
 
@@ -261,7 +273,7 @@ public class CommandUtil {
             if (!hideTownsInWar || !(info.previousArgs().get(warNodeName) instanceof War war))
                 return nationNames;
 
-            final List<String> removeNames = Stream.concat( // Create a list of all nations & towns in war
+            final @NotNull List<String> removeNames = Stream.concat( // Create a list of all nations & towns in war
                 war.getNations().stream().map(Nation::getName),
                 Stream.concat(
                     war.getSurrenderedNations().stream().map(Nation::getName),
@@ -278,51 +290,23 @@ public class CommandUtil {
         }));
     }
 
-    /*static public Argument<String> warSideCreateArgument(String nodeName) {
-        return new CustomArgument<>(new StringArgument(nodeName), info -> {
-            final String argSideName = info.input();
-
-            return argSideName;
-        }).replaceSuggestions(ArgumentSuggestions.stringCollection(info -> {
-            final List<Nation> nations = TownyHook.getNations();
-            final List<Town> towns = TownyHook.getTowns();
-
-            final List<String> nationNames = new ArrayList<>();
-            final List<String> townNames = new ArrayList<>();
-
-            for (Nation nation : nations)
-                nationNames.add(nation.getName());
-
-            for (Town town : towns)
-                townNames.add(town.getName());
-
-            Collections.sort(nationNames);
-            Collections.sort(townNames);
-            nationNames.addAll(townNames);
-
-            return nationNames;
-        }));
-    }*/
-
     public static Argument<Town> customSiegeAttackableTownArgument(String nodeName, String warNodeName, final boolean checkIfIn, final boolean checkIfSieged) {
         return new CustomArgument<>(new StringArgument(nodeName), info -> {
             if (!(info.previousArgs().get(warNodeName) instanceof War war))
-                throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The war does not exist!").parseLegacy().build());
+                throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The war does not exist!").parseLegacy().build());
 
-            Town town = TownyAPI.getInstance().getTown(info.input());
+            @Nullable Town town = TownyAPI.getInstance().getTown(info.input());
 
             if (town == null)
-                throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The town does not exist!").parseLegacy().build());
+                throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The town does not exist!").parseLegacy().build());
 
             if (!war.isTownInWar(town))
-                throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The town is not in that war!").parseLegacy().build());
+                throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The town is not in that war!").parseLegacy().build());
 
             if (checkIfSieged) {
-                for (War war2 : WarManager.getInstance().getWars()) {
-                    for (Siege siege : war2.getSieges()) {
-                        if (siege.getTown().getUUID() == town.getUUID())
-                            throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The town is already under siege!").parseLegacy().build());
-                    }
+                for (@NotNull Siege siege : WarManager.getInstance().getSieges()) {
+                    if (siege.getTown().getUUID() == town.getUUID())
+                        throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The town is already under siege!").parseLegacy().build());
                 }
             }
 
@@ -331,7 +315,7 @@ public class CommandUtil {
             if (!(info.previousArgs().get(warNodeName) instanceof War war))
                 return Collections.emptyList();
 
-            final List<String> townNames = new ArrayList<>();
+            final @NotNull List<String> townNames = new ArrayList<>();
 
             if (info.sender() instanceof Player p) {
                 if (war.getSide1().isPlayerOnSide(p)) {
@@ -339,14 +323,14 @@ public class CommandUtil {
                         .stream()
                         .map(TownyObject::getName)
                         .sorted()
-                        .collect(Collectors.toList())
+                        .toList()
                     );
                 } else if (war.getSide2().isPlayerOnSide(p)) {
                     townNames.addAll(war.getSide1().getTowns()
                         .stream()
                         .map(TownyObject::getName)
                         .sorted()
-                        .collect(Collectors.toList())
+                        .toList()
                     );
                 }
             }
@@ -355,88 +339,211 @@ public class CommandUtil {
         }));
     }
 
+    public static Argument<Siege> siegeSiegeArgument(String nodeName, final boolean isAdmin, final CommandArgsSiege checkSiege, final String playerNodeName) {
+        return new CustomArgument<>(new StringArgument(nodeName), info -> {
+            final String argSiegeName = info.input();
 
-    public static Argument<War> warWarArgument(String nodeName, final boolean isAdmin, final boolean checkIfIn, final String playerNodeName) {
+            @Nullable UUID siegeUUID = null;
+            for (Siege siege : WarManager.getInstance().getSieges()) {
+                if (siege.getName().equals(argSiegeName)) {
+                    siegeUUID = siege.getUUID();
+                }
+            }
+
+            final @Nullable Siege siege = WarManager.getInstance().getSiege(siegeUUID);
+            if (siege == null)
+                throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The siege <siege> does not exist!").parseMinimessagePlaceholder("siege", argSiegeName).build());
+
+            switch (checkSiege) {
+                case IN_SIEGE -> {
+                    if (isAdmin) {
+                        if (!(info.previousArgs().get(playerNodeName) instanceof Player player))
+                            throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The player does not exist!").build());
+
+                        if (!siege.isPlayerInSiege(player))
+                            throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The player is already in that war.").build());
+                    } else {
+                        if (!(info.sender() instanceof Player player))
+                            throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>Only players can execute this command!").build());
+
+                        if (!siege.isPlayerInSiege(player))
+                            throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You are already in this war.").build());
+                    }
+                }
+                case OUT_SIEGE -> {
+                    if (isAdmin) {
+                        if (!(info.previousArgs().get(playerNodeName) instanceof Player player))
+                            throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The player does not exist!").build());
+
+                        if (siege.isPlayerInSiege(player))
+                            throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The player is not in that war.").build());
+                    } else {
+                        if (!(info.sender() instanceof Player player))
+                            throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>Only players can execute this command!").build());
+
+                        if (siege.isPlayerInSiege(player))
+                            throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You are not in that war.").build());
+                    }
+                }
+            }
+
+            return siege;
+        }).replaceSuggestions(ArgumentSuggestions.stringCollection(info -> switch (checkSiege) {
+            case ALL_SIEGES -> siegeAll(info, isAdmin);
+            case IN_SIEGE -> siegeInside(info, isAdmin, playerNodeName);
+            case OUT_SIEGE -> siegeOutside(info, isAdmin, playerNodeName);
+        }));
+    }
+
+    private static List<String> siegeAll(SuggestionInfo<CommandSender> info, final boolean isAdmin) {
+        return WarManager.getInstance().getSieges().stream().map(Siege::getName).toList();
+    }
+
+    private static List<String> siegeOutside(SuggestionInfo<CommandSender> info, final boolean isAdmin, final String playerNodeName) {
+        List<String> siegeNames = new ArrayList<>();
+
+        if (isAdmin) {
+            if (info.previousArgs().get(playerNodeName) instanceof Player player) {
+                siegeNames = WarManager.getInstance().getSieges().stream().filter(siege -> !siege.isPlayerInSiege(player)).map(Siege::getName).toList();
+            }
+        } else {
+            if (info.sender() instanceof Player player) {
+                siegeNames = WarManager.getInstance().getSieges().stream().filter(siege -> !siege.isPlayerInSiege(player)).map(Siege::getName).toList();
+            }
+        }
+
+        return siegeNames;
+    }
+
+    private static List<String> siegeInside(SuggestionInfo<CommandSender> info, final boolean isAdmin, final String playerNodeName) {
+        List<String> siegeNames = new ArrayList<>();
+
+        if (isAdmin) {
+            if (info.previousArgs().get(playerNodeName) instanceof Player player) {
+                siegeNames = WarManager.getInstance().getSieges().stream().filter(siege -> siege.isPlayerInSiege(player)).map(Siege::getName).toList();
+            }
+        } else {
+            if (info.sender() instanceof Player player) {
+                siegeNames = WarManager.getInstance().getSieges().stream().filter(siege -> siege.isPlayerInSiege(player)).map(Siege::getName).toList();
+            }
+        }
+
+        return siegeNames;
+    }
+
+    public static Argument<War> warWarArgument(String nodeName, final boolean isAdmin, final CommandArgsWar checkWar, final String playerNodeName) {
         return new CustomArgument<>(new StringArgument(nodeName), info -> {
             final String argWarName = info.input();
 
-            final War war = WarManager.getInstance().getWar(argWarName);
+            final @Nullable War war = WarManager.getInstance().getWar(argWarName);
             if (war == null)
-                throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The war <war> does not exist!").parseLegacy().parseMinimessagePlaceholder("war", argWarName).build());
+                throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The war <war> does not exist!").parseMinimessagePlaceholder("war", argWarName).build());
 
-            if (checkIfIn) {
-                if (isAdmin) {
-                    if (!(info.previousArgs().get(playerNodeName) instanceof Player player))
-                        throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The player does not exist!").parseLegacy().build());
+            switch (checkWar) {
+                case IN_WAR -> {
+                    if (isAdmin) {
+                        if (!(info.previousArgs().get(playerNodeName) instanceof Player player))
+                            throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The player does not exist!").parseLegacy().build());
 
-                    if (war.isPlayerInWar(player))
-                        throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The player is already in that war.").parseLegacy().build());
-                } else {
-                    if (!(info.sender() instanceof Player player))
-                        throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>Only players can execute this command!").parseLegacy().build());
+                        if (!war.isPlayerInWar(player))
+                            throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The player is already in that war.").parseLegacy().build());
+                    } else {
+                        if (!(info.sender() instanceof Player player))
+                            throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>Only players can execute this command!").parseLegacy().build());
 
-                    if (war.isPlayerInWar(player))
-                        throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>You are already in this war.").parseLegacy().build());
+                        if (!war.isPlayerInWar(player))
+                            throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You are already in this war.").parseLegacy().build());
+                    }
+                }
+                case OUT_WAR -> {
+                    if (isAdmin) {
+                        if (!(info.previousArgs().get(playerNodeName) instanceof Player player))
+                            throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The player does not exist!").parseLegacy().build());
+
+                        if (war.isPlayerInWar(player))
+                            throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The player is not in that war.").parseLegacy().build());
+                    } else {
+                        if (!(info.sender() instanceof Player player))
+                            throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>Only players can execute this command!").parseLegacy().build());
+
+                        if (war.isPlayerInWar(player))
+                            throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You are not in that war.").parseLegacy().build());
+                    }
                 }
             }
 
             return war;
-
-        }).replaceSuggestions(ArgumentSuggestions.stringCollection(info -> {
-            final List<String> warNames = new ArrayList<>();
-
-            if (checkIfIn) {
-                if (isAdmin) {
-                    if (info.previousArgs().get(playerNodeName) instanceof Player player) {
-                        for (String name : WarManager.getInstance().getWarNames()) {
-                            if (WarManager.getInstance().getWar(name) != null && !WarManager.getInstance().getWar(name).isPlayerInWar(player))
-                                warNames.add(name);
-                        }
-                    }
-                } else {
-                    if (info.sender() instanceof Player player) {
-                        for (String name : WarManager.getInstance().getWarNames()) {
-                            if (WarManager.getInstance().getWar(name) != null && !WarManager.getInstance().getWar(name).isPlayerInWar(player))
-                                warNames.add(name);
-                        }
-                    }
-                }
-            } else {
-                warNames.addAll(WarManager.getInstance().getWarNames());
-            }
-
-            return warNames;
+        }).replaceSuggestions(ArgumentSuggestions.stringCollection(info -> switch (checkWar) {
+            case ALL_WARS -> warsAll(info, isAdmin);
+            case IN_WAR -> warsInside(info, isAdmin, playerNodeName);
+            case OUT_WAR -> warsOutside(info, isAdmin, playerNodeName);
         }));
+    }
+
+    private static List<String> warsAll(SuggestionInfo<CommandSender> info, final boolean isAdmin) {
+        return WarManager.getInstance().getWarNames();
+    }
+
+    private static List<String> warsOutside(SuggestionInfo<CommandSender> info, final boolean isAdmin, final String playerNodeName) {
+        List<String> warNames = new ArrayList<>();
+
+        if (isAdmin) {
+            if (info.previousArgs().get(playerNodeName) instanceof Player player) {
+                warNames = WarManager.getInstance().getWars().stream().filter(war -> !war.isPlayerInWar(player)).map(War::getName).toList();
+            }
+        } else {
+            if (info.sender() instanceof Player player) {
+                warNames = WarManager.getInstance().getWars().stream().filter(war -> !war.isPlayerInWar(player)).map(War::getName).toList();
+            }
+        }
+
+        return warNames;
+    }
+
+    private static List<String> warsInside(SuggestionInfo<CommandSender> info, final boolean isAdmin, final String playerNodeName) {
+        List<String> warNames = new ArrayList<>();
+
+        if (isAdmin) {
+            if (info.previousArgs().get(playerNodeName) instanceof Player player) {
+                warNames = WarManager.getInstance().getWars().stream().filter(war -> war.isPlayerInWar(player)).map(War::getName).toList();
+            }
+        } else {
+            if (info.sender() instanceof Player player) {
+                warNames = WarManager.getInstance().getWars().stream().filter(war -> war.isPlayerInWar(player)).map(War::getName).toList();
+            }
+        }
+
+        return warNames;
     }
 
     public static Argument<Side> warSideCreateArgument(final String nodeName, final String warNodeName, final boolean isAdmin, final boolean checkIfIn, final String playerNodeName) {
         return new CustomArgument<>(new StringArgument(nodeName), info -> {
             if (!(info.previousArgs().get(warNodeName) instanceof War war))
-                throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>You need to specify a war.").parseLegacy().build());
+                throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You need to specify a war.").parseLegacy().build());
 
             final String argSideName = info.input();
 
             if (!war.isSideValid(argSideName))
-                throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The side does not exist.").parseLegacy().build());
+                throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The side does not exist.").parseLegacy().build());
 
-            final Side side = war.getSide(argSideName);
+            final @Nullable Side side = war.getSide(argSideName);
 
             if (side == null)
-                throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The side is invalid.").parseLegacy().build());
+                throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The side is invalid.").parseLegacy().build());
 
             if (checkIfIn) {
                 if (isAdmin) {
                     if (!(info.previousArgs().get(playerNodeName) instanceof Player player))
-                        throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The player does not exist!").parseLegacy().build());
+                        throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The player does not exist!").parseLegacy().build());
 
                     if (side.getPlayers().contains(player))
-                        throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The player is already on that side.").parseLegacy().build());
+                        throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The player is already on that side.").parseLegacy().build());
                 } else {
                     if (!(info.sender() instanceof Player player))
-                        throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>Only players can execute this command!").parseLegacy().build());
+                        throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>Only players can execute this command!").parseLegacy().build());
 
                     if (side.getPlayers().contains(player))
-                        throw CustomArgument.CustomArgumentException.fromAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>You are already on that side.").parseLegacy().build());
+                        throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You are already on that side.").parseLegacy().build());
                 }
             }
 
@@ -445,19 +552,19 @@ public class CommandUtil {
                 if (!(info.previousArgs().get(warNodeName) instanceof War war))
                     return Collections.emptyList();
 
-                final List<String> sideNames = new ArrayList<>();
+                final @NotNull List<String> sideNames = new ArrayList<>();
 
                 if (checkIfIn) {
                     if (isAdmin) {
                         if (info.previousArgs().get(playerNodeName) instanceof Player player) {
-                            for (Side side : war.getSides()) {
+                            for (@NotNull Side side : war.getSides()) {
                                 if (!side.getPlayers().contains(player))
                                     sideNames.add(side.getName());
                             }
                         }
                     } else {
                         if (info.sender() instanceof Player player) {
-                            for (Side side : war.getSides()) {
+                            for (@NotNull Side side : war.getSides()) {
                                 if (!side.getPlayers().contains(player))
                                     sideNames.add(side.getName());
                             }
@@ -478,7 +585,7 @@ public class CommandUtil {
      * @return 0, 1, 2 (good to go, insufficient join, insufficient playtime)
      */
     public static int isPlayerMinuteman(String player) {
-        Resident res = TownyAPI.getInstance().getResident(player);
+        @Nullable Resident res = TownyAPI.getInstance().getResident(player);
         if (res != null) {
             //getInstance registration time
             long regTime = res.getRegistered();
@@ -505,7 +612,7 @@ public class CommandUtil {
      *
      * @return list of all alathranwars items namespaced
      */
-    public static List<String> getWarItems() {
+    public static @NotNull List<String> getWarItems() {
         return new ArrayList<>(WarItemRegistry.getInstance().getItemRegistry().keySet());
     }
 }

@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
 
@@ -45,14 +46,14 @@ public class CommandsListener implements Listener {
     };
 
     @EventHandler
-    public void onCommandSend(final PlayerCommandPreprocessEvent event) {
+    public void onCommandSend(final @NotNull PlayerCommandPreprocessEvent event) {
 
-        Player p = event.getPlayer();
+        @NotNull Player p = event.getPlayer();
 
         //if player is admin, ignore this behavior
 //        if (p.hasPermission("!AlathranWars.admin")) return;
 
-        String[] args = event.getMessage().split(" ");
+        String @NotNull [] args = event.getMessage().split(" ");
 
         /*
         Prevent any teleport command events from occurring
@@ -150,19 +151,19 @@ public class CommandsListener implements Listener {
         /*
         Prevent players from teleporting during a siege
          */
-        for (Siege siege : WarManager.getInstance().getSieges()) {
+        for (@NotNull Siege siege : WarManager.getInstance().getSieges()) {
             //Only do this during regular phases, start and end ignored in case something breaks
             if (siege.getEndTime().isAfter(Instant.now())) {
                 //only do for active raiders and any defenders
                 if (siege.getAttackerPlayers().contains(p) || siege.getDefenderPlayers().contains(p)) {
                     //set spawn and properties
                     if (args.length >= 3) {
-                        String parse = (args[0].charAt(0) == '/' ? args[0].substring(1) : args[0]) + " " + args[1] + " " + args[2];
-                        for (String prefix : PREFIXES_TOWNY) {
+                        @NotNull String parse = (args[0].charAt(0) == '/' ? args[0].substring(1) : args[0]) + " " + args[1] + " " + args[2];
+                        for (@NotNull String prefix : PREFIXES_TOWNY) {
                             //payment check
                             for (String cmd : BLACKLISTED_X_LONG) {
                                 if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
-                                    p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "<red>You cannot modify this property during a oldSiege!").parseLegacy().build());
+                                    p.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "<red>You cannot modify this property during a oldSiege!").parseLegacy().build());
                                     event.setCancelled(true);
                                     return;
                                 }
@@ -172,13 +173,13 @@ public class CommandsListener implements Listener {
                     //n spawn and t spawn
                     if (args.length >= 2) {
                         //parse what we have, remove the starting sslash
-                        String parse = (args[0].charAt(0) == '/' ? args[0].substring(1) : args[0]) + " " + args[1];
-                        for (String prefix : PREFIXES_TOWNY) {
+                        @NotNull String parse = (args[0].charAt(0) == '/' ? args[0].substring(1) : args[0]) + " " + args[1];
+                        for (@NotNull String prefix : PREFIXES_TOWNY) {
                             //payment check
                             for (String cmd : PAYMENT) {
                                 //check for each prefix
                                 if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
-                                    p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "<red>You cannot withdraw money whilst in a oldSiege!").parseLegacy().build());
+                                    p.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "<red>You cannot withdraw money whilst in a oldSiege!").parseLegacy().build());
                                     event.setCancelled(true);
                                     return;
                                 }
@@ -193,17 +194,17 @@ public class CommandsListener implements Listener {
                                             || parse.equalsIgnoreCase("t spawn") || parse.equalsIgnoreCase("town spawn")
                                             || parse.equalsIgnoreCase("towny:n spawn") || parse.equalsIgnoreCase("towny:nat spawn") || parse.equalsIgnoreCase("towny:nation spawn")
                                             || parse.equalsIgnoreCase("towny:t spawn") || parse.equalsIgnoreCase("towny:town spawn")) {
-                                            p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "<yellow>You are stuck in spawn and are allowed to teleport to your town or nation.").parseLegacy().build());
+                                            p.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "<yellow>You are stuck in spawn and are allowed to teleport to your town or nation.").parseLegacy().build());
                                             return;
                                         }
-                                        p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "<yellow>You are stuck in spawn and are allowed to teleport to your town or nation.").parseLegacy().build());
-                                        p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "<yellow>Use /t spawn, or /n spawn").parseLegacy().build());
+                                        p.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "<yellow>You are stuck in spawn and are allowed to teleport to your town or nation.").parseLegacy().build());
+                                        p.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "<yellow>Use /t spawn, or /n spawn").parseLegacy().build());
                                         event.setCancelled(true);
                                         return;
                                     }
 
                                     //else
-                                    p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "<red>You cannot teleport whilst in a oldSiege!").parseLegacy().build());
+                                    p.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "<red>You cannot teleport whilst in a oldSiege!").parseLegacy().build());
                                     event.setCancelled(true);
                                     return;
                                 }
@@ -213,20 +214,20 @@ public class CommandsListener implements Listener {
                     //random tp commands
                     if (args.length >= 1) {
                         //parse what we have, remove the starting slash
-                        String parse = args[0].charAt(0) == '/' ? args[0].substring(1) : args[0];
-                        for (String prefix : PREFIXES) {
+                        @NotNull String parse = args[0].charAt(0) == '/' ? args[0].substring(1) : args[0];
+                        for (@NotNull String prefix : PREFIXES) {
                             for (String cmd : BLACKLISTED_SHORT) {
                                 //check for each prefix
                                 if (parse.equalsIgnoreCase(prefix + (prefix.isEmpty() ? "" : ":") + cmd)) {
                                     //spawn world check
                                     if (p.getWorld().getName().equalsIgnoreCase("world")) {
-                                        p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "<yellow>You are stuck in spawn and are allowed to teleport to your town or nation.").parseLegacy().build());
-                                        p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "<yellow>Use /t spawn, or /n spawn").parseLegacy().build());
+                                        p.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "<yellow>You are stuck in spawn and are allowed to teleport to your town or nation.").parseLegacy().build());
+                                        p.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "<yellow>Use /t spawn, or /n spawn").parseLegacy().build());
                                         event.setCancelled(true);
                                         return;
                                     }
 
-                                    p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "<red>You cannot teleport whilst in a oldSiege!").parseLegacy().build());
+                                    p.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "<red>You cannot teleport whilst in a oldSiege!").parseLegacy().build());
                                     event.setCancelled(true);
                                     return;
                                 }

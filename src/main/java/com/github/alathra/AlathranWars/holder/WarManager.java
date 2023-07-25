@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Singleton
 public class WarManager {
     private static WarManager instance;
-    private Set<War> wars = new HashSet<>();
+    private @NotNull Set<War> wars = new HashSet<>();
 
     private WarManager() {
         if (instance != null)
@@ -45,7 +45,7 @@ public class WarManager {
 
     @Nullable
     public War getWar(String warName) {
-        for (War war : wars)
+        for (@NotNull War war : wars)
             if (war.equals(warName)) return war;
 
         return null;
@@ -53,7 +53,7 @@ public class WarManager {
 
     @Nullable
     public War getWar(UUID uuid) {
-        for (War war : wars)
+        for (@NotNull War war : wars)
             if (war.equals(uuid)) return war;
 
         return null;
@@ -61,7 +61,7 @@ public class WarManager {
 
     @Nullable
     public Side getSide(UUID uuid) {
-        for (War war : wars)
+        for (@NotNull War war : wars)
             if (war.getSide(uuid) != null) return war.getSide(uuid);
 
         return null;
@@ -69,7 +69,7 @@ public class WarManager {
 
     @Nullable
     public Siege getSiege(UUID uuid) {
-        for (War war : wars)
+        for (@NotNull War war : wars)
             if (war.getSiege(uuid) != null) return war.getSiege(uuid);
 
         return null;
@@ -84,28 +84,50 @@ public class WarManager {
     }
 
     public boolean isPlayerInAnyWars(UUID uuid) {
-        for (War war : wars) {
+        for (@NotNull War war : wars) {
             if (war.isPlayerInWar(uuid)) return true;
         }
         return false;
     }
 
-    public boolean isPlayerInAnyWars(Player p) {
+    public boolean isPlayerInAnyWars(@NotNull Player p) {
         return isPlayerInAnyWars(p.getUniqueId());
     }
 
+    public @NotNull Set<War> getPlayerWars(@NotNull Player p) {
+        return getPlayerWars(p.getUniqueId());
+    }
+
+    public @NotNull Set<War> getPlayerWars(UUID uuid) {
+        return wars.stream()
+            .filter(war -> war.isPlayerInWar(uuid))
+            .collect(Collectors.toSet());
+    }
+
     public boolean isTownInAnyWars(Town town) {
-        for (War war : wars) {
+        for (@NotNull War war : wars) {
             if (war.isTownInWar(town)) return true;
         }
         return false;
     }
 
+    public @NotNull Set<War> getTownWars(Town town) {
+        return wars.stream()
+            .filter(war -> war.isTownInWar(town))
+            .collect(Collectors.toSet());
+    }
+
     public boolean isNationInAnyWars(Nation nation) {
-        for (War war : wars) {
+        for (@NotNull War war : wars) {
             if (war.isNationInWar(nation)) return true;
         }
         return false;
+    }
+
+    public @NotNull Set<War> getNationWars(Nation nation) {
+        return wars.stream()
+            .filter(war -> war.isNationInWar(nation))
+            .collect(Collectors.toSet());
     }
 
     @NotNull
@@ -126,7 +148,7 @@ public class WarManager {
 
     @NotNull
     public Set<Siege> getSieges() {
-        final Set<Siege> sieges = new HashSet<>();
+        final @NotNull Set<Siege> sieges = new HashSet<>();
 
         wars.forEach((War war) -> sieges.addAll(war.getSieges()));
 
@@ -135,40 +157,32 @@ public class WarManager {
 
     @NotNull
     public Set<Raid> getRaids() {
-        final Set<Raid> raids = new HashSet<>();
+        final @NotNull Set<Raid> raids = new HashSet<>();
 
         wars.forEach((War war) -> raids.addAll(war.getRaids()));
 
         return raids;
     }
 
-    public boolean isPlayerInAnySiege(Player p) {
+    public boolean isPlayerInAnySiege(@NotNull Player p) {
         return isPlayerInAnySiege(p.getUniqueId());
     }
 
     public boolean isPlayerInAnySiege(UUID uuid) {
-        for (Siege siege : getSieges()) {
+        for (@NotNull Siege siege : getSieges()) {
             if (siege.isPlayerInSiege(uuid)) return true;
         }
 
         return false;
     }
 
-    public Set<Siege> getPlayerSieges(Player p) {
+    public @NotNull Set<Siege> getPlayerSieges(@NotNull Player p) {
         return getPlayerSieges(p.getUniqueId());
     }
 
-    public Set<Siege> getPlayerSieges(UUID uuid) {
-        if (!isPlayerInAnySiege(uuid))
-            return Collections.emptySet();
-
-        Set<Siege> sieges = new HashSet<>();
-
-        for (Siege siege : getSieges()) {
-            if (siege.isPlayerInSiege(uuid))
-                sieges.add(siege);
-        }
-
-        return sieges;
+    public @NotNull Set<Siege> getPlayerSieges(UUID uuid) {
+        return getSieges().stream()
+            .filter(siege -> siege.isPlayerInSiege(uuid))
+            .collect(Collectors.toSet());
     }
 }

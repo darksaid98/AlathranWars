@@ -10,6 +10,8 @@ import fr.skytasul.guardianbeam.Laser;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -21,19 +23,20 @@ public class SiegeRunnable implements Runnable {
     private static final Duration ANNOUNCEMENT_COOLDOWN = Duration.ofMinutes(5);
     private final static int CAPTURE_MAX_ELEVATION = 10;
     private final static int CAPTURE_RANGE = 10;
-    private final Siege siege;
+    private final @NotNull Siege siege;
+
     // Variables
-    private CaptureProgressDirection oldProgressDirection = CaptureProgressDirection.NONE;
+    private @NotNull CaptureProgressDirection oldProgressDirection = CaptureProgressDirection.NONE;
     private Instant nextAnnouncement;
     private int taskId = -1;
-    private Laser beam;
+    private @Nullable Laser beam;
 
     /**
      * Start a siege
      *
      * @param siege the siege
      */
-    public SiegeRunnable(Siege siege) {
+    public SiegeRunnable(@NotNull Siege siege) {
         this.siege = siege;
 
         siege.setSiegeProgress(0);
@@ -54,7 +57,7 @@ public class SiegeRunnable implements Runnable {
      * @param siege         the siege
      * @param siegeProgress the siege ticks
      */
-    public SiegeRunnable(Siege siege, int siegeProgress) {
+    public SiegeRunnable(@NotNull Siege siege, int siegeProgress) {
         this.siege = siege;
 
         siege.setSiegeProgress(siegeProgress);
@@ -83,9 +86,9 @@ public class SiegeRunnable implements Runnable {
 
     @Override
     public void run() {
-        final Town town = siege.getTown();
-        final TownBlock homeBlock = siege.getHomeBlock();
-        final Location townSpawn = siege.getTownSpawn();
+        final @NotNull Town town = siege.getTown();
+        final @Nullable TownBlock homeBlock = siege.getHomeBlock();
+        final @Nullable Location townSpawn = siege.getTownSpawn();
 
         if (homeBlock != null && townSpawn != null) {
             town.setHomeBlock(homeBlock);
@@ -99,7 +102,7 @@ public class SiegeRunnable implements Runnable {
         siege.calculateBattlefieldPlayers(townSpawn.toCenterLocation());
 
         // Progress the siege
-        final CaptureProgressDirection progressDirection = getSiegeProgressDirection(townSpawn);
+        final @NotNull CaptureProgressDirection progressDirection = getSiegeProgressDirection(townSpawn);
 
         // Siege is past max time or attackers haven't touched in time, defenders won
         if (
@@ -115,7 +118,7 @@ public class SiegeRunnable implements Runnable {
         // Attackers captured the town
         if (siege.getSiegeProgress() >= MAX_SIEGE_PROGRESS) {
             cancel();
-            siege.attackersWin(siege.getSiegeLeader());
+            siege.attackersWin();
             return;
         }
 
@@ -126,43 +129,29 @@ public class SiegeRunnable implements Runnable {
 
         if (oldProgressDirection != progressDirection) {
             switch (progressDirection) {
-                case UP -> {
-                    siege.getAttackers().forEach(p -> p.sendMessage(
-                        new ColorParser("<prefix>The Attackers are capturing the home block.")
-                            .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
-                            .build()
-                    ));
-                    siege.getDefenders().forEach(p -> p.sendMessage(
-                        new ColorParser("<prefix>The Attackers are capturing the home block.")
-                            .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
-                            .build()
-                    ));
-                }
+                case UP -> siege.getPlayersOnBattlefield().forEach(p -> p.sendMessage(
+                    ColorParser.of("<prefix>The Attackers are capturing the home block.")
+                        .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
+                        .build()
+                ));
                 case NONE -> {
                     /*if ()
                     siege.getAttackers().forEach(p -> p.sendMessage(
-                        new ColorParser("<prefix>The home block is being contested.")
+                        ColorParser.of("<prefix>The home block is being contested.")
                             .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
                             .build()
                     ));
                     siege.getDefenders().forEach(p -> p.sendMessage(
-                        new ColorParser("<prefix>The home block is being contested.")
+                        ColorParser.of("<prefix>The home block is being contested.")
                             .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
                             .build()
                     ));*/
                 }
-                case DOWN -> {
-                    siege.getAttackers().forEach(p -> p.sendMessage(
-                        new ColorParser("<prefix>The Defenders re-secured the home block.")
-                            .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
-                            .build()
-                    ));
-                    siege.getDefenders().forEach(p -> p.sendMessage(
-                        new ColorParser("<prefix>The Defenders re-secured the home block.")
-                            .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
-                            .build()
-                    ));
-                }
+                case DOWN -> siege.getPlayersOnBattlefield().forEach(p -> p.sendMessage(
+                    ColorParser.of("<prefix>The Defenders re-secured the home block.")
+                        .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
+                        .build()
+                ));
             }
         }
 
@@ -170,14 +159,8 @@ public class SiegeRunnable implements Runnable {
         if (Instant.now().isAfter(nextAnnouncement)) {
             nextAnnouncement = Instant.now().plus(ANNOUNCEMENT_COOLDOWN);
 
-            siege.getAttackers().forEach(p -> p.sendMessage(
-                new ColorParser("<prefix>Siege time remaining: <time> minutes.")
-                    .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
-                    .parseMinimessagePlaceholder("time", String.valueOf(Duration.between(Instant.now(), siege.getEndTime()).toMinutesPart()))
-                    .build()
-            ));
-            siege.getDefenders().forEach(p -> p.sendMessage(
-                new ColorParser("<prefix>Siege time remaining: <time> minutes.")
+            siege.getPlayersOnBattlefield().forEach(p -> p.sendMessage(
+                ColorParser.of("<prefix>Siege time remaining: <time> minutes.")
                     .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
                     .parseMinimessagePlaceholder("time", String.valueOf(Duration.between(Instant.now(), siege.getEndTime()).toMinutesPart()))
                     .build()
@@ -188,14 +171,14 @@ public class SiegeRunnable implements Runnable {
         oldProgressDirection = progressDirection;
     }
 
-    public int getPeopleOnPoint(Location townSpawn, BattleSide battleSide) {
+    public int getPeopleOnPoint(@NotNull Location townSpawn, @NotNull BattleSide battleSide) {
         int onPoint = 0;
 
-        for (final Player p : (battleSide.equals(BattleSide.ATTACKER) ? siege.getAttackers() : siege.getDefenders())) {
+        for (final @NotNull Player p : (battleSide.equals(BattleSide.ATTACKER) ? siege.getAttackers() : siege.getDefenders())) {
             if (p.isDead())
                 continue;
 
-            if (townSpawn.getWorld().equals(p.getLocation().getWorld()))
+            if (!townSpawn.getWorld().equals(p.getLocation().getWorld()))
                 continue;
 
             if (townSpawn.distance(p.getLocation()) <= CAPTURE_RANGE) {
@@ -206,7 +189,7 @@ public class SiegeRunnable implements Runnable {
         return onPoint;
     }
 
-    public CaptureProgressDirection getSiegeProgressDirection(Location townSpawn) {
+    public @NotNull CaptureProgressDirection getSiegeProgressDirection(@NotNull Location townSpawn) {
         int attackersOnPoint = getPeopleOnPoint(townSpawn, BattleSide.ATTACKER);
         int defendersOnPoint = getPeopleOnPoint(townSpawn, BattleSide.DEFENDER);
         final boolean attackersAreOnPoint = attackersOnPoint > 0;
@@ -222,9 +205,7 @@ public class SiegeRunnable implements Runnable {
                 return CaptureProgressDirection.NONE;
 
             return CaptureProgressDirection.UP;
-        } /*else if (!attackersAreOnPoint && !defendersAreOnPoint) {
-            return CaptureProgressDirection.UNCONTESTED;
-        }*/ else {
+        } else {
             if (siege.getSiegeProgress() == 0)
                 return CaptureProgressDirection.NONE;
 
@@ -242,8 +223,8 @@ public class SiegeRunnable implements Runnable {
             return;
 
         try {
-            Location loc1 = siege.getTownSpawn();
-            Location loc2 = new Location(loc1.getWorld(), loc1.getX(), loc1.getY() + 350D, loc1.getZ());
+            @Nullable Location loc1 = siege.getTownSpawn();
+            @NotNull Location loc2 = new Location(loc1.getWorld(), loc1.getX(), loc1.getY() + 350D, loc1.getZ());
 
             beam = new Laser.CrystalLaser(loc1, loc2, -1, -1);
             beam.start(Main.getInstance());

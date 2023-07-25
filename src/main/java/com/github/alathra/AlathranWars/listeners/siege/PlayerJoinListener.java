@@ -7,14 +7,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class PlayerJoinListener implements Listener {
     @EventHandler
-    private void onPlayerJoin(PlayerJoinEvent e) {
-        final Player p = e.getPlayer();
+    private void onPlayerJoin(@NotNull PlayerJoinEvent e) {
+        final @NotNull Player p = e.getPlayer();
         if (WarManager.getInstance().isPlayerInAnySiege(p)) {
-            for (Siege siege : WarManager.getInstance().getPlayerSieges(p)) {
-                final BattleSide side = siege.getPlayerSideInSiege(p);
+            for (@NotNull Siege siege : WarManager.getInstance().getPlayerSieges(p)) {
+                final @NotNull BattleSide side = siege.getPlayerSideInSiege(p);
                 siege.addOnlinePlayer(p, side);
             }
         }

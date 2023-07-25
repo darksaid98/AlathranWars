@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -23,8 +24,8 @@ public class BlockBreakListener implements Listener {
     );
 
     @EventHandler
-    public void onBlockBreak(final BlockBreakEvent e) {
-        final Block block = e.getBlock();
+    public void onBlockBreak(final @NotNull BlockBreakEvent e) {
+        final @NotNull Block block = e.getBlock();
         /*if (SiegeData.getSieges().isEmpty() *//*&& RaidData.getRaids().isEmpty()*//*) {
             return;
         }*/
@@ -47,7 +48,7 @@ public class BlockBreakListener implements Listener {
         if (WorldCoord.parseWorldCoord(block).getTownOrNull() != null) {
             /*for (final Siege siege : WarManager.getInstance().getSieges()) {
                 if (siege.getTown() == WorldCoord.parseWorldCoord(block).getTownOrNull()) {
-                    e.getPlayer().sendMessage(new ColorParser("<red>You can not break blocks during sieges").parseLegacy().build());
+                    e.getPlayer().sendMessage(ColorParser.of("<red>You can not break blocks during sieges").parseLegacy().build());
                     e.setCancelled(true);
                     return;
                 }
@@ -64,8 +65,8 @@ public class BlockBreakListener implements Listener {
     }
 
     @EventHandler
-    public void onBlockPlace(final BlockPlaceEvent event) {
-        final Block block = event.getBlock();
+    public void onBlockPlace(final @NotNull BlockPlaceEvent event) {
+        final @NotNull Block block = event.getBlock();
         /*if (SiegeData.getSieges().isEmpty() && RaidData.getRaids().isEmpty()) {
             return;
         }*/
@@ -73,7 +74,7 @@ public class BlockBreakListener implements Listener {
             return;
         }
 
-        Player p = event.getPlayer();
+        @NotNull Player p = event.getPlayer();
         if (p.hasPermission("AlathranWars.place")) {
             return;
         }
@@ -81,7 +82,7 @@ public class BlockBreakListener implements Listener {
         if (WorldCoord.parseWorldCoord(block).getTownOrNull() != null) {
             /*for (final Siege siege : WarManager.getInstance().getSieges()) {
                 if (siege.getTown() == WorldCoord.parseWorldCoord(block).getTownOrNull()) {
-                    p.sendMessage(new ColorParser("<red>You can not place blocks during sieges").parseLegacy().build());
+                    p.sendMessage(ColorParser.of("<red>You can not place blocks during sieges").parseLegacy().build());
                     event.setCancelled(true);
                     return;
                 }

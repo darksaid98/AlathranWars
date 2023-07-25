@@ -13,26 +13,13 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public class DataManager {
-    private Main instance;
-    //    private static DataManager instance;
+    private final Main instance;
     private HikariConfig hikariConfig;
     private HikariDataSource hikariDataSource;
 
     public DataManager(Main instance) {
-        /*if (instance != null)
-            Bukkit.getServer().getLogger().warning("Tried to re-initialize singleton");
-
-        main = Main.getInstance();*/
         this.instance = instance;
     }
-
-    /*@NotNull
-    public static DataManager getInstance() {
-        if (instance == null)
-            instance = new DataManager();
-
-        return instance;
-    }*/
 
     public void onLoad() {
         openConnection();
@@ -73,10 +60,6 @@ public class DataManager {
 
         if (mysqlEnabled) {
             hikariConfig.setDataSourceClassName("org.mariadb.jdbc.MariaDbDataSource");
-            hikariConfig.setJdbcUrl("jdbc:mariadb://%s/%s".formatted(
-                Config.get().get("mysql.host", "127.0.0.1:3306"),
-                Config.get().get("mysql.database", "database")
-            ));
             hikariConfig.addDataSourceProperty("url", "jdbc:mariadb://%s/%s".formatted(
                 Config.get().get("mysql.host", "127.0.0.1:3306"),
                 Config.get().get("mysql.database", "database")
@@ -86,14 +69,14 @@ public class DataManager {
             hikariConfig.setConnectionTimeout(5000);
             hikariConfig.setKeepaliveTime(0);
         } else {
-            File dataFolder = new File(instance.getDataFolder(), "database.db");
+            @NotNull File dataFolder = new File(instance.getDataFolder(), "database.db");
 
             if (!dataFolder.exists()) {
                 try {
                     if (!dataFolder.createNewFile())
                         instance.getLogger().severe("File write error: database.db (1)");
                 } catch (IOException e) {
-                    instance.getLogger().severe("File write error: database.db (2) - " + e.getMessage());
+                    instance.getLogger().severe("File write error: database.db (2) - %s".formatted(e.getMessage()));
                 }
             }
 

@@ -12,11 +12,12 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class Main extends JavaPlugin {
-    public static Economy econ;
+    public static @Nullable Economy econ;
     public static AlathranWarsLogger warLogger;
-    private static Main instance;
+    private static @Nullable Main instance;
 
     static {
         instance = null;
@@ -67,7 +68,7 @@ public class Main extends JavaPlugin {
         if (this.getServer().getPluginManager().getPlugin("Vault") == null) {
             return false;
         }
-        @SuppressWarnings("unchecked") final RegisteredServiceProvider<Economy> rsp = (RegisteredServiceProvider<Economy>) this.getServer()
+        @SuppressWarnings("unchecked") final @Nullable RegisteredServiceProvider<Economy> rsp = (RegisteredServiceProvider<Economy>) this.getServer()
             .getServicesManager().getRegistration((Class) Economy.class);
         if (rsp == null) {
             return false;

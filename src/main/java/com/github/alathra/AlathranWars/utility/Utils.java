@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -42,8 +43,8 @@ public class Utils {
      * @param p
      * @author ShermansWorld
      */
-    public static void damageAllGear(Player p) {
-        for (ItemStack itemStack : p.getInventory().getContents()) {
+    public static void damageAllGear(@NotNull Player p) {
+        for (@Nullable ItemStack itemStack : p.getInventory().getContents()) {
             if (itemStack == null)
                 continue;
 
@@ -52,9 +53,9 @@ public class Utils {
             }
         }
 
-        final ItemStack[] armor = p.getInventory().getArmorContents();
+        final ItemStack @NotNull [] armor = p.getInventory().getArmorContents();
 
-        for (ItemStack itemStack : armor) {
+        for (@Nullable ItemStack itemStack : armor) {
             if (itemStack == null)
                 continue;
 
@@ -195,10 +196,10 @@ public class Utils {
      * @return List of connected chunks
      * @author NinjaMandalorian
      */
-    private static ArrayList<WorldCoord> getAdjCells(WorldCoord worldCoord) {
-        ArrayList<WorldCoord> worldCoords = new ArrayList<>();
+    private static @NotNull ArrayList<WorldCoord> getAdjCells(@NotNull WorldCoord worldCoord) {
+        @NotNull ArrayList<WorldCoord> worldCoords = new ArrayList<>();
 
-        int[][] XZarray = new int[][]{
+        int[] @NotNull [] XZarray = new int[][]{
             {-1, 0},
             {1, 0},
             {0, -1},
@@ -207,7 +208,7 @@ public class Utils {
 
         for (int[] pair : XZarray) {
             // Constructs new WorldCoord for comparison
-            WorldCoord tCoord = new WorldCoord(worldCoord.getWorldName(), worldCoord.getX() + pair[0], worldCoord.getZ() + pair[1]);
+            @NotNull WorldCoord tCoord = new WorldCoord(worldCoord.getWorldName(), worldCoord.getX() + pair[0], worldCoord.getZ() + pair[1]);
             if (tCoord.getTownOrNull() != null && tCoord.getTownOrNull() == worldCoord.getTownOrNull()) {
                 // If in town, and in same town, adds to return list
                 worldCoords.add(tCoord);
@@ -223,15 +224,15 @@ public class Utils {
      * @return List of WorldCoords
      * @author NinjaMandalorian
      */
-    public static ArrayList<WorldCoord> getCluster(WorldCoord chunkCoord) {
+    public static @NotNull ArrayList<WorldCoord> getCluster(WorldCoord chunkCoord) {
         // worldCoords is the returning array, searchList is the to-search list.
-        ArrayList<WorldCoord> worldCoords = new ArrayList<>();
-        ArrayList<WorldCoord> searchList = new ArrayList<>(Collections.singletonList(chunkCoord)); // Adds 1st chunk to list
+        @NotNull ArrayList<WorldCoord> worldCoords = new ArrayList<>();
+        @NotNull ArrayList<WorldCoord> searchList = new ArrayList<>(Collections.singletonList(chunkCoord)); // Adds 1st chunk to list
 
         // Iterates through searchList, to create a full list of every adjacent cell.
         while (!searchList.isEmpty()) {
             WorldCoord toSearch = searchList.get(0); // Gets WorldCoord
-            ArrayList<WorldCoord> adjCells = getAdjCells(toSearch); // Gets adjacent cells
+            @NotNull ArrayList<WorldCoord> adjCells = getAdjCells(toSearch); // Gets adjacent cells
 
             for (WorldCoord cell : adjCells) {
                 if (worldCoords.contains(cell)) continue; // If in final list, ignore.

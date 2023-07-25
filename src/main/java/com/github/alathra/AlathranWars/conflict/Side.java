@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -32,7 +33,7 @@ public class Side {
     private final Set<Town> towns; // A list of participating Towns
     private final Set<Nation> nations; // A list of participating Nations
     private final Set<UUID> playersIncludingOffline; // A list of all participating player UUID, (Online & Offline)
-    private final Set<Player> players; // A list of the players who are currently online
+    private final @NotNull Set<Player> players; // A list of the players who are currently online
     private final Set<Town> surrenderedTowns;
     private final Set<Nation> surrenderedNations;
     private final Set<UUID> surrenderedPlayersIncludingOffline;
@@ -102,7 +103,7 @@ public class Side {
         calculateOnlinePlayers();
     }
 
-    public Side(UUID warUUID, UUID uuid, Nation nation, BattleSide side, BattleTeam team) {
+    public Side(UUID warUUID, UUID uuid, @NotNull Nation nation, BattleSide side, BattleTeam team) {
         this.warUUID = warUUID;
         this.uuid = uuid;
         this.side = side;
@@ -148,7 +149,7 @@ public class Side {
         return playersIncludingOffline;
     }
 
-    public Set<Player> getPlayers() {
+    public @NotNull Set<Player> getPlayers() {
         return players;
     }
 
@@ -182,7 +183,7 @@ public class Side {
         return surrenderedNations.contains(nation);
     }
 
-    public void addTown(Town town) {
+    public void addTown(@NotNull Town town) {
         if (isTownOnSide(town)) return;
 
         towns.add(town);
@@ -190,7 +191,7 @@ public class Side {
         town.getResidents().forEach((Resident resident) -> addPlayer(resident.getUUID()));
     }
 
-    public void addNation(Nation nation) {
+    public void addNation(@NotNull Nation nation) {
         if (isNationOnSide(nation)) return;
 
         nations.add(nation);
@@ -198,7 +199,7 @@ public class Side {
         nation.getTowns().forEach(this::addTown);
     }
 
-    public void removeTown(Town town) {
+    public void removeTown(@NotNull Town town) {
         if (!isTownOnSide(town)) return;
 
         towns.remove(town);
@@ -206,7 +207,7 @@ public class Side {
         town.getResidents().forEach((Resident resident) -> removePlayer(resident.getUUID()));
     }
 
-    public void removeNation(Nation nation) {
+    public void removeNation(@NotNull Nation nation) {
         if (!isNationOnSide(nation)) return;
 
         nations.remove(nation);
@@ -214,7 +215,7 @@ public class Side {
         nation.getTowns().forEach(this::removeTown);
     }
 
-    public void surrenderTown(Town town) {
+    public void surrenderTown(@NotNull Town town) {
         if (isTownSurrendered(town)) return;
 
         removeTown(town);
@@ -224,7 +225,7 @@ public class Side {
         town.getResidents().forEach((Resident resident) -> surrenderPlayer(resident.getUUID()));
     }
 
-    public void surrenderNation(Nation nation) {
+    public void surrenderNation(@NotNull Nation nation) {
         if (isNationSurrendered(nation)) return;
 
         removeNation(nation);
@@ -234,7 +235,7 @@ public class Side {
         nation.getTowns().forEach(this::surrenderTown);
     }
 
-    public boolean isPlayerOnSide(Player p) {
+    public boolean isPlayerOnSide(@NotNull Player p) {
         return isPlayerOnSide(p.getUniqueId());
     }
 
@@ -242,7 +243,7 @@ public class Side {
         return playersIncludingOffline.contains(uuid) || surrenderedPlayersIncludingOffline.contains(uuid);
     }
 
-    public boolean isPlayerSurrendered(Player p) {
+    public boolean isPlayerSurrendered(@NotNull Player p) {
         return isPlayerSurrendered(p.getUniqueId());
     }
 
@@ -250,22 +251,22 @@ public class Side {
         return surrenderedPlayersIncludingOffline.contains(uuid);
     }
 
-    public void addPlayer(Player p) {
+    public void addPlayer(@NotNull Player p) {
         addPlayer(p.getUniqueId());
     }
 
-    public void addPlayer(OfflinePlayer offlinePlayer) {
+    public void addPlayer(@NotNull OfflinePlayer offlinePlayer) {
         if (offlinePlayer.hasPlayedBefore())
             addPlayer(offlinePlayer.getUniqueId());
     }
 
-    public void addPlayer(UUID uuid) {
+    public void addPlayer(@NotNull UUID uuid) {
         if (isPlayerOnSide(uuid)) return;
 
         playersIncludingOffline.add(uuid);
 
         if (Bukkit.getOfflinePlayer(uuid).isOnline()) {
-            final Player p = Bukkit.getPlayer(uuid);
+            final @Nullable Player p = Bukkit.getPlayer(uuid);
             addOnlinePlayer(p);
         }
     }
@@ -274,22 +275,22 @@ public class Side {
         players.add(p);
     }
 
-    public void removePlayer(Player p) {
+    public void removePlayer(@NotNull Player p) {
         removePlayer(p.getUniqueId());
     }
 
-    public void removePlayer(OfflinePlayer offlinePlayer) {
+    public void removePlayer(@NotNull OfflinePlayer offlinePlayer) {
         if (offlinePlayer.hasPlayedBefore())
             removePlayer(offlinePlayer.getUniqueId());
     }
 
-    public void removePlayer(UUID uuid) {
+    public void removePlayer(@NotNull UUID uuid) {
         if (!isPlayerOnSide(uuid)) return;
 
         playersIncludingOffline.remove(uuid);
 
         if (Bukkit.getOfflinePlayer(uuid).isOnline()) {
-            final Player p = Bukkit.getPlayer(uuid);
+            final @Nullable Player p = Bukkit.getPlayer(uuid);
             removeOnlinePlayer(p);
         }
     }
@@ -298,11 +299,11 @@ public class Side {
         players.remove(p);
     }
 
-    public void surrenderPlayer(Player p) {
+    public void surrenderPlayer(@NotNull Player p) {
         surrenderPlayer(p.getUniqueId());
     }
 
-    public void surrenderPlayer(UUID uuid) {
+    public void surrenderPlayer(@NotNull UUID uuid) {
         if (isPlayerSurrendered(uuid)) return;
 
         removePlayer(uuid);
@@ -311,7 +312,7 @@ public class Side {
     }
 
     public void calculateOnlinePlayers() {
-        final Set<Player> onlinePlayers = getPlayersIncludingOffline().stream()
+        final @NotNull Set<Player> onlinePlayers = getPlayersIncludingOffline().stream()
             .filter(uuid -> Bukkit.getOfflinePlayer(uuid).isOnline())
             .map(Bukkit::getPlayer)
             .collect(Collectors.toSet());
@@ -385,11 +386,11 @@ public class Side {
         return this.uuid.equals(uuid);
     }
 
-    public boolean equals(War war) {
+    public boolean equals(@NotNull War war) {
         return this.warUUID.equals(war.getUUID());
     }
 
-    public boolean equals(Side side) {
+    public boolean equals(@NotNull Side side) {
         return getUUID().equals(side.getUUID());
     }
 

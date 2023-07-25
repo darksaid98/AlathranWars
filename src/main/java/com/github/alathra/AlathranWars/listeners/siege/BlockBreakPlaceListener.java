@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
@@ -27,8 +28,8 @@ public class BlockBreakPlaceListener implements Listener {
     );
 
     @EventHandler
-    private void onBlockBreak(BlockBreakEvent e) {
-        final Block block = e.getBlock();
+    private void onBlockBreak(@NotNull BlockBreakEvent e) {
+        final @NotNull Block block = e.getBlock();
 
         if (allowedBlocks.contains(block.getType()))
             return;
@@ -41,9 +42,9 @@ public class BlockBreakPlaceListener implements Listener {
         if (town == null)
             return;
 
-        for (final Siege siege : WarManager.getInstance().getSieges()) {
+        for (final @NotNull Siege siege : WarManager.getInstance().getSieges()) {
             if (siege.getTown().equals(town)) {
-                e.getPlayer().sendMessage(new ColorParser("<red>You can not break blocks during sieges.").build());
+                e.getPlayer().sendMessage(ColorParser.of("<red>You can not break blocks during sieges.").build());
                 e.setCancelled(true);
                 return;
             }
@@ -51,8 +52,8 @@ public class BlockBreakPlaceListener implements Listener {
     }
 
     @EventHandler
-    public void onBlockPlace(BlockPlaceEvent e) {
-        final Block block = e.getBlock();
+    public void onBlockPlace(@NotNull BlockPlaceEvent e) {
+        final @NotNull Block block = e.getBlock();
 
         if (allowedBlocks.contains(block.getType()))
             return;
@@ -65,9 +66,9 @@ public class BlockBreakPlaceListener implements Listener {
         if (town == null)
             return;
 
-        for (final Siege siege : WarManager.getInstance().getSieges()) {
+        for (final @NotNull Siege siege : WarManager.getInstance().getSieges()) {
             if (siege.getTown().equals(town)) {
-                e.getPlayer().sendMessage(new ColorParser("<red>You can not place blocks during sieges.").build());
+                e.getPlayer().sendMessage(ColorParser.of("<red>You can not place blocks during sieges.").build());
                 e.setCancelled(true);
                 return;
             }

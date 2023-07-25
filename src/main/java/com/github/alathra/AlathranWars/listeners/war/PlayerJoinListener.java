@@ -8,15 +8,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
 public class PlayerJoinListener implements Listener {
-    public static void checkPlayer(Player p) {
-        final UUID uuid = p.getUniqueId();
+    public static void checkPlayer(@NotNull Player p) {
+        final @NotNull UUID uuid = p.getUniqueId();
 
         if (WarManager.getInstance().isPlayerInAnyWars(uuid)) {
-            for (final War war : WarManager.getInstance().getWars()) {
+            for (final @NotNull War war : WarManager.getInstance().getWars()) {
                 if (war.getSide1().isPlayerOnSide(uuid) && !war.getSide1().isPlayerSurrendered(uuid)) {
                     TABHook.assignSide1WarSuffix(p, war);
                 } else if (war.getSide2().isPlayerOnSide(uuid) && !war.getSide2().isPlayerSurrendered(uuid)) {
@@ -31,12 +33,12 @@ public class PlayerJoinListener implements Listener {
     }
 
     @EventHandler
-    private void onPlayerJoin(PlayerJoinEvent e) {
-        final Player p = e.getPlayer();
+    private void onPlayerJoin(@NotNull PlayerJoinEvent e) {
+        final @NotNull Player p = e.getPlayer();
         if (WarManager.getInstance().isPlayerInAnyWars(p)) {
-            for (War war : WarManager.getInstance().getWars()) {
+            for (@NotNull War war : WarManager.getInstance().getWars()) {
                 if (war.isPlayerInWar(p)) {
-                    Side side = war.getPlayerSide(p);
+                    @Nullable Side side = war.getPlayerSide(p);
                     if (side != null) {
                         side.addOnlinePlayer(p);
                     }

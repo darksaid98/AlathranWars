@@ -21,6 +21,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -47,7 +49,7 @@ public class PlayerInteractListener implements Listener {
     }
 
     //map of broken doors
-    public Map<Location, Long> brokenDoors = new HashMap<>();
+    public final @NotNull Map<Location, Long> brokenDoors = new HashMap<>();
 
     /**
      * @param event event
@@ -55,22 +57,22 @@ public class PlayerInteractListener implements Listener {
      * @author AubriTheHuman
      */
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerInteract(final PlayerInteractEvent event) {
-        Player player = event.getPlayer();
-        Action action = event.getAction();
+    public void onPlayerInteract(final @NotNull PlayerInteractEvent event) {
+        @NotNull Player player = event.getPlayer();
+        @NotNull Action action = event.getAction();
 
         if (action == Action.LEFT_CLICK_BLOCK) {
-            Block clicked = event.getClickedBlock();
-            ItemStack item = player.getInventory().getItemInMainHand();
+            @Nullable Block clicked = event.getClickedBlock();
+            @NotNull ItemStack item = player.getInventory().getItemInMainHand();
             if (clicked != null) {
                 if (doors.contains(clicked.getType())) { // left click + any door types
-                    Door door = (Door) clicked.getBlockData();
+                    @NotNull Door door = (Door) clicked.getBlockData();
                     // lock door in the opposite position
                     if (item.equals(WarItemRegistry.getInstance().getOrNull("ram"))) {
                         boolean inSiegeOrRaid = false;
                         //siege check
-                        for (Siege s : WarManager.getInstance().getSieges()) {
-                            for (TownBlock townBlock : s.getTown().getTownBlocks()) {
+                        for (@NotNull Siege s : WarManager.getInstance().getSieges()) {
+                            for (@NotNull TownBlock townBlock : s.getTown().getTownBlocks()) {
                                 if (WorldCoord.parseWorldCoord(clicked).equals(townBlock.getWorldCoord())) {
                                     // if we find one, just end no need to continue
                                     inSiegeOrRaid = true;
@@ -97,18 +99,18 @@ public class PlayerInteractListener implements Listener {
 
                             // Returns if already broken.
                             if (doorBroken(clicked, door)) {
-                                player.sendMessage(new ColorParser(UtilsChat.getPrefix() + "<red>The door is already broken!").parseLegacy().build());
+                                player.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "<red>The door is already broken!").parseLegacy().build());
                                 event.setCancelled(true);
                                 return;
                             }
-                            player.sendMessage(new ColorParser(UtilsChat.getPrefix() + "<yellow>Break it down alright!").parseLegacy().build());
+                            player.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "<yellow>Break it down alright!").parseLegacy().build());
                             brokenDoors.put(getDoorPos(clicked, door), System.currentTimeMillis() + (1000L * Main.getInstance().getConfig().getInt("batteringRamEffectiveness")));
                             door.setOpen(!door.isOpen());
                             clicked.setBlockData(door);
                             player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
                             Main.warLogger.log("User " + player.getName() + " has broken down door" + clicked.getLocation());
                         } else {
-                            player.sendMessage(new ColorParser(UtilsChat.getPrefix() + "<red>This item can only be used in a siege or raid!").parseLegacy().build());
+                            player.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "<red>This item can only be used in a siege or raid!").parseLegacy().build());
                         }
                         event.setCancelled(true);
                     }
@@ -118,8 +120,8 @@ public class PlayerInteractListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerRClick(final PlayerItemDamageEvent event) {
-        ItemStack item = event.getItem();
+    public void onPlayerRClick(final @NotNull PlayerItemDamageEvent event) {
+        @NotNull ItemStack item = event.getItem();
         if (item.equals(WarItemRegistry.getInstance().getOrNull("ram"))) {
             event.setCancelled(true);
         }
@@ -132,17 +134,17 @@ public class PlayerInteractListener implements Listener {
      * @author AubriTheHuman
      */
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerRClick(final PlayerInteractEvent event) {
-        Player player = event.getPlayer();
-        Action action = event.getAction();
-        Block clicked = event.getClickedBlock();
-        ItemStack item = player.getInventory().getItemInMainHand();
+    public void onPlayerRClick(final @NotNull PlayerInteractEvent event) {
+        @NotNull Player player = event.getPlayer();
+        @NotNull Action action = event.getAction();
+        @Nullable Block clicked = event.getClickedBlock();
+        @NotNull ItemStack item = player.getInventory().getItemInMainHand();
         if (action == Action.RIGHT_CLICK_BLOCK) {
             if (clicked != null) {
                 if (doors.contains(clicked.getType())) {
-                    Door door = (Door) clicked.getBlockData();
+                    @NotNull Door door = (Door) clicked.getBlockData();
                     if (doorBroken(clicked, door)) {
-                        player.sendMessage(new ColorParser(UtilsChat.getPrefix() + "Door is broken!").parseLegacy().build());
+                        player.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "Door is broken!").parseLegacy().build());
                         event.setCancelled(true);
 
                         return;
@@ -164,7 +166,7 @@ public class PlayerInteractListener implements Listener {
         }
     }
 
-    private Location getDoorPos(Block clicked, Door door) {
+    private @NotNull Location getDoorPos(@NotNull Block clicked, @NotNull Door door) {
         if (door.getHalf() == Bisected.Half.BOTTOM) {
             return clicked.getLocation().clone();
         } else if (door.getHalf() == Bisected.Half.TOP) {
@@ -173,7 +175,7 @@ public class PlayerInteractListener implements Listener {
         return clicked.getLocation().clone();
     }
 
-    private boolean doorBroken(@Nonnull Block clicked, Door door) {
+    private boolean doorBroken(@Nonnull Block clicked, @NotNull Door door) {
         if (door.getHalf() == Bisected.Half.BOTTOM) {
             if (brokenDoors.get(clicked.getLocation()) != null) {
                 return brokenDoors.get(clicked.getLocation()) > System.currentTimeMillis();

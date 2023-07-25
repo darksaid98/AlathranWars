@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.github.alathra.AlathranWars"
-version = "3.0.1-SNAPSHOT"
+version = "3.0.2-SNAPSHOT"
 description = ""
 
 java {
@@ -50,23 +50,31 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
 
     implementation("com.github.milkdrinkers:simplixstorage:3.2.7")
-    implementation("com.github.milkdrinkers:colorparser:1.0.7")
+    implementation("com.github.milkdrinkers:colorparser:2.0.0") {
+        exclude(group = "net.kyori", module = "adventure-api")
+    }
     implementation("io.github.skytasul:guardianbeam:2.3.3")
 
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
 
-    compileOnly("com.palmergames.bukkit.towny:towny:0.99.5.0")
+    compileOnly("com.palmergames.bukkit.towny:towny:0.99.5.5") {
+        exclude(group = "com.palmergames", module = "adventure")
+    }
 
     compileOnly("me.neznamy:tab-api:4.0.0")
 
-    implementation("dev.jorel:commandapi-bukkit-shade:9.0.3")
+    implementation("dev.jorel:commandapi-bukkit-shade:9.0.3") {
+        exclude(group = "net.kyori", module = "adventure-api")
+    }
     compileOnly("dev.jorel:commandapi-annotations:9.0.3")
     annotationProcessor("dev.jorel:commandapi-annotations:9.0.3")
 
     implementation("com.zaxxer:HikariCP:5.0.1")
-    implementation("org.mariadb.jdbc:mariadb-java-client:3.1.0")
+    implementation("org.mariadb.jdbc:mariadb-java-client:3.1.4")
 
-    compileOnly("me.clip:placeholderapi:2.11.3")
+    compileOnly("me.clip:placeholderapi:2.11.3") {
+        exclude(group = "me.clip.placeholderapi.libs", module = "kyori")
+    }
 }
 
 tasks {
@@ -98,12 +106,18 @@ tasks {
         reloc("de.leonhard.storage", "storageapi")
         reloc("dev.jorel.commandapi", "commandapi")
         reloc("com.zaxxer.hikari", "hikaricp")
+//        reloc("org.xerial", "sqlite")
+//        reloc("com.mysql", "mysql")
+        reloc("org.mariadb.jdbc", "mariadb")
         reloc("io.github.skytasul", "guardianbeam")
     }
 
     runServer {
         // Configure the Minecraft version for our task.
-        minecraftVersion("1.20.1")
+        minecraftVersion("1.19.4")
+        jvmArgs("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005")
+        systemProperty("terminal.jline", false)
+        systemProperty("terminal.ansi", true)
     }
 }
 
@@ -116,7 +130,7 @@ bukkit {
     prefix = "AlathranWars"
     version = "${project.version}"
     description = "${project.description}"
-    authors = listOf("ShermansWorld", "NinjaMandalorian", "AubriTheHuman", "darksaid98")
+    authors = listOf("darksaid98", "ShermansWorld", "NinjaMandalorian", "AubriTheHuman")
     contributors = listOf()
     apiVersion = "1.19"
 

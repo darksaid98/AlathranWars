@@ -35,7 +35,7 @@ public class War extends Conflict {
     private final String label;
     private final ConflictType conflictType = ConflictType.WAR;
 
-    private final Side side1;
+    private final @NotNull Side side1;
     private final Side side2;
     private final Side attacker; // Reference variable to side1 or side2
     private final Side defender; // Reference variable to side1 or side2
@@ -47,7 +47,7 @@ public class War extends Conflict {
         UUID uuid,
         String name,
         String label,
-        Side side1,
+        @NotNull Side side1,
         Side side2,
         Set<Siege> sieges,
         Set<Raid> raids
@@ -75,16 +75,16 @@ public class War extends Conflict {
      * @param aggressor the side 1
      * @param victim    the side 2
      */
-    public War(final String label, Town aggressor, Town victim) throws WrapperCommandSyntaxException {
+    public War(final String label, @NotNull Town aggressor, @NotNull Town victim) throws WrapperCommandSyntaxException {
         this.uuid = UUIDUtil.generateWarUUID();
         this.name = "%s.vs.%s".formatted(aggressor.getName(), victim.getName());
         this.label = label;
 
         if (WarManager.getInstance().getWar(this.name) != null)
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>A war already exists with that name!").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>A war already exists with that name!").build());
 
-        final UUID side1UUID = UUIDUtil.generateSideUUID(null);
-        final UUID side2UUID = UUIDUtil.generateSideUUID(side1UUID);
+        final @NotNull UUID side1UUID = UUIDUtil.generateSideUUID(null);
+        final @NotNull UUID side2UUID = UUIDUtil.generateSideUUID(side1UUID);
         this.side1 = new Side(this.uuid, side1UUID, aggressor, BattleSide.ATTACKER, BattleTeam.SIDE_1);
         this.side2 = new Side(this.uuid, side2UUID, victim, BattleSide.DEFENDER, BattleTeam.SIDE_2);
 
@@ -96,16 +96,16 @@ public class War extends Conflict {
         start();
     }
 
-    public War(final String label, Nation aggressor, Nation victim) throws WrapperCommandSyntaxException {
+    public War(final String label, @NotNull Nation aggressor, @NotNull Nation victim) throws WrapperCommandSyntaxException {
         this.uuid = UUIDUtil.generateWarUUID();
         this.name = "%s.vs.%s".formatted(aggressor.getName(), victim.getName());
         this.label = label;
 
         if (WarManager.getInstance().getWar(this.name) != null)
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>A war already exists with that name!").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>A war already exists with that name!").build());
 
-        final UUID side1UUID = UUIDUtil.generateSideUUID(null);
-        final UUID side2UUID = UUIDUtil.generateSideUUID(side1UUID);
+        final @NotNull UUID side1UUID = UUIDUtil.generateSideUUID(null);
+        final @NotNull UUID side2UUID = UUIDUtil.generateSideUUID(side1UUID);
         this.side1 = new Side(this.uuid, side1UUID, aggressor, BattleSide.ATTACKER, BattleTeam.SIDE_1);
         this.side2 = new Side(this.uuid, side2UUID, victim, BattleSide.DEFENDER, BattleTeam.SIDE_2);
 
@@ -117,16 +117,16 @@ public class War extends Conflict {
         start();
     }
 
-    public War(final String label, Town aggressor, Nation victim) throws WrapperCommandSyntaxException {
+    public War(final String label, @NotNull Town aggressor, @NotNull Nation victim) throws WrapperCommandSyntaxException {
         this.uuid = UUIDUtil.generateWarUUID();
         this.name = "%s.vs.%s".formatted(aggressor.getName(), victim.getName());
         this.label = label;
 
         if (WarManager.getInstance().getWar(this.name) != null)
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>A war already exists with that name!").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>A war already exists with that name!").build());
 
-        final UUID side1UUID = UUIDUtil.generateSideUUID(null);
-        final UUID side2UUID = UUIDUtil.generateSideUUID(side1UUID);
+        final @NotNull UUID side1UUID = UUIDUtil.generateSideUUID(null);
+        final @NotNull UUID side2UUID = UUIDUtil.generateSideUUID(side1UUID);
         this.side1 = new Side(this.uuid, side1UUID, aggressor, BattleSide.ATTACKER, BattleTeam.SIDE_1);
         this.side2 = new Side(this.uuid, side2UUID, victim, BattleSide.DEFENDER, BattleTeam.SIDE_2);
 
@@ -138,16 +138,16 @@ public class War extends Conflict {
         start();
     }
 
-    public War(final String label, Nation aggressor, Town victim) throws WrapperCommandSyntaxException {
+    public War(final String label, @NotNull Nation aggressor, @NotNull Town victim) throws WrapperCommandSyntaxException {
         this.uuid = UUIDUtil.generateWarUUID();
         this.name = "%s.vs.%s".formatted(aggressor.getName(), victim.getName());
         this.label = label;
 
         if (WarManager.getInstance().getWar(this.name) != null)
-            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>A war already exists with that name!").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>A war already exists with that name!").build());
 
-        final UUID side1UUID = UUIDUtil.generateSideUUID(null);
-        final UUID side2UUID = UUIDUtil.generateSideUUID(side1UUID);
+        final @NotNull UUID side1UUID = UUIDUtil.generateSideUUID(null);
+        final @NotNull UUID side2UUID = UUIDUtil.generateSideUUID(side1UUID);
         this.side1 = new Side(this.uuid, side1UUID, aggressor, BattleSide.ATTACKER, BattleTeam.SIDE_1);
         this.side2 = new Side(this.uuid, side2UUID, victim, BattleSide.DEFENDER, BattleTeam.SIDE_2);
 
@@ -199,7 +199,7 @@ public class War extends Conflict {
      * @param war the war
      * @return the boolean
      */
-    public boolean equals(War war) {
+    public boolean equals(@NotNull War war) {
         return this.uuid.equals(war.getUUID());
     }
 
@@ -235,7 +235,7 @@ public class War extends Conflict {
 
     @NotNull
     public Set<Side> getSides() {
-        final Set<Side> sides = new HashSet<>();
+        final @NotNull Set<Side> sides = new HashSet<>();
         sides.add(getSide1());
         sides.add(getSide2());
         return sides;
@@ -295,7 +295,7 @@ public class War extends Conflict {
 
     @Nullable
     public Siege getSiege(UUID uuid) {
-        for (Siege siege : sieges) {
+        for (@NotNull Siege siege : sieges) {
             if (siege.equals(uuid))
                 return siege;
         }
@@ -314,6 +314,11 @@ public class War extends Conflict {
 
     public void removeSiege(Siege siege) {
         sieges.remove(siege);
+    }
+
+    public void setSieges(Set<Siege> sieges) {
+        this.sieges = sieges;
+        this.sieges.forEach(Siege::resume);
     }
 
     /**
@@ -362,7 +367,7 @@ public class War extends Conflict {
             .collect(Collectors.toSet());
     }
 
-    public boolean isPlayerInWar(Player p) {
+    public boolean isPlayerInWar(@NotNull Player p) {
         return side1.isPlayerOnSide(p) || side2.isPlayerOnSide(p);
     }
 
@@ -371,7 +376,7 @@ public class War extends Conflict {
     }
 
     @Nullable
-    public Side getPlayerSide(Player p) {
+    public Side getPlayerSide(@NotNull Player p) {
         if (side1.isPlayerOnSide(p))
             return getSide1();
 
@@ -463,7 +468,7 @@ public class War extends Conflict {
     }
 
     public void start() {
-        Bukkit.broadcast(new ColorParser(UtilsChat.getPrefix() + "The war of <war> has started between <attacker> and <defender>.")
+        Bukkit.broadcast(ColorParser.of(UtilsChat.getPrefix() + "The war of <war> has started between <attacker> and <defender>.")
             .parseMinimessagePlaceholder("war", getLabel())
             .parseMinimessagePlaceholder("attacker", getAttacker().getName())
             .parseMinimessagePlaceholder("defender", getDefender().getName())
@@ -491,11 +496,11 @@ public class War extends Conflict {
         this.getPlayers().forEach(PlayerJoinListener::checkPlayer);
     }
 
-    public void defeat(Side loserSide) {
-        Side loser = loserSide.equals(getSide1()) ? getSide1() : getSide2();
-        Side winner = loserSide.equals(getSide1()) ? getSide2() : getSide1();
+    public void defeat(@NotNull Side loserSide) {
+        @NotNull Side loser = loserSide.equals(getSide1()) ? getSide1() : getSide2();
+        @NotNull Side winner = loserSide.equals(getSide1()) ? getSide2() : getSide1();
 
-        Bukkit.broadcast(new ColorParser(UtilsChat.getPrefix() + "The war of <war> has ended. <red><winner> <reset>has triumphed against <red><loser><reset>.")
+        Bukkit.broadcast(ColorParser.of(UtilsChat.getPrefix() + "The war of <war> has ended. <red><winner> <reset>has triumphed against <red><loser><reset>.")
             .parseMinimessagePlaceholder("war", getLabel())
             .parseMinimessagePlaceholder("winner", winner.getName())
             .parseMinimessagePlaceholder("loser", loser.getName())
@@ -507,7 +512,7 @@ public class War extends Conflict {
 
     // White defeat/force end war
     public void draw() {
-        Bukkit.broadcast(new ColorParser(UtilsChat.getPrefix() + "The war of <war> has ended with a white peace.")
+        Bukkit.broadcast(ColorParser.of(UtilsChat.getPrefix() + "The war of <war> has ended with a white peace.")
             .parseMinimessagePlaceholder("war", getLabel())
             .build()
         );

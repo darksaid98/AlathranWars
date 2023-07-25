@@ -1,6 +1,8 @@
 package com.github.alathra.AlathranWars;
 
 import org.bukkit.Bukkit;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -8,9 +10,9 @@ import java.util.Date;
 
 public class AlathranWarsLogger {
 
-    final File logsFolder;
-    final File log;
-    PrintWriter output = null;
+    final @NotNull File logsFolder;
+    final @NotNull File log;
+    @Nullable PrintWriter output = null;
 
     public AlathranWarsLogger() {
         logsFolder = new File("plugins" + File.separator + "AlathranWars" + File.separator + "logs");
@@ -35,10 +37,10 @@ public class AlathranWarsLogger {
     private void initFileWriter() {
         // init file writer
         try {
-            FileWriter fw = new FileWriter(
+            @NotNull FileWriter fw = new FileWriter(
                 "plugins" + File.separator + "AlathranWars" + File.separator + "logs" + File.separator + "log.txt",
                 true);
-            BufferedWriter bw = new BufferedWriter(fw);
+            @NotNull BufferedWriter bw = new BufferedWriter(fw);
             output = new PrintWriter(bw);
         } catch (IOException e1) {
             Bukkit.getLogger().warning("[AlathranWars] Error in AlathranWarsLogger - could not initialize file writer");
@@ -52,9 +54,9 @@ public class AlathranWarsLogger {
         }
 
         initFileWriter();
-        Date date = new Date();
-        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        String logMsg = "[" + format.format(date) + "] " + msg;
+        @NotNull Date date = new Date();
+        @NotNull SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        @NotNull String logMsg = "[" + format.format(date) + "] " + msg;
         output.println(logMsg);
         output.close();
     }

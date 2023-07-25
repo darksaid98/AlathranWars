@@ -11,6 +11,8 @@ import me.neznamy.tab.api.nametag.UnlimitedNameTagManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class TABHook {
     private static boolean enabled = false;
@@ -28,20 +30,20 @@ public class TABHook {
     private static void registerPlayerLoadListener() {
         if (!enabled) return;
 
-        EventBus eventBus = tabAPI.getEventBus();
+        @Nullable EventBus eventBus = tabAPI.getEventBus();
         if (eventBus == null) return;
 
         eventBus.register(PlayerLoadEvent.class, e -> {
-            TabPlayer tabPlayer = e.getPlayer();
+            @NotNull TabPlayer tabPlayer = e.getPlayer();
             if (tabPlayer.getPlayer() instanceof Player p)
                 PlayerJoinListener.checkPlayer(p);
         });
     }
 
-    public static void assignSide1WarSuffix(Player p, War war) {
+    public static void assignSide1WarSuffix(@NotNull Player p, @NotNull War war) {
         if (!enabled) return;
 
-        TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
+        @Nullable TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
 
         if (tabAPI.getTabListFormatManager() == null) return;
 
@@ -54,10 +56,10 @@ public class TABHook {
         }
     }
 
-    public static void assignSide2WarSuffix(Player p, War war) {
+    public static void assignSide2WarSuffix(@NotNull Player p, @NotNull War war) {
         if (!enabled) return;
 
-        TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
+        @Nullable TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
 
         if (tabAPI.getTabListFormatManager() == null) return;
 
@@ -68,10 +70,10 @@ public class TABHook {
         }
     }
 
-    public static void assignSide1WarSuffixMerc(Player p, War war) {
+    public static void assignSide1WarSuffixMerc(@NotNull Player p, @NotNull War war) {
         if (!enabled) return;
 
-        TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
+        @Nullable TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
 
         if (tabAPI.getTabListFormatManager() == null) return;
 
@@ -79,10 +81,10 @@ public class TABHook {
             UtilsChat.color(" <green>[M]<red>[") + war.getSide1() + "]<reset>");
     }
 
-    public static void assignSide2WarSuffixMerc(Player p, War war) {
+    public static void assignSide2WarSuffixMerc(@NotNull Player p, @NotNull War war) {
         if (!enabled) return;
 
-        TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
+        @Nullable TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
 
         if (tabAPI.getTabListFormatManager() == null) return;
 
@@ -90,25 +92,25 @@ public class TABHook {
             UtilsChat.color(" <green>[M]<blue>[") + war.getSide2() + "]<reset>");
     }
 
-    public static void resetSuffix(Player p) {
+    public static void resetSuffix(@NotNull Player p) {
         if (!enabled) return;
 
-        TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
+        @Nullable TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
 
         if (tabAPI.getTabListFormatManager() == null) return;
 
         tabAPI.getTabListFormatManager().setSuffix(tabPlayer, null);
     }
 
-    public static void resetSuffix(String username) {
+    public static void resetSuffix(@NotNull String username) {
         if (!enabled) return;
 
-        @SuppressWarnings("deprecation")
+        @NotNull
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(username);
 
         try {
             if (offlinePlayer.isOnline()) {
-                TabPlayer tabPlayer = tabAPI.getPlayer(username);
+                @Nullable TabPlayer tabPlayer = tabAPI.getPlayer(username);
 
                 if (tabAPI.getTabListFormatManager() == null) return;
 
@@ -118,10 +120,10 @@ public class TABHook {
         }
     }
 
-    public static void resetPrefix(Player p) {
+    public static void resetPrefix(@NotNull Player p) {
         if (!enabled) return;
 
-        TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
+        @Nullable TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
 
         if (tabAPI.getTabListFormatManager() == null) return;
 
@@ -132,14 +134,14 @@ public class TABHook {
         }
     }
 
-    public static void resetPrefix(String playername) {
+    public static void resetPrefix(@NotNull String playername) {
         if (!enabled) return;
 
-        @SuppressWarnings("deprecation")
+        @NotNull
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playername);
         try {
             if (offlinePlayer.isOnline()) {
-                TabPlayer tabPlayer = tabAPI.getPlayer(playername);
+                @Nullable TabPlayer tabPlayer = tabAPI.getPlayer(playername);
 
                 if (tabAPI.getTabListFormatManager() == null) return;
 
@@ -149,10 +151,10 @@ public class TABHook {
         }
     }
 
-    public static void removeColorPrefix(Player p, String prefix) {
+    public static void removeColorPrefix(@NotNull Player p, @NotNull String prefix) {
         if (!enabled) return;
 
-        TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
+        @Nullable TabPlayer tabPlayer = tabAPI.getPlayer(p.getUniqueId());
 
         if (prefix.length() > 2) {
             prefix = prefix.substring(0, prefix.length() - 2);

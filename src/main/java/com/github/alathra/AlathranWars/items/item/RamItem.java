@@ -11,18 +11,20 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
 public class RamItem implements IWarItem {
 
-    public ItemStack getItemStack() {
+    public @NotNull ItemStack getItemStack() {
 
-        ItemStack ram = new ItemStack(Material.WOODEN_HOE);
+        @NotNull ItemStack ram = new ItemStack(Material.WOODEN_HOE);
         ItemMeta meta = ram.getItemMeta();
 
         meta.setDisplayName("Door Ram");
-        ArrayList<String> lore = new ArrayList<>();
+        @NotNull ArrayList<String> lore = new ArrayList<>();
         meta.setLore(lore);
         meta.setCustomModelData(14700);
 
@@ -32,10 +34,10 @@ public class RamItem implements IWarItem {
     }
 
     @Override
-    public Recipe getRecipe() {
-        ItemStack output = WarItemRegistry.getInstance().getOrNull("ram");
-        NamespacedKey key = new NamespacedKey(Main.getInstance(), "ram");
-        ShapedRecipe recipe = new ShapedRecipe(key, output);
+    public @NotNull Recipe getRecipe() {
+        @Nullable ItemStack output = WarItemRegistry.getInstance().getOrNull("ram");
+        @NotNull NamespacedKey key = new NamespacedKey(Main.getInstance(), "ram");
+        @NotNull ShapedRecipe recipe = new ShapedRecipe(key, output);
         recipe.shape("$@$", "B##");
         recipe.setIngredient('@', Material.STICK);
         recipe.setIngredient('$', Material.IRON_INGOT);

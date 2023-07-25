@@ -8,17 +8,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public final class KillsListener implements Listener {
 
 //    public static final HashMap<UUID, OldRaid> respawnQueue = new HashMap<>();
 
     @EventHandler
-    public void onPlayerKilled(final PlayerDeathEvent event) {
+    public void onPlayerKilled(final @NotNull PlayerDeathEvent event) {
 
-        final Player killed = event.getEntity();
-        final Player killer = event.getEntity().getKiller();
-        Town town = null;
+        final @NotNull Player killed = event.getEntity();
+        final @Nullable Player killer = event.getEntity().getKiller();
+        @Nullable Town town = null;
         try {
             town = WorldCoord.parseWorldCoord(killed).getTownBlock().getTown();
         } catch (NotRegisteredException ex2) {
@@ -96,7 +98,7 @@ public final class KillsListener implements Listener {
                         for (final Player p : siege.getAttackerPlayers()) {
                             try {
                                 if (p != null)
-                                    p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "Defender killed! + 20 Attacker Points").parseLegacy().build());
+                                    p.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "Defender killed! + 20 Attacker Points").parseLegacy().build());
                             } catch (NullPointerException ignored) {
                                 ignored.printStackTrace();
                             }
@@ -180,7 +182,7 @@ public final class KillsListener implements Listener {
      * @param killed killed player
      * @param event  event
      */
-    private void siegeKill(final Player killed, final PlayerDeathEvent event) {
+    private void siegeKill(final @NotNull Player killed, final @NotNull PlayerDeathEvent event) {
         //Helper
         Utils.damageAllGear(killed);
 
@@ -198,7 +200,7 @@ public final class KillsListener implements Listener {
      * @param killed killed player
      * @param event  event
      */
-    private void raidKill(final Player killed, final PlayerDeathEvent event) {
+    private void raidKill(final @NotNull Player killed, final @NotNull PlayerDeathEvent event) {
         //Helper
         Utils.damageAllGear(killed);
 
@@ -216,7 +218,7 @@ public final class KillsListener implements Listener {
      * @param killed killed player
      * @param event  event
      */
-    private void oocKill(final Player killed, final PlayerDeathEvent event) {
+    private void oocKill(final Player killed, final @NotNull PlayerDeathEvent event) {
         //Siege specific
 //        Bukkit.dispatchCommand((CommandSender)Bukkit.getConsoleSender(), "spawn " + killed.getName());
         event.setKeepInventory(true);

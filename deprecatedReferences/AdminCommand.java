@@ -18,6 +18,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -147,9 +148,9 @@ public class AdminCommand {
     }*/
 
     @NotNull
-    private static StringBuilder getSurrenderedTowns(War war) {
-        StringBuilder surrenderedTowns = new StringBuilder();
-        for (Town t : war.getSurrenderedTowns()) {
+    private static StringBuilder getSurrenderedTowns(@NotNull War war) {
+        @NotNull StringBuilder surrenderedTowns = new StringBuilder();
+        for (@NotNull Town t : war.getSurrenderedTowns()) {
             surrenderedTowns.append(t.getName());
             surrenderedTowns.append(", ");
         }
@@ -160,17 +161,11 @@ public class AdminCommand {
     }
 
 
-    private static boolean fail(CommandSender p, CommandArguments args, AdminCommandFailEnum type) throws WrapperCommandSyntaxException {
+    private static boolean fail(CommandSender p, CommandArguments args, @NotNull AdminCommandFailEnum type) throws WrapperCommandSyntaxException {
         switch (type) {
-            case PERMISSIONS -> {
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>You do not have permission to do this.").build());
-            }
-            case SYNTAX -> {
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "Invalid Arguments. /alathranwarsadmin help").build());
-            }
-            default -> {
-                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "Something wrong. /alathranwarsadmin help").build());
-            }
+            case PERMISSIONS -> throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You do not have permission to do this.").build());
+            case SYNTAX -> throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "Invalid Arguments. /alathranwarsadmin help").build());
+            default -> throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "Something wrong. /alathranwarsadmin help").build());
         }
     }
 
@@ -202,9 +197,9 @@ public class AdminCommand {
             .executesPlayer((Player sender, CommandArguments args) -> {
                 // Parse item
                 if (!(args.get("item") instanceof String argItem))
-                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>Invalid item argument.").build());
+                    throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>Invalid item argument.").build());
 
-                ItemStack stack;
+                @Nullable ItemStack stack;
                 if (argItem.contains(Main.getInstance().getName().toLowerCase())) {
                     stack = WarItemRegistry.getInstance().getOrNullNamespace(argItem);
                 } else {
@@ -212,7 +207,7 @@ public class AdminCommand {
                 }
 
                 if (stack == null)
-                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The item is not an AlathranWars item.").build());
+                    throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The item is not an AlathranWars item.").build());
 
                 // Parse amount
                 int argAmount = (int) args.getOptional("amount").orElse(1);
@@ -231,7 +226,7 @@ public class AdminCommand {
                 argPlayer.getInventory().addItem(stack);
 
                 //log
-                final Component name = stack.getItemMeta() == null ? new ColorParser(stack.toString()).build() : stack.getItemMeta().displayName();
+                final @Nullable Component name = stack.getItemMeta() == null ? ColorParser.of(stack.toString()).build() : stack.getItemMeta().displayName();
                 sender.sendMessage(UtilsChat.getPrefix() + "Gave " + stack.getAmount() + "x " + name + " to " + argPlayer.getName());
                 Main.warLogger.log(UtilsChat.getPrefix() + "Gave " + stack.getAmount() + "x " + name + " to " + argPlayer.getName());
             });
@@ -268,7 +263,7 @@ public class AdminCommand {
             )
             .executes((CommandSender sender, CommandArguments args) -> {
                 if (!(args.get("war") instanceof final String argWarName))
-                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>You need to specify a war name.").build());
+                    throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You need to specify a war name.").build());
 
                 for (War war : WarManager.getInstance().getWars()) {
                     if (war.getName().equalsIgnoreCase(argWarName)) {
@@ -292,9 +287,7 @@ public class AdminCommand {
 
     private CommandAPICommand commandLoad() {
         return new CommandAPICommand("load")
-            .executes((CommandSender sender, CommandArguments args) -> {
-                sender.sendMessage(new ColorParser(UtilsChat.getPrefix() + "<red>Support for loading wars individually is currently unimplemented. Use /awa load-all instead").build());
-            });
+            .executes((CommandSender sender, CommandArguments args) -> sender.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "<red>Support for loading wars individually is currently unimplemented. Use /awa load-all instead").build()));
 
                 /*if (args.length >= 3) {
                     if(Boolean.parseBoolean(args[2])) {
@@ -411,8 +404,8 @@ public class AdminCommand {
                     .executesPlayer((Player p, CommandArguments args) -> SiegeCommand.siegeStart(p, args, true)),
                 new CommandAPICommand("war")
                     .withArguments(
-                        CommandUtil.customTownAndNationsArgument("side1", "war", true),
-                        CommandUtil.customTownAndNationsArgument("side2", "war", true),
+                        CommandUtil.customTownAndNationArgument("side1", "war", true),
+                        CommandUtil.customTownAndNationArgument("side2", "war", true),
                         new GreedyStringArgument("warlabel")
                             .replaceSuggestions(
                                 ArgumentSuggestions.stringCollection(info -> List.of(
@@ -424,9 +417,7 @@ public class AdminCommand {
                     )
                     .executesPlayer(WarCommand::warCreate)
             )
-            .executesPlayer((Player p, CommandArguments args) -> {
-                fail(p, args, AdminCommandFailEnum.SYNTAX);
-            });
+            .executesPlayer((Player p, CommandArguments args) -> fail(p, args, AdminCommandFailEnum.SYNTAX));
     }
 
     private CommandAPICommand commandForce() {
@@ -468,15 +459,15 @@ public class AdminCommand {
 
                             ).executesPlayer((Player sender, CommandArguments args) -> {
                                 if (!(args.get("oldSiege") instanceof final String argSiegeName))
-                                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>You need to specify a oldSiege!").build());
+                                    throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You need to specify a oldSiege!").build());
 
                                 final Siege oldSiege = SiegeData.getSiege(argSiegeName);
                                 if (oldSiege == null)
-                                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>That oldSiege does not exist!").build());
+                                    throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>That oldSiege does not exist!").build());
 
                                 final War war = oldSiege.getWar();
                                 if (war == null)
-                                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The war does not exist!").build());
+                                    throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The war does not exist!").build());
 
                                 final String argSide = (String) args.getOptional("victor").orElse("none");
 
@@ -537,15 +528,15 @@ public class AdminCommand {
                                     )
                             ).executesPlayer((Player sender, CommandArguments args) -> {
                                 if (!(args.get("oldRaid") instanceof final String argRaidName))
-                                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>You need to specify a oldRaid name!").build());
+                                    throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You need to specify a oldRaid name!").build());
 
                                 final OldRaid oldRaid = RaidData.getRaid(argRaidName);
                                 if (oldRaid == null)
-                                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>That oldRaid does not exist!").build());
+                                    throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>That oldRaid does not exist!").build());
 
                                 final War war = oldRaid.getWar();
                                 if (war == null)
-                                    throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The war does not exist!").build());
+                                    throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The war does not exist!").build());
 
                                 final String argSide = (String) args.getOptional("victor").orElse("none");
 
@@ -730,12 +721,12 @@ public class AdminCommand {
                         )
                     )
                     .executes((CommandSender sender, CommandArguments args) -> {
-                            if (!(args.get("war") instanceof final War war))
-                                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>You need to specify a war!").build());
+                            if (!(args.get("war") instanceof final @NotNull War war))
+                                throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You need to specify a war!").build());
 
 //                            final War war = WarManager.getInstance().getWar(argWarName);
 //                            if (war == null)
-//                                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>That war does not exist!").build());
+//                                throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>That war does not exist!").build());
 
                             sender.sendMessage(UtilsChat.getPrefix() + "Info dump for war: " + war.getName());
                             sender.sendMessage(UtilsChat.getPrefix() + "oOo------------===------------oOo");
@@ -747,14 +738,14 @@ public class AdminCommand {
 //                            sender.sendMessage(UtilsChat.getPrefix() + "Last Raid for Side 1: " + new Timestamp(((long) war.getLastRaidTimeSide1()) * 1000L)); // TODO
 //                            sender.sendMessage(UtilsChat.getPrefix() + "Last Raid for Side 2: " + new Timestamp(((long) war.getLastRaidTimeSide2()) * 1000L));
                             sender.sendMessage(UtilsChat.getPrefix() + "oOo------------===------------oOo");
-                            StringBuilder side1Towns = new StringBuilder();
-                            StringBuilder side1Players = new StringBuilder();
+                            @NotNull StringBuilder side1Towns = new StringBuilder();
+                            @NotNull StringBuilder side1Players = new StringBuilder();
 
-                            for (Town town : war.getSide1().getTowns()) {
+                            for (@NotNull Town town : war.getSide1().getTowns()) {
                                 side1Towns.append(town.getName());
                                 side1Towns.append(", ");
                             }
-                            for (Player player : war.getSide1().getPlayers()) {
+                            for (@NotNull Player player : war.getSide1().getPlayers()) {
                                 side1Players.append(player.getName());
                                 side1Players.append(", ");
                             }
@@ -768,8 +759,8 @@ public class AdminCommand {
                             sender.sendMessage(UtilsChat.getPrefix() + war.getSide1() + " Players: " + side1Players);
 
                             sender.sendMessage(UtilsChat.getPrefix() + "oOo------------===------------oOo");
-                            StringBuilder side2Towns = new StringBuilder();
-                            StringBuilder side2Players = new StringBuilder();
+                            @NotNull StringBuilder side2Towns = new StringBuilder();
+                            @NotNull StringBuilder side2Players = new StringBuilder();
 
                             for (Town town : war.getSide2().getTowns()) {
                                 side2Towns.append(town);
@@ -789,7 +780,7 @@ public class AdminCommand {
                             sender.sendMessage(UtilsChat.getPrefix() + war.getSide2() + " Players: " + side2Players);
 
                             sender.sendMessage(UtilsChat.getPrefix() + "oOo------------===------------oOo");
-                            final StringBuilder surrenderedTowns = getSurrenderedTowns(war);
+                            final @NotNull StringBuilder surrenderedTowns = getSurrenderedTowns(war);
                             sender.sendMessage(UtilsChat.getPrefix() + "Surrendered Towns: " + surrenderedTowns);
                         }
                     )/*,
@@ -804,11 +795,11 @@ public class AdminCommand {
                     )
                     .executes((CommandSender sender, CommandArguments args) -> { // TODO Needed
                         if (!(args.get("oldSiege") instanceof final String argSiegeName))
-                            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>You need to specify a oldSiege!").build());
+                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You need to specify a oldSiege!").build());
 
                         final Siege oldSiege = SiegeData.getSiege(argSiegeName);
                         if (oldSiege == null)
-                            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>That oldSiege does not exist!").build());
+                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>That oldSiege does not exist!").build());
 
 
                         sender.sendMessage(UtilsChat.getPrefix() + "Info dump for oldSiege: " + oldSiege.getName());
@@ -855,11 +846,11 @@ public class AdminCommand {
                     )
                     .executes((CommandSender sender, CommandArguments args) -> {
                         if (!(args.get("oldRaid") instanceof final String argRaidName))
-                            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>You need to specify a oldRaid name!").build());
+                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You need to specify a oldRaid name!").build());
 
                         final OldRaid oldRaid = RaidData.getRaid(argRaidName);
                         if (oldRaid == null)
-                            throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>That oldRaid does not exist!").build());
+                            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>That oldRaid does not exist!").build());
 
                         sender.sendMessage(UtilsChat.getPrefix() + "Info dump for oldRaid: " + oldRaid.getName());
                         sender.sendMessage(UtilsChat.getPrefix() + "oOo------------===------------oOo");
@@ -947,17 +938,17 @@ public class AdminCommand {
                             ),
                             new IntegerArgument("amount", 1, 10000)
                         ).executesPlayer((Player p, CommandArguments args) -> {
-                            if (!(args.get("action") instanceof final String argAction))
-                                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>You need to specify an action.").build());
+                            if (!(args.get("action") instanceof final @NotNull String argAction))
+                                throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You need to specify an action.").build());
 
                             if (!List.of("add", "subtract", "set").contains(argAction))
-                                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>Invalid action.").build());
+                                throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>Invalid action.").build());
 
-                            if (!(args.get("war") instanceof final War war))
-                                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The war does not exist!").build());
+                            if (!(args.get("war") instanceof final @NotNull War war))
+                                throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The war does not exist!").build());
 
-                            if (!(args.get("side") instanceof final Side side))
-                                throw CommandAPIBukkit.failWithAdventureComponent(new ColorParser(UtilsChat.getPrefix() + "<red>The side does not exist.").build());
+                            if (!(args.get("side") instanceof final @NotNull Side side))
+                                throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The side does not exist.").build());
 
                             final int amount = (int) args.get("amount");
 

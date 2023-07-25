@@ -4,6 +4,7 @@ import com.github.alathra.AlathranWars.utility.Utils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class PlayerDeathListener implements Listener {
     private final static int BATTLE_RADIUS = 300;
@@ -40,10 +41,10 @@ public class PlayerDeathListener implements Listener {
                     siege.addPointsToAttackers(KILL_POINTS_OFF);
 
                     for (final Player p : siege.getAttackerPlayers()) {
-                        p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "Defender killed! + "+KILL_POINTS_OFF+" Attacker Points.").build());
+                        p.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "Defender killed! + "+KILL_POINTS_OFF+" Attacker Points.").build());
                     }
                     for (final Player p : siege.getDefenderPlayers()) {
-                        p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "Defender killed! + "+KILL_POINTS_OFF+" Attacker Points.").build());
+                        p.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "Defender killed! + "+KILL_POINTS_OFF+" Attacker Points.").build());
                     }
                 }
 
@@ -57,10 +58,10 @@ public class PlayerDeathListener implements Listener {
                     siege.addPointsToDefenders(KILL_POINTS_DEF);
 
                     for (final Player p : siege.getAttackerPlayers()) {
-                        p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "Attacker killed! + "+KILL_POINTS_DEF+" Defender Points.").build());
+                        p.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "Attacker killed! + "+KILL_POINTS_DEF+" Defender Points.").build());
                     }
                     for (final Player p : siege.getDefenderPlayers()) {
-                        p.sendMessage(new ColorParser(UtilsChat.getPrefix() + "Attacker killed! + "+KILL_POINTS_DEF+" Defender Points.").build());
+                        p.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "Attacker killed! + "+KILL_POINTS_DEF+" Defender Points.").build());
                     }
                 }
 
@@ -82,7 +83,7 @@ public class PlayerDeathListener implements Listener {
      * @param victim killed player
      * @param e      event
      */
-    private void siegeKill(Player victim, PlayerDeathEvent e) {
+    private void siegeKill(@NotNull Player victim, @NotNull PlayerDeathEvent e) {
         //Helper
         Utils.damageAllGear(victim);
 
@@ -100,7 +101,7 @@ public class PlayerDeathListener implements Listener {
      * @param victim killed player
      * @param e      event
      */
-    private void oocKill(Player victim, PlayerDeathEvent e) {
+    private void oocKill(Player victim, @NotNull PlayerDeathEvent e) {
         //Siege specific
 //        Bukkit.dispatchCommand((CommandSender)Bukkit.getConsoleSender(), "spawn " + victim.getName()); // TODO Re enable?
         e.setKeepInventory(true);

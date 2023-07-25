@@ -1,6 +1,7 @@
 package com.github.alathra.AlathranWars.items;
 
 import org.bukkit.inventory.Recipe;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -24,14 +25,14 @@ public class WarRecipeRegistry {
         return instance;
     }
 
-    public void register(String name, Set<Recipe> recipes) {
+    public void register(String name, @NotNull Set<Recipe> recipes) {
         for (Recipe recipe : recipes) {
 //            Bukkit.getServer().addRecipe(recipe);
             recipeRegistry.put(name, recipe);
         }
     }
 
-    public HashMap<String, Recipe> getRecipeRegistry() {
+    public @NotNull HashMap<String, Recipe> getRecipeRegistry() {
         return recipeRegistry;
     }
 

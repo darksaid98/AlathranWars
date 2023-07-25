@@ -3,6 +3,7 @@ package com.github.alathra.AlathranWars.items;
 import com.github.alathra.AlathranWars.Main;
 import com.github.alathra.AlathranWars.items.item.RamItem;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -40,11 +41,11 @@ public class WarItemRegistry {
      * @param item
      * @return
      */
-    public static String registryName(String item) {
+    public static @NotNull String registryName(String item) {
         return namespace + ":" + item;
     }
 
-    public Map<String, ItemStack> getItemRegistry() {
+    public @NotNull Map<String, ItemStack> getItemRegistry() {
         return itemRegistry.entrySet()
             .stream()
             .filter(v -> v.getValue() != null)

@@ -4,7 +4,7 @@ import com.github.alathra.AlathranWars.Main;
 import de.leonhard.storage.Config;
 
 public class ConfigManager {
-    private Main instance;
+    private final Main instance;
     private Config cfg;
 
     public ConfigManager(Main instance) {
