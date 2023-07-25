@@ -7,11 +7,11 @@ import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
 import fr.skytasul.guardianbeam.Laser;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.arim.morepaperlib.scheduling.ScheduledTask;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -28,7 +28,7 @@ public class SiegeRunnable implements Runnable {
     // Variables
     private @NotNull CaptureProgressDirection oldProgressDirection = CaptureProgressDirection.NONE;
     private Instant nextAnnouncement;
-    private int taskId = -1;
+    private ScheduledTask task;
     private @Nullable Laser beam;
 
     /**
@@ -46,7 +46,7 @@ public class SiegeRunnable implements Runnable {
 
         nextAnnouncement = Instant.now().plus(ANNOUNCEMENT_COOLDOWN);
 
-        taskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), this, 0L, 20L);
+        task = Main.getPaperLib().scheduling().globalRegionalScheduler().runAtFixedRate(this, 0L, 20L);
 
         siege.updateDisplayBar(CaptureProgressDirection.NONE);
     }
@@ -67,20 +67,20 @@ public class SiegeRunnable implements Runnable {
 
         nextAnnouncement = Instant.now().plus(ANNOUNCEMENT_COOLDOWN);
 
-        taskId = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), this, 0L, 20L);
+        task = Main.getPaperLib().scheduling().globalRegionalScheduler().runAtFixedRate(this, 0L, 20L);
 
         siege.updateDisplayBar(CaptureProgressDirection.NONE);
     }
 
     public void cancel() {
         stopBeam();
-        if (taskId == -1) return;
+        if (task.isCancelled()) return;
 
         try {
-            Bukkit.getServer().getScheduler().cancelTask(taskId);
+            task.cancel();
             siege.deleteDisplayBar();
         } finally {
-            taskId = -1;
+            task = null;
         }
     }
 
