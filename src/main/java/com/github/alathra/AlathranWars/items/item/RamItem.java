@@ -3,6 +3,8 @@ package com.github.alathra.AlathranWars.items.item;
 import com.github.alathra.AlathranWars.Main;
 import com.github.alathra.AlathranWars.items.IWarItem;
 import com.github.alathra.AlathranWars.items.WarItemRegistry;
+import com.github.milkdrinkers.colorparser.ColorParser;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
@@ -23,9 +25,9 @@ public class RamItem implements IWarItem {
         @NotNull ItemStack ram = new ItemStack(Material.WOODEN_HOE);
         ItemMeta meta = ram.getItemMeta();
 
-        meta.setDisplayName("Door Ram");
-        @NotNull ArrayList<String> lore = new ArrayList<>();
-        meta.setLore(lore);
+        meta.displayName(ColorParser.of("Door Ram").build());
+        @NotNull ArrayList<Component> lore = new ArrayList<>();
+        meta.lore(lore);
         meta.setCustomModelData(14700);
 
         ram.setItemMeta(meta);

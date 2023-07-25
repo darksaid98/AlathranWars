@@ -17,8 +17,7 @@ import space.arim.morepaperlib.MorePaperLib;
 
 public class Main extends JavaPlugin {
     public static @Nullable Economy econ = null;
-    public static AlathranWarsLogger warLogger;
-    private static @Nullable Main instance = null;
+    private static Main instance = null;
     private static MorePaperLib paperLib;
 
     private ConfigManager configManager;
@@ -35,34 +34,6 @@ public class Main extends JavaPlugin {
         return paperLib;
     }
 
-    /**
-     * Dangerous if done at the wrong time!
-     */
-    /*public static void initData() {
-        File userDataFolder = new File("plugins" + File.separator + "AlathranWars" + File.separator + "userdata");
-        if (!userDataFolder.exists()) {
-            userDataFolder.mkdirs();
-        }
-
-        WarData.setWars(WarData.createWars());
-    }
-
-    public static void initLogs() {
-        File logsFolder = new File("plugins" + File.separator + "AlathranWars" + File.separator + "logs");
-        if (!logsFolder.exists()) {
-            logsFolder.mkdirs();
-        }
-        File log = new File(
-            "plugins" + File.separator + "AlathranWars" + File.separator + "logs" + File.separator + "log.txt");
-        if (!log.exists()) {
-            try {
-                log.createNewFile();
-            } catch (IOException e) {
-                Bukkit.getLogger().warning("[AlathranWars] Encountered error when creating log file!");
-            }
-        }
-        warLogger = new AlathranWarsLogger();
-    }*/
     @SuppressWarnings("rawtypes")
     private boolean setupEconomy() {
         if (this.getServer().getPluginManager().getPlugin("Vault") == null) {
@@ -98,19 +69,8 @@ public class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         this.saveDefaultConfig();
-//        initLogs();
-
-        //new WarData(this);
-//		new TimeoutData(this);
-
-//		//run first
         new WarItemRegistry();
-//		//run second
-//		new WarRecipeRegistry();
-
-//        initData();
         setupEconomy();
-//        initLogs();
 
         configManager.onEnable();
         dataManager.onEnable();

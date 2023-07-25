@@ -102,7 +102,7 @@ public class SiegeCommands {
             .executesPlayer(SiegeCommands::siegeList);
     }
 
-    protected static void siegeStart(@NotNull Player sender, @NotNull CommandArguments args, boolean admin) throws WrapperCommandSyntaxException {
+    protected static void siegeStart(@NotNull Player sender, @NotNull CommandArguments args, boolean asAdmin) throws WrapperCommandSyntaxException {
         if (!(args.get("war") instanceof final @NotNull War war))
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You need to specify a war.").build());
 
@@ -126,7 +126,7 @@ public class SiegeCommands {
 
         // Attacking own side
         if (side.isTownOnSide(town)) {
-            if (admin)
+            if (asAdmin)
                 throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "You cannot attack your own side.").build());
             else
                 siegeLeader.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "You cannot attack your own towns.").build());
@@ -142,19 +142,19 @@ public class SiegeCommands {
         siege.start();
     }
 
-    private static void siegeStop(@NotNull Player sender, @NotNull CommandArguments args, boolean admin) throws WrapperCommandSyntaxException {
+    private static void siegeStop(@NotNull Player sender, @NotNull CommandArguments args, boolean asAdmin) throws WrapperCommandSyntaxException {
         if (!(args.get("siege") instanceof final @NotNull Siege siege))
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Invalid siege.").build());
 
         siege.noWinner();
     }
 
-    private static void siegeAbandon(Player p, @NotNull CommandArguments args, boolean admin) throws WrapperCommandSyntaxException {
+    private static void siegeAbandon(Player p, @NotNull CommandArguments args, boolean asAdmin) throws WrapperCommandSyntaxException {
         if (!(args.get("siege") instanceof final @NotNull Siege siege))
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Invalid siege.").build());
 
         @NotNull OfflinePlayer siegeLeader = siege.getSiegeLeader();
-        if (siegeLeader != p && !admin)
+        if (siegeLeader != p && !asAdmin)
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You are not the leader of this siege.").build());
 
         Bukkit.broadcast(
@@ -166,7 +166,7 @@ public class SiegeCommands {
         siege.defendersWin();
     }
 
-    private static void siegeSurrender(Player p, @NotNull CommandArguments args, boolean admin) throws WrapperCommandSyntaxException {
+    private static void siegeSurrender(Player p, @NotNull CommandArguments args, boolean asAdmin) throws WrapperCommandSyntaxException {
         if (!(args.get("siege") instanceof final @NotNull Siege siege))
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Invalid siege.").build());
 
@@ -179,7 +179,7 @@ public class SiegeCommands {
         final boolean canKingSurrender = (res.hasNation() && town.hasNation() && res.getNationOrNull().equals(town.getNationOrNull()) && res.isKing());
         final boolean canMayorSurrender = (res.hasTown() && res.getTownOrNull().equals(town) && res.isMayor());
 
-        if (!admin && (!canKingSurrender || !canMayorSurrender))
+        if (!asAdmin && (!canKingSurrender || !canMayorSurrender))
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You cannot surrender this town.").build());
 
         Bukkit.broadcast(

@@ -108,7 +108,6 @@ public class PlayerInteractListener implements Listener {
                             door.setOpen(!door.isOpen());
                             clicked.setBlockData(door);
                             player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
-                            Main.warLogger.log("User " + player.getName() + " has broken down door" + clicked.getLocation());
                         } else {
                             player.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "<red>This item can only be used in a siege or raid!").parseLegacy().build());
                         }
