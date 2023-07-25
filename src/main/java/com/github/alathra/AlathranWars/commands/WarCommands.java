@@ -169,7 +169,7 @@ public class WarCommands {
         war.draw();
     }
 
-    protected static void warJoinPlayer(Player p, @NotNull CommandArguments args, boolean admin) throws WrapperCommandSyntaxException {
+    protected static void warJoinPlayer(Player p, @NotNull CommandArguments args, boolean asAdmin) throws WrapperCommandSyntaxException {
         War war = (War) args.get("war");
         if (war == null) return;
 
@@ -194,7 +194,7 @@ public class WarCommands {
         }
     }
 
-    protected static void warSurrender(@NotNull Player p, @NotNull CommandArguments args, boolean admin) throws WrapperCommandSyntaxException {
+    protected static void warSurrender(@NotNull Player p, @NotNull CommandArguments args, boolean asAdmin) throws WrapperCommandSyntaxException {
         War war = (War) args.get("war");
         if (war == null) return;
 
@@ -220,7 +220,7 @@ public class WarCommands {
 
         // TODO Test if resTown is reached
         if (resNation != null) {
-            if (p.hasPermission("AlathranWars.nationsurrender") || res.isKing() || admin) {
+            if (p.hasPermission("AlathranWars.nationsurrender") || res.isKing() || asAdmin) {
                 // Has nation surrender permission
                 argPlayer.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "You have surrendered the war for " + resNation.getName() + ".").build());
                 Bukkit.broadcast(ColorParser.of(UtilsChat.getPrefix() + "The nation of " + resNation.getName() + " has surrendered!").build());
@@ -231,7 +231,7 @@ public class WarCommands {
                 throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "You cannot surrender for your nation.").build());
             }
         } else if (resTown != null) {
-            if (p.hasPermission("AlathranWars.townsurrender") || res.isMayor() || admin) {
+            if (p.hasPermission("AlathranWars.townsurrender") || res.isMayor() || asAdmin) {
                 // Is in indepdenent town & has surrender perms
                 argPlayer.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "You have surrendered the war for " + resTown.getName() + ".").build());
                 Bukkit.broadcast(ColorParser.of(UtilsChat.getPrefix() + "The town of " + resTown.getName() + " has surrendered!").build());

@@ -21,8 +21,7 @@ public class CommandManager {
         // Register commands
         new WarCommands();
         new SiegeCommands();
-//        new RaidCommand();
-//        new AdminCommand();
+        new AdminCommands();
     }
 
     public void onDisable() {
