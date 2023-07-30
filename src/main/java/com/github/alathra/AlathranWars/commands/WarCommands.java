@@ -230,8 +230,8 @@ public class WarCommands {
             town.getResidents().stream().filter(Resident::isOnline).map(Resident::getPlayer).toList().forEach(PlayerJoinListener::checkPlayer);
             Bukkit.broadcast(
                 ColorParser.of(
-                    "<prefix>The town of <town> joined the war of <war> on the side of <side>."
-                )
+                        "<prefix>The town of <town> joined the war of <war> on the side of <side>."
+                    )
                     .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
                     .parseMinimessagePlaceholder("town", town.getName())
                     .parseMinimessagePlaceholder("war", war.getLabel())

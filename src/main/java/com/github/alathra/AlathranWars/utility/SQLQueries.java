@@ -2,10 +2,10 @@ package com.github.alathra.AlathranWars.utility;
 
 import com.github.alathra.AlathranWars.conflict.Side;
 import com.github.alathra.AlathranWars.conflict.War;
+import com.github.alathra.AlathranWars.conflict.WarManager;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.enums.BattleSide;
 import com.github.alathra.AlathranWars.enums.BattleTeam;
-import com.github.alathra.AlathranWars.conflict.WarManager;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;

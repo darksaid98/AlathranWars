@@ -39,7 +39,7 @@ public class PlayerDeathListener implements Listener {
         Player victim = e.getPlayer();
         Player attacker = e.getPlayer().getKiller();
         if (attacker == null) return;
-        
+
         Siege siege = Utils.getClosestSiege(victim, false);
         if (siege == null) return;
 
@@ -74,7 +74,7 @@ public class PlayerDeathListener implements Listener {
      * Damage all gear held by the player (and then send them to spawn?)
      * They don't lose items from death.
      *
-     * @param e      event
+     * @param e event
      */
     private void siegeKill(PlayerDeathEvent e) {
 //        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "spawn " + victim.getName()); // TODO Re enable?
@@ -88,7 +88,7 @@ public class PlayerDeathListener implements Listener {
      * Dont damage items held by the player
      * They don't lose items from death.
      *
-     * @param e      event
+     * @param e event
      */
     private void oocKill(PlayerDeathEvent e) {
 //        Bukkit.dispatchCommand((CommandSender)Bukkit.getConsoleSender(), "spawn " + victim.getName()); // TODO Re enable?

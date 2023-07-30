@@ -1,9 +1,9 @@
 package com.github.alathra.AlathranWars;
 
 import com.github.alathra.AlathranWars.commands.CommandManager;
+import com.github.alathra.AlathranWars.conflict.WarManager;
 import com.github.alathra.AlathranWars.data.ConfigManager;
 import com.github.alathra.AlathranWars.data.DataManager;
-import com.github.alathra.AlathranWars.conflict.WarManager;
 import com.github.alathra.AlathranWars.hooks.HookManager;
 import com.github.alathra.AlathranWars.items.WarItemRegistry;
 import com.github.alathra.AlathranWars.listeners.ListenerHandler;
@@ -30,6 +30,7 @@ public class Main extends JavaPlugin {
     public static Main getInstance() {
         return instance;
     }
+
     public static MorePaperLib getPaperLib() {
         return paperLib;
     }

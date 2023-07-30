@@ -79,8 +79,8 @@ public class AdminCommands {
                 final @Nullable Component itemName = stack.getItemMeta() == null ? ColorParser.of(stack.toString()).build() : stack.getItemMeta().displayName();
                 sender.sendMessage(
                     ColorParser.of(
-                        "<prefix>Gave <amount>x <item> to <player>."
-                    )
+                            "<prefix>Gave <amount>x <item> to <player>."
+                        )
                         .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
                         .parseMinimessagePlaceholder("amount", String.valueOf(stack.getAmount()))
                         .parseMinimessagePlaceholder("item", itemName)

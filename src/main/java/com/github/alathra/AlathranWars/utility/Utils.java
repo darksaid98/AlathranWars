@@ -1,7 +1,7 @@
 package com.github.alathra.AlathranWars.utility;
 
-import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.conflict.WarManager;
+import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 import org.bukkit.Location;
 import org.bukkit.Material;

@@ -3,8 +3,8 @@ package com.github.alathra.AlathranWars.commands;
 import com.github.alathra.AlathranWars.Main;
 import com.github.alathra.AlathranWars.conflict.Side;
 import com.github.alathra.AlathranWars.conflict.War;
-import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.conflict.WarManager;
+import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.TownyAPI;
@@ -192,7 +192,7 @@ public class SiegeCommands {
             ColorParser.of("<prefix>The siege at <town> has been abandoned.")
                 .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
                 .parseMinimessagePlaceholder("town", siege.getTown().getName())
-            .build()
+                .build()
         );
         siege.defendersWin();
     }

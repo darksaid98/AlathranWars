@@ -3,10 +3,10 @@ package com.github.alathra.AlathranWars.commands;
 import com.github.alathra.AlathranWars.Main;
 import com.github.alathra.AlathranWars.conflict.Side;
 import com.github.alathra.AlathranWars.conflict.War;
+import com.github.alathra.AlathranWars.conflict.WarManager;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.enums.CommandArgsSiege;
 import com.github.alathra.AlathranWars.enums.CommandArgsWar;
-import com.github.alathra.AlathranWars.conflict.WarManager;
 import com.github.alathra.AlathranWars.hooks.TownyHook;
 import com.github.alathra.AlathranWars.items.WarItemRegistry;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
@@ -624,8 +624,8 @@ public class CommandUtil {
                             players.stream()
                         )
                     )
-                        .filter(string -> !inWar.contains(string)) // Remove participants in te war
-                        .toList();
+                    .filter(string -> !inWar.contains(string)) // Remove participants in te war
+                    .toList();
             }
         ));
     }
