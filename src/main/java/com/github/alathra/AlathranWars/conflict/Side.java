@@ -1,8 +1,8 @@
 package com.github.alathra.AlathranWars.conflict;
 
+import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.enums.BattleSide;
 import com.github.alathra.AlathranWars.enums.BattleTeam;
-import com.github.alathra.AlathranWars.holder.WarManager;
 import com.github.alathra.AlathranWars.listeners.war.PlayerJoinListener;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
@@ -21,14 +21,14 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class Side {
-    private static final Duration SIEGE_COOLDOWN = Duration.ofMinutes(120);
+    private static final Duration SIEGE_COOLDOWN = Duration.ofMinutes(30);
     private static final Duration RAID_COOLDOWN = Duration.ofMinutes(30);
     private final UUID warUUID;
     private final UUID uuid;
     private final BattleSide side;
     private final BattleTeam team;
     private final String name; // A town name
-    // TODO Use Town & Nation UUID's when saving to config
+
     private final Town town; // The initiating town or capital of the nation
     private final Set<Town> towns; // A list of participating Towns
     private final Set<Nation> nations; // A list of participating Nations
@@ -235,6 +235,26 @@ public class Side {
         nation.getTowns().forEach(this::surrenderTown);
     }
 
+    public void unsurrenderTown(@NotNull Town town) {
+        if (!isTownSurrendered(town)) return;
+
+        addTown(town);
+
+        surrenderedTowns.remove(town);
+
+        town.getResidents().forEach((Resident resident) -> unsurrenderPlayer(resident.getUUID()));
+    }
+
+    public void unsurrenderNation(@NotNull Nation nation) {
+        if (!isNationSurrendered(nation)) return;
+
+        addNation(nation);
+
+        surrenderedNations.remove(nation);
+
+        nation.getTowns().forEach(this::unsurrenderTown);
+    }
+
     public boolean isPlayerOnSide(@NotNull Player p) {
         return isPlayerOnSide(p.getUniqueId());
     }
@@ -264,6 +284,15 @@ public class Side {
         if (isPlayerOnSide(uuid)) return;
 
         playersIncludingOffline.add(uuid);
+        if (getWar() != null) { // We need to check this as on side creation War doesn't exist
+            for (@NotNull Siege siege : getWar().getSieges()) {
+                if (siege.getAttackerSide().equals(this)) {
+                    siege.addPlayer(uuid, BattleSide.ATTACKER);
+                } else {
+                    siege.addPlayer(uuid, BattleSide.DEFENDER);
+                }
+            }
+        }
 
         if (Bukkit.getOfflinePlayer(uuid).isOnline()) {
             final @Nullable Player p = Bukkit.getPlayer(uuid);
@@ -288,6 +317,15 @@ public class Side {
         if (!isPlayerOnSide(uuid)) return;
 
         playersIncludingOffline.remove(uuid);
+        if (getWar() != null) { // We need to check this as on side creation War doesn't exist
+            for (@NotNull Siege siege : getWar().getSieges()) {
+                if (siege.getAttackerSide().equals(this)) {
+                    siege.removePlayer(uuid);
+                } else {
+                    siege.removePlayer(uuid);
+                }
+            }
+        }
 
         if (Bukkit.getOfflinePlayer(uuid).isOnline()) {
             final @Nullable Player p = Bukkit.getPlayer(uuid);
@@ -308,6 +346,18 @@ public class Side {
 
         removePlayer(uuid);
         surrenderedPlayersIncludingOffline.add(uuid);
+        applyNameTags();
+    }
+
+    public void unsurrenderPlayer(@NotNull Player p) {
+        unsurrenderPlayer(p.getUniqueId());
+    }
+
+    public void unsurrenderPlayer(@NotNull UUID uuid) {
+        if (!isPlayerSurrendered(uuid)) return;
+
+        addPlayer(uuid);
+        surrenderedPlayersIncludingOffline.remove(uuid);
         applyNameTags();
     }
 
@@ -335,31 +385,31 @@ public class Side {
     // Graces
 
     public Instant getSiegeGrace() {
-        return this.siegeGrace;
+        return siegeGrace;
     }
 
     public void setSiegeGrace() {
-        this.siegeGrace = Instant.now().plus(SIEGE_COOLDOWN);
+        siegeGrace = Instant.now().plus(SIEGE_COOLDOWN);
     }
 
     public boolean isSiegeGraceActive() {
-        return this.siegeGrace.isAfter(Instant.now());
+        return siegeGrace.isAfter(Instant.now());
     }
 
     public Duration getSiegeGraceCooldown() {
-        return Duration.between(Instant.now(), this.siegeGrace);
+        return Duration.between(Instant.now(), siegeGrace);
     }
 
     public Instant getRaidGrace() {
-        return this.raidGrace;
+        return raidGrace;
     }
 
     public void setRaidGrace() {
-        this.raidGrace = Instant.now().plus(RAID_COOLDOWN);
+        raidGrace = Instant.now().plus(RAID_COOLDOWN);
     }
 
     public boolean isRaidGraceActive() {
-        return this.raidGrace.isAfter(Instant.now());
+        return raidGrace.isAfter(Instant.now());
     }
 
     public Duration getRaidGraceCooldown() {
@@ -402,8 +452,7 @@ public class Side {
         return this.uuid;
     }
 
-    @NotNull
-    @SuppressWarnings({"all"})
+    @Nullable
     public War getWar() {
         return WarManager.getInstance().getWar(warUUID); // The war must exist, or this object wouldn't
     }
@@ -414,30 +463,31 @@ public class Side {
     }
 
     private void surrenderWar() {
-        getWar().defeat(this);
+        War war = getWar();
+        if (war != null)
+            getWar().defeat(this);
     }
 
     private boolean shouldSurrender() {
         return nations.isEmpty() && towns.isEmpty();
     }
 
+    public boolean shouldNationSurrender(Nation nation) {
+        final int townsQty = nation.getNumTowns();
+//        List<Town> towns = nation.getTowns();
+
+        final int surrenderedTownsQty = nation.getTowns().stream().filter(this::isTownSurrendered).mapToInt(value -> 1).sum();
+
+        /*int surrenderedTownsQty = 0;
+        for (Town town : towns) {
+            if (isTownSurrendered(town))
+                surrenderedTownsQty++;
+        }*/
+
+        return surrenderedTownsQty == townsQty;
+    }
+
     public Town getTown() {
         return town;
     }
-
-    // TODO Make object serializable
-    /*private void writeObject(ObjectOutputStream oos)
-        throws IOException {
-        oos.defaultWriteObject();
-        oos.writeObject(address.getHouseNumber());
-    }
-
-    private void readObject(ObjectInputStream ois)
-        throws ClassNotFoundException, IOException {
-        ois.defaultReadObject();
-        Integer houseNumber = (Integer) ois.readObject();
-        Address a = new Address();
-        a.setHouseNumber(houseNumber);
-        this.setAddress(a);
-    }*/
 }

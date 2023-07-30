@@ -4,8 +4,10 @@ import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
 
+import javax.inject.Singleton;
 import java.util.List;
 
+@Singleton
 public class TownyHook {
     private static boolean enabled = false;
     private static TownyAPI townyAPI;

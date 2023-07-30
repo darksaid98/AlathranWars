@@ -4,7 +4,7 @@ import com.github.alathra.AlathranWars.conflict.battle.raid.Raid;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.enums.BattleSide;
 import com.github.alathra.AlathranWars.enums.BattleTeam;
-import com.github.alathra.AlathranWars.holder.WarManager;
+import com.github.alathra.AlathranWars.enums.ConflictType;
 import com.github.alathra.AlathranWars.listeners.war.PlayerJoinListener;
 import com.github.alathra.AlathranWars.utility.SQLQueries;
 import com.github.alathra.AlathranWars.utility.UUIDUtil;
@@ -431,6 +431,76 @@ public class War extends Conflict {
         return getSide1().equals(sideName) || getSide2().equals(sideName);
     }
 
+    public void cancelSieges() {
+        getTowns().forEach(this::cancelSieges);
+    }
+
+    public void cancelSieges(Town town) {
+        if (this != null) {
+            Side townSide = getTownSide(town);
+
+            if (townSide == null) return;
+
+            getSieges().forEach(siege -> { // TODO INFINITE LOOP, runs surrenderTown
+                if (siege.getTown().equals(town)) {
+                    if (siege.getAttackerSide().equals(townSide)) {
+                        siege.defendersWin();
+                    } else {
+                        siege.attackersWin();
+                    }
+                }
+            });
+        }
+    }
+
+    public void surrenderNation(Nation nation) {
+        Side nationSide = getNationSide(nation);
+        if (nationSide == null) return;
+
+        final @Nullable Nation occupier = nationSide.equals(getSide1()) ? getSide2().getTown().getNationOrNull() : getSide1().getTown().getNationOrNull();
+        Occupation.setOccupied(nation, occupier);
+
+        nationSide.surrenderNation(nation);
+        // TODO Cancel in progress sieges for towns?
+        nationSide.processSurrenders();
+    }
+
+    public void surrenderTown(Town town) {
+        Side townSide = getTownSide(town);
+        if (townSide == null) return;
+
+        final @Nullable Nation townNation = town.getNationOrNull();
+        final @Nullable Nation occupier = townSide.equals(getSide1()) ? getSide2().getTown().getNationOrNull() : getSide1().getTown().getNationOrNull();
+        Occupation.setOccupied(town, occupier);
+        townSide.surrenderTown(town);
+
+        if (townNation != null) {
+            if (townSide.shouldNationSurrender(townNation)) {
+                surrenderNation(townNation);
+            }
+        }
+
+        // TODO Cancel in progress sieges for towns?
+        townSide.processSurrenders();
+    }
+
+    public void unsurrenderNation(Nation nation) {
+        Side nationSide = getNationSide(nation);
+        if (nationSide == null) return;
+
+        nationSide.unsurrenderNation(nation);
+        nation.getTowns().forEach(this::unsurrenderTown);
+    }
+
+    public void unsurrenderTown(Town town) {
+        Side townSide = getTownSide(town);
+        if (townSide == null) return;
+
+        Occupation.removeOccupied(town);
+
+        townSide.unsurrenderTown(town);
+    }
+
     @NotNull
     public Set<Town> getTowns() {
         return Stream.concat(
@@ -441,10 +511,34 @@ public class War extends Conflict {
     }
 
     @NotNull
+    public Set<Town> getAllTowns() {
+        return Stream.concat(
+                getSide1().getTowns().stream(),
+                Stream.concat(
+                    getSide2().getTowns().stream(),
+                    getSurrenderedTowns().stream()
+                )
+            )
+            .collect(Collectors.toSet());
+    }
+
+    @NotNull
     public Set<Nation> getNations() {
         return Stream.concat(
                 getSide1().getNations().stream(),
                 getSide2().getNations().stream()
+            )
+            .collect(Collectors.toSet());
+    }
+
+    @NotNull
+    public Set<Nation> getAllNations() {
+        return Stream.concat(
+                getSide1().getNations().stream(),
+                Stream.concat(
+                    getSide2().getNations().stream(),
+                    getSurrenderedNations().stream()
+                )
             )
             .collect(Collectors.toSet());
     }
@@ -485,15 +579,14 @@ public class War extends Conflict {
     }
 
     public void end() {
-        // TODO Stop battles
         getSieges().forEach(Siege::stop);
-//        getRaids().forEach(Raid::stop);
+        getAllTowns().forEach(Occupation::removeOccupied);
 
         SQLQueries.deleteWar(this);
         WarManager.getInstance().removeWar(this);
 
         // Run check after war is removed to cleanup player tags
-        this.getPlayers().forEach(PlayerJoinListener::checkPlayer);
+        getPlayers().forEach(PlayerJoinListener::checkPlayer);
     }
 
     public void defeat(@NotNull Side loserSide) {

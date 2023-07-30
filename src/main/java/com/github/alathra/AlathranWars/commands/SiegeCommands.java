@@ -1,9 +1,10 @@
 package com.github.alathra.AlathranWars.commands;
 
+import com.github.alathra.AlathranWars.Main;
 import com.github.alathra.AlathranWars.conflict.Side;
 import com.github.alathra.AlathranWars.conflict.War;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
-import com.github.alathra.AlathranWars.holder.WarManager;
+import com.github.alathra.AlathranWars.conflict.WarManager;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.TownyAPI;
@@ -15,6 +16,7 @@ import dev.jorel.commandapi.arguments.PlayerArgument;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.jorel.commandapi.executors.CommandArguments;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -48,7 +50,7 @@ public class SiegeCommands {
 
     public static CommandAPICommand commandStart(boolean asAdmin) {
         return new CommandAPICommand("start")
-            .withPermission("AlathranWars.admin")
+//            .withPermission("AlathranWars.admin")
             .withArguments(
                 CommandUtil.warWarArgument(
                     "war",
@@ -104,40 +106,69 @@ public class SiegeCommands {
 
     protected static void siegeStart(@NotNull Player sender, @NotNull CommandArguments args, boolean asAdmin) throws WrapperCommandSyntaxException {
         if (!(args.get("war") instanceof final @NotNull War war))
-            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You need to specify a war.").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You need to specify a war.").build());
 
         if (!(args.get("town") instanceof final @NotNull Town town))
-            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You need to specify a town.").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You need to specify a town.").build());
 
         final @NotNull Player siegeLeader = (Player) args.getOptional("leader").orElse(sender);
 
-        if (siegeLeader == null)
-            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("You need to pick a valid leader.").build());
-
         // Player participance check
-//        @Nullable Town leaderTown = TownyAPI.getInstance().getResident(siegeLeader).getTownOrNull();
-//        @Nullable Side side = war.getTownSide(leaderTown);
         @Nullable Side side = war.getPlayerSide(siegeLeader);
         if (side == null)
-            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("You are not in this war.").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You are not in this war.").build());
 
         if (side.isPlayerSurrendered(siegeLeader))
-            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("You have surrendered and cannot participate in this war.").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You have surrendered and cannot participate in this war.").build());
+
+        if (side.isSiegeGraceActive() && !asAdmin)
+            throw CommandAPIBukkit.failWithAdventureComponent(
+                ColorParser.of("<red>Your side needs to wait <time> minutes before starting another siege.")
+                    .parseMinimessagePlaceholder("time", String.valueOf(side.getSiegeGraceCooldown().toMinutes()))
+                    .build()
+            );
 
         // Attacking own side
-        if (side.isTownOnSide(town)) {
+        if (side.isTownOnSide(town) && !side.isTownSurrendered(town)) {
             if (asAdmin)
-                throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "You cannot attack your own side.").build());
+                throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You cannot attack your own side.").build());
             else
-                siegeLeader.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "You cannot attack your own towns.").build());
+                siegeLeader.sendMessage(ColorParser.of("<red>You cannot attack your own towns.").build());
             return;
         }
 
+        final Location location = siegeLeader.getLocation();
+        final Location townLocation = town.getSpawnOrNull();
+        if (townLocation == null)
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>The town you are attacking doesn't have a spawn point set. Contact admin.").build());
+
+        if (!location.getWorld().equals(townLocation.getWorld()))
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You need to be in the same world as the town you're attacking!").build());
+
+        if (location.distance(townLocation) >= Siege.BATTLEFIELD_START_MAX_RANGE)
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You need to be within <range> blocks of the town to start a siege!").parseMinimessagePlaceholder("range", String.valueOf(Siege.BATTLEFIELD_START_MAX_RANGE)).build());
+
+        if (location.distance(townLocation) <= Siege.BATTLEFIELD_START_MIN_RANGE)
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You need to be further than <range> blocks away from the town to start a siege!").parseMinimessagePlaceholder("range", String.valueOf(Siege.BATTLEFIELD_START_MIN_RANGE)).build());
+
+        if ((Main.econ.getBalance(siegeLeader) < Siege.SIEGE_VICTORY_MONEY))
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You need to have $<amount> to start a siege!").parseMinimessagePlaceholder("amount", String.valueOf(Siege.SIEGE_VICTORY_MONEY)).build());
+
+
+        side.setSiegeGrace();
         Siege siege = new Siege(war, town, siegeLeader);
 
         war.addSiege(siege);
 
-        Bukkit.broadcast(ColorParser.of(UtilsChat.getPrefix() + siege.getTown() + " has been put to siege by " + siege.getAttackerSide().getName() + "!").build());
+        Bukkit.broadcast(
+            ColorParser.of(
+                    "<prefix>The town of <town> has been put to siege by <side>!"
+                )
+                .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
+                .parseMinimessagePlaceholder("town", town.getName())
+                .parseMinimessagePlaceholder("side", siege.getAttackerSide().getName())
+                .build()
+        );
 
         siege.start();
     }
@@ -179,7 +210,7 @@ public class SiegeCommands {
         final boolean canKingSurrender = (res.hasNation() && town.hasNation() && res.getNationOrNull().equals(town.getNationOrNull()) && res.isKing());
         final boolean canMayorSurrender = (res.hasTown() && res.getTownOrNull().equals(town) && res.isMayor());
 
-        if (!asAdmin && (!canKingSurrender || !canMayorSurrender))
+        if (!asAdmin && !canKingSurrender && !canMayorSurrender)
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You cannot surrender this town.").build());
 
         Bukkit.broadcast(

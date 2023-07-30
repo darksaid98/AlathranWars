@@ -2,9 +2,7 @@ package com.github.alathra.AlathranWars.commands;
 
 import com.github.alathra.AlathranWars.conflict.Side;
 import com.github.alathra.AlathranWars.conflict.War;
-import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
-import com.github.alathra.AlathranWars.enums.BattleSide;
-import com.github.alathra.AlathranWars.holder.WarManager;
+import com.github.alathra.AlathranWars.conflict.WarManager;
 import com.github.alathra.AlathranWars.listeners.war.PlayerJoinListener;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
@@ -82,9 +80,12 @@ public class WarCommands {
             .withArguments(
                 CommandUtil.warWarArgument("war", asAdmin, asAdmin ? ALL_WARS : OUT_WAR, ""),
                 CommandUtil.warSideCreateArgument("side", "war", asAdmin, !asAdmin, ""),
-                new PlayerArgument("player").setOptional(true).withPermission("AlathranWars.admin.join")
+                CommandUtil.warTargetCreateArgument("target", "war", asAdmin).setOptional(!asAdmin)
+//                new PlayerArgument("player").setOptional(true).withPermission("AlathranWars.admin.join"),
+//                new PlayerArgument("nation").setOptional(true).withPermission("AlathranWars.admin.join"),
+//                new PlayerArgument("town").setOptional(true).withPermission("AlathranWars.admin.join")
             )
-            .executesPlayer((Player p, CommandArguments args) -> warJoinPlayer(p, args, false));
+            .executesPlayer((Player p, CommandArguments args) -> warJoin(p, args, false));
     }
 
     public static CommandAPICommand commandSurrender(boolean asAdmin) {
@@ -169,29 +170,103 @@ public class WarCommands {
         war.draw();
     }
 
-    protected static void warJoinPlayer(Player p, @NotNull CommandArguments args, boolean asAdmin) throws WrapperCommandSyntaxException {
+    protected static void warJoin(Player p, @NotNull CommandArguments args, boolean asAdmin) throws WrapperCommandSyntaxException {
         War war = (War) args.get("war");
         if (war == null) return;
 
-        if (!(args.get("side") instanceof final @NotNull Side side))
+        if (!(args.get("side") instanceof final Side side))
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You need to specify a side.").build());
 
-        if (!(args.getOptional("player").orElse(p) instanceof Player argPlayer))
-            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>Player not found.").build());
+        // The target or empty string
+        if (!(args.getOptional("target").orElse("") instanceof String targetString))
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>Invalid target name.").build());
 
-        if (war.isPlayerInWar(argPlayer))
-            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You are already in this war.").build());
+        // The target player or sender of the command
+        Player targetPlayer = args.getOptional("target").map(o -> Bukkit.getPlayer((String) o)).orElse(p);
 
-        argPlayer.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "You have joined the war.").build());
-        side.addPlayer(argPlayer);
-        PlayerJoinListener.checkPlayer(argPlayer);
-        for (@NotNull Siege siege : war.getSieges()) {
+        // Get the player resident
+        @Nullable Resident res = TownyAPI.getInstance().getResident(targetPlayer);
+        if (res == null)
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Resident invalid.").build());
+
+        // Get nations and towns
+        @Nullable Nation nation = res.hasNation() ? res.getNationOrNull() : TownyAPI.getInstance().getNation(targetString);
+        @Nullable Town town = res.hasTown() ? res.getTownOrNull() : TownyAPI.getInstance().getTown(targetString);
+
+        final boolean isNation = nation != null;
+        final boolean isTown = town != null;
+        final boolean isPlayer = targetPlayer != null;
+
+        // If no valid targets
+        if ((!isNation && !isTown && !isPlayer))
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Invalid target.").build());
+
+        // Check if player can validly join or not
+        final boolean canKingJoin = (res.hasNation() && res.getNationOrNull().equals(nation) && res.isKing() && nation.isKing(res));
+        final boolean canMayorJoin = (res.hasTown() && res.getTownOrNull().equals(town) && res.isMayor() && town.isMayor(res));
+
+        // Join nation into war
+        if (isNation && nation != null && !war.isNationInWar(nation) && (asAdmin || canKingJoin)) {
+            side.addNation(nation);
+            nation.getResidents().stream().filter(Resident::isOnline).map(Resident::getPlayer).toList().forEach(PlayerJoinListener::checkPlayer);
+            Bukkit.broadcast(
+                ColorParser.of(
+                        "<prefix>The nation of <nation> joined the war of <war> on the side of <side>."
+                    )
+                    .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
+                    .parseMinimessagePlaceholder("nation", nation.getName())
+                    .parseMinimessagePlaceholder("war", war.getLabel())
+                    .parseMinimessagePlaceholder("side", side.getName())
+                    .build()
+            );
+            return;
+        } else if (town == null && nation != null && (!canKingJoin || !asAdmin)) {
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Nation is already in that war.").build());
+        }
+
+        // Join town into war
+        if (isTown && town != null && !war.isTownInWar(town) && (asAdmin || canMayorJoin)) {
+            side.addTown(town);
+            town.getResidents().stream().filter(Resident::isOnline).map(Resident::getPlayer).toList().forEach(PlayerJoinListener::checkPlayer);
+            Bukkit.broadcast(
+                ColorParser.of(
+                    "<prefix>The town of <town> joined the war of <war> on the side of <side>."
+                )
+                    .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
+                    .parseMinimessagePlaceholder("town", town.getName())
+                    .parseMinimessagePlaceholder("war", war.getLabel())
+                    .parseMinimessagePlaceholder("side", side.getName())
+                    .build()
+            );
+            return;
+        } else if (targetPlayer == null && town != null && !canMayorJoin) {
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Town is already in that war.").build());
+        }
+
+        // Join player into war
+        if (isPlayer && targetPlayer != null && !war.isPlayerInWar(targetPlayer) && asAdmin) {
+            targetPlayer.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "You have joined the war.").build());
+            side.addPlayer(targetPlayer);
+            PlayerJoinListener.checkPlayer(targetPlayer);
+            return;
+        } else if (!asAdmin) {
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Players cannot individually join wars.").build());
+        } else {
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Player is already in that war.").build());
+        }
+
+        // Join player into war
+//        if (war.isPlayerInWar(player))
+//            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You are already in this war.").build());
+
+
+        /*for (@NotNull Siege siege : war.getSieges()) {
             if (siege.getAttackerSide().equals(side)) {
                 siege.addPlayer(argPlayer, BattleSide.ATTACKER);
             } else {
                 siege.addPlayer(argPlayer, BattleSide.DEFENDER);
             }
-        }
+        }*/
     }
 
     protected static void warSurrender(@NotNull Player p, @NotNull CommandArguments args, boolean asAdmin) throws WrapperCommandSyntaxException {
@@ -199,7 +274,7 @@ public class WarCommands {
         if (war == null) return;
 
         if (!(args.getOptional("player").orElse(p) instanceof Player argPlayer))
-            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>Player not found.").build());
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Player not found.").build());
 
         // Towny Resident Object
         @Nullable Resident res = TownyAPI.getInstance().getResident(argPlayer);
@@ -218,29 +293,25 @@ public class WarCommands {
         final @Nullable Nation resNation = res.getNationOrNull();
         final @Nullable Town resTown = res.getTownOrNull();
 
-        // TODO Test if resTown is reached
-        if (resNation != null) {
-            if (p.hasPermission("AlathranWars.nationsurrender") || res.isKing() || asAdmin) {
-                // Has nation surrender permission
-                argPlayer.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "You have surrendered the war for " + resNation.getName() + ".").build());
-                Bukkit.broadcast(ColorParser.of(UtilsChat.getPrefix() + "The nation of " + resNation.getName() + " has surrendered!").build());
-                side.surrenderNation(resNation);
-                side.processSurrenders();
-            } else {
-                // Cannot surrender nation involvement
-                throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "You cannot surrender for your nation.").build());
-            }
-        } else if (resTown != null) {
-            if (p.hasPermission("AlathranWars.townsurrender") || res.isMayor() || asAdmin) {
-                // Is in indepdenent town & has surrender perms
-                argPlayer.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "You have surrendered the war for " + resTown.getName() + ".").build());
-                Bukkit.broadcast(ColorParser.of(UtilsChat.getPrefix() + "The town of " + resTown.getName() + " has surrendered!").build());
-                side.surrenderTown(resTown); // TODO Process siege surrender here as well
-                side.processSurrenders();
-            } else {
-                // No perms
-                throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "You cannot surrender war for your town.").build());
-            }
+        if (resNation != null && (p.hasPermission("AlathranWars.nationsurrender") || res.isKing() || asAdmin)) {
+            // Has nation surrender permission
+            argPlayer.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "You have surrendered the war for " + resNation.getName() + ".").build());
+            Bukkit.broadcast(ColorParser.of(UtilsChat.getPrefix() + "The nation of " + resNation.getName() + " has surrendered!").build());
+            war.surrenderNation(resNation);
+        } else if (resTown == null) {
+            // Cannot surrender nation involvement
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You cannot surrender for your nation.").build());
+        }
+
+        if (resTown != null && (p.hasPermission("AlathranWars.townsurrender") || res.isMayor() || asAdmin)) {
+            // Is in indepdenent town & has surrender perms
+            argPlayer.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "You have surrendered the war for " + resTown.getName() + ".").build());
+            Bukkit.broadcast(ColorParser.of(UtilsChat.getPrefix() + "The town of " + resTown.getName() + " has surrendered!").build());
+            war.cancelSieges(resTown);
+            war.surrenderTown(resTown);
+        } else {
+            // No perms
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You cannot surrender war for your town.").build());
         }
     }
 

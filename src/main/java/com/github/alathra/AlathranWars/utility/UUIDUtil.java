@@ -1,12 +1,15 @@
 package com.github.alathra.AlathranWars.utility;
 
-import com.github.alathra.AlathranWars.holder.WarManager;
+import com.github.alathra.AlathranWars.conflict.WarManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public class UUIDUtil {
+/**
+ * Convenience class for generating UUID for different things in the plugin
+ */
+public abstract class UUIDUtil {
     public static @NotNull UUID generateWarUUID() {
         @NotNull UUID uuid = UUID.randomUUID();
 

@@ -2,7 +2,7 @@ package com.github.alathra.AlathranWars.listeners.war;
 
 import com.github.alathra.AlathranWars.conflict.Side;
 import com.github.alathra.AlathranWars.conflict.War;
-import com.github.alathra.AlathranWars.holder.WarManager;
+import com.github.alathra.AlathranWars.conflict.WarManager;
 import com.github.alathra.AlathranWars.hooks.TABHook;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

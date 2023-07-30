@@ -1,6 +1,9 @@
 package com.github.alathra.AlathranWars.utility;
 
+import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
+import com.github.alathra.AlathranWars.conflict.WarManager;
 import com.palmergames.bukkit.towny.object.WorldCoord;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -12,8 +15,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-public class Utils {
+public abstract class Utils {
     private static final ArrayList<Material> weaponList = new ArrayList<>(List.of(
         Material.NETHERITE_SWORD,
         Material.NETHERITE_AXE,
@@ -189,6 +194,44 @@ public class Utils {
         }
 
         itemStack.setItemMeta(damageable);
+    }
+
+    // TODO Implement usage in siege commands to make siege optional argument
+    public static @Nullable Siege getClosestSiege(Player p, boolean checkIfInSiege) {
+        Set<Siege> sieges = checkIfInSiege
+            ? WarManager.getInstance().getSieges().stream().filter(siege -> siege.isPlayerInSiege(p)).collect(Collectors.toSet())
+            : WarManager.getInstance().getSieges();
+
+        @Nullable Siege siegeResult = null;
+        final Location playerLoc = p.getLocation();
+        double closestSiege = 100000000D;
+
+        for (Siege siege : sieges) {
+            final @Nullable Location location = siege.getTown().getSpawnOrNull();
+
+            if (location == null) continue;
+            if (!location.getWorld().equals(playerLoc.getWorld())) continue;
+
+            final double distance = location.distance(playerLoc);
+            if (distance < closestSiege) {
+                siegeResult = siege;
+                closestSiege = distance;
+            }
+        }
+
+        return siegeResult;
+    }
+
+    public static boolean isOnSiegeBattlefield(Player p, Siege siege) {
+        if (siege == null) return false;
+
+        final Location pLocation = p.getLocation();
+        final Location siegeLocation = siege.getTownSpawn();
+
+        if (siegeLocation == null) return false;
+        if (!pLocation.getWorld().equals(siegeLocation.getWorld())) return false;
+
+        return (pLocation.distance(siegeLocation) <= Siege.BATTLEFIELD_RANGE);
     }
 
     /**

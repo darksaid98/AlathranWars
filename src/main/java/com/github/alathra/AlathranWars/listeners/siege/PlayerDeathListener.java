@@ -1,94 +1,74 @@
 package com.github.alathra.AlathranWars.listeners.siege;
 
+import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.utility.Utils;
+import com.ranull.graves.event.GraveCreateEvent;
+import dev.geco.gsit.api.event.PrePlayerPlayerSitEvent;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.jetbrains.annotations.NotNull;
 
 public class PlayerDeathListener implements Listener {
-    private final static int BATTLE_RADIUS = 300;
-    private final static int KILL_POINTS_OFF = 20; // Point for an offensive kill
-    private final static int KILL_POINTS_DEF = 20; // Point for a defensive kill
+    @EventHandler
+    private void onGraveCreate(GraveCreateEvent e) {
+        if (!e.getEntityType().equals(EntityType.PLAYER)) return;
+        if (!(e.getEntity() instanceof Player p)) return;
 
-    /*@EventHandler
+        Siege siege = Utils.getClosestSiege(p, false);
+        if (siege == null) return;
+
+        if (!Utils.isOnSiegeBattlefield(p, siege)) return;
+
+        e.setCancelled(true);
+    }
+
+    @EventHandler
     private void onPlayerDeath(PlayerDeathEvent e) {
-        final Player victim = e.getPlayer();
-        final Player attacker = e.getPlayer().getKiller();
-
-        if (attacker == null)
-            return;
+        Player victim = e.getPlayer();
+        Player attacker = e.getPlayer().getKiller();
+        if (attacker == null) return;
         
-        final @Nullable Town town = WorldCoord.parseWorldCoord(victim).getTownOrNull();
+        Siege siege = Utils.getClosestSiege(victim, false);
+        if (siege == null) return;
 
-        for (Siege siege : WarManager.getInstance().getSieges()) {
-            boolean isPlayerInCombatZone = false;
-            
-            final TownBlock homeBlock = siege.getTown().getHomeBlockOrNull();
-            if (homeBlock == null)
-                continue;
-            
-            final int homeBlockXCoord = homeBlock.getCoord().getX() * 16;
-            final int homeBlockZCoord = homeBlock.getCoord().getZ() * 16;
-            
-            if (victim.getLocation().distance(new Location(victim.getWorld(), homeBlockXCoord, victim.getLocation().getBlockY(), homeBlockZCoord)) <= BATTLE_RADIUS) {
-//            if (Math.abs(killed.getLocation().getBlockX() - homeBlockXCoord) <= BATTLE_RADIUS && Math.abs(killed.getLocation().getBlockZ() - homeBlockZCoord) <= BATTLE_RADIUS) {
-                isPlayerInCombatZone = true;
-            }
-            
-            if (siege.getAttackerPlayers().contains(attacker) && (siege.getTown().equals(town) || isPlayerInCombatZone)) {
-                if (siege.getDefenderPlayers().contains(victim)) {
-                    siege.addPointsToAttackers(KILL_POINTS_OFF);
+        if (!Utils.isOnSiegeBattlefield(victim, siege)) return;
 
-                    for (final Player p : siege.getAttackerPlayers()) {
-                        p.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "Defender killed! + "+KILL_POINTS_OFF+" Attacker Points.").build());
-                    }
-                    for (final Player p : siege.getDefenderPlayers()) {
-                        p.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "Defender killed! + "+KILL_POINTS_OFF+" Attacker Points.").build());
-                    }
-                }
-
-                this.siegeKill(victim, e);
-
-                return;
-            }
-            
-            if (siege.getDefenderPlayers().contains(attacker) && (siege.getTown().equals(town) || isPlayerInCombatZone)) {
-                if (siege.getAttackerPlayers().contains(victim)) {
-                    siege.addPointsToDefenders(KILL_POINTS_DEF);
-
-                    for (final Player p : siege.getAttackerPlayers()) {
-                        p.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "Attacker killed! + "+KILL_POINTS_DEF+" Defender Points.").build());
-                    }
-                    for (final Player p : siege.getDefenderPlayers()) {
-                        p.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "Attacker killed! + "+KILL_POINTS_DEF+" Defender Points.").build());
-                    }
-                }
-
-                this.siegeKill(victim, e);
-
-                return;
-            }
-            
-            if ((siege.getTown().equals(town) || isPlayerInCombatZone)) {
-                this.oocKill(victim, e);
-            }
+        if (siege.isPlayerInSiege(victim) && siege.isPlayerInSiege(attacker)) {
+            siegeKill(e);
+        } else {
+            oocKill(e);
         }
-    }*/
+    }
+
+    @EventHandler
+    private void onPlayerSuicide(PlayerDeathEvent e) {
+        Player victim = e.getPlayer();
+        Player attacker = e.getPlayer().getKiller();
+        if (attacker != null) return;
+
+        Siege siege = Utils.getClosestSiege(victim, false);
+        if (siege == null) return;
+
+        if (!Utils.isOnSiegeBattlefield(victim, siege)) return;
+
+        if (siege.isPlayerInSiege(victim)) {
+            siegeKill(e);
+        } else {
+            oocKill(e);
+        }
+    }
 
     /**
      * Damage all gear held by the player (and then send them to spawn?)
      * They don't lose items from death.
      *
-     * @param victim killed player
      * @param e      event
      */
-    private void siegeKill(@NotNull Player victim, @NotNull PlayerDeathEvent e) {
-        //Helper
-        Utils.damageAllGear(victim);
-
-        //Siege specific
+    private void siegeKill(PlayerDeathEvent e) {
 //        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "spawn " + victim.getName()); // TODO Re enable?
+//        Utils.damageAllGear(e.getPlayer());
         e.setKeepInventory(true);
         e.getDrops().clear();
         e.setKeepLevel(true);
@@ -98,11 +78,9 @@ public class PlayerDeathListener implements Listener {
      * Dont damage items held by the player
      * They don't lose items from death.
      *
-     * @param victim killed player
      * @param e      event
      */
-    private void oocKill(Player victim, @NotNull PlayerDeathEvent e) {
-        //Siege specific
+    private void oocKill(PlayerDeathEvent e) {
 //        Bukkit.dispatchCommand((CommandSender)Bukkit.getConsoleSender(), "spawn " + victim.getName()); // TODO Re enable?
         e.setKeepInventory(true);
         e.getDrops().clear();

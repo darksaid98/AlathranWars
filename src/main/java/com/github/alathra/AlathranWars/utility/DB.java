@@ -7,6 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+/**
+ * Convenience class for accessing {@link com.github.alathra.AlathranWars.data.DataManager }
+ */
 public abstract class DB {
     public static @NotNull Connection get() throws SQLException {
         return Main.getInstance().getDataManager().getConnection();

@@ -5,7 +5,7 @@ import com.github.alathra.AlathranWars.conflict.War;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.enums.BattleSide;
 import com.github.alathra.AlathranWars.enums.BattleTeam;
-import com.github.alathra.AlathranWars.holder.WarManager;
+import com.github.alathra.AlathranWars.conflict.WarManager;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
@@ -21,7 +21,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-public class SQLQueries {
+/**
+ * Convenience class for defining and executing SQL queries
+ */
+public abstract class SQLQueries {
     public static void initDB() {
         try (final Statement statement = DB.get().createStatement()) {
             statement.addBatch("""

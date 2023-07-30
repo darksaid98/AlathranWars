@@ -14,7 +14,6 @@ import java.sql.SQLException;
 
 public class DataManager {
     private final Main instance;
-    private HikariConfig hikariConfig;
     private HikariDataSource hikariDataSource;
 
     public DataManager(Main instance) {
@@ -50,11 +49,11 @@ public class DataManager {
         return hikariDataSource;
     }
 
-    public void openConnection() {
+    private void openConnection() {
         if (hikariDataSource != null)
             return;
 
-        hikariConfig = new HikariConfig();
+        HikariConfig hikariConfig = new HikariConfig();
 
         final boolean mysqlEnabled = Config.get().getBoolean("mysql.enabled");
 
@@ -89,39 +88,28 @@ public class DataManager {
         hikariConfig.setMaximumPoolSize(10);
         hikariConfig.setMinimumIdle(10);
         hikariConfig.setInitializationFailTimeout(-1); // We try to create tables after this anyways which will error if no connection
-//        hikariConfig.addDataSourceProperty("characterEncoding", "UTF-8");
-
-        // General optimizations (https://github.com/brettwooldridge/HikariCP/wiki/MySQL-Configuration)
-//        hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
-//        hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
-//        hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-//        hikariConfig.addDataSourceProperty("useServerPrepStmts", "true");
-//        hikariConfig.addDataSourceProperty("useLocalSessionState", "true");
-//        hikariConfig.addDataSourceProperty("rewriteBatchedStatements", "true");
-//        hikariConfig.addDataSourceProperty("cacheServerConfiguration", "true");
-//        hikariConfig.addDataSourceProperty("maintainTimeStats", "false");
-//        hikariConfig.addDataSourceProperty("allowPublicKeyRetrieval", "true");
-//        hikariConfig.addDataSourceProperty("useSSL", "false");
 
         hikariDataSource = new HikariDataSource(hikariConfig);
     }
 
-    public void closeDatabaseConnection() {
+    private void closeDatabaseConnection() {
         instance.getLogger().info("Closing database connection...");
 
-        if (hikariDataSource != null) {
-            if (!hikariDataSource.isClosed()) {
-                try {
-                    hikariDataSource.close();
-                } catch (Exception e) {
-                    instance.getLogger().severe("Error closing database connections:");
-                    e.printStackTrace();
-                }
-            } else {
-                instance.getLogger().info("Skipped closing database connection: connection is already closed.");
-            }
-        } else {
+        if (hikariDataSource == null) {
             instance.getLogger().severe("Skipped closing database connection because the data source is null. Was there a previous error which needs to be fixed? Check your console logs!");
+            return;
+        }
+
+        if (hikariDataSource.isClosed()) {
+            instance.getLogger().info("Skipped closing database connection: connection is already closed.");
+            return;
+        }
+
+        try {
+            hikariDataSource.close();
+        } catch (Exception e) {
+            instance.getLogger().severe("Error closing database connections:");
+            e.printStackTrace();
         }
     }
 }

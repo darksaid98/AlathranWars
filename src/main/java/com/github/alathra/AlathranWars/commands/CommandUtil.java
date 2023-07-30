@@ -6,7 +6,7 @@ import com.github.alathra.AlathranWars.conflict.War;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.enums.CommandArgsSiege;
 import com.github.alathra.AlathranWars.enums.CommandArgsWar;
-import com.github.alathra.AlathranWars.holder.WarManager;
+import com.github.alathra.AlathranWars.conflict.WarManager;
 import com.github.alathra.AlathranWars.hooks.TownyHook;
 import com.github.alathra.AlathranWars.items.WarItemRegistry;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
@@ -34,8 +34,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static com.github.alathra.AlathranWars.enums.CommandArgsSiege.*;
 
 public class CommandUtil {
     /*public Argument<World> customWorldArgument(String nodeName) {
@@ -576,6 +574,58 @@ public class CommandUtil {
                 }
 
                 return sideNames;
+            }
+        ));
+    }
+
+    public static Argument<String> warTargetCreateArgument(final String nodeName, final String warNodeName, final boolean isAdmin) {
+        return new CustomArgument<>(new StringArgument(nodeName), info -> {
+            final String argTargetName = info.input();
+
+            if (!(info.previousArgs().get(warNodeName) instanceof War war))
+                throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You need to specify a war.").parseLegacy().build());
+
+            final boolean isNation = TownyAPI.getInstance().getNation(argTargetName) != null;
+            final boolean isTown = TownyAPI.getInstance().getTown(argTargetName) != null;
+            final boolean isPlayer = Bukkit.getPlayer(argTargetName) != null;
+
+            if (isNation && !war.getNations().stream().map(Nation::getName).toList().contains(argTargetName))
+                return argTargetName;
+
+            if (isTown && !war.getTowns().stream().map(Town::getName).toList().contains(argTargetName))
+                return argTargetName;
+
+            if (isPlayer && !war.getPlayers().stream().map(Player::getName).toList().contains(argTargetName))
+                return argTargetName;
+
+            throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>Invalid target.").build());
+        }).replaceSuggestions(ArgumentSuggestions.stringCollection(info -> { // Returns list of every nation, town and player not in the war
+                if (!(info.previousArgs().get(warNodeName) instanceof War war))
+                    return Collections.emptyList();
+
+                // Get all participants in war into list
+                final List<String> inWar = Stream.concat(
+                    war.getPlayers().stream().map(Player::getName),
+                    Stream.concat(
+                        war.getNations().stream().map(Nation::getName),
+                        war.getTowns().stream().map(Town::getName)
+                    )
+                ).toList();
+
+                // Make list of all nations, towns and player
+                final List<String> players = Bukkit.getOnlinePlayers().stream().map(Player::getName).toList();
+                final List<String> towns = TownyAPI.getInstance().getTowns().stream().map(Town::getName).toList();
+                final List<String> nations = TownyAPI.getInstance().getNations().stream().map(Nation::getName).toList();
+
+                return Stream.concat(
+                        nations.stream(),
+                        Stream.concat(
+                            towns.stream(),
+                            players.stream()
+                        )
+                    )
+                        .filter(string -> !inWar.contains(string)) // Remove participants in te war
+                        .toList();
             }
         ));
     }

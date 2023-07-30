@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.github.alathra.AlathranWars"
-version = "3.0.2-SNAPSHOT"
+version = "3.0.0-SNAPSHOT-2"
 description = ""
 
 java {
@@ -29,6 +29,7 @@ repositories {
             includeGroup("com.github.milkdrinkers")
             includeGroup("com.github.MilkBowl")
             includeGroup("com.palmergames.bukkit.towny")
+            includeGroup("com.github.Gecolay.GSit")
         }
     }
 
@@ -46,7 +47,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains:annotations:24.0.1")
+    compileOnly("org.jetbrains:annotations:24.0.1")
 
     compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
     implementation("space.arim.morepaperlib:morepaperlib:0.4.3")
@@ -55,11 +56,13 @@ dependencies {
     implementation("com.github.milkdrinkers:colorparser:2.0.0") {
         exclude(group = "net.kyori", module = "adventure-api")
     }
-    implementation("io.github.skytasul:guardianbeam:2.3.3")
+    implementation("io.github.skytasul:guardianbeam:2.3.3") {
+        isTransitive = false
+    }
 
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
 
-    compileOnly("com.palmergames.bukkit.towny:towny:0.99.5.5") {
+    compileOnly("com.palmergames.bukkit.towny:towny:0.99.5.7") {
         exclude(group = "com.palmergames", module = "adventure")
     }
 
@@ -72,11 +75,15 @@ dependencies {
     annotationProcessor("dev.jorel:commandapi-annotations:9.0.3")
 
     implementation("com.zaxxer:HikariCP:5.0.1")
-    implementation("org.mariadb.jdbc:mariadb-java-client:3.1.4")
+    implementation("org.mariadb.jdbc:mariadb-java-client:3.1.4") {
+        isTransitive = false
+    }
 
     compileOnly("me.clip:placeholderapi:2.11.3") {
         exclude(group = "me.clip.placeholderapi.libs", module = "kyori")
     }
+    compileOnly(files("lib/Graves-4.9.jar"))
+    compileOnly("com.github.Gecolay.GSit:core:1.4.9")
 }
 
 tasks {
@@ -109,10 +116,8 @@ tasks {
         reloc("de.leonhard.storage", "storageapi")
         reloc("dev.jorel.commandapi", "commandapi")
         reloc("com.zaxxer.hikari", "hikaricp")
-//        reloc("org.xerial", "sqlite")
-//        reloc("com.mysql", "mysql")
         reloc("org.mariadb.jdbc", "mariadb")
-        reloc("io.github.skytasul", "guardianbeam")
+        reloc("fr.skytasul.guardianbeam", "guardianbeam")
     }
 
     runServer {

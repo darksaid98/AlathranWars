@@ -1,7 +1,5 @@
-package com.github.alathra.AlathranWars.holder;
+package com.github.alathra.AlathranWars.conflict;
 
-import com.github.alathra.AlathranWars.conflict.Side;
-import com.github.alathra.AlathranWars.conflict.War;
 import com.github.alathra.AlathranWars.conflict.battle.raid.Raid;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.utility.SQLQueries;
@@ -148,20 +146,18 @@ public class WarManager {
 
     @NotNull
     public Set<Siege> getSieges() {
-        final @NotNull Set<Siege> sieges = new HashSet<>();
-
-        wars.forEach((War war) -> sieges.addAll(war.getSieges()));
-
-        return sieges;
+        return getWars().stream()
+            .map(War::getSieges)
+            .flatMap(Set::stream)
+            .collect(Collectors.toSet());
     }
 
     @NotNull
     public Set<Raid> getRaids() {
-        final @NotNull Set<Raid> raids = new HashSet<>();
-
-        wars.forEach((War war) -> raids.addAll(war.getRaids()));
-
-        return raids;
+        return getWars().stream()
+            .map(War::getRaids)
+            .flatMap(Set::stream)
+            .collect(Collectors.toSet());
     }
 
     public boolean isPlayerInAnySiege(@NotNull Player p) {
@@ -183,6 +179,20 @@ public class WarManager {
     public @NotNull Set<Siege> getPlayerSieges(UUID uuid) {
         return getSieges().stream()
             .filter(siege -> siege.isPlayerInSiege(uuid))
+            .collect(Collectors.toSet());
+    }
+
+    public @NotNull Set<Nation> getNationsAtWar() {
+        return getWars().stream()
+            .map(War::getNations)
+            .flatMap(Set::stream)
+            .collect(Collectors.toSet());
+    }
+
+    public @NotNull Set<Town> getTownsAtWar() {
+        return getWars().stream()
+            .map(War::getTowns)
+            .flatMap(Set::stream)
             .collect(Collectors.toSet());
     }
 }

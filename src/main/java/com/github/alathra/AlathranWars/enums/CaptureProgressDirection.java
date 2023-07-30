@@ -1,8 +1,8 @@
-package com.github.alathra.AlathranWars.conflict.battle.siege;
+package com.github.alathra.AlathranWars.enums;
 
 public enum CaptureProgressDirection {
     UP,
-    NONE,
+    CONTESTED,
     UNCONTESTED,
     DOWN
 }

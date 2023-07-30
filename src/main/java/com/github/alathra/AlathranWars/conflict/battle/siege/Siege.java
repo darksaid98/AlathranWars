@@ -6,13 +6,11 @@ import com.github.alathra.AlathranWars.conflict.War;
 import com.github.alathra.AlathranWars.conflict.battle.Battle;
 import com.github.alathra.AlathranWars.enums.BattleSide;
 import com.github.alathra.AlathranWars.enums.BattleTeam;
+import com.github.alathra.AlathranWars.enums.CaptureProgressDirection;
 import com.github.alathra.AlathranWars.utility.SQLQueries;
 import com.github.alathra.AlathranWars.utility.UUIDUtil;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
-import com.palmergames.bukkit.towny.TownyAPI;
-import com.palmergames.bukkit.towny.object.Nation;
-import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
 import net.kyori.adventure.bossbar.BossBar;
@@ -36,7 +34,10 @@ public class Siege extends Battle {
     public static final int MAX_SIEGE_PROGRESS = 60 * MAX_SIEGE_PROGRESS_MINUTES; // On reaching this, the attackers win. 1 point is added per second
     public static final Duration ATTACKERS_MUST_TOUCH_END = Duration.ofMinutes(40); // If point is not touched in this much time, defenders win
     public static final Duration ATTACKERS_MUST_TOUCH_REVERT = Duration.ofMinutes(2); // If point is not touched in this much time, siege progress begins reverting
-    public static final int BATTLEFIELD_RANGE = 300;
+    public static final int BATTLEFIELD_RANGE = 500;
+    public static final int BATTLEFIELD_START_MAX_RANGE = BATTLEFIELD_RANGE * 2;
+    public static final int BATTLEFIELD_START_MIN_RANGE = 75;
+    public static final double SIEGE_VICTORY_MONEY = 2500.0;
 
     private @NotNull War war; // War which siege belongs to
     private final @NotNull UUID uuid;
@@ -60,6 +61,8 @@ public class Siege extends Battle {
     private @Nullable TownBlock homeBlock = null;
     private @Nullable Location townSpawn = null;
     private @Nullable BossBar activeBossBar = null;
+
+    private boolean stopped = false; // Used to track if the siege has been already deleted
 
     public Siege(final @NotNull War war, final Town town, Player siegeLeader) {
         uuid = UUIDUtil.generateSiegeUUID();
@@ -105,6 +108,7 @@ public class Siege extends Battle {
      */
     public void start() {
         siegeRunnable = new SiegeRunnable(this);
+        Main.econ.withdrawPlayer(siegeLeader, SIEGE_VICTORY_MONEY);
     }
 
     /**
@@ -118,77 +122,83 @@ public class Siege extends Battle {
      * Stops a siege
      */
     public void stop() {
+        if (stopped) return;
+        stopped = true;
         siegeRunnable.cancel();
         SQLQueries.deleteSiege(this);
         war.removeSiege(this);
     }
 
     public void attackersWin() {
-        final @Nullable Resident resident = TownyAPI.getInstance().getResident(siegeLeader.getUniqueId());
-//        @Nullable Nation nation = null;
-//        Bukkit.broadcast(ColorParser.of(UtilsChat.getPrefix() + "The attackers have won the siege of " + town.getName() + "!").build());
+        Main.econ.depositPlayer(siegeLeader, SIEGE_VICTORY_MONEY);
+        double amt;
 
-//        try {
-//            nation = resident.getTown().getNation();
-//        } catch (Exception ignored) {
-//        }
+        if (town.getAccount().getHoldingBalance() > 10000.0) {
+            amt = Math.floor(town.getAccount().getHoldingBalance()) / 4.0;
+            town.getAccount().withdraw(amt, "Siege Defeat");
+        } else {
+            /*if (town.getAccount().getHoldingBalance() < SIEGE_VICTORY_MONEY) {
+                Bukkit.broadcast(
+                    ColorParser.of("<prefix>The town of <town> has been destroyed by <attacker>!")
+                        .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
+                        .parseMinimessagePlaceholder("town", town.getName())
+                        .parseMinimessagePlaceholder("attacker", getAttackerSide().getName())
+                        .build()
+                );
+                amt = town.getAccount().getHoldingBalance();
+                Main.econ.depositPlayer(siegeLeader, amt);
+                TownyAPI.getInstance().getDataSource().deleteTown(town);
+                return;
+            }*/
 
-//        if (nation != null) {
-//            Bukkit.broadcast(ColorParser.of(UtilsChat.getPrefix() + "The town of " + town.getName()
-//                + " has been placed under occupation by " + nation.getName() + "!").build());
-//        }
+            town.getAccount().withdraw(SIEGE_VICTORY_MONEY, "Siege Defeat");
+            amt = SIEGE_VICTORY_MONEY;
+        }
 
-        // TODO Re-enable prize
-//        Main.econ.depositPlayer(siegeLeader, 2500.0);
-//        double amt = 0.0;
-//        if (this.town.getAccount().getHoldingBalance() > 10000.0) {
-//            amt = Math.floor(this.town.getAccount().getHoldingBalance()) / 4.0;
-//            this.town.getAccount().withdraw(amt, "war loot");
-//        } else {
-//            if (this.town.getAccount().getHoldingBalance() < 2500.0) {
-//                amt = this.town.getAccount().getHoldingBalance();
-//                Bukkit.broadcastMessage(UtilsChat.getPrefix() + "The town of " + this.town.getName()
-//                    + " has been destroyed by " + this.getAttackerSide() + "!");
-//                TownyUniverse.getInstance().getDataSource().deleteTown(this.town);
-//                Main.econ.depositPlayer(siegeLeader, amt);
-//                return;
-//            }
-//            this.town.getAccount().withdraw(2500.0, "war loot");
-//            amt = 2500.0;
-//        }
+        Main.econ.depositPlayer(siegeLeader, amt);
 
-        /*Bukkit.broadcastMessage("The town of " + this.town.getName() + " has been sacked by " + this.getAttackerSide()
-            + ", valuing $" + amt);*/
-
-//        TODO
-//        "The town of <town> has been sacked and placed under occupation by the armies of <attacker>!"
-        Bukkit.broadcast(ColorParser.of(UtilsChat.getPrefix() + "The town of " + this.town.getName() + " has been sacked by " + this.getAttackerSide().getName() + "!").build());
-//        Main.warLogger.log("The town of " + this.town.getName() + " has been sacked by " + this.getAttackerSide()
-//            + ", valuing $" + amt);
-//        Main.econ.depositPlayer(siegeLeader, amt);
+        Bukkit.broadcast(ColorParser.of("<prefix>The town of <town> has been sacked and placed under occupation by the armies of <attacker>!")
+            .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
+            .parseMinimessagePlaceholder("town", town.getName())
+            .parseMinimessagePlaceholder("attacker", getAttackerSide().getName())
+            .build());
 
         if (side1AreAttackers) {
             war.getSide1().addScore(50);
+            war.getSide2().addScore(5);
         } else {
+            war.getSide1().addScore(5);
             war.getSide2().addScore(50);
         }
 
         stop();
+
+        Side townSide = getWar().getTownSide(town);
+        Side attackerSide = getAttackerSide();
+
+        if (attackerSide.equals(townSide)) {
+            if (townSide.isTownSurrendered(town))
+                war.unsurrenderTown(town);
+        } else {
+            if (!townSide.isTownSurrendered(town))
+                war.surrenderTown(town);
+        }
     }
 
     public void defendersWin() {
-//        this.town.getAccount().deposit(2500.0, "War chest");
-//        "The siege of <town> has been lifted." TODO
-        Bukkit.broadcast(ColorParser.of(UtilsChat.getPrefix() + "The defenders have won the siege of " + this.town.getName() + "!").build());
-//        Bukkit.broadcastMessage(UtilsChat.getPrefix() + this.town.getName()
-//            + " has recovered the attackers' war chest, valued at $2,500");
-//        Main.warLogger
-//            .log(war.getName() + ": The defenders have won the siege of " + this.town.getName() + "!");
+        town.getAccount().deposit(SIEGE_VICTORY_MONEY, "Siege Victory");
+
+        Bukkit.broadcast(
+            ColorParser.of("<prefix>The siege of <town> has been lifted by the defenders!")
+                .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
+                .parseMinimessagePlaceholder("town", town.getName())
+                .build()
+        );
 
         if (side1AreAttackers) {
-            war.getSide2().addScore(50);
+            war.getSide2().addScore(10);
         } else {
-            war.getSide1().addScore(50);
+            war.getSide1().addScore(10);
         }
 
         stop();
@@ -198,10 +208,12 @@ public class Siege extends Battle {
      * No winner declared
      */
     public void noWinner() {
-        Bukkit.broadcast(ColorParser.of(UtilsChat.getPrefix() + "The siege of " + this.town.getName() + " has ended in a draw!").build());
-//        Bukkit.broadcastMessage(UtilsChat.getPrefix() + "No money has been recovered.");
-//        Main.warLogger
-//            .log(war.getName() + ": No one won the siege of " + this.town.getName() + "!");
+        Bukkit.broadcast(
+            ColorParser.of("<prefix>The siege of <town> has ended in a draw!")
+                .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
+                .parseMinimessagePlaceholder("town", town.getName())
+                .build()
+        );
         stop();
     }
 
@@ -286,7 +298,7 @@ public class Siege extends Battle {
                     color = "<blue>";
                 }
             }
-            case NONE -> activeBossBar.color(BossBar.Color.YELLOW);
+            case CONTESTED, UNCONTESTED -> activeBossBar.color(BossBar.Color.YELLOW);
             case DOWN -> {
                 if (getAttackerSide().getSide().equals(BattleSide.ATTACKER)) {
                     activeBossBar.color(BossBar.Color.BLUE);
@@ -422,7 +434,7 @@ public class Siege extends Battle {
 
     @NotNull
     public String getName() { // TODO Make better siegenames
-        return getWar().getName() + "-" + getTown();
+        return getTown().getName();
     }
 
     // SECTION Time management

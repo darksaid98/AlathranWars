@@ -48,11 +48,11 @@ public class TABHook {
         if (tabAPI.getTabListFormatManager() == null) return;
 
         tabAPI.getTabListFormatManager().setSuffix(tabPlayer,
-            UtilsChat.color(" <red>[" + war.getSide1().getName() + "]<reset>")
+            UtilsChat.color(" &c[" + war.getSide1().getName() + "]&r")
         );
 
         if (TabAPI.getInstance().getNameTagManager() instanceof UnlimitedNameTagManager unm) {
-            unm.setPrefix(tabPlayer, "<red>");
+            unm.setPrefix(tabPlayer, "&c");
         }
     }
 
@@ -63,10 +63,10 @@ public class TABHook {
 
         if (tabAPI.getTabListFormatManager() == null) return;
 
-        tabAPI.getTabListFormatManager().setSuffix(tabPlayer, UtilsChat.color(" <blue>[") + war.getSide2().getName() + "]<reset>");
+        tabAPI.getTabListFormatManager().setSuffix(tabPlayer, UtilsChat.color(" &9[") + war.getSide2().getName() + "]&r");
 
         if (TabAPI.getInstance().getNameTagManager() instanceof UnlimitedNameTagManager unm) {
-            unm.setPrefix(tabPlayer, "<blue>");
+            unm.setPrefix(tabPlayer, "&9");
         }
     }
 
@@ -78,7 +78,7 @@ public class TABHook {
         if (tabAPI.getTabListFormatManager() == null) return;
 
         tabAPI.getTabListFormatManager().setSuffix(tabPlayer,
-            UtilsChat.color(" <green>[M]<red>[") + war.getSide1() + "]<reset>");
+            UtilsChat.color(" &a[M]&c[") + war.getSide1() + "]&r");
     }
 
     public static void assignSide2WarSuffixMerc(@NotNull Player p, @NotNull War war) {
@@ -89,7 +89,7 @@ public class TABHook {
         if (tabAPI.getTabListFormatManager() == null) return;
 
         tabAPI.getTabListFormatManager().setSuffix(tabPlayer,
-            UtilsChat.color(" <green>[M]<blue>[") + war.getSide2() + "]<reset>");
+            UtilsChat.color(" &a[M]&9[") + war.getSide2() + "]&r");
     }
 
     public static void resetSuffix(@NotNull Player p) {

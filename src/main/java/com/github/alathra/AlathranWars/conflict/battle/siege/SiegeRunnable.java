@@ -2,6 +2,7 @@ package com.github.alathra.AlathranWars.conflict.battle.siege;
 
 import com.github.alathra.AlathranWars.Main;
 import com.github.alathra.AlathranWars.enums.BattleSide;
+import com.github.alathra.AlathranWars.enums.CaptureProgressDirection;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.object.Town;
@@ -26,7 +27,7 @@ public class SiegeRunnable implements Runnable {
     private final @NotNull Siege siege;
 
     // Variables
-    private @NotNull CaptureProgressDirection oldProgressDirection = CaptureProgressDirection.NONE;
+    private @NotNull CaptureProgressDirection oldProgressDirection = CaptureProgressDirection.UNCONTESTED;
     private Instant nextAnnouncement;
     private ScheduledTask task;
     private @Nullable Laser beam;
@@ -48,7 +49,7 @@ public class SiegeRunnable implements Runnable {
 
         task = Main.getPaperLib().scheduling().globalRegionalScheduler().runAtFixedRate(this, 0L, 20L);
 
-        siege.updateDisplayBar(CaptureProgressDirection.NONE);
+        siege.updateDisplayBar(CaptureProgressDirection.CONTESTED);
     }
 
     /**
@@ -69,19 +70,15 @@ public class SiegeRunnable implements Runnable {
 
         task = Main.getPaperLib().scheduling().globalRegionalScheduler().runAtFixedRate(this, 0L, 20L);
 
-        siege.updateDisplayBar(CaptureProgressDirection.NONE);
+        siege.updateDisplayBar(CaptureProgressDirection.CONTESTED);
     }
 
     public void cancel() {
         stopBeam();
         if (task.isCancelled()) return;
 
-        try {
-            task.cancel();
-            siege.deleteDisplayBar();
-        } finally {
-            task = null;
-        }
+        task.cancel();
+        siege.deleteDisplayBar();
     }
 
     @Override
@@ -106,7 +103,7 @@ public class SiegeRunnable implements Runnable {
 
         // Siege is past max time or attackers haven't touched in time, defenders won
         if (
-            !progressDirection.equals(CaptureProgressDirection.UP) &&
+            (!progressDirection.equals(CaptureProgressDirection.CONTESTED) && !progressDirection.equals(CaptureProgressDirection.UP)) &&
                 (Instant.now().isAfter(siege.getEndTime()) ||
                     Instant.now().isAfter(siege.getLastTouched().plus(ATTACKERS_MUST_TOUCH_END)))
         ) {
@@ -134,7 +131,7 @@ public class SiegeRunnable implements Runnable {
                         .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
                         .build()
                 ));
-                case NONE -> {
+                case CONTESTED, UNCONTESTED -> {
                     /*if ()
                     siege.getAttackers().forEach(p -> p.sendMessage(
                         ColorParser.of("<prefix>The home block is being contested.")
@@ -154,7 +151,6 @@ public class SiegeRunnable implements Runnable {
                 ));
             }
         }
-
 
         if (Instant.now().isAfter(nextAnnouncement)) {
             nextAnnouncement = Instant.now().plus(ANNOUNCEMENT_COOLDOWN);
@@ -199,21 +195,21 @@ public class SiegeRunnable implements Runnable {
             siege.setLastTouched(Instant.now());
 
         if (attackersAreOnPoint && defendersAreOnPoint) {
-            return CaptureProgressDirection.NONE;
+            return CaptureProgressDirection.CONTESTED;
         } else if (attackersAreOnPoint && !defendersAreOnPoint) {
             if (siege.getSiegeProgress() == MAX_SIEGE_PROGRESS)
-                return CaptureProgressDirection.NONE;
+                return CaptureProgressDirection.CONTESTED;
 
             return CaptureProgressDirection.UP;
         } else {
             if (siege.getSiegeProgress() == 0)
-                return CaptureProgressDirection.NONE;
+                return CaptureProgressDirection.UNCONTESTED;
 
             // If the attackers haven't touched in a while, begin reverting progress
             if (Instant.now().isAfter(siege.getLastTouched().plus(ATTACKERS_MUST_TOUCH_REVERT))) {
                 return CaptureProgressDirection.DOWN;
             } else {
-                return CaptureProgressDirection.NONE;
+                return CaptureProgressDirection.UNCONTESTED;
             }
         }
     }
