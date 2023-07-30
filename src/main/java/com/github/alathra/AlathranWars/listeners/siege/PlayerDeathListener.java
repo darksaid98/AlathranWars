@@ -3,7 +3,7 @@ package com.github.alathra.AlathranWars.listeners.siege;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.utility.Utils;
 import com.ranull.graves.event.GraveCreateEvent;
-import dev.geco.gsit.api.event.PrePlayerPlayerSitEvent;
+import io.github.thatsmusic99.headsplus.api.events.PlayerHeadDropEvent;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,6 +11,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 public class PlayerDeathListener implements Listener {
+    @EventHandler
+    private void onHeadDrop(PlayerHeadDropEvent e) {
+        Siege siege = Utils.getClosestSiege(e.getDeadPlayer(), false);
+        if (siege == null) return;
+
+        if (!Utils.isOnSiegeBattlefield(e.getDeadPlayer(), siege)) return;
+
+        e.setCancelled(true);
+    }
+
     @EventHandler
     private void onGraveCreate(GraveCreateEvent e) {
         if (!e.getEntityType().equals(EntityType.PLAYER)) return;

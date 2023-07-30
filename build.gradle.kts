@@ -84,6 +84,7 @@ dependencies {
     }
     compileOnly(files("lib/Graves-4.9.jar"))
     compileOnly("com.github.Gecolay.GSit:core:1.4.9")
+    compileOnly(files("lib/HeadsPlus-7.0.14.jar"))
 }
 
 tasks {
