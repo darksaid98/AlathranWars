@@ -18,16 +18,16 @@ import java.time.Duration;
 import java.time.Instant;
 
 import static com.github.alathra.AlathranWars.conflict.battle.siege.Siege.*;
+import static com.github.alathra.AlathranWars.enums.CaptureProgressDirection.*;
 
 public class SiegeRunnable implements Runnable {
     // Settings
     private static final Duration ANNOUNCEMENT_COOLDOWN = Duration.ofMinutes(5);
-    private final static int CAPTURE_MAX_ELEVATION = 10;
     private final static int CAPTURE_RANGE = 10;
     private final @NotNull Siege siege;
 
     // Variables
-    private @NotNull CaptureProgressDirection oldProgressDirection = CaptureProgressDirection.UNCONTESTED;
+    private @NotNull CaptureProgressDirection oldProgressDirection = UNCONTESTED;
     private Instant nextAnnouncement;
     private ScheduledTask task;
     private @Nullable Laser beam;
@@ -49,7 +49,7 @@ public class SiegeRunnable implements Runnable {
 
         task = Main.getPaperLib().scheduling().globalRegionalScheduler().runAtFixedRate(this, 0L, 20L);
 
-        siege.updateDisplayBar(CaptureProgressDirection.CONTESTED);
+        siege.updateDisplayBar(CONTESTED);
     }
 
     /**
@@ -70,7 +70,7 @@ public class SiegeRunnable implements Runnable {
 
         task = Main.getPaperLib().scheduling().globalRegionalScheduler().runAtFixedRate(this, 0L, 20L);
 
-        siege.updateDisplayBar(CaptureProgressDirection.CONTESTED);
+        siege.updateDisplayBar(CONTESTED);
     }
 
     public void cancel() {
@@ -99,11 +99,13 @@ public class SiegeRunnable implements Runnable {
         siege.calculateBattlefieldPlayers(townSpawn.toCenterLocation());
 
         // Progress the siege
-        final @NotNull CaptureProgressDirection progressDirection = getSiegeProgressDirection(townSpawn);
+        final int attackersOnPoint = getPeopleOnPoint(townSpawn, BattleSide.ATTACKER);
+        final int defendersOnPoint = getPeopleOnPoint(townSpawn, BattleSide.DEFENDER);
+        final @NotNull CaptureProgressDirection progressDirection = getSiegeProgressDirection(attackersOnPoint, defendersOnPoint);
 
         // Siege is past max time or attackers haven't touched in time, defenders won
         if (
-            (!progressDirection.equals(CaptureProgressDirection.CONTESTED) && !progressDirection.equals(CaptureProgressDirection.UP)) &&
+            (!progressDirection.equals(CONTESTED) && !progressDirection.equals(UP)) &&
                 (Instant.now().isAfter(siege.getEndTime()) ||
                     Instant.now().isAfter(siege.getLastTouched().plus(ATTACKERS_MUST_TOUCH_END)))
         ) {
@@ -120,35 +122,52 @@ public class SiegeRunnable implements Runnable {
         }
 
         switch (progressDirection) {
-            case UP -> siege.setSiegeProgress(siege.getSiegeProgress() + 1);
-            case DOWN -> siege.setSiegeProgress(siege.getSiegeProgress() - 1);
+            case UP -> {
+                final int playerOnPointDiff = attackersOnPoint - defendersOnPoint;
+
+                // If you have less than 5 people contesting you get (4 + excessPlayers) points per second
+                if (playerOnPointDiff < 5) {
+                    siege.setSiegeProgress(siege.getSiegeProgress() + (4 + playerOnPointDiff));
+                } else {
+                    siege.setSiegeProgress(siege.getSiegeProgress() + 10);
+                }
+            }
+            case DOWN -> siege.setSiegeProgress(siege.getSiegeProgress() - 10);
         }
 
         if (oldProgressDirection != progressDirection) {
             switch (progressDirection) {
-                case UP -> siege.getPlayersOnBattlefield().forEach(p -> p.sendMessage(
-                    ColorParser.of("<prefix>The Attackers are capturing the home block.")
-                        .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
-                        .build()
-                ));
-                case CONTESTED, UNCONTESTED -> {
-                    /*if ()
-                    siege.getAttackers().forEach(p -> p.sendMessage(
-                        ColorParser.of("<prefix>The home block is being contested.")
+                case UP -> {
+                    siege.getPlayersOnBattlefield().forEach(p -> p.sendMessage(
+                        ColorParser.of("<prefix>The Attackers are capturing the home block.")
                             .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
                             .build()
                     ));
-                    siege.getDefenders().forEach(p -> p.sendMessage(
-                        ColorParser.of("<prefix>The home block is being contested.")
-                            .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
-                            .build()
-                    ));*/
                 }
-                case DOWN -> siege.getPlayersOnBattlefield().forEach(p -> p.sendMessage(
-                    ColorParser.of("<prefix>The Defenders re-secured the home block.")
-                        .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
-                        .build()
-                ));
+                case CONTESTED -> {
+                    if (oldProgressDirection.equals(UNCONTESTED))
+                        siege.getPlayersOnBattlefield().forEach(p -> p.sendMessage(
+                            ColorParser.of("<prefix>The home block is being contested.")
+                                .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
+                                .build()
+                        ));
+                }
+                case UNCONTESTED -> {
+                    if (oldProgressDirection.equals(UP) || oldProgressDirection.equals(CONTESTED) || oldProgressDirection.equals(DOWN))
+                        siege.getPlayersOnBattlefield().forEach(p -> p.sendMessage(
+                            ColorParser.of("<prefix>The home block is no longer being contested.")
+                                .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
+                                .build()
+                        ));
+                }
+                case DOWN -> {
+                    if (oldProgressDirection.equals(UP) || oldProgressDirection.equals(CONTESTED))
+                        siege.getPlayersOnBattlefield().forEach(p -> p.sendMessage(
+                            ColorParser.of("<prefix>The Defenders re-secured the home block.")
+                                .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
+                                .build()
+                        ));
+                }
             }
         }
 
@@ -185,9 +204,7 @@ public class SiegeRunnable implements Runnable {
         return onPoint;
     }
 
-    public @NotNull CaptureProgressDirection getSiegeProgressDirection(@NotNull Location townSpawn) {
-        int attackersOnPoint = getPeopleOnPoint(townSpawn, BattleSide.ATTACKER);
-        int defendersOnPoint = getPeopleOnPoint(townSpawn, BattleSide.DEFENDER);
+    public @NotNull CaptureProgressDirection getSiegeProgressDirection(int attackersOnPoint, int defendersOnPoint) {
         final boolean attackersAreOnPoint = attackersOnPoint > 0;
         final boolean defendersAreOnPoint = defendersOnPoint > 0;
 
@@ -195,21 +212,25 @@ public class SiegeRunnable implements Runnable {
             siege.setLastTouched(Instant.now());
 
         if (attackersAreOnPoint && defendersAreOnPoint) {
-            return CaptureProgressDirection.CONTESTED;
+
+            if (attackersOnPoint > defendersOnPoint)
+                return UP;
+
+            return CONTESTED;
         } else if (attackersAreOnPoint && !defendersAreOnPoint) {
             if (siege.getSiegeProgress() == MAX_SIEGE_PROGRESS)
-                return CaptureProgressDirection.CONTESTED;
+                return CONTESTED;
 
-            return CaptureProgressDirection.UP;
+            return UP;
         } else {
             if (siege.getSiegeProgress() == 0)
-                return CaptureProgressDirection.UNCONTESTED;
+                return UNCONTESTED;
 
             // If the attackers haven't touched in a while, begin reverting progress
             if (Instant.now().isAfter(siege.getLastTouched().plus(ATTACKERS_MUST_TOUCH_REVERT))) {
-                return CaptureProgressDirection.DOWN;
+                return DOWN;
             } else {
-                return CaptureProgressDirection.UNCONTESTED;
+                return UNCONTESTED;
             }
         }
     }

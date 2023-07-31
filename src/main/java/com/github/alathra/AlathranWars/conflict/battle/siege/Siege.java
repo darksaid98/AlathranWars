@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 public class Siege extends Battle {
     public static final Duration SIEGE_DURATION = Duration.ofMinutes(60);
     public static final int MAX_SIEGE_PROGRESS_MINUTES = 8; // How many minutes attackers will need to be on point uncontested for to reach 100%
-    public static final int MAX_SIEGE_PROGRESS = 60 * MAX_SIEGE_PROGRESS_MINUTES; // On reaching this, the attackers win. 1 point is added per second
+    public static final int MAX_SIEGE_PROGRESS = 60 * 10 * MAX_SIEGE_PROGRESS_MINUTES; // On reaching this, the attackers win. 10 points is added per second
     public static final Duration ATTACKERS_MUST_TOUCH_END = Duration.ofMinutes(40); // If point is not touched in this much time, defenders win
     public static final Duration ATTACKERS_MUST_TOUCH_REVERT = Duration.ofMinutes(2); // If point is not touched in this much time, siege progress begins reverting
     public static final int BATTLEFIELD_RANGE = 500;
@@ -233,6 +233,11 @@ public class Siege extends Battle {
     }
 
     public void setSiegeProgress(int siegeProgress) {
+        if (siegeProgress < 0) {
+            siegeProgress = 0;
+        } else if (siegeProgress > MAX_SIEGE_PROGRESS) {
+            siegeProgress = MAX_SIEGE_PROGRESS;
+        }
         this.siegeProgress = siegeProgress;
     }
 
@@ -289,28 +294,34 @@ public class Siege extends Battle {
                 p.showBossBar(activeBossBar);
         }
 
-        String color = "<yellow>";
-        switch (progressDirection) {
+        final String color = switch (progressDirection) {
             case UP -> {
                 if (getAttackerSide().getSide().equals(BattleSide.ATTACKER)) {
                     activeBossBar.color(BossBar.Color.RED);
-                    color = "<red>";
+                    yield "<red>";
                 } else {
                     activeBossBar.color(BossBar.Color.BLUE);
-                    color = "<blue>";
+                    yield "<blue>";
                 }
             }
-            case CONTESTED, UNCONTESTED -> activeBossBar.color(BossBar.Color.YELLOW);
+            case CONTESTED -> {
+                activeBossBar.color(BossBar.Color.YELLOW);
+                yield "<yellow>";
+            }
+            case UNCONTESTED -> {
+                activeBossBar.color(BossBar.Color.WHITE);
+                yield "<white>";
+            }
             case DOWN -> {
                 if (getAttackerSide().getSide().equals(BattleSide.ATTACKER)) {
                     activeBossBar.color(BossBar.Color.BLUE);
-                    color = "<blue>";
+                    yield "<blue>";
                 } else {
                     activeBossBar.color(BossBar.Color.RED);
-                    color = "<red>";
+                    yield "<red>";
                 }
             }
-        }
+        };
 
         if (Instant.now().isBefore(getEndTime())) {
             activeBossBar.name(
