@@ -1,4 +1,4 @@
-package com.github.alathra.AlathranWars.listeners;
+package com.github.alathra.AlathranWars.listeners.items;
 
 import com.github.alathra.AlathranWars.Main;
 import com.github.alathra.AlathranWars.conflict.WarManager;

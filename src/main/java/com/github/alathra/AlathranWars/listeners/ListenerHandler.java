@@ -1,6 +1,7 @@
 package com.github.alathra.AlathranWars.listeners;
 
 import com.github.alathra.AlathranWars.Main;
+import com.github.alathra.AlathranWars.listeners.items.PlayerInteractListener;
 import com.github.alathra.AlathranWars.listeners.siege.BlockBreakPlaceListener;
 import com.github.alathra.AlathranWars.listeners.siege.PlayerDeathListener;
 import com.github.alathra.AlathranWars.listeners.siege.PlayerQuitListener;
