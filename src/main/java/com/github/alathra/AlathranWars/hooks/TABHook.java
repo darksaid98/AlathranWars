@@ -21,10 +21,13 @@ public class TABHook {
     public static void init() {
         if (enabled) return;
 
-        tabAPI = TabAPI.getInstance();
-        enabled = true;
+        try {
+            tabAPI = TabAPI.getInstance();
+            enabled = true;
 
-        registerPlayerLoadListener();
+            registerPlayerLoadListener();
+        } catch (NoClassDefFoundError ignored) {
+        }
     }
 
     private static void registerPlayerLoadListener() {
