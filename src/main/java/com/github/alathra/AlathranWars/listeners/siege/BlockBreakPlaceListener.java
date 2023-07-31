@@ -13,14 +13,17 @@ import org.bukkit.event.Listener;
 import java.util.Set;
 
 public class BlockBreakPlaceListener implements Listener {
-    private final static Set<Material> allowedBlocks = Set.of(
-        Material.TNT,
+    private final static Set<Material> DESTROY_SPECIFIC = Set.of(
         // Mortar & Cannons
         Material.IRON_BLOCK,
         Material.HEAVY_WEIGHTED_PRESSURE_PLATE,
         Material.TORCH,
         Material.STONE_BUTTON,
-        Material.BLACK_WOOL,
+        Material.BLACK_WOOL
+    );
+
+    private final static Set<Material> DESTROY_GLOBAL = Set.of(
+        Material.TNT,
         // Beds
         Material.WHITE_BED,
         Material.YELLOW_BED,
@@ -40,6 +43,39 @@ public class BlockBreakPlaceListener implements Listener {
         Material.RED_BED
     );
 
+    private final static Set<Material> PLACE_NEUTRAL = Set.of(
+        // Mortar & Cannons
+        Material.IRON_BLOCK,
+        Material.HEAVY_WEIGHTED_PRESSURE_PLATE,
+        Material.TORCH,
+        Material.STONE_BUTTON,
+        Material.BLACK_WOOL
+    );
+
+    private final static Set<Material> PLACE_OWNED = Set.of(
+        // Beds
+        Material.WHITE_BED,
+        Material.YELLOW_BED,
+        Material.BLACK_BED,
+        Material.BLUE_BED,
+        Material.BROWN_BED,
+        Material.CYAN_BED,
+        Material.GRAY_BED,
+        Material.GREEN_BED,
+        Material.LIGHT_BLUE_BED,
+        Material.LIGHT_GRAY_BED,
+        Material.LIME_BED,
+        Material.MAGENTA_BED,
+        Material.ORANGE_BED,
+        Material.PINK_BED,
+        Material.PURPLE_BED,
+        Material.RED_BED
+    );
+
+    private final static Set<Material> PLACE_GLOBAL = Set.of(
+        Material.TNT
+    );
+
     @EventHandler
     public void onBlockBreak(TownyDestroyEvent e) {
         Siege siege = Utils.getClosestSiege(e.getPlayer(), true);
@@ -50,8 +86,15 @@ public class BlockBreakPlaceListener implements Listener {
         final boolean isInsideTownClaims = e.hasTownBlock();
         final boolean isDefender = siege.getPlayerSideInSiege(e.getPlayer()).equals(BattleSide.DEFENDER);
 
+        // Allow destroying beds anywhere
+        if (DESTROY_GLOBAL.contains(e.getMaterial())) {
+            e.setCancelled(false);
+            return;
+        }
+
+        // Allow destroying outside claims
         if (
-            (isDefender || !isInsideTownClaims) && allowedBlocks.contains(e.getMaterial())
+            ((isDefender || !isInsideTownClaims) && DESTROY_SPECIFIC.contains(e.getMaterial()))
         ) {
             e.setCancelled(false);
             return;
@@ -74,12 +117,26 @@ public class BlockBreakPlaceListener implements Listener {
 
         if (!Utils.isOnSiegeBattlefield(e.getPlayer(), siege)) return;
 
-        final boolean isInsideTownClaims = e.hasTownBlock();
+        final boolean isInsideClaims = e.hasTownBlock();
         final boolean isDefender = siege.getPlayerSideInSiege(e.getPlayer()).equals(BattleSide.DEFENDER);
 
-        if (
-            (isDefender || !isInsideTownClaims) && allowedBlocks.contains(e.getMaterial())
-        ) {
+        final boolean isDefenderAllowed = (!isInsideClaims || !e.getTownBlock().isOutpost()) && isDefender; // Defenders can build on the battlefield and in towns
+        final boolean isAttackerAllowed = (!isInsideClaims || e.getTownBlock().isOutpost()) && !isDefender; // Attackers can build on the battlefield and in outposts
+
+        // Allow placing outside claims and in claims your side owns
+        if ((isAttackerAllowed || isDefenderAllowed) && PLACE_NEUTRAL.contains(e.getMaterial())) {
+            e.setCancelled(false);
+            return;
+        }
+
+        // Allow placing beds in claims your side owns
+        if (isInsideClaims && (isAttackerAllowed || isDefenderAllowed) && PLACE_OWNED.contains(e.getMaterial())) {
+            e.setCancelled(false);
+            return;
+        }
+
+        // Allow placing everywhere
+        if (PLACE_GLOBAL.contains(e.getMaterial())) {
             e.setCancelled(false);
             return;
         }
@@ -93,48 +150,4 @@ public class BlockBreakPlaceListener implements Listener {
         e.setCancelMessage("");
         e.getPlayer().sendMessage(ColorParser.of("<red>You can not place blocks during sieges.").build());
     }
-
-//    public void onIteract(Towny)
-
-    /*@EventHandler(ignoreCancelled = true)
-    public void onBlockPlaceTowny(BlockBreakEvent e) {
-        Siege siege = Utils.getClosestSiege(e.getPlayer(), true);
-        if (siege == null) return;
-
-        if (!Utils.isOnSiegeBattlefield(e.getPlayer(), siege)) return;
-
-        if (e.getPlayer().hasPermission("AlathranWars.break")) {
-            e.setCancelled(false);
-            return;
-        }
-
-        if (!allowedBlocks.contains(e.getBlock().getType())) {
-            e.getPlayer().sendMessage(ColorParser.of("<red>You can not break these blocks during sieges.").build());
-            e.setCancelled(true);
-            return;
-        }
-
-        e.setCancelled(false);
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onBlockPlaceTowny(BlockPlaceEvent e) {
-        Siege siege = Utils.getClosestSiege(e.getPlayer(), true);
-        if (siege == null) return;
-
-        if (!Utils.isOnSiegeBattlefield(e.getPlayer(), siege)) return;
-
-        if (e.getPlayer().hasPermission("AlathranWars.place")) {
-            e.setCancelled(false);
-            return;
-        }
-
-        if (!allowedBlocks.contains(e.getBlock().getType())) {
-            e.getPlayer().sendMessage(ColorParser.of("<red>You can not place these blocks during sieges.").build());
-            e.setCancelled(true);
-            return;
-        }
-
-        e.setCancelled(false);
-    }*/
 }
