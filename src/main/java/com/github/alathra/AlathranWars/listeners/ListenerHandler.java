@@ -36,8 +36,6 @@ public class ListenerHandler {
         instance.getServer().getPluginManager().registerEvents(new TownListener(), instance);
         instance.getServer().getPluginManager().registerEvents(new PlayerJoinListener(), instance);
         instance.getServer().getPluginManager().registerEvents(new com.github.alathra.AlathranWars.listeners.war.PlayerQuitListener(), instance);
-        instance.getServer().getPluginManager().registerEvents(new NewDayListener(), instance);
-
 
         instance.getServer().getPluginManager().registerEvents(new CommandsListener(), instance);
         instance.getServer().getPluginManager().registerEvents(new PlayerInteractListener(), instance);
