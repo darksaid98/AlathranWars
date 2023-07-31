@@ -35,7 +35,7 @@ public class Siege extends Battle {
     public static final int MAX_SIEGE_PROGRESS_MINUTES = 8; // How many minutes attackers will need to be on point uncontested for to reach 100%
     public static final int MAX_SIEGE_PROGRESS = 60 * 10 * MAX_SIEGE_PROGRESS_MINUTES; // On reaching this, the attackers win. 10 points is added per second
     public static final Duration ATTACKERS_MUST_TOUCH_END = Duration.ofMinutes(40); // If point is not touched in this much time, defenders win
-    public static final Duration ATTACKERS_MUST_TOUCH_REVERT = Duration.ofMinutes(2); // If point is not touched in this much time, siege progress begins reverting
+    public static final Duration ATTACKERS_MUST_TOUCH_REVERT = Duration.ofSeconds(60); // If point is not touched in this much time, siege progress begins reverting
     public static final int BATTLEFIELD_RANGE = 500;
     public static final int BATTLEFIELD_START_MAX_RANGE = BATTLEFIELD_RANGE * 2;
     public static final int BATTLEFIELD_START_MIN_RANGE = 75;
