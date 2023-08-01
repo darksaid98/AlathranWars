@@ -17,12 +17,16 @@ import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import dev.jorel.commandapi.arguments.PlayerArgument;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.jorel.commandapi.executors.CommandArguments;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -219,6 +223,20 @@ public class WarCommands {
                     .parseMinimessagePlaceholder("side", side.getName())
                     .build()
             );
+            final Title warTitle = Title.title(
+                ColorParser.of("<gradient:#D72A09:#B01F03><u><b>War")
+                    .build(),
+                ColorParser.of("<gray><i>You entered the war of <war>!")
+                    .parseMinimessagePlaceholder("war", war.getLabel())
+                    .build(),
+                Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(3500), Duration.ofMillis(500))
+            );
+            final Sound warSound = Sound.sound(Key.key("entity.wither.spawn"), Sound.Source.VOICE, 0.5f, 1.0F);
+
+            nation.getResidents().stream().filter(Resident::isOnline).map(Resident::getPlayer).toList().forEach(player -> {
+                player.showTitle(warTitle);
+                player.playSound(warSound);
+            });
             return;
         } else if (town == null && nation != null && (!canKingJoin || !asAdmin)) {
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Nation is already in that war.").build());
@@ -238,6 +256,20 @@ public class WarCommands {
                     .parseMinimessagePlaceholder("side", side.getName())
                     .build()
             );
+            final Title warTitle = Title.title(
+                ColorParser.of("<gradient:#D72A09:#B01F03><u><b>War")
+                    .build(),
+                ColorParser.of("<gray><i>You entered the war of <war>!")
+                    .parseMinimessagePlaceholder("war", war.getLabel())
+                    .build(),
+                Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(3500), Duration.ofMillis(500))
+            );
+            final Sound warSound = Sound.sound(Key.key("entity.wither.spawn"), Sound.Source.VOICE, 0.5f, 1.0F);
+
+            town.getResidents().stream().filter(Resident::isOnline).map(Resident::getPlayer).toList().forEach(player -> {
+                player.showTitle(warTitle);
+                player.playSound(warSound);
+            });
             return;
         } else if (targetPlayer == null && town != null && !canMayorJoin) {
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Town is already in that war.").build());
@@ -248,6 +280,18 @@ public class WarCommands {
             targetPlayer.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "You have joined the war.").build());
             side.addPlayer(targetPlayer);
             PlayerJoinListener.checkPlayer(targetPlayer);
+            final Title warTitle = Title.title(
+                ColorParser.of("<gradient:#D72A09:#B01F03><u><b>War")
+                    .build(),
+                ColorParser.of("<gray><i>You entered the war of <war>!")
+                    .parseMinimessagePlaceholder("war", war.getLabel())
+                    .build(),
+                Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(3500), Duration.ofMillis(500))
+            );
+            final Sound warSound = Sound.sound(Key.key("entity.wither.spawn"), Sound.Source.VOICE, 0.5f, 1.0F);
+
+            targetPlayer.showTitle(warTitle);
+            targetPlayer.playSound(warSound);
             return;
         } else if (!asAdmin) {
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Players cannot individually join wars.").build());

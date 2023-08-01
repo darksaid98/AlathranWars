@@ -3,16 +3,23 @@ package com.github.alathra.AlathranWars.listeners.war;
 import com.github.alathra.AlathranWars.conflict.Side;
 import com.github.alathra.AlathranWars.conflict.War;
 import com.github.alathra.AlathranWars.conflict.WarManager;
+import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.event.TownAddResidentEvent;
 import com.palmergames.bukkit.towny.event.TownPreRenameEvent;
 import com.palmergames.bukkit.towny.event.town.TownKickEvent;
 import com.palmergames.bukkit.towny.event.town.TownLeaveEvent;
 import com.palmergames.bukkit.towny.event.town.TownPreMergeEvent;
 import com.palmergames.bukkit.towny.event.town.TownRuinedEvent;
+import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.title.Title;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+
+import java.time.Duration;
 
 public class TownListener implements Listener {
     @EventHandler
@@ -37,6 +44,19 @@ public class TownListener implements Listener {
             Side side = war.getTownSide(town);
             if (side == null) continue;
             side.addPlayer(p);
+
+            final Title warTitle = Title.title(
+                ColorParser.of("<gradient:#D72A09:#B01F03><u><b>War")
+                    .build(),
+                ColorParser.of("<gray><i>You entered the war of <war>!")
+                    .parseMinimessagePlaceholder("war", war.getLabel())
+                    .build(),
+                Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(3500), Duration.ofMillis(500))
+            );
+            final Sound warSound = Sound.sound(Key.key("entity.wither.spawn"), Sound.Source.VOICE, 0.5f, 1.0F);
+
+            p.showTitle(warTitle);
+            p.playSound(warSound);
         }
 
         PlayerJoinListener.checkPlayer(p);
