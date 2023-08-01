@@ -61,7 +61,7 @@ dependencies {
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
 
     compileOnly("com.palmergames.bukkit.towny:towny:0.99.5.7") {
-        exclude(group = "com.palmergames", module = "adventure")
+        exclude(group = "com.palmergames.adventure")
     }
 
     compileOnly("me.neznamy:tab-api:4.0.0")

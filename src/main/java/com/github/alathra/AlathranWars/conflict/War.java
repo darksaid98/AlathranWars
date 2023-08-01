@@ -14,12 +14,16 @@ import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
 import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -293,6 +297,11 @@ public class War extends Conflict {
         return sieges;
     }
 
+    public void setSieges(Set<Siege> sieges) {
+        this.sieges = sieges;
+        this.sieges.forEach(Siege::resume);
+    }
+
     @Nullable
     public Siege getSiege(UUID uuid) {
         for (@NotNull Siege siege : sieges) {
@@ -314,11 +323,6 @@ public class War extends Conflict {
 
     public void removeSiege(Siege siege) {
         sieges.remove(siege);
-    }
-
-    public void setSieges(Set<Siege> sieges) {
-        this.sieges = sieges;
-        this.sieges.forEach(Siege::resume);
     }
 
     /**
@@ -568,6 +572,25 @@ public class War extends Conflict {
             .parseMinimessagePlaceholder("defender", getDefender().getName())
             .build()
         );
+
+        final Title warTitle = Title.title(
+            ColorParser.of("<gradient:#D72A09:#B01F03><u><b>War")
+                .build(),
+            ColorParser.of("<gray><i>The war of <war> has begun!")
+                .parseMinimessagePlaceholder("war", getLabel())
+                .build(),
+            Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(3500), Duration.ofMillis(500))
+        );
+        final Sound warSound = Sound.sound(Key.key("entity.wither.spawn"), Sound.Source.VOICE, 0.5f, 1.0F);
+
+        side1.getPlayers().forEach(player -> {
+            player.showTitle(warTitle);
+            player.playSound(warSound);
+        });
+        side2.getPlayers().forEach(player -> {
+            player.showTitle(warTitle);
+            player.playSound(warSound);
+        });
 
         side1.applyNameTags();
         side2.applyNameTags();

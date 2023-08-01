@@ -14,7 +14,10 @@ import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -24,9 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,8 +41,9 @@ public class Siege extends Battle {
     public static final int BATTLEFIELD_START_MAX_RANGE = BATTLEFIELD_RANGE * 2;
     public static final int BATTLEFIELD_START_MIN_RANGE = 75;
     public static final double SIEGE_VICTORY_MONEY = 2500.0;
-
-    private @NotNull War war; // War which siege belongs to
+    private final static Title.Times TITLE_TIMES = Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(3500), Duration.ofMillis(500));
+    private final static Sound SOUND_VICTORY = Sound.sound(Key.key("item.goat_horn.sound.0"), Sound.Source.VOICE, 0.5f, 1.0F);
+    private final static Sound SOUND_DEFEAT = Sound.sound(Key.key("entity.wither.death"), Sound.Source.VOICE, 0.5f, 1.0F);
     private final @NotNull UUID uuid;
     private final Set<Player> attackers = new HashSet<>(); // Players inside battlefield
     private final Set<Player> defenders = new HashSet<>(); // Players inside battlefield
@@ -49,21 +51,17 @@ public class Siege extends Battle {
     private final Set<Player> defenderPlayers = new HashSet<>();
     private final Set<UUID> attackerPlayersIncludingOffline = new HashSet<>();
     private final Set<UUID> defenderPlayersIncludingOffline = new HashSet<>();
-
+    private @NotNull War war; // War which siege belongs to
     private Instant endTime;
     private int siegeProgress = 0;
     private Instant lastTouched;
-
     private SiegeRunnable siegeRunnable;
-
     private Town town; // Town of the siege
     private boolean side1AreAttackers; // bool of if side1 being attacker
-
     private OfflinePlayer siegeLeader;
     private @Nullable TownBlock homeBlock = null;
     private @Nullable Location townSpawn = null;
     private @Nullable BossBar activeBossBar = null;
-
     private boolean stopped = false; // Used to track if the siege has been already deleted
 
     public Siege(final @NotNull War war, final Town town, Player siegeLeader) {
@@ -111,6 +109,41 @@ public class Siege extends Battle {
     public void start() {
         siegeRunnable = new SiegeRunnable(this);
         Main.econ.withdrawPlayer(siegeLeader, SIEGE_VICTORY_MONEY);
+
+        final Title.Times times = Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(3500), Duration.ofMillis(500));
+        final Title defTitle = Title.title(
+            ColorParser.of("<red><u><b><town>")
+                .parseMinimessagePlaceholder("town", town.getName())
+                .build(),
+            ColorParser.of("<gray><i>Is under siege, defend!")
+                .build(),
+            times
+        );
+        final Title attTitle = Title.title(
+            ColorParser.of("<red><u><b><town>")
+                .parseMinimessagePlaceholder("town", town.getName())
+                .build(),
+            ColorParser.of("<gray><i>Has been put to siege, attack!")
+                .build(),
+            times
+        );
+
+        final List<Sound> soundList = List.of(
+            Sound.sound(Key.key("item.goat_horn.sound.0"), Sound.Source.VOICE, 0.5f, new Random().nextFloat(0.9F, 1.0F)),
+            Sound.sound(Key.key("item.goat_horn.sound.2"), Sound.Source.VOICE, 0.5f, new Random().nextFloat(0.9F, 1.0F)),
+            Sound.sound(Key.key("item.goat_horn.sound.3"), Sound.Source.VOICE, 0.5f, new Random().nextFloat(0.9F, 1.0F)),
+            Sound.sound(Key.key("item.goat_horn.sound.7"), Sound.Source.VOICE, 0.5f, new Random().nextFloat(0.9F, 1.0F))
+        );
+
+        getDefenderPlayers().forEach(player -> {
+            player.showTitle(defTitle);
+            player.playSound(soundList.get(new Random().nextInt(1, soundList.size())));
+        });
+
+        getAttackerPlayers().forEach(player -> {
+            player.showTitle(attTitle);
+            player.playSound(soundList.get(new Random().nextInt(1, soundList.size())));
+        });
     }
 
     /**
@@ -139,20 +172,6 @@ public class Siege extends Battle {
             amt = Math.floor(town.getAccount().getHoldingBalance()) / 4.0;
             town.getAccount().withdraw(amt, "Siege Defeat");
         } else {
-            /*if (town.getAccount().getHoldingBalance() < SIEGE_VICTORY_MONEY) {
-                Bukkit.broadcast(
-                    ColorParser.of("<prefix>The town of <town> has been destroyed by <attacker>!")
-                        .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
-                        .parseMinimessagePlaceholder("town", town.getName())
-                        .parseMinimessagePlaceholder("attacker", getAttackerSide().getName())
-                        .build()
-                );
-                amt = town.getAccount().getHoldingBalance();
-                Main.econ.depositPlayer(siegeLeader, amt);
-                TownyAPI.getInstance().getDataSource().deleteTown(town);
-                return;
-            }*/
-
             town.getAccount().withdraw(SIEGE_VICTORY_MONEY, "Siege Defeat");
             amt = SIEGE_VICTORY_MONEY;
         }
@@ -164,6 +183,31 @@ public class Siege extends Battle {
             .parseMinimessagePlaceholder("town", town.getName())
             .parseMinimessagePlaceholder("attacker", getAttackerSide().getName())
             .build());
+
+        final Title vicAttackTitle = Title.title(
+            ColorParser.of("<green><u><b>Victory")
+                .build(),
+            ColorParser.of("<gray><i><town> has been captured!")
+                .parseMinimessagePlaceholder("town", town.getName())
+                .build(),
+            TITLE_TIMES
+        );
+        final Title losAttackTitle = Title.title(
+            ColorParser.of("<red><u><b>Defeat")
+                .build(),
+            ColorParser.of("<gray><i><town> has been lost!")
+                .parseMinimessagePlaceholder("town", town.getName())
+                .build(),
+            TITLE_TIMES
+        );
+        getAttackers().forEach(player -> {
+            player.showTitle(vicAttackTitle);
+            player.playSound(SOUND_VICTORY);
+        });
+        getDefenders().forEach(player -> {
+            player.showTitle(losAttackTitle);
+            player.playSound(SOUND_DEFEAT);
+        });
 
         if (side1AreAttackers) {
             war.getSide1().addScore(50);
@@ -197,6 +241,31 @@ public class Siege extends Battle {
                 .build()
         );
 
+        final Title vicDefendTitle = Title.title(
+            ColorParser.of("<red><u><b>Defeat")
+                .build(),
+            ColorParser.of("<gray><i>We failed to capture <town>!")
+                .parseMinimessagePlaceholder("town", town.getName())
+                .build(),
+            TITLE_TIMES
+        );
+        final Title losDefendTitle = Title.title(
+            ColorParser.of("<green><u><b>Victory")
+                .build(),
+            ColorParser.of("<gray><i><town> has been made safe!")
+                .parseMinimessagePlaceholder("town", town.getName())
+                .build(),
+            TITLE_TIMES
+        );
+        getAttackers().forEach(player -> {
+            player.showTitle(vicDefendTitle);
+            player.playSound(SOUND_DEFEAT);
+        });
+        getDefenders().forEach(player -> {
+            player.showTitle(losDefendTitle);
+            player.playSound(SOUND_VICTORY);
+        });
+
         if (side1AreAttackers) {
             war.getSide2().addScore(10);
         } else {
@@ -216,6 +285,24 @@ public class Siege extends Battle {
                 .parseMinimessagePlaceholder("town", town.getName())
                 .build()
         );
+
+        final Title drawTitle = Title.title(
+            ColorParser.of("<yellow><u><b>Draw")
+                .build(),
+            ColorParser.of("<gray><i>The siege at <town> has ended!")
+                .parseMinimessagePlaceholder("town", town.getName())
+                .build(),
+            TITLE_TIMES
+        );
+        getAttackers().forEach(player -> {
+            player.showTitle(drawTitle);
+            player.playSound(SOUND_DEFEAT);
+        });
+        getDefenders().forEach(player -> {
+            player.showTitle(drawTitle);
+            player.playSound(SOUND_DEFEAT);
+        });
+
         stop();
     }
 

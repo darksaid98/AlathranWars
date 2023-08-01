@@ -30,7 +30,7 @@ public class SiegeRunnable implements Runnable {
     // Variables
     private @NotNull CaptureProgressDirection oldProgressDirection = UNCONTESTED;
     private Instant nextAnnouncement;
-    private ScheduledTask task;
+    private final ScheduledTask task;
     private @Nullable Laser beam;
 
     /**
