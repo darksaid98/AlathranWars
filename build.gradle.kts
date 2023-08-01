@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.github.alathra.AlathranWars"
-version = "3.0.0-SNAPSHOT-3"
+version = "3.0.0-SNAPSHOT-4"
 description = ""
 
 java {
