@@ -71,7 +71,7 @@ public class SiegeCommands {
                     .setOptional(true)
                     .withPermission("AlathranWars.admin")*/
             )
-            .executesPlayer((Player p, CommandArguments args) -> siegeStart(p, args, false));
+            .executesPlayer((Player p, CommandArguments args) -> siegeStart(p, args, asAdmin));
     }
 
     public static CommandAPICommand commandStop(boolean asAdmin) {
@@ -145,15 +145,14 @@ public class SiegeCommands {
         if (!location.getWorld().equals(townLocation.getWorld()))
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You need to be in the same world as the town you're attacking!").build());
 
-        if (location.distance(townLocation) >= Siege.BATTLEFIELD_START_MAX_RANGE)
+        if (location.distance(townLocation) >= Siege.BATTLEFIELD_START_MAX_RANGE && !asAdmin)
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You need to be within <range> blocks of the town to start a siege!").parseMinimessagePlaceholder("range", String.valueOf(Siege.BATTLEFIELD_START_MAX_RANGE)).build());
 
-        if (location.distance(townLocation) <= Siege.BATTLEFIELD_START_MIN_RANGE)
+        if (location.distance(townLocation) <= Siege.BATTLEFIELD_START_MIN_RANGE && !asAdmin)
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You need to be further than <range> blocks away from the town to start a siege!").parseMinimessagePlaceholder("range", String.valueOf(Siege.BATTLEFIELD_START_MIN_RANGE)).build());
 
-        if ((Main.econ.getBalance(siegeLeader) < Siege.SIEGE_VICTORY_MONEY))
+        if ((Main.econ.getBalance(siegeLeader) < Siege.SIEGE_VICTORY_MONEY) && !asAdmin)
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You need to have $<amount> to start a siege!").parseMinimessagePlaceholder("amount", String.valueOf(Siege.SIEGE_VICTORY_MONEY)).build());
-
 
         side.setSiegeGrace();
         Siege siege = new Siege(war, town, siegeLeader);
