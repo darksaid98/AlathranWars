@@ -1,13 +1,14 @@
 package com.github.alathra.AlathranWars.conflict.battle.siege;
 
 import com.github.alathra.AlathranWars.Main;
+import com.github.alathra.AlathranWars.conflict.battle.beam.CrystalLaser;
+import com.github.alathra.AlathranWars.conflict.battle.beam.Laser;
 import com.github.alathra.AlathranWars.enums.BattleSide;
 import com.github.alathra.AlathranWars.enums.CaptureProgressDirection;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
-import fr.skytasul.guardianbeam.Laser;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -243,7 +244,7 @@ public class SiegeRunnable implements Runnable {
             @Nullable Location loc1 = siege.getTownSpawn();
             @NotNull Location loc2 = new Location(loc1.getWorld(), loc1.getX(), loc1.getY() + 350D, loc1.getZ());
 
-            beam = new Laser.CrystalLaser(loc1, loc2, -1, -1);
+            beam = new CrystalLaser(loc1, loc2, -1, 300);
             beam.start(Main.getInstance());
         } catch (ReflectiveOperationException ignored) {
         }

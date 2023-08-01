@@ -4,6 +4,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1" // Shades and relocates dependencies, See https://imperceptiblethoughts.com/shadow/introduction/
     id("xyz.jpenilla.run-paper") version "2.1.0" // Adds runServer and runMojangMappedServer tasks for testing
     id("net.minecrell.plugin-yml.bukkit") version "0.6.0" // Automatic plugin.yml generation
+    id("io.papermc.paperweight.userdev") version "1.5.5" // Used to develop internal plugins using Mojang mappings
 }
 
 group = "com.github.alathra.AlathranWars"
@@ -49,15 +50,12 @@ repositories {
 dependencies {
     compileOnly("org.jetbrains:annotations:24.0.1")
 
-    compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.19.4-R0.1-SNAPSHOT")
     implementation("space.arim.morepaperlib:morepaperlib:0.4.3")
 
     implementation("com.github.milkdrinkers:simplixstorage:3.2.7")
     implementation("com.github.milkdrinkers:colorparser:2.0.0") {
         exclude(group = "net.kyori", module = "adventure-api")
-    }
-    implementation("io.github.skytasul:guardianbeam:2.3.3") {
-        isTransitive = false
     }
 
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
@@ -118,7 +116,6 @@ tasks {
         reloc("dev.jorel.commandapi", "commandapi")
         reloc("com.zaxxer.hikari", "hikaricp")
         reloc("org.mariadb.jdbc", "mariadb")
-        reloc("fr.skytasul.guardianbeam", "guardianbeam")
     }
 
     runServer {
