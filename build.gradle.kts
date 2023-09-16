@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.github.alathra.AlathranWars"
-version = "3.0.0-SNAPSHOT-4"
+version = "3.0.0-SNAPSHOT-5"
 description = ""
 
 java {
@@ -62,9 +62,7 @@ dependencies {
     implementation("dev.jorel:commandapi-bukkit-shade:9.1.0")
 
     implementation("com.zaxxer:HikariCP:5.0.1")
-    implementation("org.mariadb.jdbc:mariadb-java-client:3.1.4") {
-        isTransitive = false
-    }
+    library("org.mariadb.jdbc:mariadb-java-client:3.1.4")
 
     compileOnly("me.clip:placeholderapi:2.11.3") {
         exclude("me.clip.placeholderapi.libs", "kyori")
@@ -91,7 +89,7 @@ tasks {
         // Set the release flag. This configures what version bytecode the compiler will emit, as well as what JDK APIs are usable.
         // See https://openjdk.java.net/jeps/247 for more information.
         options.release.set(17)
-        options.compilerArgs.add("-Xlint:-deprecation")
+        options.compilerArgs.addAll(arrayListOf("-Xlint:all", "-Xlint:-processing", "-Xdiags:verbose"))
     }
 
     processResources {
@@ -104,19 +102,20 @@ tasks {
 
         // Shadow classes
         // helper function to relocate a package into our package
-        fun reloc(originPkg: String, targetPkg: String) = relocate(originPkg, "${project.group}.${targetPkg}")
+        fun reloc(originPkg: String, targetPkg: String) = relocate(originPkg, "${project.group}.lib.${targetPkg}")
 
         reloc("space.arim.morepaperlib", "morepaperlib")
         reloc("dev.jorel.commandapi", "commandapi")
         reloc("com.github.milkdrinkers.Crate", "crate")
         reloc("com.github.milkdrinkers.colorparser", "colorparser")
         reloc("com.zaxxer.hikari", "hikaricp")
-        reloc("org.mariadb.jdbc", "mariadb")
     }
 
     runServer {
         // Configure the Minecraft version for our task.
-        minecraftVersion("1.19.4")
+        minecraftVersion("1.20.1")
+
+        // IntelliJ IDEA debugger setup: https://docs.papermc.io/paper/dev/debugging#using-a-remote-debugger
         jvmArgs("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005")
         systemProperty("terminal.jline", false)
         systemProperty("terminal.ansi", true)
