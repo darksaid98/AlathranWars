@@ -2,6 +2,9 @@ package com.github.alathra.AlathranWars.listeners.siege;
 
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.utility.Utils;
+import com.palmergames.bukkit.towny.event.deathprice.NationPaysDeathPriceEvent;
+import com.palmergames.bukkit.towny.event.deathprice.PlayerPaysDeathPriceEvent;
+import com.palmergames.bukkit.towny.event.deathprice.TownPaysDeathPriceEvent;
 import com.ranull.graves.event.GraveCreateEvent;
 import io.github.thatsmusic99.headsplus.api.events.PlayerHeadDropEvent;
 import org.bukkit.entity.EntityType;
@@ -27,6 +30,39 @@ public class PlayerDeathListener implements Listener {
         if (!(e.getEntity() instanceof Player p)) return;
 
         Siege siege = Utils.getClosestSiege(p, false);
+        if (siege == null) return;
+
+        if (!Utils.isOnSiegeBattlefield(p, siege)) return;
+
+        e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerPaysDeathPrice(PlayerPaysDeathPriceEvent e) {
+        Player p = e.getDeadResident().getPlayer();
+        Siege siege = Utils.getClosestSiege(p, true);
+        if (siege == null) return;
+
+        if (!Utils.isOnSiegeBattlefield(p, siege)) return;
+
+        e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerPaysDeathPrice(TownPaysDeathPriceEvent e) {
+        Player p = e.getDeadResident().getPlayer();
+        Siege siege = Utils.getClosestSiege(p, true);
+        if (siege == null) return;
+
+        if (!Utils.isOnSiegeBattlefield(p, siege)) return;
+
+        e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerPaysDeathPrice(NationPaysDeathPriceEvent e) {
+        Player p = e.getDeadResident().getPlayer();
+        Siege siege = Utils.getClosestSiege(p, true);
         if (siege == null) return;
 
         if (!Utils.isOnSiegeBattlefield(p, siege)) return;
@@ -82,6 +118,7 @@ public class PlayerDeathListener implements Listener {
         e.setKeepInventory(true);
         e.getDrops().clear();
         e.setKeepLevel(true);
+        e.setDroppedExp(0);
     }
 
     /**
@@ -95,5 +132,6 @@ public class PlayerDeathListener implements Listener {
         e.setKeepInventory(true);
         e.getDrops().clear();
         e.setKeepLevel(true);
+        e.setDroppedExp(0);
     }
 }

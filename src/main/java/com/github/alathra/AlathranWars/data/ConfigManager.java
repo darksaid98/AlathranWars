@@ -1,7 +1,7 @@
 package com.github.alathra.AlathranWars.data;
 
 import com.github.alathra.AlathranWars.Main;
-import de.leonhard.storage.Config;
+import com.github.milkdrinkers.Crate.Config;
 
 public class ConfigManager {
     private final Main instance;

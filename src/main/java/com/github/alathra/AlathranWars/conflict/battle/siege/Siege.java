@@ -108,7 +108,8 @@ public class Siege extends Battle {
      */
     public void start() {
         siegeRunnable = new SiegeRunnable(this);
-        Main.econ.withdrawPlayer(siegeLeader, SIEGE_VICTORY_MONEY);
+        if (!war.isEvent())
+            Main.econ.withdrawPlayer(siegeLeader, SIEGE_VICTORY_MONEY);
 
         final Title.Times times = Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(3500), Duration.ofMillis(500));
         final Title defTitle = Title.title(
@@ -165,18 +166,20 @@ public class Siege extends Battle {
     }
 
     public void attackersWin() {
-        Main.econ.depositPlayer(siegeLeader, SIEGE_VICTORY_MONEY);
-        double amt;
+        if (!war.isEvent()) {
+            Main.econ.depositPlayer(siegeLeader, SIEGE_VICTORY_MONEY);
+            double amt;
 
-        if (town.getAccount().getHoldingBalance() > 10000.0) {
-            amt = Math.floor(town.getAccount().getHoldingBalance()) / 4.0;
-            town.getAccount().withdraw(amt, "Siege Defeat");
-        } else {
-            town.getAccount().withdraw(SIEGE_VICTORY_MONEY, "Siege Defeat");
-            amt = SIEGE_VICTORY_MONEY;
+            if (town.getAccount().getHoldingBalance() > 10000.0) {
+                amt = Math.floor(town.getAccount().getHoldingBalance()) / 4.0;
+                town.getAccount().withdraw(amt, "Siege Defeat");
+            } else {
+                town.getAccount().withdraw(SIEGE_VICTORY_MONEY, "Siege Defeat");
+                amt = SIEGE_VICTORY_MONEY;
+            }
+
+            Main.econ.depositPlayer(siegeLeader, amt);
         }
-
-        Main.econ.depositPlayer(siegeLeader, amt);
 
         Bukkit.broadcast(ColorParser.of("<prefix>The town of <town> has been sacked and placed under occupation by the armies of <attacker>!")
             .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
@@ -219,20 +222,23 @@ public class Siege extends Battle {
 
         stop();
 
-        Side townSide = getWar().getTownSide(town);
-        Side attackerSide = getAttackerSide();
+        if (!war.isEvent()) {
+            Side townSide = getWar().getTownSide(town);
+            Side attackerSide = getAttackerSide();
 
-        if (attackerSide.equals(townSide)) {
-            if (townSide.isTownSurrendered(town))
-                war.unsurrenderTown(town);
-        } else {
-            if (!townSide.isTownSurrendered(town))
-                war.surrenderTown(town);
+            if (attackerSide.equals(townSide)) {
+                if (townSide.isTownSurrendered(town))
+                    war.unsurrenderTown(town);
+            } else {
+                if (!townSide.isTownSurrendered(town))
+                    war.surrenderTown(town);
+            }
         }
     }
 
     public void defendersWin() {
-        town.getAccount().deposit(SIEGE_VICTORY_MONEY, "Siege Victory");
+        if (!war.isEvent())
+            town.getAccount().deposit(SIEGE_VICTORY_MONEY, "Siege Victory");
 
         Bukkit.broadcast(
             ColorParser.of("<prefix>The siege of <town> has been lifted by the defenders!")

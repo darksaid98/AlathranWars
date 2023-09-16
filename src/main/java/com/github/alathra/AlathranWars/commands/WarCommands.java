@@ -13,6 +13,7 @@ import com.palmergames.bukkit.towny.object.Town;
 import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
+import dev.jorel.commandapi.arguments.BooleanArgument;
 import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import dev.jorel.commandapi.arguments.PlayerArgument;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
@@ -21,6 +22,7 @@ import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -58,6 +60,7 @@ public class WarCommands {
             .withArguments(
                 CommandUtil.customTownAndNationArgument("side1", "war", false),
                 CommandUtil.customTownAndNationArgument("side2", "war", false),
+                new BooleanArgument("event"),
                 new GreedyStringArgument("warlabel")
                     .replaceSuggestions(
                         ArgumentSuggestions.stringCollection(info -> List.of(
@@ -89,7 +92,17 @@ public class WarCommands {
 //                new PlayerArgument("nation").setOptional(true).withPermission("AlathranWars.admin.join"),
 //                new PlayerArgument("town").setOptional(true).withPermission("AlathranWars.admin.join")
             )
-            .executesPlayer((Player p, CommandArguments args) -> warJoin(p, args, false));
+            .executesPlayer((Player p, CommandArguments args) -> warJoin(p, args, asAdmin));
+    }
+
+    public static CommandAPICommand commandJoinNear() {
+        return new CommandAPICommand("joinnear")
+            .withPermission("AlathranWars.admin")
+            .withArguments(
+                CommandUtil.warWarArgument("war", true, ALL_WARS, ""),
+                CommandUtil.warSideCreateArgument("side", "war", true, false, "")
+            )
+            .executesPlayer((Player p, CommandArguments args) -> warJoinNear(p, args, true));
     }
 
     public static CommandAPICommand commandSurrender(boolean asAdmin) {
@@ -123,6 +136,8 @@ public class WarCommands {
         if (Objects.equals(args.get("side1"), args.get("side2")))
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>Cannot declare war on oneself.").build());
 
+        final boolean event = (boolean) args.getOrDefault("event", false);
+
         final UUID uuid1 = (UUID) args.get("side1");
         final UUID uuid2 = (UUID) args.get("side2");
 
@@ -142,25 +157,25 @@ public class WarCommands {
 
                 // Allow civil wars
                 if (nation2.getUUID() != nation1.getUUID()) {
-                    new War(argLabel, nation1, nation2);
+                    new War(argLabel, nation1, nation2, event);
                 } else {
-                    new War(argLabel, town1, town2);
+                    new War(argLabel, town1, town2, event);
                 }
 
             } else if (town2 != null) { // Nation vs Town
 
-                new War(argLabel, nation1, town2);
+                new War(argLabel, nation1, town2, event);
 
             }
         } else if (town1 != null) {
 
             if (town2 != null) { // Town vs Town
 
-                new War(argLabel, town1, town2);
+                new War(argLabel, town1, town2, event);
 
             } else if (nation2 != null) { // Nation vs Town
 
-                new War(argLabel, town1, nation2);
+                new War(argLabel, town1, nation2, event);
 
             }
 
@@ -209,70 +224,72 @@ public class WarCommands {
         final boolean canKingJoin = (res.hasNation() && res.getNationOrNull().equals(nation) && res.isKing() && nation.isKing(res));
         final boolean canMayorJoin = (res.hasTown() && res.getTownOrNull().equals(town) && res.isMayor() && town.isMayor(res));
 
-        // Join nation into war
-        if (isNation && nation != null && !war.isNationInWar(nation) && (asAdmin || canKingJoin)) {
-            side.addNation(nation);
-            nation.getResidents().stream().filter(Resident::isOnline).map(Resident::getPlayer).toList().forEach(PlayerJoinListener::checkPlayer);
-            Bukkit.broadcast(
-                ColorParser.of(
-                        "<prefix>The nation of <nation> joined the war of <war> on the side of <side>."
-                    )
-                    .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
-                    .parseMinimessagePlaceholder("nation", nation.getName())
-                    .parseMinimessagePlaceholder("war", war.getLabel())
-                    .parseMinimessagePlaceholder("side", side.getName())
-                    .build()
-            );
-            final Title warTitle = Title.title(
-                ColorParser.of("<gradient:#D72A09:#B01F03><u><b>War")
-                    .build(),
-                ColorParser.of("<gray><i>You entered the war of <war>!")
-                    .parseMinimessagePlaceholder("war", war.getLabel())
-                    .build(),
-                Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(3500), Duration.ofMillis(500))
-            );
-            final Sound warSound = Sound.sound(Key.key("entity.wither.spawn"), Sound.Source.VOICE, 0.5f, 1.0F);
+        if (!war.isEvent()) {
+            // Join nation into war
+            if (isNation && nation != null && !war.isNationInWar(nation) && (asAdmin || canKingJoin)) {
+                side.addNation(nation);
+                nation.getResidents().stream().filter(Resident::isOnline).map(Resident::getPlayer).toList().forEach(PlayerJoinListener::checkPlayer);
+                Bukkit.broadcast(
+                    ColorParser.of(
+                            "<prefix>The nation of <nation> joined the war of <war> on the side of <side>."
+                        )
+                        .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
+                        .parseMinimessagePlaceholder("nation", nation.getName())
+                        .parseMinimessagePlaceholder("war", war.getLabel())
+                        .parseMinimessagePlaceholder("side", side.getName())
+                        .build()
+                );
+                final Title warTitle = Title.title(
+                    ColorParser.of("<gradient:#D72A09:#B01F03><u><b>War")
+                        .build(),
+                    ColorParser.of("<gray><i>You entered the war of <war>!")
+                        .parseMinimessagePlaceholder("war", war.getLabel())
+                        .build(),
+                    Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(3500), Duration.ofMillis(500))
+                );
+                final Sound warSound = Sound.sound(Key.key("entity.wither.spawn"), Sound.Source.VOICE, 0.5f, 1.0F);
 
-            nation.getResidents().stream().filter(Resident::isOnline).map(Resident::getPlayer).toList().forEach(player -> {
-                player.showTitle(warTitle);
-                player.playSound(warSound);
-            });
-            return;
-        } else if (town == null && nation != null && (!canKingJoin || !asAdmin)) {
-            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Nation is already in that war.").build());
-        }
+                nation.getResidents().stream().filter(Resident::isOnline).map(Resident::getPlayer).toList().forEach(player -> {
+                    player.showTitle(warTitle);
+                    player.playSound(warSound);
+                });
+                return;
+            } else if (town == null && nation != null && (!canKingJoin || !asAdmin)) {
+                throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Nation is already in that war.").build());
+            }
 
-        // Join town into war
-        if (isTown && town != null && !war.isTownInWar(town) && (asAdmin || canMayorJoin)) {
-            side.addTown(town);
-            town.getResidents().stream().filter(Resident::isOnline).map(Resident::getPlayer).toList().forEach(PlayerJoinListener::checkPlayer);
-            Bukkit.broadcast(
-                ColorParser.of(
-                        "<prefix>The town of <town> joined the war of <war> on the side of <side>."
-                    )
-                    .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
-                    .parseMinimessagePlaceholder("town", town.getName())
-                    .parseMinimessagePlaceholder("war", war.getLabel())
-                    .parseMinimessagePlaceholder("side", side.getName())
-                    .build()
-            );
-            final Title warTitle = Title.title(
-                ColorParser.of("<gradient:#D72A09:#B01F03><u><b>War")
-                    .build(),
-                ColorParser.of("<gray><i>You entered the war of <war>!")
-                    .parseMinimessagePlaceholder("war", war.getLabel())
-                    .build(),
-                Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(3500), Duration.ofMillis(500))
-            );
-            final Sound warSound = Sound.sound(Key.key("entity.wither.spawn"), Sound.Source.VOICE, 0.5f, 1.0F);
+            // Join town into war
+            if (isTown && town != null && !war.isTownInWar(town) && (asAdmin || canMayorJoin)) {
+                side.addTown(town);
+                town.getResidents().stream().filter(Resident::isOnline).map(Resident::getPlayer).toList().forEach(PlayerJoinListener::checkPlayer);
+                Bukkit.broadcast(
+                    ColorParser.of(
+                            "<prefix>The town of <town> joined the war of <war> on the side of <side>."
+                        )
+                        .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
+                        .parseMinimessagePlaceholder("town", town.getName())
+                        .parseMinimessagePlaceholder("war", war.getLabel())
+                        .parseMinimessagePlaceholder("side", side.getName())
+                        .build()
+                );
+                final Title warTitle = Title.title(
+                    ColorParser.of("<gradient:#D72A09:#B01F03><u><b>War")
+                        .build(),
+                    ColorParser.of("<gray><i>You entered the war of <war>!")
+                        .parseMinimessagePlaceholder("war", war.getLabel())
+                        .build(),
+                    Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(3500), Duration.ofMillis(500))
+                );
+                final Sound warSound = Sound.sound(Key.key("entity.wither.spawn"), Sound.Source.VOICE, 0.5f, 1.0F);
 
-            town.getResidents().stream().filter(Resident::isOnline).map(Resident::getPlayer).toList().forEach(player -> {
-                player.showTitle(warTitle);
-                player.playSound(warSound);
-            });
-            return;
-        } else if (targetPlayer == null && town != null && !canMayorJoin) {
-            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Town is already in that war.").build());
+                town.getResidents().stream().filter(Resident::isOnline).map(Resident::getPlayer).toList().forEach(player -> {
+                    player.showTitle(warTitle);
+                    player.playSound(warSound);
+                });
+                return;
+            } else if (targetPlayer == null && town != null && !canMayorJoin) {
+                throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Town is already in that war.").build());
+            }
         }
 
         // Join player into war
@@ -311,6 +328,40 @@ public class WarCommands {
                 siege.addPlayer(argPlayer, BattleSide.DEFENDER);
             }
         }*/
+    }
+
+    protected static void warJoinNear(@NotNull Player p, @NotNull CommandArguments args, boolean asAdmin) throws WrapperCommandSyntaxException {
+        War war = (War) args.get("war");
+        if (war == null) return;
+
+        if (!(args.get("side") instanceof final Side side))
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You need to specify a side.").build());
+
+        final Location location = p.getLocation();
+
+        for (Player targetPlayer : Bukkit.getOnlinePlayers()) {
+            if (p.equals(targetPlayer)) continue;
+            final Location targetLocation = targetPlayer.getLocation();
+            if (!location.getWorld().equals(targetLocation.getWorld())) continue;
+            if (location.distance(targetLocation) > 25D) continue;
+            if (war.isPlayerInWar(targetPlayer)) continue;
+
+            targetPlayer.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "You have joined the war.").build());
+            side.addPlayer(targetPlayer);
+            PlayerJoinListener.checkPlayer(targetPlayer);
+            final Title warTitle = Title.title(
+                ColorParser.of("<gradient:#D72A09:#B01F03><u><b>War")
+                    .build(),
+                ColorParser.of("<gray><i>You entered the war of <war>!")
+                    .parseMinimessagePlaceholder("war", war.getLabel())
+                    .build(),
+                Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(3500), Duration.ofMillis(500))
+            );
+            final Sound warSound = Sound.sound(Key.key("entity.wither.spawn"), Sound.Source.VOICE, 0.5f, 1.0F);
+
+            targetPlayer.showTitle(warTitle);
+            targetPlayer.playSound(warSound);
+        }
     }
 
     protected static void warSurrender(@NotNull Player p, @NotNull CommandArguments args, boolean asAdmin) throws WrapperCommandSyntaxException {

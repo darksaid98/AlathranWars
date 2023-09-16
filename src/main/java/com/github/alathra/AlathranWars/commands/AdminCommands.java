@@ -96,6 +96,7 @@ public class AdminCommands {
                 WarCommands.commandCreate(true),
                 WarCommands.commandDelete(true),
                 WarCommands.commandJoin(true),
+                WarCommands.commandJoinNear(),
                 WarCommands.commandSurrender(true),
                 WarCommands.commandList(),
                 WarCommands.commandInfo()

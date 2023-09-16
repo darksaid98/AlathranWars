@@ -144,6 +144,10 @@ public abstract class SQLQueries {
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
                 """);
 
+            statement.addBatch("""
+                    ALTER TABLE `wars_list` ADD COLUMN `event` BIT NOT NULL DEFAULT 0 AFTER `side2`;
+                """);
+
             statement.executeLargeBatch();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -153,8 +157,8 @@ public abstract class SQLQueries {
     public static void saveAll() {
         try (
             @NotNull Connection con = DB.get();
-            PreparedStatement warStatement = con.prepareStatement("INSERT INTO `wars_list` (`uuid`, `name`, `label`, `side1`, `side2`) VALUES (?, ?, ?, ?, ?) "
-                + "ON DUPLICATE KEY UPDATE `name` = ?, `label` = ?, `side1` = ?, `side2` = ?")
+            PreparedStatement warStatement = con.prepareStatement("INSERT INTO `wars_list` (`uuid`, `name`, `label`, `side1`, `side2`, `event`) VALUES (?, ?, ?, ?, ?, ?) "
+                + "ON DUPLICATE KEY UPDATE `name` = ?, `label` = ?, `side1` = ?, `side2` = ?, `event` = ?")
         ) {
             // Save wars
             for (@NotNull War war : WarManager.getInstance().getWars()) {
@@ -164,12 +168,14 @@ public abstract class SQLQueries {
                 warStatement.setString(3, war.getLabel());
                 warStatement.setString(4, war.getSide1().getUUID().toString());
                 warStatement.setString(5, war.getSide2().getUUID().toString());
+                warStatement.setBoolean(6, war.isEvent());
 
                 // Update
-                warStatement.setString(6, war.getName());
-                warStatement.setString(7, war.getLabel());
-                warStatement.setString(8, war.getSide1().getUUID().toString());
-                warStatement.setString(9, war.getSide2().getUUID().toString());
+                warStatement.setString(7, war.getName());
+                warStatement.setString(8, war.getLabel());
+                warStatement.setString(9, war.getSide1().getUUID().toString());
+                warStatement.setString(10, war.getSide2().getUUID().toString());
+                warStatement.setBoolean(11, war.isEvent());
 
                 warStatement.executeUpdate();
 
@@ -336,6 +342,7 @@ public abstract class SQLQueries {
                 @NotNull UUID side2UUID = UUID.fromString(warsResult.getString("side2"));
                 @NotNull Side side1 = loadSide(con, uuid, side1UUID);
                 @NotNull Side side2 = loadSide(con, uuid, side2UUID);
+                boolean event = warsResult.getBoolean("event");
 
                 wars.add(new War(
                     uuid,
@@ -344,7 +351,8 @@ public abstract class SQLQueries {
                     side1,
                     side2,
                     new HashSet<>(),
-                    new HashSet<>()
+                    new HashSet<>(),
+                    event
                 ));
             }
 

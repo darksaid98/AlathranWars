@@ -19,7 +19,9 @@ repositories {
     mavenCentral()
 
     maven("https://papermc.io/repo/repository/maven-public/")
-    maven("https://mvn-repo.arim.space/lesser-gpl3/")
+    maven("https://mvn-repo.arim.space/lesser-gpl3/") {
+        content { includeGroup("space.arim.morepaperlib") }
+    }
 
     maven("https://repo.glaremasters.me/repository/towny/") {
         content { includeGroup("com.palmergames.bukkit.towny") }
@@ -49,28 +51,15 @@ repositories {
 
 dependencies {
     compileOnly("org.jetbrains:annotations:24.0.1")
+    annotationProcessor("org.jetbrains:annotations:24.0.1")
 
-    paperweight.paperDevBundle("1.19.4-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.20.1-R0.1-SNAPSHOT")
     implementation("space.arim.morepaperlib:morepaperlib:0.4.3")
 
-    implementation("com.github.milkdrinkers:simplixstorage:3.2.7")
-    implementation("com.github.milkdrinkers:colorparser:2.0.0") {
-        exclude(group = "net.kyori", module = "adventure-api")
-    }
+    implementation("com.github.milkdrinkers:crate:1.1.0")
+    implementation("com.github.milkdrinkers:colorparser:2.0.0")
 
-    compileOnly("com.github.MilkBowl:VaultAPI:1.7")
-
-    compileOnly("com.palmergames.bukkit.towny:towny:0.99.5.7") {
-        exclude(group = "com.palmergames.adventure")
-    }
-
-    compileOnly("me.neznamy:tab-api:4.0.0")
-
-    implementation("dev.jorel:commandapi-bukkit-shade:9.0.3") {
-        exclude(group = "net.kyori", module = "adventure-api")
-    }
-    compileOnly("dev.jorel:commandapi-annotations:9.0.3")
-    annotationProcessor("dev.jorel:commandapi-annotations:9.0.3")
+    implementation("dev.jorel:commandapi-bukkit-shade:9.1.0")
 
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("org.mariadb.jdbc:mariadb-java-client:3.1.4") {
@@ -78,11 +67,17 @@ dependencies {
     }
 
     compileOnly("me.clip:placeholderapi:2.11.3") {
-        exclude(group = "me.clip.placeholderapi.libs", module = "kyori")
+        exclude("me.clip.placeholderapi.libs", "kyori")
     }
+    compileOnly("com.github.MilkBowl:VaultAPI:1.7")
+    compileOnly("com.palmergames.bukkit.towny:towny:0.99.5.7") {
+        exclude("com.palmergames.adventure")
+    }
+    compileOnly("me.neznamy:tab-api:4.0.0")
     compileOnly(files("lib/Graves-4.9.jar"))
-    compileOnly("com.github.Gecolay.GSit:core:1.4.9")
+    compileOnly("com.github.Gecolay.GSit:core:1.4.10")
     compileOnly(files("lib/HeadsPlus-7.0.14.jar"))
+    compileOnly(files("lib/Skulls.jar"))
 }
 
 tasks {
@@ -112,8 +107,9 @@ tasks {
         fun reloc(originPkg: String, targetPkg: String) = relocate(originPkg, "${project.group}.${targetPkg}")
 
         reloc("space.arim.morepaperlib", "morepaperlib")
-        reloc("de.leonhard.storage", "storageapi")
         reloc("dev.jorel.commandapi", "commandapi")
+        reloc("com.github.milkdrinkers.Crate", "crate")
+        reloc("com.github.milkdrinkers.colorparser", "colorparser")
         reloc("com.zaxxer.hikari", "hikaricp")
         reloc("org.mariadb.jdbc", "mariadb")
     }
@@ -138,10 +134,10 @@ bukkit {
     description = "${project.description}"
     authors = listOf("darksaid98", "ShermansWorld", "NinjaMandalorian", "AubriTheHuman")
     contributors = listOf()
-    apiVersion = "1.19"
+    apiVersion = "1.20"
 
     // Misc properties
     load = net.minecrell.pluginyml.bukkit.BukkitPluginDescription.PluginLoadOrder.POSTWORLD // STARTUP or POSTWORLD
     depend = listOf("Vault", "Towny")
-    softDepend = listOf("TAB")
+    softDepend = listOf("TAB", "Skulls", "HeadsPlus")
 }

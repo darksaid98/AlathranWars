@@ -38,6 +38,7 @@ public class War extends Conflict {
     private final String name; // Used in commands and such, like "TidalHaven.vs.Meme"
     private final String label;
     private final ConflictType conflictType = ConflictType.WAR;
+    private boolean event = false;
 
     private final @NotNull Side side1;
     private final Side side2;
@@ -54,7 +55,8 @@ public class War extends Conflict {
         @NotNull Side side1,
         Side side2,
         Set<Siege> sieges,
-        Set<Raid> raids
+        Set<Raid> raids,
+        boolean event
     ) {
         this.uuid = uuid;
         this.name = name;
@@ -68,6 +70,7 @@ public class War extends Conflict {
 
         this.sieges = sieges;
         this.raids = raids;
+        this.event = event;
 
         resume();
     }
@@ -79,7 +82,7 @@ public class War extends Conflict {
      * @param aggressor the side 1
      * @param victim    the side 2
      */
-    public War(final String label, @NotNull Town aggressor, @NotNull Town victim) throws WrapperCommandSyntaxException {
+    public War(final String label, @NotNull Town aggressor, @NotNull Town victim, boolean event) throws WrapperCommandSyntaxException {
         this.uuid = UUIDUtil.generateWarUUID();
         this.name = "%s.vs.%s".formatted(aggressor.getName(), victim.getName());
         this.label = label;
@@ -94,13 +97,14 @@ public class War extends Conflict {
 
         this.attacker = side1.getSide().equals(BattleSide.ATTACKER) ? this.side1 : this.side2;
         this.defender = side1.getSide().equals(BattleSide.DEFENDER) ? this.side1 : this.side2;
+        this.event = event;
 
         WarManager.getInstance().addWar(this);
 
         start();
     }
 
-    public War(final String label, @NotNull Nation aggressor, @NotNull Nation victim) throws WrapperCommandSyntaxException {
+    public War(final String label, @NotNull Nation aggressor, @NotNull Nation victim, boolean event) throws WrapperCommandSyntaxException {
         this.uuid = UUIDUtil.generateWarUUID();
         this.name = "%s.vs.%s".formatted(aggressor.getName(), victim.getName());
         this.label = label;
@@ -115,13 +119,14 @@ public class War extends Conflict {
 
         this.attacker = side1.getSide().equals(BattleSide.ATTACKER) ? this.side1 : this.side2;
         this.defender = side1.getSide().equals(BattleSide.DEFENDER) ? this.side1 : this.side2;
+        this.event = event;
 
         WarManager.getInstance().addWar(this);
 
         start();
     }
 
-    public War(final String label, @NotNull Town aggressor, @NotNull Nation victim) throws WrapperCommandSyntaxException {
+    public War(final String label, @NotNull Town aggressor, @NotNull Nation victim, boolean event) throws WrapperCommandSyntaxException {
         this.uuid = UUIDUtil.generateWarUUID();
         this.name = "%s.vs.%s".formatted(aggressor.getName(), victim.getName());
         this.label = label;
@@ -136,13 +141,14 @@ public class War extends Conflict {
 
         this.attacker = side1.getSide().equals(BattleSide.ATTACKER) ? this.side1 : this.side2;
         this.defender = side1.getSide().equals(BattleSide.DEFENDER) ? this.side1 : this.side2;
+        this.event = event;
 
         WarManager.getInstance().addWar(this);
 
         start();
     }
 
-    public War(final String label, @NotNull Nation aggressor, @NotNull Town victim) throws WrapperCommandSyntaxException {
+    public War(final String label, @NotNull Nation aggressor, @NotNull Town victim, boolean event) throws WrapperCommandSyntaxException {
         this.uuid = UUIDUtil.generateWarUUID();
         this.name = "%s.vs.%s".formatted(aggressor.getName(), victim.getName());
         this.label = label;
@@ -157,6 +163,7 @@ public class War extends Conflict {
 
         this.attacker = side1.getSide().equals(BattleSide.ATTACKER) ? this.side1 : this.side2;
         this.defender = side1.getSide().equals(BattleSide.DEFENDER) ? this.side1 : this.side2;
+        this.event = event;
 
         WarManager.getInstance().addWar(this);
 
@@ -634,5 +641,13 @@ public class War extends Conflict {
         );
 
         end();
+    }
+
+    public void setEvent(boolean event) {
+        this.event = event;
+    }
+
+    public boolean isEvent() {
+        return event;
     }
 }
