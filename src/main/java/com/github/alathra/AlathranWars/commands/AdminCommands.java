@@ -99,7 +99,8 @@ public class AdminCommands {
                 WarCommands.commandJoinNear(),
                 WarCommands.commandSurrender(true),
                 WarCommands.commandList(),
-                WarCommands.commandInfo()
+                WarCommands.commandInfo(),
+                WarCommands.commandKick()
             );
     }
 

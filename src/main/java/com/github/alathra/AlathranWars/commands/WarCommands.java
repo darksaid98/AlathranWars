@@ -129,6 +129,17 @@ public class WarCommands {
             .executesPlayer(WarCommands::warInfo);
     }
 
+    public static CommandAPICommand commandKick() {
+        return new CommandAPICommand("kick")
+            .withArguments(
+                CommandUtil.warWarArgument("war", true, ALL_WARS, "player"),
+                new PlayerArgument("player")
+                    .setOptional(true)
+                    .withPermission("AlathranWars.admin")
+            )
+            .executesPlayer(WarCommands::warKick);
+    }
+
     protected static void warCreate(CommandSender p, @NotNull CommandArguments args) throws WrapperCommandSyntaxException {
         if (!(args.get("warlabel") instanceof final String argLabel))
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You need to specify a war label.").build());
@@ -408,6 +419,26 @@ public class WarCommands {
             // No perms
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You cannot surrender war for your town.").build());
         }
+    }
+
+    protected static void warKick(@NotNull Player p, @NotNull CommandArguments args) throws WrapperCommandSyntaxException {
+        War war = (War) args.get("war");
+        if (war == null) return;
+
+        if (!(args.getOptional("player").orElse(p) instanceof Player argPlayer))
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Player not found.").build());
+
+        if (!war.isPlayerInWar(argPlayer))
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>The player is not in that war.").build());
+
+        @Nullable Side side = war.getPlayerSide(argPlayer);
+        if (side == null)
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>The player is not in that war.").build());
+
+        p.sendMessage(ColorParser.of("Target yeeted.").build());
+        side.removePlayer(argPlayer);
+
+        PlayerJoinListener.checkPlayer(argPlayer);
     }
 
     private static void warList(@NotNull Player p, CommandArguments args) throws WrapperCommandSyntaxException {
