@@ -35,11 +35,11 @@ public class CommandsListener implements Listener {
         "t withdraw", "town withdraw"
     };
     final static String[] BLACKLISTED_SHORT = new String[]{
-        "home", "homes", "warp", "warps",
-        "wild", "rtp", "spawn", "wilderness", "wildtp",
+        "homes",
+        "wild", "rtp", "wilderness", "wildtp",
         "tpa", "tpahere", "tpaccept", "tpacancel",
         "etpa", "etpahere", "etpaccept", "etpacancel",
-        "ehome", "ehomes", "ewarp", "ewarps"
+        "ehomes"
 
     };
 
