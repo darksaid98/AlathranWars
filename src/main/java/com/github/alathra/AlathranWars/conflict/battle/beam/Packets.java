@@ -111,7 +111,7 @@ class Packets {
             }
 //            logger.info("Loaded mappings " + mappings.name());
 
-            Class<?> entityTypesClass = EntityType.class;
+            Class<?> entityTypesClass = getNMSClass("world.entity", "EntityTypes");
             Class<Entity> entityClass = Entity.class;
             Class<EndCrystal> crystalClass = EndCrystal.class;
             Class<?> squidClass = Squid.class;
