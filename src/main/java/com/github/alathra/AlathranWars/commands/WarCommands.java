@@ -223,12 +223,12 @@ public class WarCommands {
         @Nullable Nation nation = res.hasNation() ? res.getNationOrNull() : TownyAPI.getInstance().getNation(targetString);
         @Nullable Town town = res.hasTown() ? res.getTownOrNull() : TownyAPI.getInstance().getTown(targetString);
 
-        final boolean isNation = nation != null;
-        final boolean isTown = town != null;
-        final boolean isPlayer = targetPlayer != null;
+        final boolean isArgNation = nation != null;
+        final boolean isArgTown = town != null;
+        final boolean isArgPlayer = targetPlayer != null;
 
         // If no valid targets
-        if ((!isNation && !isTown && !isPlayer))
+        if ((!isArgNation && !isArgTown && !isArgPlayer))
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Invalid target.").build());
 
         // Check if player can validly join or not
@@ -237,7 +237,7 @@ public class WarCommands {
 
         if (!war.isEvent()) {
             // Join nation into war
-            if (isNation && nation != null && !war.isNationInWar(nation) && (asAdmin || canKingJoin)) {
+            if (isArgNation && nation != null && !war.isNationInWar(nation) && (asAdmin || canKingJoin)) {
                 side.addNation(nation);
                 nation.getResidents().stream().filter(Resident::isOnline).map(Resident::getPlayer).toList().forEach(PlayerJoinListener::checkPlayer);
                 Bukkit.broadcast(
@@ -270,7 +270,7 @@ public class WarCommands {
             }
 
             // Join town into war
-            if (isTown && town != null && !war.isTownInWar(town) && (asAdmin || canMayorJoin)) {
+            if (isArgTown && town != null && !war.isTownInWar(town) && (asAdmin || canMayorJoin)) {
                 side.addTown(town);
                 town.getResidents().stream().filter(Resident::isOnline).map(Resident::getPlayer).toList().forEach(PlayerJoinListener::checkPlayer);
                 Bukkit.broadcast(
@@ -304,7 +304,7 @@ public class WarCommands {
         }
 
         // Join player into war
-        if (isPlayer && targetPlayer != null && !war.isPlayerInWar(targetPlayer) && asAdmin) {
+        if (isArgPlayer && targetPlayer != null && !war.isPlayerInWar(targetPlayer) && asAdmin) {
             targetPlayer.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "You have joined the war.").build());
             side.addPlayer(targetPlayer);
             PlayerJoinListener.checkPlayer(targetPlayer);
