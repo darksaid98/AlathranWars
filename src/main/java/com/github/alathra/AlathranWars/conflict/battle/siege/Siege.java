@@ -31,7 +31,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Siege extends Battle {
+public class Siege implements Battle {
     public static final Duration SIEGE_DURATION = Duration.ofMinutes(60);
     public static final int MAX_SIEGE_PROGRESS_MINUTES = 8; // How many minutes attackers will need to be on point uncontested for to reach 100%
     public static final int MAX_SIEGE_PROGRESS = 60 * 10 * MAX_SIEGE_PROGRESS_MINUTES; // On reaching this, the attackers win. 10 points is added per second
@@ -284,7 +284,7 @@ public class Siege extends Battle {
     /**
      * No winner declared
      */
-    public void noWinner() {
+    public void equalWin() {
         Bukkit.broadcast(
             ColorParser.of("<prefix>The siege of <town> has ended in a draw!")
                 .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())

@@ -176,7 +176,7 @@ public class SiegeCommands {
         if (!(args.get("siege") instanceof final @NotNull Siege siege))
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Invalid siege.").build());
 
-        siege.noWinner();
+        siege.equalWin();
     }
 
     private static void siegeAbandon(Player p, @NotNull CommandArguments args, boolean asAdmin) throws WrapperCommandSyntaxException {
