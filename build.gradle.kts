@@ -53,27 +53,27 @@ dependencies {
     compileOnly("org.jetbrains:annotations:24.0.1")
     annotationProcessor("org.jetbrains:annotations:24.0.1")
 
-    paperweight.paperDevBundle("1.20.1-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.20.2-R0.1-SNAPSHOT")
     implementation("space.arim.morepaperlib:morepaperlib:0.4.3")
 
     implementation("com.github.milkdrinkers:crate:1.1.0")
     implementation("com.github.milkdrinkers:colorparser:2.0.0")
 
-    implementation("dev.jorel:commandapi-bukkit-shade:9.1.0")
+    implementation("dev.jorel:commandapi-bukkit-shade:9.2.0")
 
     implementation("com.zaxxer:HikariCP:5.0.1")
     library("org.mariadb.jdbc:mariadb-java-client:3.1.4")
 
-    compileOnly("me.clip:placeholderapi:2.11.3") {
+    compileOnly("me.clip:placeholderapi:2.11.4") {
         exclude("me.clip.placeholderapi.libs", "kyori")
     }
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
-    compileOnly("com.palmergames.bukkit.towny:towny:0.99.5.7") {
+    compileOnly("com.palmergames.bukkit.towny:towny:0.99.6.0") {
         exclude("com.palmergames.adventure")
     }
     compileOnly("me.neznamy:tab-api:4.0.0")
     compileOnly(files("lib/Graves-4.9.jar"))
-    compileOnly("com.github.Gecolay.GSit:core:1.4.10")
+    compileOnly("com.github.Gecolay.GSit:core:1.5.0")
     compileOnly(files("lib/HeadsPlus-7.0.14.jar"))
     compileOnly(files("lib/Skulls.jar"))
 }
