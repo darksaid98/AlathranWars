@@ -5,14 +5,18 @@ plugins {
     id("xyz.jpenilla.run-paper") version "2.1.0" // Adds runServer and runMojangMappedServer tasks for testing
     id("net.minecrell.plugin-yml.bukkit") version "0.6.0" // Automatic plugin.yml generation
     id("io.papermc.paperweight.userdev") version "1.5.5" // Used to develop internal plugins using Mojang mappings
+
+    eclipse
+    idea
 }
 
-group = "com.github.alathra.AlathranWars"
-version = "3.0.0-SNAPSHOT-7"
+group = "com.github.alathra"
+version = "3.0.0-RC-1"
 description = ""
+val mainPackage = "${project.group}.${rootProject.name}"
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17)) // Configure the java toolchain. This allows gradle to auto-provision JDK 17 on systems that only have JDK 8 installed for example.
+    toolchain.languageVersion.set(JavaLanguageVersion.of(JavaVersion.VERSION_17.majorVersion)) // Configure the java toolchain. This allows gradle to auto-provision JDK 17 on systems that only have JDK 8 installed for example.
 }
 
 repositories {
@@ -122,13 +126,13 @@ tasks {
     }
 }
 
-bukkit {
+bukkit { // Options: https://github.com/Minecrell/plugin-yml#bukkit
     // Plugin main class (required)
-    main = "${project.group}.Main"
+    main = "${mainPackage}.${rootProject.name}"
 
     // Plugin Information
     name = project.name
-    prefix = "AlathranWars"
+    prefix = project.name
     version = "${project.version}"
     description = "${project.description}"
     authors = listOf("darksaid98", "ShermansWorld", "NinjaMandalorian", "AubriTheHuman")
@@ -139,4 +143,14 @@ bukkit {
     load = net.minecrell.pluginyml.bukkit.BukkitPluginDescription.PluginLoadOrder.POSTWORLD // STARTUP or POSTWORLD
     depend = listOf("Vault", "Towny")
     softDepend = listOf("TAB", "Skulls", "HeadsPlus")
-}
+}// Apply custom version arg
+val versionArg = if (hasProperty("customVersion"))
+    (properties["customVersion"] as String).uppercase() // Uppercase version string
+else
+    "${project.version}-SNAPSHOT-${Instant.now().epochSecond}" // Append snapshot to version
+
+// Strip prefixed "v" from version tag
+project.version = if (versionArg.first().equals('v', true))
+    versionArg.substring(1)
+else
+    versionArg.uppercase()
