@@ -1,10 +1,18 @@
+import org.jooq.codegen.GenerationTool
+import org.jooq.meta.jaxb.Configuration
+import org.jooq.meta.jaxb.Database
+import org.jooq.meta.jaxb.Generator
+import org.jooq.meta.jaxb.Jdbc
+import java.time.Instant
+
 plugins {
     `java-library`
 
     id("com.github.johnrengelman.shadow") version "8.1.1" // Shades and relocates dependencies, See https://imperceptiblethoughts.com/shadow/introduction/
-    id("xyz.jpenilla.run-paper") version "2.1.0" // Adds runServer and runMojangMappedServer tasks for testing
+    id("xyz.jpenilla.run-paper") version "2.2.2" // Adds runServer and runMojangMappedServer tasks for testing
     id("net.minecrell.plugin-yml.bukkit") version "0.6.0" // Automatic plugin.yml generation
-    id("io.papermc.paperweight.userdev") version "1.5.5" // Used to develop internal plugins using Mojang mappings
+    id("io.papermc.paperweight.userdev") version "1.5.9" // Used to develop internal plugins using Mojang mappings, See https://github.com/PaperMC/paperweight
+    id("org.flywaydb.flyway") version "10.0.0" // Database migrations
 
     eclipse
     idea
@@ -58,15 +66,14 @@ dependencies {
     annotationProcessor("org.jetbrains:annotations:24.0.1")
 
     paperweight.paperDevBundle("1.20.2-R0.1-SNAPSHOT")
-    implementation("space.arim.morepaperlib:morepaperlib:0.4.3")
+    implementation("space.arim.morepaperlib:morepaperlib:latest.release")
 
     implementation("com.github.milkdrinkers:crate:1.1.0")
-    implementation("com.github.milkdrinkers:colorparser:2.0.0")
+    implementation("com.github.milkdrinkers:colorparser:2.0.0") {
+        exclude("net.kyori")
+    }
 
     implementation("dev.jorel:commandapi-bukkit-shade:9.2.0")
-
-    implementation("com.zaxxer:HikariCP:5.0.1")
-    library("org.mariadb.jdbc:mariadb-java-client:3.1.4")
 
     compileOnly("me.clip:placeholderapi:2.11.4") {
         exclude("me.clip.placeholderapi.libs", "kyori")
@@ -80,9 +87,27 @@ dependencies {
     compileOnly("com.github.Gecolay.GSit:core:1.5.0")
     compileOnly(files("lib/HeadsPlus-7.0.14.jar"))
     compileOnly(files("lib/Skulls.jar"))
+
+    // Database Dependencies
+    implementation("com.zaxxer:HikariCP:5.1.0")
+    library("org.flywaydb:flyway-core:10.0.1")
+    library("org.flywaydb:flyway-mysql:10.0.1")
+    library("org.flywaydb:flyway-database-hsqldb:10.0.1")
+    library("org.jooq:jooq:3.18.7")
+
+    // JDBC Drivers
+    library("org.hsqldb:hsqldb:2.7.2")
+    library("com.h2database:h2:2.2.224")
+    library("com.mysql:mysql-connector-j:8.2.0")
+    library("org.mariadb.jdbc:mariadb-java-client:3.3.0")
 }
 
 tasks {
+    // NOTE: Use when developing plugins using Mojang mappings
+    assemble {
+        dependsOn(reobfJar)
+    }
+
     build {
         dependsOn(shadowJar)
     }
@@ -94,6 +119,13 @@ tasks {
         // See https://openjdk.java.net/jeps/247 for more information.
         options.release.set(17)
         options.compilerArgs.addAll(arrayListOf("-Xlint:all", "-Xlint:-processing", "-Xdiags:verbose"))
+        
+        // Generate jOOQ sources before compilation
+        dependsOn(project.tasks.named("generateSources"))
+    }
+
+    javadoc {
+        options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
     }
 
     processResources {
@@ -105,24 +137,38 @@ tasks {
         archiveClassifier.set("")
 
         // Shadow classes
-        // helper function to relocate a package into our package
-        fun reloc(originPkg: String, targetPkg: String) = relocate(originPkg, "${project.group}.lib.${targetPkg}")
+        fun reloc(originPkg: String, targetPkg: String) = relocate(originPkg, "${mainPackage}.lib.${targetPkg}")
 
         reloc("space.arim.morepaperlib", "morepaperlib")
-        reloc("dev.jorel.commandapi", "commandapi")
         reloc("com.github.milkdrinkers.Crate", "crate")
         reloc("com.github.milkdrinkers.colorparser", "colorparser")
+        reloc("dev.jorel.commandapi", "commandapi")
         reloc("com.zaxxer.hikari", "hikaricp")
+
+        mergeServiceFiles {
+            setPath("META-INF/services/org.flywaydb.core.extensibility.Plugin") // Fix Flyway overriding its own files
+        }
+
+        minimize()
     }
 
     runServer {
         // Configure the Minecraft version for our task.
-        minecraftVersion("1.20.1")
+        minecraftVersion("1.20.2")
 
         // IntelliJ IDEA debugger setup: https://docs.papermc.io/paper/dev/debugging#using-a-remote-debugger
-        jvmArgs("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005")
+        jvmArgs("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005", "-DPaper.IgnoreJavaVersion=true", "-Dcom.mojang.eula.agree=true", "-DIReallyKnowWhatIAmDoingISwear")
         systemProperty("terminal.jline", false)
         systemProperty("terminal.ansi", true)
+
+        // Automatically install dependencies
+        downloadPlugins {
+//            modrinth("carbon", "2.1.0-beta.21")
+//            github("jpenilla", "MiniMOTD", "v2.0.13", "minimotd-bukkit-2.0.13.jar")
+//            hangar("squaremap", "1.2.0")
+//            url("https://download.luckperms.net/1515/bukkit/loader/LuckPerms-Bukkit-5.4.102.jar")
+            github("MilkBowl", "Vault", "1.7.3", "Vault.jar")
+        }
     }
 }
 
@@ -143,7 +189,91 @@ bukkit { // Options: https://github.com/Minecrell/plugin-yml#bukkit
     load = net.minecrell.pluginyml.bukkit.BukkitPluginDescription.PluginLoadOrder.POSTWORLD // STARTUP or POSTWORLD
     depend = listOf("Vault", "Towny")
     softDepend = listOf("TAB", "Skulls", "HeadsPlus")
-}// Apply custom version arg
+}
+
+flyway {
+    url = "jdbc:h2:${project.layout.buildDirectory.get()}/generated/flyway/db;AUTO_SERVER=TRUE;MODE=MySQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;IGNORECASE=TRUE"
+    user = "sa"
+    password = ""
+    placeholders = mapOf( // Substitute placeholders for flyway
+        "tablePrefix" to "",
+        "columnSuffix" to " VIRTUAL",
+        "tableDefaults" to "",
+        "uuidType" to "BINARY(16)",
+        "inetType" to "VARBINARY(16)",
+        "binaryType" to "BLOB",
+        "alterViewStatement" to "ALTER VIEW",
+    )
+    validateMigrationNaming = true
+    baselineOnMigrate = true
+    cleanDisabled = false
+    locations = arrayOf(
+        "filesystem:src/main/resources/db/migration",
+        "classpath:db/migration"
+    )
+}
+
+task("generateSources") {
+    this.group = "jooq"
+    val dir = layout.buildDirectory.dir("generated-src/jooq").get()
+
+    // Ensure database schema has been prepared by Flyway before generating the jOOQ sources
+    dependsOn.add(tasks.flywayMigrate)
+
+    // Declare Flyway migration scripts as inputs on the jOOQ task
+    inputs.files(fileTree("src/main/resources/db/migration"), fileTree("src/main/java/${mainPackage}/db/flyway/migration"))
+        .withPropertyName("migration files")
+        .withPathSensitivity(PathSensitivity.RELATIVE)
+
+    // jOOQ Generation Task
+    doLast {
+        GenerationTool.generate(Configuration()
+            .withLogging(org.jooq.meta.jaxb.Logging.WARN)
+            .withJdbc(Jdbc()
+                .withDriver("org.h2.Driver")
+                .withUrl(flyway.url)
+                .withUser(flyway.user)
+                .withPassword(flyway.password)
+            )
+            .withGenerator(Generator()
+                .withName("org.jooq.codegen.DefaultGenerator")
+                .withDatabase(Database()
+                    .withName("org.jooq.meta.h2.H2Database")
+                    .withIncludes(".*")
+                    .withExcludes("(flyway_schema_history)|(?i:information_schema\\..*)|(?i:system_lobs\\..*)") // Exclude db specific files
+                    .withInputSchema("PUBLIC")
+                    .withSchemaVersionProvider("SELECT :schema_name || '_' || MAX(\"version\") FROM \"flyway_schema_history\"") // Grab version from Flyway
+                )
+                .withTarget(org.jooq.meta.jaxb.Target()
+                    .withPackageName("${mainPackage}.db.schema")
+                    .withDirectory(dir.toString())
+                    .withClean(true)
+                )
+            )
+        )
+    }
+
+    // Declare outputs
+    outputs.dir(dir)
+        .withPropertyName("jooq generated sources")
+    sourceSets {
+        get("main").java.srcDir(dir)
+    }
+
+    // Enable build caching
+    outputs.cacheIf { true }
+}
+
+buildscript {
+    dependencies {
+        classpath("org.jooq:jooq:3.18.7")
+        classpath("org.jooq:jooq-meta:3.18.7")
+        classpath("org.jooq:jooq-codegen:3.18.7")
+        classpath("com.h2database:h2:2.2.224")
+    }
+}
+
+// Apply custom version arg
 val versionArg = if (hasProperty("customVersion"))
     (properties["customVersion"] as String).uppercase() // Uppercase version string
 else
