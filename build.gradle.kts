@@ -66,7 +66,7 @@ dependencies {
     annotationProcessor("org.jetbrains:annotations:24.1.0")
 
     paperweight.paperDevBundle("1.20.2-R0.1-SNAPSHOT")
-    implementation("space.arim.morepaperlib:morepaperlib:latest.release")
+    implementation("space.arim.morepaperlib:morepaperlib:0.4.3")
 
     implementation("com.github.milkdrinkers:crate:1.1.0")
     implementation("com.github.milkdrinkers:colorparser:2.0.0") {
