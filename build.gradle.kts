@@ -32,7 +32,7 @@ repositories {
 
     maven("https://papermc.io/repo/repository/maven-public/")
     maven("https://mvn-repo.arim.space/lesser-gpl3/") {
-        content { includeGroup("space.arim.morepaperlib") }
+        content { includeGroup("space.arim") }
     }
 
     maven("https://repo.glaremasters.me/repository/towny/") {
