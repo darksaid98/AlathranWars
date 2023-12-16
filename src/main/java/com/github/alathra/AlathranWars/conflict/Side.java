@@ -1,9 +1,10 @@
 package com.github.alathra.AlathranWars.conflict;
 
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
-import com.github.alathra.AlathranWars.enums.BattleSide;
-import com.github.alathra.AlathranWars.enums.BattleTeam;
+import com.github.alathra.AlathranWars.enums.battle.BattleSide;
+import com.github.alathra.AlathranWars.enums.battle.BattleTeam;
 import com.github.alathra.AlathranWars.listeners.war.PlayerJoinListener;
+import com.palmergames.bukkit.towny.object.Government;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
@@ -16,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -46,7 +48,7 @@ public class Side {
     public Side(
         UUID warUUID,
         UUID uuid,
-        Town town,
+        Government government,
         BattleSide side,
         BattleTeam team,
         String name,
@@ -58,12 +60,11 @@ public class Side {
         Set<UUID> surrenderedPlayersIncludingOffline,
         Instant siegeGrace,
         Instant raidGrace
-    ) {
+    ) throws SideCreationException {
         this.warUUID = warUUID;
         this.uuid = uuid;
         this.side = side;
         this.team = team;
-        this.town = town;
         this.name = name;
 
         this.towns = towns;
@@ -78,10 +79,73 @@ public class Side {
         this.siegeGrace = siegeGrace;
         this.raidGrace = raidGrace;
 
+        if (government instanceof Nation nation) {
+            this.town = nation.getCapital();
+        } else if (government instanceof Town town2) {
+            this.town = town2;
+        } else {
+            throw new SideCreationException("No town or nation specified!");
+        }
+
         calculateOnlinePlayers();
     }
 
-    public Side(UUID warUUID, UUID uuid, Town town, BattleSide side, BattleTeam team) {
+    /*public Side(UUID warUUID, UUID uuid, Town town, boolean isNation, BattleSide side, BattleTeam team) {
+        this.warUUID = warUUID;
+        this.uuid = uuid;
+        this.side = side;
+        this.team = team;
+        this.town = town;
+        this.name = this.town.getName();
+
+        this.towns = new HashSet<>();
+        this.nations = new HashSet<>();
+        this.playersIncludingOffline = new HashSet<>();
+        this.players = new HashSet<>();
+
+        this.surrenderedTowns = new HashSet<>();
+        this.surrenderedNations = new HashSet<>();
+        this.surrenderedPlayersIncludingOffline = new HashSet<>();
+
+        if (isNation)
+            addNation(Objects.requireNonNull(this.town.getNationOrNull()));
+        else
+            addTown(this.town);
+
+        calculateOnlinePlayers();
+    }*/
+
+    public Side(UUID warUUID, UUID uuid, Government government, BattleSide side, BattleTeam team) throws SideCreationException {
+        this.warUUID = warUUID;
+        this.uuid = uuid;
+        this.side = side;
+        this.team = team;
+
+        this.towns = new HashSet<>();
+        this.nations = new HashSet<>();
+        this.playersIncludingOffline = new HashSet<>();
+        this.players = new HashSet<>();
+
+        this.surrenderedTowns = new HashSet<>();
+        this.surrenderedNations = new HashSet<>();
+        this.surrenderedPlayersIncludingOffline = new HashSet<>();
+
+        if (government instanceof Nation nation) {
+            this.town = nation.getCapital();
+            addNation(nation);
+        } else if (government instanceof Town town2) {
+            this.town = town2;
+            addTown(town2);
+        } else {
+            throw new SideCreationException("No town or nation specified!");
+        }
+
+        this.name = this.town.getName();
+
+        calculateOnlinePlayers();
+    }
+
+    /*public Side(UUID warUUID, UUID uuid, Town town, BattleSide side, BattleTeam team) {
         this.warUUID = warUUID;
         this.uuid = uuid;
         this.side = side;
@@ -123,7 +187,7 @@ public class Side {
         addNation(nation);
 
         calculateOnlinePlayers();
-    }
+    }*/
 
     public BattleSide getSide() {
         return side;

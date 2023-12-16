@@ -1,13 +1,13 @@
 package com.github.alathra.AlathranWars.commands;
 
-import com.github.alathra.AlathranWars.Main;
+import com.github.alathra.AlathranWars.AlathranWars;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
 
 public class CommandManager {
-    private final Main instance;
+    private final AlathranWars instance;
 
-    public CommandManager(Main instance) {
+    public CommandManager(AlathranWars instance) {
         this.instance = instance;
     }
 

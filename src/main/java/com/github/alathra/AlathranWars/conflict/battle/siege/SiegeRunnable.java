@@ -1,10 +1,11 @@
 package com.github.alathra.AlathranWars.conflict.battle.siege;
 
-import com.github.alathra.AlathranWars.Main;
+import com.github.alathra.AlathranWars.AlathranWars;
 import com.github.alathra.AlathranWars.conflict.battle.beam.CrystalLaser;
 import com.github.alathra.AlathranWars.conflict.battle.beam.Laser;
-import com.github.alathra.AlathranWars.enums.BattleSide;
+import com.github.alathra.AlathranWars.enums.battle.BattleSide;
 import com.github.alathra.AlathranWars.enums.CaptureProgressDirection;
+import com.github.alathra.AlathranWars.enums.battle.BattleVictoryReason;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.object.Town;
@@ -48,7 +49,7 @@ public class SiegeRunnable implements Runnable {
 
         nextAnnouncement = Instant.now().plus(ANNOUNCEMENT_COOLDOWN);
 
-        task = Main.getPaperLib().scheduling().globalRegionalScheduler().runAtFixedRate(this, 0L, 20L);
+        task = AlathranWars.getPaperLib().scheduling().globalRegionalScheduler().runAtFixedRate(this, 0L, 20L);
 
         siege.updateDisplayBar(CONTESTED);
     }
@@ -69,7 +70,7 @@ public class SiegeRunnable implements Runnable {
 
         nextAnnouncement = Instant.now().plus(ANNOUNCEMENT_COOLDOWN);
 
-        task = Main.getPaperLib().scheduling().globalRegionalScheduler().runAtFixedRate(this, 0L, 20L);
+        task = AlathranWars.getPaperLib().scheduling().globalRegionalScheduler().runAtFixedRate(this, 0L, 20L);
 
         siege.updateDisplayBar(CONTESTED);
     }
@@ -111,14 +112,14 @@ public class SiegeRunnable implements Runnable {
                     Instant.now().isAfter(siege.getLastTouched().plus(ATTACKERS_MUST_TOUCH_END)))
         ) {
             cancel();
-            siege.defendersWin();
+            siege.defendersWin(BattleVictoryReason.OPPONENT_LOST);
             return;
         }
 
         // Attackers captured the town
         if (siege.getSiegeProgress() >= MAX_SIEGE_PROGRESS) {
             cancel();
-            siege.attackersWin();
+            siege.attackersWin(BattleVictoryReason.OPPONENT_LOST);
             return;
         }
 
@@ -245,7 +246,7 @@ public class SiegeRunnable implements Runnable {
             @NotNull Location loc2 = new Location(loc1.getWorld(), loc1.getX(), loc1.getY() + 350D, loc1.getZ());
 
             beam = new CrystalLaser(loc1, loc2, -1, 300);
-            beam.start(Main.getInstance());
+            beam.start(AlathranWars.getInstance());
         } catch (ReflectiveOperationException ignored) {
         }
     }

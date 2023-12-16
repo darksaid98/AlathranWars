@@ -1,10 +1,11 @@
 package com.github.alathra.AlathranWars.commands;
 
-import com.github.alathra.AlathranWars.Main;
+import com.github.alathra.AlathranWars.AlathranWars;
 import com.github.alathra.AlathranWars.conflict.Side;
 import com.github.alathra.AlathranWars.conflict.War;
 import com.github.alathra.AlathranWars.conflict.WarManager;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
+import com.github.alathra.AlathranWars.enums.battle.BattleVictoryReason;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.TownyAPI;
@@ -151,7 +152,7 @@ public class SiegeCommands {
         if (location.distance(townLocation) <= Siege.BATTLEFIELD_START_MIN_RANGE && !asAdmin)
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You need to be further than <range> blocks away from the town to start a siege!").parseMinimessagePlaceholder("range", String.valueOf(Siege.BATTLEFIELD_START_MIN_RANGE)).build());
 
-        if ((Main.econ.getBalance(siegeLeader) < Siege.SIEGE_VICTORY_MONEY) && !asAdmin)
+        if ((AlathranWars.econ.getBalance(siegeLeader) < Siege.SIEGE_VICTORY_MONEY) && !asAdmin)
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You need to have $<amount> to start a siege!").parseMinimessagePlaceholder("amount", String.valueOf(Siege.SIEGE_VICTORY_MONEY)).build());
 
         side.setSiegeGrace();
@@ -176,7 +177,7 @@ public class SiegeCommands {
         if (!(args.get("siege") instanceof final @NotNull Siege siege))
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Invalid siege.").build());
 
-        siege.equalWin();
+        siege.equalWin(BattleVictoryReason.ADMIN_COMMAND);
     }
 
     private static void siegeAbandon(Player p, @NotNull CommandArguments args, boolean asAdmin) throws WrapperCommandSyntaxException {
@@ -187,13 +188,7 @@ public class SiegeCommands {
         if (siegeLeader != p && !asAdmin)
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You are not the leader of this siege.").build());
 
-        Bukkit.broadcast(
-            ColorParser.of("<prefix>The siege at <town> has been abandoned.")
-                .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
-                .parseMinimessagePlaceholder("town", siege.getTown().getName())
-                .build()
-        );
-        siege.defendersWin();
+        siege.defendersWin(BattleVictoryReason.OPPONENT_RETREAT);
     }
 
     private static void siegeSurrender(Player p, @NotNull CommandArguments args, boolean asAdmin) throws WrapperCommandSyntaxException {
@@ -212,13 +207,7 @@ public class SiegeCommands {
         if (!asAdmin && !canKingSurrender && !canMayorSurrender)
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You cannot surrender this town.").build());
 
-        Bukkit.broadcast(
-            ColorParser.of("<prefix>The town of <town> has surrendered.")
-                .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
-                .parseMinimessagePlaceholder("town", siege.getTown().getName())
-                .build()
-        );
-        siege.attackersWin();
+        siege.attackersWin(BattleVictoryReason.OPPONENT_RETREAT);
     }
 
     private static void siegeList(@NotNull Player sender, CommandArguments args) throws WrapperCommandSyntaxException {

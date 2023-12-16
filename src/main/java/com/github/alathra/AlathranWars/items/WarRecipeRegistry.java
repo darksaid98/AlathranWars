@@ -14,11 +14,11 @@ public class WarRecipeRegistry {
     public WarRecipeRegistry() {
         instance = this;
 
-//        Main.warLogger.log(UtilsChat.getPrefix() + "Registering AlathranWars recipes.");
+//        AlathranWars.warLogger.log(UtilsChat.getPrefix() + "Registering AlathranWars recipes.");
 
 //        register(WarItemRegistry.registryName("ram"), new RamItem().getRecipes());
 
-//        Main.warLogger.log(UtilsChat.getPrefix() + "Registered AlathranWars recipes.");
+//        AlathranWars.warLogger.log(UtilsChat.getPrefix() + "Registered AlathranWars recipes.");
     }
 
     public static WarRecipeRegistry getInstance() {

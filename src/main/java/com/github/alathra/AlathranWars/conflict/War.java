@@ -2,14 +2,20 @@ package com.github.alathra.AlathranWars.conflict;
 
 import com.github.alathra.AlathranWars.conflict.battle.raid.Raid;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
-import com.github.alathra.AlathranWars.enums.BattleSide;
-import com.github.alathra.AlathranWars.enums.BattleTeam;
+import com.github.alathra.AlathranWars.db.DatabaseQueries;
 import com.github.alathra.AlathranWars.enums.ConflictType;
+import com.github.alathra.AlathranWars.enums.WarDeleteReason;
+import com.github.alathra.AlathranWars.enums.battle.BattleSide;
+import com.github.alathra.AlathranWars.enums.battle.BattleTeam;
+import com.github.alathra.AlathranWars.enums.battle.BattleVictoryReason;
+import com.github.alathra.AlathranWars.events.PreWarCreateEvent;
+import com.github.alathra.AlathranWars.events.PreWarDeleteEvent;
+import com.github.alathra.AlathranWars.events.WarCreateEvent;
+import com.github.alathra.AlathranWars.events.WarDeleteEvent;
 import com.github.alathra.AlathranWars.listeners.war.PlayerJoinListener;
-import com.github.alathra.AlathranWars.utility.SQLQueries;
-import com.github.alathra.AlathranWars.utility.UUIDUtil;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
+import com.palmergames.bukkit.towny.object.Government;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
 import dev.jorel.commandapi.CommandAPIBukkit;
@@ -40,8 +46,8 @@ public class War extends Conflict {
     private final ConflictType conflictType = ConflictType.WAR;
     private boolean event = false;
 
-    private final @NotNull Side side1;
-    private final Side side2;
+    private @NotNull Side side1;
+    private Side side2;
     private final Side attacker; // Reference variable to side1 or side2
     private final Side defender; // Reference variable to side1 or side2
 
@@ -75,6 +81,68 @@ public class War extends Conflict {
         resume();
     }
 
+    public War(
+        UUID uuid,
+        String label,
+        Government aggressor,
+        Government victim,
+        boolean event
+    ) throws SideCreationException, WrapperCommandSyntaxException {
+        this.uuid = uuid;
+        this.label = label;
+
+        this.name = "%s.vs.%s".formatted(aggressor.getName(), victim.getName());
+        if (WarManager.getInstance().getWar(this.name) != null)
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>A war already exists with that name!").build());
+
+//        final @NotNull UUID side1UUID = UUIDUtil.generateSideUUID(null);
+//        final @NotNull UUID side2UUID = UUIDUtil.generateSideUUID(side1UUID);
+
+        // TODO Side builder that uses aggressorIsNation &
+//        if (!aggressorIsNation && !victimIsNation) {
+//            this.side1 = new Side(this.uuid, side1UUID, aggressor, BattleSide.ATTACKER, BattleTeam.SIDE_1);
+//            this.side2 = new Side(this.uuid, side2UUID, victim, BattleSide.DEFENDER, BattleTeam.SIDE_2);
+//        } else if (!aggressorIsNation && victimIsNation) {
+//            this.side1 = new Side(this.uuid, side1UUID, aggressor, BattleSide.ATTACKER, BattleTeam.SIDE_1);
+//            this.side2 = new Side(this.uuid, side2UUID, victim.getNationOrNull(), BattleSide.DEFENDER, BattleTeam.SIDE_2);
+//        } else if (aggressorIsNation && !victimIsNation) {
+//            this.side1 = new Side(this.uuid, side1UUID, aggressor.getNationOrNull(), BattleSide.ATTACKER, BattleTeam.SIDE_1);
+//            this.side2 = new Side(this.uuid, side2UUID, victim, BattleSide.DEFENDER, BattleTeam.SIDE_2);
+//        } else if (aggressorIsNation && victimIsNation) {
+//            this.side1 = new Side(this.uuid, side1UUID, aggressor.getNationOrNull(), BattleSide.ATTACKER, BattleTeam.SIDE_1);
+//            this.side2 = new Side(this.uuid, side2UUID, victim.getNationOrNull(), BattleSide.DEFENDER, BattleTeam.SIDE_2);
+//        }
+
+        this.side1 = new SideBuilder()
+            .setWarUUID(this.uuid)
+            .setUuid(UUID.randomUUID())
+            .setLeader(aggressor)
+            .setSide(BattleSide.ATTACKER)
+            .setTeam(BattleTeam.SIDE_1)
+            .buildNew();
+        this.side2 = new SideBuilder()
+            .setWarUUID(this.uuid)
+            .setUuid(UUID.randomUUID())
+            .setLeader(victim)
+            .setSide(BattleSide.DEFENDER)
+            .setTeam(BattleTeam.SIDE_2)
+            .buildNew();
+
+        this.attacker = side1.getSide().equals(BattleSide.ATTACKER) ? this.side1 : this.side2;
+        this.defender = side1.getSide().equals(BattleSide.DEFENDER) ? this.side1 : this.side2;
+        this.event = event;
+
+        if (!new PreWarCreateEvent(this).callEvent())
+            return;
+
+        // TODO All logic below this point should be separated out
+        WarManager.getInstance().addWar(this);
+
+        start();
+
+        new WarCreateEvent(this).callEvent();
+    }
+
     /**
      * Instantiates a new New war.
      *
@@ -82,7 +150,72 @@ public class War extends Conflict {
      * @param aggressor the side 1
      * @param victim    the side 2
      */
-    public War(final String label, @NotNull Town aggressor, @NotNull Town victim, boolean event) throws WrapperCommandSyntaxException {
+    /*public War(
+        UUID uuid,
+        String label,
+        Town aggressor,
+        Town victim,
+        boolean aggressorIsNation,
+        boolean victimIsNation,
+        boolean event
+    ) throws WrapperCommandSyntaxException {
+        this.uuid = uuid;
+        this.label = label;
+
+        final String aggressorName = aggressorIsNation ? Objects.requireNonNull(aggressor.getNationOrNull()).getName() : aggressor.getName();
+        final String victimName = victimIsNation ? Objects.requireNonNull(victim.getNationOrNull()).getName() : victim.getName();
+        this.name = "%s.vs.%s".formatted(aggressorName, victimName);
+        if (WarManager.getInstance().getWar(this.name) != null)
+            throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>A war already exists with that name!").build());
+
+        final @NotNull UUID side1UUID = UUIDUtil.generateSideUUID(null);
+        final @NotNull UUID side2UUID = UUIDUtil.generateSideUUID(side1UUID);
+
+        // TODO Side builder that uses aggressorIsNation &
+        if (!aggressorIsNation && !victimIsNation) {
+            this.side1 = new Side(this.uuid, side1UUID, aggressor, BattleSide.ATTACKER, BattleTeam.SIDE_1);
+            this.side2 = new Side(this.uuid, side2UUID, victim, BattleSide.DEFENDER, BattleTeam.SIDE_2);
+        } else if (!aggressorIsNation && victimIsNation) {
+            this.side1 = new Side(this.uuid, side1UUID, aggressor, BattleSide.ATTACKER, BattleTeam.SIDE_1);
+            this.side2 = new Side(this.uuid, side2UUID, victim.getNationOrNull(), BattleSide.DEFENDER, BattleTeam.SIDE_2);
+        } else if (aggressorIsNation && !victimIsNation) {
+            this.side1 = new Side(this.uuid, side1UUID, aggressor.getNationOrNull(), BattleSide.ATTACKER, BattleTeam.SIDE_1);
+            this.side2 = new Side(this.uuid, side2UUID, victim, BattleSide.DEFENDER, BattleTeam.SIDE_2);
+        } else if (aggressorIsNation && victimIsNation) {
+            this.side1 = new Side(this.uuid, side1UUID, aggressor.getNationOrNull(), BattleSide.ATTACKER, BattleTeam.SIDE_1);
+            this.side2 = new Side(this.uuid, side2UUID, victim.getNationOrNull(), BattleSide.DEFENDER, BattleTeam.SIDE_2);
+        }
+
+        this.side1 = new SideBuilder()
+            .setWarUUID(this.uuid)
+            .setUuid(side1UUID)
+            .setLeader(aggressorIsNation ? aggressor.getNationOrNull() : aggressor)
+            .setSide(BattleSide.ATTACKER)
+            .setTeam(BattleTeam.SIDE_1)
+            .buildNew();
+
+        this.attacker = side1.getSide().equals(BattleSide.ATTACKER) ? this.side1 : this.side2;
+        this.defender = side1.getSide().equals(BattleSide.DEFENDER) ? this.side1 : this.side2;
+        this.event = event;
+
+        if (!new PreWarCreateEvent(this).callEvent())
+            return;
+
+        WarManager.getInstance().addWar(this);
+
+        start();
+
+        new WarCreateEvent(this).callEvent();
+    }*/
+
+    /**
+     * Instantiates a new New war.
+     *
+     * @param label     the name
+     * @param aggressor the side 1
+     * @param victim    the side 2
+     */
+    /*public War(final String label, @NotNull Town aggressor, @NotNull Town victim, boolean event) throws WrapperCommandSyntaxException {
         this.uuid = UUIDUtil.generateWarUUID();
         this.name = "%s.vs.%s".formatted(aggressor.getName(), victim.getName());
         this.label = label;
@@ -99,9 +232,14 @@ public class War extends Conflict {
         this.defender = side1.getSide().equals(BattleSide.DEFENDER) ? this.side1 : this.side2;
         this.event = event;
 
+        if (!new PreWarCreateEvent(this).callEvent())
+            return;
+
         WarManager.getInstance().addWar(this);
 
         start();
+
+        new WarCreateEvent(this).callEvent();
     }
 
     public War(final String label, @NotNull Nation aggressor, @NotNull Nation victim, boolean event) throws WrapperCommandSyntaxException {
@@ -121,9 +259,14 @@ public class War extends Conflict {
         this.defender = side1.getSide().equals(BattleSide.DEFENDER) ? this.side1 : this.side2;
         this.event = event;
 
+        if (!new PreWarCreateEvent(this).callEvent())
+            return;
+
         WarManager.getInstance().addWar(this);
 
         start();
+
+        new WarCreateEvent(this).callEvent();
     }
 
     public War(final String label, @NotNull Town aggressor, @NotNull Nation victim, boolean event) throws WrapperCommandSyntaxException {
@@ -143,9 +286,14 @@ public class War extends Conflict {
         this.defender = side1.getSide().equals(BattleSide.DEFENDER) ? this.side1 : this.side2;
         this.event = event;
 
+        if (!new PreWarCreateEvent(this).callEvent())
+            return;
+
         WarManager.getInstance().addWar(this);
 
         start();
+
+        new WarCreateEvent(this).callEvent();
     }
 
     public War(final String label, @NotNull Nation aggressor, @NotNull Town victim, boolean event) throws WrapperCommandSyntaxException {
@@ -165,11 +313,16 @@ public class War extends Conflict {
         this.defender = side1.getSide().equals(BattleSide.DEFENDER) ? this.side1 : this.side2;
         this.event = event;
 
+        if (!new PreWarCreateEvent(this).callEvent())
+            return;
+
         WarManager.getInstance().addWar(this);
 
         start();
-    }
 
+        new WarCreateEvent(this).callEvent();
+    }
+*/
     /**
      * Gets uuid.
      *
@@ -351,6 +504,10 @@ public class War extends Conflict {
         raids.add(raid);
     }
 
+    public void removeRaid(Raid raid) {
+        raids.remove(raid);
+    }
+
     @NotNull
     public Set<Player> getPlayers() {
         return Stream.concat(
@@ -455,9 +612,9 @@ public class War extends Conflict {
             getSieges().forEach(siege -> { // TODO INFINITE LOOP, runs surrenderTown
                 if (siege.getTown().equals(town)) {
                     if (siege.getAttackerSide().equals(townSide)) {
-                        siege.defendersWin();
+                        siege.defendersWin(BattleVictoryReason.ADMIN_CANCEL);
                     } else {
-                        siege.attackersWin();
+                        siege.attackersWin(BattleVictoryReason.ADMIN_CANCEL);
                     }
                 }
             });
@@ -608,15 +765,20 @@ public class War extends Conflict {
         side2.applyNameTags();
     }
 
-    public void end() {
+    public void end(WarDeleteReason reason) {
+        if (!new PreWarDeleteEvent(this, reason).callEvent())
+            return;
+
         getSieges().forEach(Siege::stop);
         getAllTowns().forEach(Occupation::removeOccupied);
 
-        SQLQueries.deleteWar(this);
+        DatabaseQueries.deleteWar(this);
         WarManager.getInstance().removeWar(this);
 
         // Run check after war is removed to cleanup player tags
         getPlayers().forEach(PlayerJoinListener::checkPlayer);
+
+        new WarDeleteEvent(this, reason).callEvent();
     }
 
     public void defeat(@NotNull Side loserSide) {
@@ -630,7 +792,7 @@ public class War extends Conflict {
             .build()
         );
 
-        end();
+        end(WarDeleteReason.DEFEAT);
     }
 
     // White defeat/force end war
@@ -640,7 +802,7 @@ public class War extends Conflict {
             .build()
         );
 
-        end();
+        end(WarDeleteReason.DRAW);
     }
 
     public void setEvent(boolean event) {

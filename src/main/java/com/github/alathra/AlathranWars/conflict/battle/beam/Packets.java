@@ -24,8 +24,9 @@ SOFTWARE.
 
 package com.github.alathra.AlathranWars.conflict.battle.beam;
 
+import com.github.alathra.AlathranWars.utility.Logger;
+import com.github.milkdrinkers.colorparser.ColorParser;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.Squid;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import org.bukkit.Bukkit;
@@ -39,13 +40,9 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 
 class Packets {
     public static boolean enabled = false;
-    private static Logger logger;
     static int version;
     private static int versionMinor;
     private static final String npack = "net.minecraft.server." + Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
@@ -84,16 +81,6 @@ class Packets {
 
     static {
         try {
-            logger = new Logger("GuardianBeam", null) {
-                @Override
-                public void log(LogRecord logRecord) {
-                    logRecord.setMessage("[GuardianBeam] " + logRecord.getMessage());
-                    super.log(logRecord);
-                }
-            };
-            logger.setParent(Bukkit.getServer().getLogger());
-            logger.setLevel(Level.ALL);
-
             // e.g. Bukkit.getServer().getClass().getPackage().getName() -> org.bukkit.craftbukkit.v1_17_R1
             String[] versions = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].substring(1).split("_");
             version = Integer.parseInt(versions[1]); // 1.X
@@ -102,14 +89,11 @@ class Packets {
                 versions = Bukkit.getBukkitVersion().split("-R")[0].split("\\.");
                 versionMinor = versions.length <= 2 ? 0 : Integer.parseInt(versions[2]);
             } else versionMinor = Integer.parseInt(versions[2].substring(1)); // 1.X.Y
-//            logger.info("Found server version 1." + version + "." + versionMinor);
 
             ProtocolMappings mappings = ProtocolMappings.getMappings(version);
             if (mappings == null) {
                 mappings = ProtocolMappings.values()[ProtocolMappings.values().length - 1];
-//                logger.warning("Loaded not matching version of the mappings for your server version (1." + version + "." + versionMinor + ")");
             }
-//            logger.info("Loaded mappings " + mappings.name());
 
             Class<?> entityTypesClass = getNMSClass("world.entity", "EntityTypes");
             Class<Entity> entityClass = Entity.class;
@@ -161,7 +145,10 @@ class Packets {
             getHandle = Class.forName(cpack + "entity.CraftPlayer").getDeclaredMethod("getHandle");
             playerConnection = getNMSClass("server.level", "EntityPlayer")
                 .getDeclaredField(version < 17 ? "playerConnection" : (version < 20 ? "b" : "c"));
-            sendPacket = getNMSClass("server.network", "PlayerConnection").getMethod(version < 18 ? "sendPacket" : "a", getNMSClass("network.protocol", "Packet"));
+            playerConnection.setAccessible(true);
+            sendPacket = getNMSClass("server.network", "PlayerConnection").getMethod(
+                version < 18 ? "sendPacket" : (version >= 20 && versionMinor >= 2 ? "b" : "a"),
+                getNMSClass("network.protocol", "Packet"));
 
             if (version >= 17) {
                 setUUID = entityClass.getDeclaredMethod("a_", UUID.class);
@@ -170,12 +157,11 @@ class Packets {
 
             enabled = true;
         } catch (Exception e) {
-            e.printStackTrace();
-            String errorMsg = "Laser Beam reflection failed to initialize. The util is disabled. Please ensure your version (" + Bukkit.getServer().getClass().getPackage().getName() + ") is supported.";
-            if (logger == null)
-                System.err.println(errorMsg);
-            else
-                logger.severe(errorMsg);
+            Logger.get().error(
+                ColorParser.of("Laser reflection failed to initialize. The utility is disabled. Please ensure your version (<version>) is supported.")
+                    .parseMinimessagePlaceholder("version", Bukkit.getServer().getClass().getPackage().getName())
+                    .build()
+            , e);
         }
     }
 
@@ -324,7 +310,12 @@ class Packets {
             }
 
         },
-        V1_20(20, "an", "b", "e", "c", "d", 89, 38, "V", "aT", "B", "a", "g"),
+        V1_20(20, null, "b", "e", "c", "d", 89, 38, "V", "aT", "B", "a", "g") {
+            @Override
+            public String getWatcherFlags() {
+                return versionMinor < 2 ? "an" : "ao";
+            }
+        },
         ;
 
         private final int major;

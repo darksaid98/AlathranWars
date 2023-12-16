@@ -12,14 +12,14 @@ plugins {
     id("xyz.jpenilla.run-paper") version "2.2.2" // Adds runServer and runMojangMappedServer tasks for testing
     id("net.minecrell.plugin-yml.bukkit") version "0.6.0" // Automatic plugin.yml generation
     id("io.papermc.paperweight.userdev") version "1.5.9" // Used to develop internal plugins using Mojang mappings, See https://github.com/PaperMC/paperweight
-    id("org.flywaydb.flyway") version "10.0.0" // Database migrations
+    id("org.flywaydb.flyway") version "10.2.0" // Database migrations
 
     eclipse
     idea
 }
 
 group = "com.github.alathra"
-version = "3.0.0-RC-1"
+version = "3.0.0"
 description = ""
 val mainPackage = "${project.group}.${rootProject.name}"
 
@@ -62,8 +62,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.jetbrains:annotations:24.0.1")
-    annotationProcessor("org.jetbrains:annotations:24.0.1")
+    compileOnly("org.jetbrains:annotations:24.1.0")
+    annotationProcessor("org.jetbrains:annotations:24.1.0")
 
     paperweight.paperDevBundle("1.20.2-R0.1-SNAPSHOT")
     implementation("space.arim.morepaperlib:morepaperlib:latest.release")
@@ -73,13 +73,13 @@ dependencies {
         exclude("net.kyori")
     }
 
-    implementation("dev.jorel:commandapi-bukkit-shade:9.2.0")
+    implementation("dev.jorel:commandapi-bukkit-shade:9.3.0")
 
     compileOnly("me.clip:placeholderapi:2.11.4") {
         exclude("me.clip.placeholderapi.libs", "kyori")
     }
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
-    compileOnly("com.palmergames.bukkit.towny:towny:0.99.6.0") {
+    compileOnly("com.palmergames.bukkit.towny:towny:0.100.0.8") {
         exclude("com.palmergames.adventure")
     }
     compileOnly("me.neznamy:tab-api:4.0.0")
@@ -90,10 +90,10 @@ dependencies {
 
     // Database Dependencies
     implementation("com.zaxxer:HikariCP:5.1.0")
-    library("org.flywaydb:flyway-core:10.0.1")
-    library("org.flywaydb:flyway-mysql:10.0.1")
-    library("org.flywaydb:flyway-database-hsqldb:10.0.1")
-    library("org.jooq:jooq:3.18.7")
+    library("org.flywaydb:flyway-core:10.2.0")
+    library("org.flywaydb:flyway-mysql:10.2.0")
+    library("org.flywaydb:flyway-database-hsqldb:10.2.0")
+    library("org.jooq:jooq:3.19.0")
 
     // JDBC Drivers
     library("org.hsqldb:hsqldb:2.7.2")
@@ -103,7 +103,6 @@ dependencies {
 }
 
 tasks {
-    // NOTE: Use when developing plugins using Mojang mappings
     assemble {
         dependsOn(reobfJar)
     }
@@ -163,11 +162,11 @@ tasks {
 
         // Automatically install dependencies
         downloadPlugins {
-//            modrinth("carbon", "2.1.0-beta.21")
-//            github("jpenilla", "MiniMOTD", "v2.0.13", "minimotd-bukkit-2.0.13.jar")
-//            hangar("squaremap", "1.2.0")
-//            url("https://download.luckperms.net/1515/bukkit/loader/LuckPerms-Bukkit-5.4.102.jar")
+            url("https://ci.dmulloy2.net/job/ProtocolLib/lastStableBuild/artifact/build/libs/ProtocolLib.jar")
             github("MilkBowl", "Vault", "1.7.3", "Vault.jar")
+            url("https://download.luckperms.net/1521/bukkit/loader/LuckPerms-Bukkit-5.4.108.jar")
+            modrinth("tab-was-taken", "4.0.9")
+//            url("https://www.spigotmc.org/resources/skulls-the-ultimate-head-database.90098/download?version=520217/Skulls.jar")
         }
     }
 }
@@ -266,9 +265,9 @@ task("generateSources") {
 
 buildscript {
     dependencies {
-        classpath("org.jooq:jooq:3.18.7")
-        classpath("org.jooq:jooq-meta:3.18.7")
-        classpath("org.jooq:jooq-codegen:3.18.7")
+        classpath("org.jooq:jooq:3.19.0")
+        classpath("org.jooq:jooq-meta:3.19.0")
+        classpath("org.jooq:jooq-codegen:3.19.0")
         classpath("com.h2database:h2:2.2.224")
     }
 }

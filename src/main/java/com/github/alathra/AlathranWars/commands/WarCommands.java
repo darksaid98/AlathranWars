@@ -1,8 +1,6 @@
 package com.github.alathra.AlathranWars.commands;
 
-import com.github.alathra.AlathranWars.conflict.Side;
-import com.github.alathra.AlathranWars.conflict.War;
-import com.github.alathra.AlathranWars.conflict.WarManager;
+import com.github.alathra.AlathranWars.conflict.*;
 import com.github.alathra.AlathranWars.listeners.war.PlayerJoinListener;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
@@ -163,33 +161,42 @@ public class WarCommands {
         // Implement permission checking here if this is ever going to be exposed to players
 
         // Create war depending on what args have been passed, attempt to create nation wars first
+        WarBuilder builder = new WarBuilder()
+            .setUuid(UUID.randomUUID())
+            .setLabel(argLabel)
+            .setEvent(event);
         if (nation1 != null) {
             if (nation2 != null) { // Nation vs Nation
-
                 // Allow civil wars
                 if (nation2.getUUID() != nation1.getUUID()) {
-                    new War(argLabel, nation1, nation2, event);
+                    builder
+                        .setAggressor(nation1)
+                        .setVictim(nation2);
                 } else {
-                    new War(argLabel, town1, town2, event);
+                    builder
+                        .setAggressor(town1)
+                        .setVictim(town2);
                 }
-
             } else if (town2 != null) { // Nation vs Town
-
-                new War(argLabel, nation1, town2, event);
-
+                builder
+                    .setAggressor(nation1)
+                    .setVictim(town2);
             }
         } else if (town1 != null) {
-
             if (town2 != null) { // Town vs Town
-
-                new War(argLabel, town1, town2, event);
-
+                builder
+                    .setAggressor(town1)
+                    .setVictim(town2);
             } else if (nation2 != null) { // Nation vs Town
-
-                new War(argLabel, town1, nation2, event);
-
+                builder
+                    .setAggressor(town1)
+                    .setVictim(nation2);
             }
-
+        }
+        try {
+            builder.create(); // TODO Add war to list
+        } catch (SideCreationException e) {
+            throw new RuntimeException(e);
         }
     }
 

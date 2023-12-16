@@ -5,39 +5,14 @@ import com.github.alathra.AlathranWars.utility.Utils;
 import com.palmergames.bukkit.towny.event.deathprice.NationPaysDeathPriceEvent;
 import com.palmergames.bukkit.towny.event.deathprice.PlayerPaysDeathPriceEvent;
 import com.palmergames.bukkit.towny.event.deathprice.TownPaysDeathPriceEvent;
-import com.ranull.graves.event.GraveCreateEvent;
-import io.github.thatsmusic99.headsplus.api.events.PlayerHeadDropEvent;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 public class PlayerDeathListener implements Listener {
-    @EventHandler
-    private void onHeadDrop(PlayerHeadDropEvent e) {
-        Siege siege = Utils.getClosestSiege(e.getDeadPlayer(), false);
-        if (siege == null) return;
-
-        if (!Utils.isOnSiegeBattlefield(e.getDeadPlayer(), siege)) return;
-
-        e.setCancelled(true);
-    }
-
-    @EventHandler
-    private void onGraveCreate(GraveCreateEvent e) {
-        if (!e.getEntityType().equals(EntityType.PLAYER)) return;
-        if (!(e.getEntity() instanceof Player p)) return;
-
-        Siege siege = Utils.getClosestSiege(p, false);
-        if (siege == null) return;
-
-        if (!Utils.isOnSiegeBattlefield(p, siege)) return;
-
-        e.setCancelled(true);
-    }
-
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerPaysDeathPrice(PlayerPaysDeathPriceEvent e) {
         Player p = e.getDeadResident().getPlayer();
         Siege siege = Utils.getClosestSiege(p, true);
@@ -48,7 +23,7 @@ public class PlayerDeathListener implements Listener {
         e.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerPaysDeathPrice(TownPaysDeathPriceEvent e) {
         Player p = e.getDeadResident().getPlayer();
         Siege siege = Utils.getClosestSiege(p, true);
@@ -59,7 +34,7 @@ public class PlayerDeathListener implements Listener {
         e.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerPaysDeathPrice(NationPaysDeathPriceEvent e) {
         Player p = e.getDeadResident().getPlayer();
         Siege siege = Utils.getClosestSiege(p, true);
@@ -70,7 +45,7 @@ public class PlayerDeathListener implements Listener {
         e.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     private void onPlayerDeath(PlayerDeathEvent e) {
         Player victim = e.getPlayer();
         Player attacker = e.getPlayer().getKiller();
@@ -88,7 +63,7 @@ public class PlayerDeathListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     private void onPlayerSuicide(PlayerDeathEvent e) {
         Player victim = e.getPlayer();
         Player attacker = e.getPlayer().getKiller();

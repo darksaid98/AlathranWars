@@ -1,5 +1,7 @@
 package com.github.alathra.AlathranWars.conflict.battle;
 
+import com.github.alathra.AlathranWars.enums.battle.BattleType;
+import com.github.alathra.AlathranWars.enums.battle.BattleVictoryReason;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -9,9 +11,9 @@ public interface Battle {
     void stop(); // Ends battle
     void resume(); // Resume battle after server restart or plugin reload
 
-    void attackersWin(); // A Attacker victory
-    void defendersWin(); // A Defender victory
-    void equalWin(); // A Draw
+    void attackersWin(BattleVictoryReason reason); // A Attacker victory
+    void defendersWin(BattleVictoryReason reason); // A Defender victory
+    void equalWin(BattleVictoryReason reason); // A Draw
 
 
     UUID uuid = null; // Battle UUID
@@ -39,4 +41,8 @@ public interface Battle {
         return getUUID().equals(battle.getUUID());
     }
 
+    BattleType battleType = null;
+    default BattleType getBattleType() {
+        return battleType;
+    }
 }

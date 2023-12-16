@@ -51,7 +51,7 @@ public class CrystalLaser extends Laser {
      * @see #executeEnd(Runnable) to add Runnable-s to execute when the laser will stop
      */
     public CrystalLaser(Location start, Location end, int duration, int distance) throws ReflectiveOperationException {
-        super(start, end, duration, distance);
+        super(start, new Location(end.getWorld(), end.getBlockX(), end.getBlockY(), end.getBlockZ()), duration, distance);
 
         fakeCrystalDataWatcher = Packets.createFakeDataWatcher();
         Packets.setCrystalWatcher(fakeCrystalDataWatcher, end);

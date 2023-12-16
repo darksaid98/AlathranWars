@@ -1,13 +1,13 @@
 package com.github.alathra.AlathranWars;
 
 import com.github.alathra.AlathranWars.commands.CommandManager;
+import com.github.alathra.AlathranWars.config.ConfigHandler;
 import com.github.alathra.AlathranWars.conflict.WarManager;
-import com.github.alathra.AlathranWars.data.ConfigManager;
-import com.github.alathra.AlathranWars.data.DataManager;
+import com.github.alathra.AlathranWars.db.DatabaseHandler;
+import com.github.alathra.AlathranWars.db.DatabaseQueries;
 import com.github.alathra.AlathranWars.hooks.HookManager;
 import com.github.alathra.AlathranWars.items.WarItemRegistry;
 import com.github.alathra.AlathranWars.listeners.ListenerHandler;
-import com.github.alathra.AlathranWars.utility.SQLQueries;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,25 +15,17 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.arim.morepaperlib.MorePaperLib;
 
-public class Main extends JavaPlugin {
+public class AlathranWars extends JavaPlugin {
     public static @Nullable Economy econ = null;
-    private static Main instance = null;
     private static MorePaperLib paperLib;
 
-    private ConfigManager configManager;
-    private DataManager dataManager;
-    private CommandManager commandManager;
+    private static AlathranWars instance;
+    private ConfigHandler configHandler;
+    private DatabaseHandler databaseHandler;
     private ListenerHandler listenerHandler;
+
+    private CommandManager commandManager;
     private HookManager hookManager;
-
-    @NotNull
-    public static Main getInstance() {
-        return instance;
-    }
-
-    public static MorePaperLib getPaperLib() {
-        return paperLib;
-    }
 
     @SuppressWarnings("rawtypes")
     private boolean setupEconomy() {
@@ -49,54 +41,62 @@ public class Main extends JavaPlugin {
         return econ != null;
     }
 
-    @Override
     public void onLoad() {
         instance = this;
-        paperLib = new MorePaperLib(getInstance());
+        paperLib = new MorePaperLib(instance);
         WarManager.getInstance();
-        configManager = new ConfigManager(getInstance());
-        dataManager = new DataManager(getInstance());
-        commandManager = new CommandManager(getInstance());
-        listenerHandler = new ListenerHandler(getInstance());
+        configHandler = new ConfigHandler(instance);
+        databaseHandler = new DatabaseHandler(instance);
+        commandManager = new CommandManager(instance);
+        listenerHandler = new ListenerHandler(instance);
         hookManager = new HookManager();
 
-        configManager.onLoad();
-        dataManager.onLoad();
+        configHandler.onLoad();
+        databaseHandler.onLoad();
         commandManager.onLoad();
         listenerHandler.onLoad();
         hookManager.onLoad();
     }
 
-    @Override
     public void onEnable() {
         this.saveDefaultConfig();
         new WarItemRegistry();
         setupEconomy();
 
-        configManager.onEnable();
-        dataManager.onEnable();
+        configHandler.onEnable();
+        databaseHandler.onEnable();
         commandManager.onEnable();
         listenerHandler.onEnable();
         hookManager.onEnable();
         WarManager.getInstance().loadAll();
     }
 
-    @Override
     public void onDisable() {
         getPaperLib().scheduling().cancelGlobalTasks();
-        SQLQueries.saveAll();
-        configManager.onDisable();
+        DatabaseQueries.saveAll();
         commandManager.onDisable();
         listenerHandler.onDisable();
         hookManager.onDisable();
-        dataManager.onDisable();
+        databaseHandler.onDisable();
+        configHandler.onDisable();
     }
 
-    public ConfigManager getConfigManager() {
-        return configManager;
+    @NotNull
+    public static AlathranWars getInstance() {
+        return instance;
     }
 
-    public DataManager getDataManager() {
-        return dataManager;
+    public static MorePaperLib getPaperLib() {
+        return paperLib;
+    }
+
+    @NotNull
+    public DatabaseHandler getDataHandler() {
+        return databaseHandler;
+    }
+
+    @NotNull
+    public ConfigHandler getConfigHandler() {
+        return configHandler;
     }
 }

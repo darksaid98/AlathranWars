@@ -2,7 +2,7 @@ package com.github.alathra.AlathranWars.conflict;
 
 import com.github.alathra.AlathranWars.conflict.battle.raid.Raid;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
-import com.github.alathra.AlathranWars.utility.SQLQueries;
+import com.github.alathra.AlathranWars.db.DatabaseQueries;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
 import org.bukkit.Bukkit;
@@ -36,7 +36,7 @@ public class WarManager {
     }
 
     public void loadAll() {
-        wars = SQLQueries.loadAll();
+        wars = DatabaseQueries.loadAll();
     }
 
     @NotNull

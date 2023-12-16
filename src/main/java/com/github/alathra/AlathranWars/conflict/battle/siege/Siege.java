@@ -1,23 +1,21 @@
 package com.github.alathra.AlathranWars.conflict.battle.siege;
 
-import com.github.alathra.AlathranWars.Main;
+import com.github.alathra.AlathranWars.AlathranWars;
 import com.github.alathra.AlathranWars.conflict.Side;
 import com.github.alathra.AlathranWars.conflict.War;
 import com.github.alathra.AlathranWars.conflict.battle.Battle;
-import com.github.alathra.AlathranWars.enums.BattleSide;
-import com.github.alathra.AlathranWars.enums.BattleTeam;
+import com.github.alathra.AlathranWars.db.DatabaseQueries;
 import com.github.alathra.AlathranWars.enums.CaptureProgressDirection;
-import com.github.alathra.AlathranWars.utility.SQLQueries;
-import com.github.alathra.AlathranWars.utility.UUIDUtil;
-import com.github.alathra.AlathranWars.utility.UtilsChat;
+import com.github.alathra.AlathranWars.enums.battle.*;
+import com.github.alathra.AlathranWars.events.battle.BattleResultEvent;
+import com.github.alathra.AlathranWars.events.battle.BattleStartEvent;
+import com.github.alathra.AlathranWars.events.battle.PreBattleResultEvent;
+import com.github.alathra.AlathranWars.events.battle.PreBattleStartEvent;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
 import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -31,6 +29,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * The type Siege.
+ */
 public class Siege implements Battle {
     public static final Duration SIEGE_DURATION = Duration.ofMinutes(60);
     public static final int MAX_SIEGE_PROGRESS_MINUTES = 8; // How many minutes attackers will need to be on point uncontested for to reach 100%
@@ -41,10 +42,9 @@ public class Siege implements Battle {
     public static final int BATTLEFIELD_START_MAX_RANGE = BATTLEFIELD_RANGE * 2;
     public static final int BATTLEFIELD_START_MIN_RANGE = 75;
     public static final double SIEGE_VICTORY_MONEY = 2500.0;
-    private final static Title.Times TITLE_TIMES = Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(3500), Duration.ofMillis(500));
-    private final static Sound SOUND_VICTORY = Sound.sound(Key.key("item.goat_horn.sound.0"), Sound.Source.VOICE, 0.5f, 1.0F);
-    private final static Sound SOUND_DEFEAT = Sound.sound(Key.key("entity.wither.death"), Sound.Source.VOICE, 0.5f, 1.0F);
+
     private final @NotNull UUID uuid;
+    private final static BattleType battleType = BattleType.SIEGE;
     private final Set<Player> attackers = new HashSet<>(); // Players inside battlefield
     private final Set<Player> defenders = new HashSet<>(); // Players inside battlefield
     private final Set<Player> attackerPlayers = new HashSet<>();
@@ -64,8 +64,15 @@ public class Siege implements Battle {
     private @Nullable BossBar activeBossBar = null;
     private boolean stopped = false; // Used to track if the siege has been already deleted
 
+    /**
+     * Instantiates a new Siege. Used when creating a new siege.
+     *
+     * @param war         the war
+     * @param town        the town
+     * @param siegeLeader the siege leader
+     */
     public Siege(final @NotNull War war, final Town town, Player siegeLeader) {
-        uuid = UUIDUtil.generateSiegeUUID();
+        uuid = UUID.randomUUID();
 
         endTime = Instant.now().plus(SIEGE_DURATION);
         lastTouched = Instant.now();
@@ -86,7 +93,19 @@ public class Siege implements Battle {
         calculateOnlinePlayers();
     }
 
-    // Construct when loading from DB
+    /**
+     * Instantiates a new Siege. Used when loading existing Siege from Database.
+     *
+     * @param war                             the war
+     * @param uuid                            the uuid
+     * @param town                            the town
+     * @param siegeLeader                     the siege leader
+     * @param endTime                         the end time
+     * @param lastTouched                     the last touched
+     * @param siegeProgress                   the siege progress
+     * @param attackerPlayersIncludingOffline the attacker players including offline
+     * @param defenderPlayersIncludingOffline the defender players including offline
+     */
     public Siege(War war, @NotNull UUID uuid, Town town, OfflinePlayer siegeLeader, Instant endTime, Instant lastTouched, int siegeProgress, Set<UUID> attackerPlayersIncludingOffline, Set<UUID> defenderPlayersIncludingOffline) {
         this.war = war;
         this.uuid = uuid;
@@ -104,70 +123,54 @@ public class Siege implements Battle {
     }
 
     /**
-     * Starts a siege
+     * Starts the battle
      */
     public void start() {
+        if (!new PreBattleStartEvent(war, this, BattleType.SIEGE).callEvent()) return;
+
         siegeRunnable = new SiegeRunnable(this);
+        stopped = false;
+
         if (!war.isEvent())
-            Main.econ.withdrawPlayer(siegeLeader, SIEGE_VICTORY_MONEY);
+            AlathranWars.econ.withdrawPlayer(siegeLeader, SIEGE_VICTORY_MONEY);
 
-        final Title.Times times = Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(3500), Duration.ofMillis(500));
-        final Title defTitle = Title.title(
-            ColorParser.of("<red><u><b><town>")
-                .parseMinimessagePlaceholder("town", town.getName())
-                .build(),
-            ColorParser.of("<gray><i>Is under siege, defend!")
-                .build(),
-            times
-        );
-        final Title attTitle = Title.title(
-            ColorParser.of("<red><u><b><town>")
-                .parseMinimessagePlaceholder("town", town.getName())
-                .build(),
-            ColorParser.of("<gray><i>Has been put to siege, attack!")
-                .build(),
-            times
-        );
-
-        final List<Sound> soundList = List.of(
-            Sound.sound(Key.key("item.goat_horn.sound.0"), Sound.Source.VOICE, 0.5f, new Random().nextFloat(0.9F, 1.0F)),
-            Sound.sound(Key.key("item.goat_horn.sound.2"), Sound.Source.VOICE, 0.5f, new Random().nextFloat(0.9F, 1.0F)),
-            Sound.sound(Key.key("item.goat_horn.sound.3"), Sound.Source.VOICE, 0.5f, new Random().nextFloat(0.9F, 1.0F)),
-            Sound.sound(Key.key("item.goat_horn.sound.7"), Sound.Source.VOICE, 0.5f, new Random().nextFloat(0.9F, 1.0F))
-        );
-
-        getDefenderPlayers().forEach(player -> {
-            player.showTitle(defTitle);
-            player.playSound(soundList.get(new Random().nextInt(1, soundList.size())));
-        });
-
-        getAttackerPlayers().forEach(player -> {
-            player.showTitle(attTitle);
-            player.playSound(soundList.get(new Random().nextInt(1, soundList.size())));
-        });
+        new BattleStartEvent(war, this).callEvent();
     }
 
     /**
-     * Resumes a siege (after a server restart e.t.c.)
+     * Resumes the battle (after a server restart e.t.c.)
      */
     public void resume() {
+        if (!new PreBattleStartEvent(war, this, BattleType.SIEGE).callEvent()) return;
+
         siegeRunnable = new SiegeRunnable(this, getSiegeProgress());
+        stopped = false;
+
+        new BattleStartEvent(war, this).callEvent();
     }
 
     /**
-     * Stops a siege
+     * Stops the battle
+     * </p>
+     * Internal stop method for battles which triggers cleanup methods
      */
     public void stop() {
         if (stopped) return;
         stopped = true;
         siegeRunnable.cancel();
-        SQLQueries.deleteSiege(this);
-        war.removeSiege(this);
+        DatabaseQueries.deleteSiege(this); // TODO Run as latent event?
+        war.removeSiege(this); // TODO Run as latent event?
     }
 
-    public void attackersWin() {
+    /**
+     * Stop a battle in favor of the attackers
+     * @param reason what triggered the end
+     */
+    public void attackersWin(BattleVictoryReason reason) {
+        if (!new PreBattleResultEvent(war, this, BattleType.SIEGE, BattleVictor.ATTACKER, reason).callEvent()) return;
+
         if (!war.isEvent()) {
-            Main.econ.depositPlayer(siegeLeader, SIEGE_VICTORY_MONEY);
+            AlathranWars.econ.depositPlayer(siegeLeader, SIEGE_VICTORY_MONEY);
             double amt;
 
             if (town.getAccount().getHoldingBalance() > 10000.0) {
@@ -178,136 +181,37 @@ public class Siege implements Battle {
                 amt = SIEGE_VICTORY_MONEY;
             }
 
-            Main.econ.depositPlayer(siegeLeader, amt);
+            AlathranWars.econ.depositPlayer(siegeLeader, amt);
         }
 
-        Bukkit.broadcast(ColorParser.of("<prefix>The town of <town> has been sacked and placed under occupation by the armies of <attacker>!")
-            .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
-            .parseMinimessagePlaceholder("town", town.getName())
-            .parseMinimessagePlaceholder("attacker", getAttackerSide().getName())
-            .build());
-
-        final Title vicAttackTitle = Title.title(
-            ColorParser.of("<green><u><b>Victory")
-                .build(),
-            ColorParser.of("<gray><i><town> has been captured!")
-                .parseMinimessagePlaceholder("town", town.getName())
-                .build(),
-            TITLE_TIMES
-        );
-        final Title losAttackTitle = Title.title(
-            ColorParser.of("<red><u><b>Defeat")
-                .build(),
-            ColorParser.of("<gray><i><town> has been lost!")
-                .parseMinimessagePlaceholder("town", town.getName())
-                .build(),
-            TITLE_TIMES
-        );
-        getAttackers().forEach(player -> {
-            player.showTitle(vicAttackTitle);
-            player.playSound(SOUND_VICTORY);
-        });
-        getDefenders().forEach(player -> {
-            player.showTitle(losAttackTitle);
-            player.playSound(SOUND_DEFEAT);
-        });
-
-        if (side1AreAttackers) {
-            war.getSide1().addScore(50);
-            war.getSide2().addScore(5);
-        } else {
-            war.getSide1().addScore(5);
-            war.getSide2().addScore(50);
-        }
-
-        stop();
-
-        if (!war.isEvent()) {
-            Side townSide = getWar().getTownSide(town);
-            Side attackerSide = getAttackerSide();
-
-            if (attackerSide.equals(townSide)) {
-                if (townSide.isTownSurrendered(town))
-                    war.unsurrenderTown(town);
-            } else {
-                if (!townSide.isTownSurrendered(town))
-                    war.surrenderTown(town);
-            }
-        }
-    }
-
-    public void defendersWin() {
-        if (!war.isEvent())
-            town.getAccount().deposit(SIEGE_VICTORY_MONEY, "Siege Victory");
-
-        Bukkit.broadcast(
-            ColorParser.of("<prefix>The siege of <town> has been lifted by the defenders!")
-                .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
-                .parseMinimessagePlaceholder("town", town.getName())
-                .build()
-        );
-
-        final Title vicDefendTitle = Title.title(
-            ColorParser.of("<red><u><b>Defeat")
-                .build(),
-            ColorParser.of("<gray><i>We failed to capture <town>!")
-                .parseMinimessagePlaceholder("town", town.getName())
-                .build(),
-            TITLE_TIMES
-        );
-        final Title losDefendTitle = Title.title(
-            ColorParser.of("<green><u><b>Victory")
-                .build(),
-            ColorParser.of("<gray><i><town> has been made safe!")
-                .parseMinimessagePlaceholder("town", town.getName())
-                .build(),
-            TITLE_TIMES
-        );
-        getAttackers().forEach(player -> {
-            player.showTitle(vicDefendTitle);
-            player.playSound(SOUND_DEFEAT);
-        });
-        getDefenders().forEach(player -> {
-            player.showTitle(losDefendTitle);
-            player.playSound(SOUND_VICTORY);
-        });
-
-        if (side1AreAttackers) {
-            war.getSide2().addScore(10);
-        } else {
-            war.getSide1().addScore(10);
-        }
+        new BattleResultEvent(war, this, BattleVictor.ATTACKER, reason).callEvent();
 
         stop();
     }
 
     /**
-     * No winner declared
+     * Stop a battle in favor of the defenders
+     * @param reason what triggered the end
      */
-    public void equalWin() {
-        Bukkit.broadcast(
-            ColorParser.of("<prefix>The siege of <town> has ended in a draw!")
-                .parseMinimessagePlaceholder("prefix", UtilsChat.getPrefix())
-                .parseMinimessagePlaceholder("town", town.getName())
-                .build()
-        );
+    public void defendersWin(BattleVictoryReason reason) {
+        if (!new PreBattleResultEvent(war, this, BattleType.SIEGE, BattleVictor.DEFENDER, reason).callEvent()) return;
 
-        final Title drawTitle = Title.title(
-            ColorParser.of("<yellow><u><b>Draw")
-                .build(),
-            ColorParser.of("<gray><i>The siege at <town> has ended!")
-                .parseMinimessagePlaceholder("town", town.getName())
-                .build(),
-            TITLE_TIMES
-        );
-        getAttackers().forEach(player -> {
-            player.showTitle(drawTitle);
-            player.playSound(SOUND_DEFEAT);
-        });
-        getDefenders().forEach(player -> {
-            player.showTitle(drawTitle);
-            player.playSound(SOUND_DEFEAT);
-        });
+        if (!war.isEvent())
+            town.getAccount().deposit(SIEGE_VICTORY_MONEY, "Siege Victory");
+
+        new BattleResultEvent(war, this, BattleVictor.DEFENDER, reason).callEvent();
+
+        stop();
+    }
+
+    /**
+     * End a battle in favor of no one
+     * @param reason what triggered the end
+     */
+    public void equalWin(BattleVictoryReason reason) {
+        if (!new PreBattleResultEvent(war, this, BattleType.SIEGE, BattleVictor.DRAW, reason).callEvent()) return;
+
+        new BattleResultEvent(war, this, BattleVictor.DRAW, reason).callEvent();
 
         stop();
     }
@@ -361,7 +265,7 @@ public class Siege implements Battle {
      */
     @NotNull
     public Side getAttackerSide() {
-        return side1AreAttackers ? war.getSide1() : war.getSide2();
+        return getSide1AreAttackers() ? war.getSide1() : war.getSide2();
     }
 
     /**
@@ -369,7 +273,7 @@ public class Siege implements Battle {
      */
     @NotNull
     public Side getDefenderSide() {
-        return side1AreAttackers ? war.getSide2() : war.getSide1();
+        return getSide1AreAttackers() ? war.getSide2() : war.getSide1();
     }
 
     // SECTION Display Bar
@@ -474,6 +378,13 @@ public class Siege implements Battle {
      */
     public boolean equals(@NotNull Siege siege) {
         return getUUID().equals(siege.getUUID());
+    }
+
+    // SECTION BattleType
+
+    @Override
+    public BattleType getBattleType() {
+        return battleType;
     }
 
     // SECTION Accessors & Getters
@@ -667,6 +578,9 @@ public class Siege implements Battle {
     }
 
     public void calculateBattlefieldPlayers(@NotNull Location location) {
+        final Set<Player> previousAttackersOnBattlefield = new HashSet<>(attackers);
+        final Set<Player> previousDefendersOnBattlefield = new HashSet<>(defenders);
+
         final @NotNull Set<Player> attackersOnBattlefield = attackerPlayers.stream()
             .filter(OfflinePlayer::isOnline)
             .filter(p -> location.getWorld().equals(p.getLocation().getWorld()))
@@ -684,5 +598,29 @@ public class Siege implements Battle {
 
         defenders.clear();
         defenders.addAll(defendersOnBattlefield);
+
+        // Emit events for players leaving & entering the battlefield
+        for (Player p : previousAttackersOnBattlefield) {
+            if (p.isConnected() && !attackers.contains(p)) {
+                // TODO Player left battlefield
+            }
+        }
+        for (Player p : attackers) {
+            if (p.isConnected() && !previousAttackersOnBattlefield.contains(p)) {
+                // TODO Player entered battlefield
+            }
+        }
+
+        for (Player p : previousDefendersOnBattlefield) {
+            if (p.isConnected() && !defenders.contains(p)) {
+                // TODO Player left battlefield
+            }
+        }
+
+        for (Player p : defenders) {
+            if (p.isConnected() && !previousDefendersOnBattlefield.contains(p)) {
+                // TODO Player entered battlefield
+            }
+        }
     }
 }

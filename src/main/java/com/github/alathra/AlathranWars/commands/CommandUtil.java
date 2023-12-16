@@ -1,6 +1,6 @@
 package com.github.alathra.AlathranWars.commands;
 
-import com.github.alathra.AlathranWars.Main;
+import com.github.alathra.AlathranWars.AlathranWars;
 import com.github.alathra.AlathranWars.conflict.Side;
 import com.github.alathra.AlathranWars.conflict.War;
 import com.github.alathra.AlathranWars.conflict.WarManager;
@@ -641,14 +641,14 @@ public class CommandUtil {
             long regTime = res.getRegistered();
             int playTicks = Bukkit.getPlayer(res.getUUID()).getStatistic(Statistic.PLAY_ONE_MINUTE);
             int out = 0;
-            if (Main.getInstance().getConfig().getInt("minimumPlayerAge") > 0) {
+            if (AlathranWars.getInstance().getConfig().getInt("minimumPlayerAge") > 0) {
                 //compare the join date, if they joined less that min age ago it is true
-                if ((System.currentTimeMillis() - regTime) < 86400000L * Main.getInstance().getConfig().getInt("minimumPlayerAge"))
+                if ((System.currentTimeMillis() - regTime) < 86400000L * AlathranWars.getInstance().getConfig().getInt("minimumPlayerAge"))
                     out = 1;
             }
-            if (Main.getInstance().getConfig().getInt("minimumPlayTime") > 0) {
+            if (AlathranWars.getInstance().getConfig().getInt("minimumPlayTime") > 0) {
                 //check playtime, if its less than min its true
-                if (playTicks < (Main.getInstance().getConfig().getInt("minimumPlayTime") * (60 * 60 * 20))) out = 2;
+                if (playTicks < (AlathranWars.getInstance().getConfig().getInt("minimumPlayTime") * (60 * 60 * 20))) out = 2;
             }
 
             return out;

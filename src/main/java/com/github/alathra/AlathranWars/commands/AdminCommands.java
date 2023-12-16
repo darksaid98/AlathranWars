@@ -1,6 +1,6 @@
 package com.github.alathra.AlathranWars.commands;
 
-import com.github.alathra.AlathranWars.Main;
+import com.github.alathra.AlathranWars.AlathranWars;
 import com.github.alathra.AlathranWars.items.WarItemRegistry;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
@@ -51,7 +51,7 @@ public class AdminCommands {
                     throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>Invalid item argument.").build());
 
                 @Nullable ItemStack stack;
-                if (argItem.contains(Main.getInstance().getName().toLowerCase())) {
+                if (argItem.contains(AlathranWars.getInstance().getName().toLowerCase())) {
                     stack = WarItemRegistry.getInstance().getOrNullNamespace(argItem);
                 } else {
                     stack = WarItemRegistry.getInstance().getOrNull(argItem);

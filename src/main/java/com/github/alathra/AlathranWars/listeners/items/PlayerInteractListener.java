@@ -1,6 +1,6 @@
 package com.github.alathra.AlathranWars.listeners.items;
 
-import com.github.alathra.AlathranWars.Main;
+import com.github.alathra.AlathranWars.AlathranWars;
 import com.github.alathra.AlathranWars.conflict.WarManager;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.items.WarItemRegistry;
@@ -104,7 +104,7 @@ public class PlayerInteractListener implements Listener {
                                 return;
                             }
                             player.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "<yellow>Break it down alright!").parseLegacy().build());
-                            brokenDoors.put(getDoorPos(clicked, door), System.currentTimeMillis() + (1000L * Main.getInstance().getConfig().getInt("batteringRamEffectiveness")));
+                            brokenDoors.put(getDoorPos(clicked, door), System.currentTimeMillis() + (1000L * AlathranWars.getInstance().getConfig().getInt("batteringRamEffectiveness")));
                             door.setOpen(!door.isOpen());
                             clicked.setBlockData(door);
                             player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);

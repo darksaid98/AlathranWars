@@ -1,6 +1,6 @@
 package com.github.alathra.AlathranWars.items;
 
-import com.github.alathra.AlathranWars.Main;
+import com.github.alathra.AlathranWars.AlathranWars;
 import com.github.alathra.AlathranWars.items.item.RamItem;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class WarItemRegistry {
 
-    public static final String namespace = Main.getInstance().getName().toLowerCase();
+    public static final String namespace = AlathranWars.getInstance().getName().toLowerCase();
     private static final HashMap<String, IWarItem> itemRegistry = new HashMap<>();
     private static WarItemRegistry instance;
 
@@ -22,13 +22,13 @@ public class WarItemRegistry {
     public WarItemRegistry() {
         instance = this;
 
-//        Main.warLogger.log(UtilsChat.getPrefix() + "Registering AlathranWars items.");
+//        AlathranWars.warLogger.log(UtilsChat.getPrefix() + "Registering AlathranWars items.");
 
         itemRegistry.put(registryName("ram"), new RamItem());
         //THIS BREAKS EVERYTHING???? TODO
 //            Bukkit.getServer().addRecipe(new RamItem().getRecipe());
 
-//        Main.warLogger.log(UtilsChat.getPrefix() + "Registered AlathranWars items.");
+//        AlathranWars.warLogger.log(UtilsChat.getPrefix() + "Registered AlathranWars items.");
     }
 
     public static WarItemRegistry getInstance() {

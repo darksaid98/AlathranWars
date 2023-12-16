@@ -1,7 +1,7 @@
 package com.github.alathra.AlathranWars.listeners.siege;
 
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
-import com.github.alathra.AlathranWars.enums.BattleSide;
+import com.github.alathra.AlathranWars.enums.battle.BattleSide;
 import com.github.alathra.AlathranWars.utility.Utils;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.event.actions.TownyBuildEvent;

@@ -1,6 +1,6 @@
 package com.github.alathra.AlathranWars.items.item;
 
-import com.github.alathra.AlathranWars.Main;
+import com.github.alathra.AlathranWars.AlathranWars;
 import com.github.alathra.AlathranWars.items.IWarItem;
 import com.github.alathra.AlathranWars.items.WarItemRegistry;
 import com.github.milkdrinkers.colorparser.ColorParser;
@@ -38,7 +38,7 @@ public class RamItem implements IWarItem {
     @Override
     public @NotNull Recipe getRecipe() {
         @Nullable ItemStack output = WarItemRegistry.getInstance().getOrNull("ram");
-        @NotNull NamespacedKey key = new NamespacedKey(Main.getInstance(), "ram");
+        @NotNull NamespacedKey key = new NamespacedKey(AlathranWars.getInstance(), "ram");
         @NotNull ShapedRecipe recipe = new ShapedRecipe(key, output);
         recipe.shape("$@$", "B##");
         recipe.setIngredient('@', Material.STICK);

@@ -2,7 +2,7 @@ package com.github.alathra.AlathranWars.listeners.siege;
 
 import com.github.alathra.AlathranWars.conflict.WarManager;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
-import com.github.alathra.AlathranWars.enums.BattleSide;
+import com.github.alathra.AlathranWars.enums.battle.BattleSide;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

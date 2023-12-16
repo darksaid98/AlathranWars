@@ -24,7 +24,9 @@ SOFTWARE.
 
 package com.github.alathra.AlathranWars.conflict.battle.beam;
 
-import com.github.alathra.AlathranWars.Main;
+import com.github.alathra.AlathranWars.AlathranWars;
+import com.github.alathra.AlathranWars.utility.Logger;
+import com.github.milkdrinkers.colorparser.ColorParser;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -65,8 +67,8 @@ public abstract class Laser {
             throw new IllegalStateException("The Laser Beam API is disabled. An error has occured during initialization.");
         if (start.getWorld() != end.getWorld())
             throw new IllegalArgumentException("Locations do not belong to the same worlds.");
-        this.start = start;
-        this.end = end;
+        this.start = start.clone();
+        this.end = end.clone();
         this.duration = duration;
         distanceSquared = distance < 0 ? -1 : distance * distance;
     }
@@ -103,7 +105,6 @@ public abstract class Laser {
      */
     public void start(Plugin plugin) {
         if (task != null) throw new IllegalStateException("Task already started");
-//        if (runnable != null) throw new IllegalStateException("Task already started");
         this.plugin = plugin;
         Runnable runnable = new BukkitRunnable() {
             int time = 0;
@@ -128,28 +129,11 @@ public abstract class Laser {
                     }
                     time++;
                 } catch (ReflectiveOperationException e) {
-                    e.printStackTrace();
+                    Logger.get().error(ColorParser.of("<red>Laser packer exception: ").build(), e);
                 }
             }
-
-            /*@Override
-            public synchronized void cancel() throws IllegalStateException {
-                super.cancel();
-                runnable = null;
-                try {
-                    for (Player p : show) {
-                        sendDestroyPackets(p);
-                    }
-                    show.clear();
-                    executeEnd.forEach(Runnable::run);
-                } catch (ReflectiveOperationException e) {
-                    e.printStackTrace();
-                }
-            }*/
         };
-//        main.runTaskTimerAsynchronously(plugin, 0L, durationInTicks ? 1L : 20L);
-//        Main.getPaperLib().scheduling().asyncScheduler().run(main);
-        task = Main.getPaperLib().scheduling().asyncScheduler().runAtFixedRate(runnable, Duration.ZERO, Duration.ofMillis(durationInTicks ? 50L : 1000L));
+        task = AlathranWars.getPaperLib().scheduling().asyncScheduler().runAtFixedRate(runnable, Duration.ZERO, Duration.ofMillis(durationInTicks ? 50L : 1000L));
     }
 
     /**
@@ -200,7 +184,7 @@ public abstract class Laser {
      * @return where exactly is the start position of the laser located
      */
     public Location getStart() {
-        return start;
+        return start.clone();
     }
 
     /**
@@ -209,7 +193,7 @@ public abstract class Laser {
      * @return where exactly is the end position of the laser located
      */
     public Location getEnd() {
-        return end;
+        return end.clone();
     }
 
     protected abstract void sendStartPackets(Player p, boolean hasSeen) throws ReflectiveOperationException;
