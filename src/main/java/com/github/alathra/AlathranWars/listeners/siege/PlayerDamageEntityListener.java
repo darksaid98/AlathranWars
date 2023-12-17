@@ -20,7 +20,7 @@ public class PlayerDamageEntityListener implements Listener {
         EntityType.BOAT,
         EntityType.MINECART,
         EntityType.MINECART_TNT
-    )
+    );
 
     /**
      * Always allow damaging certain entities withing the siege zone (mounts and dogs)
