@@ -37,6 +37,7 @@ public class ListenerHandler implements Reloadable {
         if (Bukkit.getServer().getPluginManager().isPluginEnabled("GSit"))
             instance.getServer().getPluginManager().registerEvents(new PlayerSitListener(), instance);
         instance.getServer().getPluginManager().registerEvents(new ItemUseListener(), instance);
+        instance.getServer().getPluginManager().registerEvents(new PlayerDamageEntityListener(), instance);
 
         // Battles
         instance.getServer().getPluginManager().registerEvents(new SiegeListener(), instance);
