@@ -14,3 +14,13 @@ updates:
     commit-message:
       prefix: "build:"
     target-branch: "main"
+    groups:
+      "org.flywaydb":
+        patterns:
+          - "org.flywaydb*"
+      "org.jooq":
+        patterns:
+          - "org.jooq*"
+      "net.kyori":
+        patterns:
+          - "net.kyori*"
