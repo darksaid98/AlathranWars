@@ -1,6 +1,10 @@
 package com.github.alathra.AlathranWars.commands;
 
-import com.github.alathra.AlathranWars.conflict.*;
+import com.github.alathra.AlathranWars.conflict.war.War;
+import com.github.alathra.AlathranWars.conflict.war.WarBuilder;
+import com.github.alathra.AlathranWars.conflict.war.WarController;
+import com.github.alathra.AlathranWars.conflict.war.side.Side;
+import com.github.alathra.AlathranWars.conflict.war.side.SideCreationException;
 import com.github.alathra.AlathranWars.hooks.NameColorHandler;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;

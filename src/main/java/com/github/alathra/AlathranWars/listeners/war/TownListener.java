@@ -1,8 +1,8 @@
 package com.github.alathra.AlathranWars.listeners.war;
 
-import com.github.alathra.AlathranWars.conflict.Side;
-import com.github.alathra.AlathranWars.conflict.War;
-import com.github.alathra.AlathranWars.conflict.WarController;
+import com.github.alathra.AlathranWars.conflict.war.side.Side;
+import com.github.alathra.AlathranWars.conflict.war.War;
+import com.github.alathra.AlathranWars.conflict.war.WarController;
 import com.github.alathra.AlathranWars.hooks.NameColorHandler;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.event.TownAddResidentEvent;

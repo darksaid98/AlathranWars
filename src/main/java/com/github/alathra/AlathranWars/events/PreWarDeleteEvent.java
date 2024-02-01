@@ -1,6 +1,6 @@
 package com.github.alathra.AlathranWars.events;
 
-import com.github.alathra.AlathranWars.conflict.War;
+import com.github.alathra.AlathranWars.conflict.war.War;
 import com.github.alathra.AlathranWars.enums.WarDeleteReason;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;

@@ -1,7 +1,12 @@
 package com.github.alathra.AlathranWars.db;
 
-import com.github.alathra.AlathranWars.conflict.*;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
+import com.github.alathra.AlathranWars.conflict.war.War;
+import com.github.alathra.AlathranWars.conflict.war.WarBuilder;
+import com.github.alathra.AlathranWars.conflict.war.WarController;
+import com.github.alathra.AlathranWars.conflict.war.side.Side;
+import com.github.alathra.AlathranWars.conflict.war.side.SideBuilder;
+import com.github.alathra.AlathranWars.conflict.war.side.SideCreationException;
 import com.github.alathra.AlathranWars.enums.battle.BattleSide;
 import com.github.alathra.AlathranWars.enums.battle.BattleTeam;
 import com.github.alathra.AlathranWars.utility.DB;
@@ -456,7 +461,7 @@ public abstract class DatabaseQueries {
                 .setSurrenderedPlayersIncludingOffline(playersSurrendered)
                 .setSiegeGrace(siegeGrace)
                 .setRaidGrace(raidGrace)
-                .buildOld();
+                .rebuild();
         } catch (SideCreationException e) {
             Logger.get().error("SQL Query threw an error!", e);
         }

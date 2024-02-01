@@ -1,6 +1,6 @@
 package com.github.alathra.AlathranWars.events.battle;
 
-import com.github.alathra.AlathranWars.conflict.War;
+import com.github.alathra.AlathranWars.conflict.war.War;
 import com.github.alathra.AlathranWars.conflict.battle.Battle;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

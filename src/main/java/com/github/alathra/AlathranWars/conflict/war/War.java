@@ -1,7 +1,11 @@
-package com.github.alathra.AlathranWars.conflict;
+package com.github.alathra.AlathranWars.conflict.war;
 
+import com.github.alathra.AlathranWars.conflict.*;
 import com.github.alathra.AlathranWars.conflict.battle.raid.Raid;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
+import com.github.alathra.AlathranWars.conflict.war.side.Side;
+import com.github.alathra.AlathranWars.conflict.war.side.SideBuilder;
+import com.github.alathra.AlathranWars.conflict.war.side.SideCreationException;
 import com.github.alathra.AlathranWars.db.DatabaseQueries;
 import com.github.alathra.AlathranWars.enums.ConflictType;
 import com.github.alathra.AlathranWars.enums.WarDeleteReason;
@@ -47,7 +51,7 @@ public class War extends Conflict {
     private final ConflictType conflictType = ConflictType.WAR;
     private boolean event;
 
-    private @NotNull Side side1;
+    private Side side1;
     private Side side2;
     private final Side attacker; // Reference variable to side1 or side2
     private final Side defender; // Reference variable to side1 or side2
@@ -72,7 +76,7 @@ public class War extends Conflict {
         UUID uuid,
         String name,
         String label,
-        @NotNull Side side1,
+        Side side1,
         Side side2,
         Set<Siege> sieges,
         Set<Raid> raids,
@@ -127,14 +131,14 @@ public class War extends Conflict {
             .setLeader(aggressor)
             .setSide(BattleSide.ATTACKER)
             .setTeam(BattleTeam.SIDE_1)
-            .buildNew();
+            .build();
         this.side2 = new SideBuilder()
             .setWarUUID(this.uuid)
             .setUuid(UUID.randomUUID())
             .setLeader(victim)
             .setSide(BattleSide.DEFENDER)
             .setTeam(BattleTeam.SIDE_2)
-            .buildNew();
+            .build();
 
         this.attacker = side1.getSide().equals(BattleSide.ATTACKER) ? this.side1 : this.side2;
         this.defender = side1.getSide().equals(BattleSide.DEFENDER) ? this.side1 : this.side2;
@@ -196,7 +200,7 @@ public class War extends Conflict {
      * @param war the war
      * @return the boolean
      */
-    public boolean equals(@NotNull War war) {
+    public boolean equals(War war) {
         return this.uuid.equals(war.getUUID());
     }
 
@@ -817,9 +821,9 @@ public class War extends Conflict {
      *
      * @param loserSide the loser side
      */
-    public void defeat(@NotNull Side loserSide) {
-        @NotNull Side loser = loserSide.equals(getSide1()) ? getSide1() : getSide2();
-        @NotNull Side winner = loserSide.equals(getSide1()) ? getSide2() : getSide1();
+    public void defeat(Side loserSide) {
+        Side loser = loserSide.equals(getSide1()) ? getSide1() : getSide2();
+        Side winner = loserSide.equals(getSide1()) ? getSide2() : getSide1();
 
         Bukkit.broadcast(ColorParser.of(UtilsChat.getPrefix() + "The war of <war> has ended. <red><winner> <reset>has triumphed against <red><loser><reset>.")
             .parseMinimessagePlaceholder("war", getLabel())

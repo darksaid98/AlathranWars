@@ -1,26 +1,42 @@
-package com.github.alathra.AlathranWars.conflict;
+package com.github.alathra.AlathranWars.conflict.war.side;
 
 import com.github.alathra.AlathranWars.enums.battle.BattleSide;
 import com.github.alathra.AlathranWars.enums.battle.BattleTeam;
 import com.palmergames.bukkit.towny.object.Government;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
-import org.bukkit.entity.Player;
 
 import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
 public class SideBuilder {
+    private UUID warUUID;
+    private UUID uuid;
+    private BattleSide side;
+    private BattleTeam team;
+    private String name;
+
+    private Government government;
+
+    private Set<Town> towns;
+    private Set<Nation> nations;
+    private Set<UUID> playersIncludingOffline;
+    private Set<Town> surrenderedTowns;
+    private Set<Nation> surrenderedNations;
+    private Set<UUID> surrenderedPlayersIncludingOffline;
+    private Instant siegeGrace;
+    private Instant raidGrace;
+
     public SideBuilder() {}
 
-    public Side buildOld() throws SideCreationException {
+    public Side rebuild() throws SideCreationException {
 //        if (warUUID == null || uuid == null || town == null || side == null || team == null || name == null ||
 //            towns == null || nations == null || playersIncludingOffline == null ||
 //            surrenderedTowns == null || surrenderedNations == null || surrenderedPlayersIncludingOffline == null ||
 //            siegeGrace == null || raidGrace == null
 //        ) throw new IllegalStateException("Missing state to create Side 1");
-
+        // TODO Cleanup this shit
         if (warUUID == null || uuid == null
         ) throw new IllegalStateException("Missing state to create Side 1.2");
 
@@ -56,7 +72,7 @@ public class SideBuilder {
         );
     }
 
-    public Side buildNew() throws SideCreationException {
+    public Side build() throws SideCreationException {
         if (warUUID == null || uuid == null || government == null || side == null || team == null)
             throw new IllegalStateException("Missing state to create new Side");
 
@@ -138,25 +154,4 @@ public class SideBuilder {
         this.raidGrace = raidGrace;
         return this;
     }
-
-    private UUID warUUID;
-    private UUID uuid;
-    private BattleSide side;
-    private BattleTeam team;
-    private String name;
-
-    private Government government;
-    private Town town;
-
-    private Set<Town> towns;
-    private Set<Nation> nations;
-    private Set<UUID> playersIncludingOffline;
-    private Set<Town> surrenderedTowns;
-    private Set<Nation> surrenderedNations;
-    private Set<UUID> surrenderedPlayersIncludingOffline;
-    private Instant siegeGrace;
-    private Instant raidGrace;
-
-
-
 }

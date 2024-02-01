@@ -1,8 +1,8 @@
 package com.github.alathra.AlathranWars.conflict.battle.siege;
 
 import com.github.alathra.AlathranWars.AlathranWars;
-import com.github.alathra.AlathranWars.conflict.Side;
-import com.github.alathra.AlathranWars.conflict.War;
+import com.github.alathra.AlathranWars.conflict.war.side.Side;
+import com.github.alathra.AlathranWars.conflict.war.War;
 import com.github.alathra.AlathranWars.conflict.battle.Battle;
 import com.github.alathra.AlathranWars.db.DatabaseQueries;
 import com.github.alathra.AlathranWars.enums.CaptureProgressDirection;

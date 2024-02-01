@@ -1,6 +1,8 @@
-package com.github.alathra.AlathranWars.conflict;
+package com.github.alathra.AlathranWars.conflict.war.side;
 
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
+import com.github.alathra.AlathranWars.conflict.war.War;
+import com.github.alathra.AlathranWars.conflict.war.WarController;
 import com.github.alathra.AlathranWars.enums.battle.BattleSide;
 import com.github.alathra.AlathranWars.enums.battle.BattleTeam;
 import com.github.alathra.AlathranWars.hooks.NameColorHandler;
@@ -89,31 +91,6 @@ public class Side {
         calculateOnlinePlayers();
     }
 
-    /*public Side(UUID warUUID, UUID uuid, Town town, boolean isNation, BattleSide side, BattleTeam team) {
-        this.warUUID = warUUID;
-        this.uuid = uuid;
-        this.side = side;
-        this.team = team;
-        this.town = town;
-        this.name = this.town.getName();
-
-        this.towns = new HashSet<>();
-        this.nations = new HashSet<>();
-        this.playersIncludingOffline = new HashSet<>();
-        this.players = new HashSet<>();
-
-        this.surrenderedTowns = new HashSet<>();
-        this.surrenderedNations = new HashSet<>();
-        this.surrenderedPlayersIncludingOffline = new HashSet<>();
-
-        if (isNation)
-            addNation(Objects.requireNonNull(this.town.getNationOrNull()));
-        else
-            addTown(this.town);
-
-        calculateOnlinePlayers();
-    }*/
-
     public Side(UUID warUUID, UUID uuid, Government government, BattleSide side, BattleTeam team) throws SideCreationException {
         this.warUUID = warUUID;
         this.uuid = uuid;
@@ -143,50 +120,6 @@ public class Side {
 
         calculateOnlinePlayers();
     }
-
-    /*public Side(UUID warUUID, UUID uuid, Town town, BattleSide side, BattleTeam team) {
-        this.warUUID = warUUID;
-        this.uuid = uuid;
-        this.side = side;
-        this.team = team;
-        this.town = town;
-        this.name = this.town.getName();
-
-        this.towns = new HashSet<>();
-        this.nations = new HashSet<>();
-        this.playersIncludingOffline = new HashSet<>();
-        this.players = new HashSet<>();
-
-        this.surrenderedTowns = new HashSet<>();
-        this.surrenderedNations = new HashSet<>();
-        this.surrenderedPlayersIncludingOffline = new HashSet<>();
-
-        addTown(this.town);
-
-        calculateOnlinePlayers();
-    }
-
-    public Side(UUID warUUID, UUID uuid, @NotNull Nation nation, BattleSide side, BattleTeam team) {
-        this.warUUID = warUUID;
-        this.uuid = uuid;
-        this.side = side;
-        this.team = team;
-        this.town = nation.getCapital();
-        this.name = this.town.getName();
-
-        this.towns = new HashSet<>();
-        this.nations = new HashSet<>();
-        this.playersIncludingOffline = new HashSet<>();
-        this.players = new HashSet<>();
-
-        this.surrenderedTowns = new HashSet<>();
-        this.surrenderedNations = new HashSet<>();
-        this.surrenderedPlayersIncludingOffline = new HashSet<>();
-
-        addNation(nation);
-
-        calculateOnlinePlayers();
-    }*/
 
     public BattleSide getSide() {
         return side;
@@ -246,7 +179,7 @@ public class Side {
         return surrenderedNations.contains(nation);
     }
 
-    public void addTown(@NotNull Town town) {
+    public void addTown(Town town) {
         if (isTownOnSide(town)) return;
 
         towns.add(town);
@@ -254,7 +187,7 @@ public class Side {
         town.getResidents().forEach((Resident resident) -> addPlayer(resident.getUUID()));
     }
 
-    public void addNation(@NotNull Nation nation) {
+    public void addNation(Nation nation) {
         if (isNationOnSide(nation)) return;
 
         nations.add(nation);
@@ -262,7 +195,7 @@ public class Side {
         nation.getTowns().forEach(this::addTown);
     }
 
-    public void removeTown(@NotNull Town town) {
+    public void removeTown(Town town) {
         if (!isTownOnSide(town)) return;
 
         towns.remove(town);
@@ -270,7 +203,7 @@ public class Side {
         town.getResidents().forEach((Resident resident) -> removePlayer(resident.getUUID()));
     }
 
-    public void removeNation(@NotNull Nation nation) {
+    public void removeNation(Nation nation) {
         if (!isNationOnSide(nation)) return;
 
         nations.remove(nation);
@@ -278,7 +211,7 @@ public class Side {
         nation.getTowns().forEach(this::removeTown);
     }
 
-    public void surrenderTown(@NotNull Town town) {
+    public void surrenderTown(Town town) {
         if (isTownSurrendered(town)) return;
 
         removeTown(town);
@@ -288,7 +221,7 @@ public class Side {
         town.getResidents().forEach((Resident resident) -> surrenderPlayer(resident.getUUID()));
     }
 
-    public void surrenderNation(@NotNull Nation nation) {
+    public void surrenderNation(Nation nation) {
         if (isNationSurrendered(nation)) return;
 
         removeNation(nation);
@@ -298,7 +231,7 @@ public class Side {
         nation.getTowns().forEach(this::surrenderTown);
     }
 
-    public void unsurrenderTown(@NotNull Town town) {
+    public void unsurrenderTown(Town town) {
         if (!isTownSurrendered(town)) return;
 
         addTown(town);
@@ -308,7 +241,7 @@ public class Side {
         town.getResidents().forEach((Resident resident) -> unsurrenderPlayer(resident.getUUID()));
     }
 
-    public void unsurrenderNation(@NotNull Nation nation) {
+    public void unsurrenderNation(Nation nation) {
         if (!isNationSurrendered(nation)) return;
 
         addNation(nation);
@@ -318,7 +251,7 @@ public class Side {
         nation.getTowns().forEach(this::unsurrenderTown);
     }
 
-    public boolean isPlayerOnSide(@NotNull Player p) {
+    public boolean isPlayerOnSide(Player p) {
         return isPlayerOnSide(p.getUniqueId());
     }
 
@@ -326,7 +259,7 @@ public class Side {
         return playersIncludingOffline.contains(uuid) || surrenderedPlayersIncludingOffline.contains(uuid);
     }
 
-    public boolean isPlayerSurrendered(@NotNull Player p) {
+    public boolean isPlayerSurrendered(Player p) {
         return isPlayerSurrendered(p.getUniqueId());
     }
 
@@ -334,21 +267,21 @@ public class Side {
         return surrenderedPlayersIncludingOffline.contains(uuid);
     }
 
-    public void addPlayer(@NotNull Player p) {
+    public void addPlayer(Player p) {
         addPlayer(p.getUniqueId());
     }
 
-    public void addPlayer(@NotNull OfflinePlayer offlinePlayer) {
+    public void addPlayer(OfflinePlayer offlinePlayer) {
         if (offlinePlayer.hasPlayedBefore())
             addPlayer(offlinePlayer.getUniqueId());
     }
 
-    public void addPlayer(@NotNull UUID uuid) {
+    public void addPlayer(UUID uuid) {
         if (isPlayerOnSide(uuid)) return;
 
         playersIncludingOffline.add(uuid);
         if (getWar() != null) { // We need to check this as on side creation War doesn't exist
-            for (@NotNull Siege siege : getWar().getSieges()) {
+            for (Siege siege : getWar().getSieges()) {
                 if (siege.getAttackerSide().equals(this)) {
                     siege.addPlayer(uuid, BattleSide.ATTACKER);
                 } else {
@@ -367,21 +300,21 @@ public class Side {
         players.add(p);
     }
 
-    public void removePlayer(@NotNull Player p) {
+    public void removePlayer(Player p) {
         removePlayer(p.getUniqueId());
     }
 
-    public void removePlayer(@NotNull OfflinePlayer offlinePlayer) {
+    public void removePlayer(OfflinePlayer offlinePlayer) {
         if (offlinePlayer.hasPlayedBefore())
             removePlayer(offlinePlayer.getUniqueId());
     }
 
-    public void removePlayer(@NotNull UUID uuid) {
+    public void removePlayer(UUID uuid) {
         if (!isPlayerOnSide(uuid)) return;
 
         playersIncludingOffline.remove(uuid);
         if (getWar() != null) { // We need to check this as on side creation War doesn't exist
-            for (@NotNull Siege siege : getWar().getSieges()) {
+            for (Siege siege : getWar().getSieges()) {
                 if (siege.getAttackerSide().equals(this)) {
                     siege.removePlayer(uuid);
                 } else {
@@ -400,11 +333,11 @@ public class Side {
         players.remove(p);
     }
 
-    public void surrenderPlayer(@NotNull Player p) {
+    public void surrenderPlayer(Player p) {
         surrenderPlayer(p.getUniqueId());
     }
 
-    public void surrenderPlayer(@NotNull UUID uuid) {
+    public void surrenderPlayer(UUID uuid) {
         if (isPlayerSurrendered(uuid)) return;
 
         removePlayer(uuid);
@@ -412,11 +345,11 @@ public class Side {
         applyNameTags();
     }
 
-    public void unsurrenderPlayer(@NotNull Player p) {
+    public void unsurrenderPlayer(Player p) {
         unsurrenderPlayer(p.getUniqueId());
     }
 
-    public void unsurrenderPlayer(@NotNull UUID uuid) {
+    public void unsurrenderPlayer(UUID uuid) {
         if (!isPlayerSurrendered(uuid)) return;
 
         addPlayer(uuid);
@@ -425,7 +358,7 @@ public class Side {
     }
 
     public void calculateOnlinePlayers() {
-        final @NotNull Set<Player> onlinePlayers = getPlayersIncludingOffline().stream()
+        final Set<Player> onlinePlayers = getPlayersIncludingOffline().stream()
             .filter(uuid -> Bukkit.getOfflinePlayer(uuid).isOnline())
             .map(Bukkit::getPlayer)
             .collect(Collectors.toSet());
@@ -499,11 +432,11 @@ public class Side {
         return this.uuid.equals(uuid);
     }
 
-    public boolean equals(@NotNull War war) {
+    public boolean equals(War war) {
         return this.warUUID.equals(war.getUUID());
     }
 
-    public boolean equals(@NotNull Side side) {
+    public boolean equals(Side side) {
         return getUUID().equals(side.getUUID());
     }
 

@@ -1,9 +1,9 @@
 package com.github.alathra.AlathranWars.commands;
 
 import com.github.alathra.AlathranWars.AlathranWars;
-import com.github.alathra.AlathranWars.conflict.Side;
-import com.github.alathra.AlathranWars.conflict.War;
-import com.github.alathra.AlathranWars.conflict.WarController;
+import com.github.alathra.AlathranWars.conflict.war.side.Side;
+import com.github.alathra.AlathranWars.conflict.war.War;
+import com.github.alathra.AlathranWars.conflict.war.WarController;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.enums.CommandArgsSiege;
 import com.github.alathra.AlathranWars.enums.CommandArgsWar;

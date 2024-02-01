@@ -2,7 +2,7 @@ package com.github.alathra.AlathranWars;
 
 import com.github.alathra.AlathranWars.commands.CommandManager;
 import com.github.alathra.AlathranWars.config.ConfigHandler;
-import com.github.alathra.AlathranWars.conflict.WarController;
+import com.github.alathra.AlathranWars.conflict.war.WarController;
 import com.github.alathra.AlathranWars.db.DatabaseHandler;
 import com.github.alathra.AlathranWars.db.DatabaseQueries;
 import com.github.alathra.AlathranWars.hooks.HookManager;
