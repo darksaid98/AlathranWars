@@ -399,10 +399,10 @@ public class War extends Conflict {
 
     @NotNull
     public Set<Side> getSides() {
-        final @NotNull Set<Side> sides = new HashSet<>();
-        sides.add(getSide1());
-        sides.add(getSide2());
-        return sides;
+        return Set.of(
+            getSide1(),
+            getSide2()
+        );
     }
 
     /**
@@ -506,6 +506,16 @@ public class War extends Conflict {
 
     public void removeRaid(Raid raid) {
         raids.remove(raid);
+    }
+
+    @NotNull
+    public boolean isTownUnderSiege(Town town) {
+        return sieges.stream().anyMatch(siege -> siege.getTown().equals(town));
+    }
+
+    @NotNull
+    public boolean isTownUnderRaid(Town town) {
+        return raids.stream().anyMatch(raid -> raid.getTown().equals(town));
     }
 
     @NotNull

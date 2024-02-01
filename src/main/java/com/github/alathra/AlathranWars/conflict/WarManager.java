@@ -46,7 +46,7 @@ public class WarManager {
 
     @Nullable
     public War getWar(String warName) {
-        for (@NotNull War war : wars)
+        for (@NotNull War war : getWars())
             if (war.equals(warName)) return war;
 
         return null;
@@ -54,7 +54,7 @@ public class WarManager {
 
     @Nullable
     public War getWar(UUID uuid) {
-        for (@NotNull War war : wars)
+        for (@NotNull War war : getWars())
             if (war.equals(uuid)) return war;
 
         return null;
@@ -62,7 +62,7 @@ public class WarManager {
 
     @Nullable
     public Side getSide(UUID uuid) {
-        for (@NotNull War war : wars)
+        for (@NotNull War war : getWars())
             if (war.getSide(uuid) != null) return war.getSide(uuid);
 
         return null;
@@ -70,25 +70,23 @@ public class WarManager {
 
     @Nullable
     public Siege getSiege(UUID uuid) {
-        for (@NotNull War war : wars)
+        for (@NotNull War war : getWars())
             if (war.getSiege(uuid) != null) return war.getSiege(uuid);
 
         return null;
     }
 
     public void addWar(War war) {
-        wars.add(war);
+        getWars().add(war);
     }
 
     public void removeWar(War war) {
-        wars.remove(war);
+        getWars().remove(war);
     }
 
     public boolean isPlayerInAnyWars(UUID uuid) {
-        for (@NotNull War war : wars) {
-            if (war.isPlayerInWar(uuid)) return true;
-        }
-        return false;
+        return getWars().stream()
+            .anyMatch(war -> war.isPlayerInWar(uuid));
     }
 
     public boolean isPlayerInAnyWars(@NotNull Player p) {
@@ -100,40 +98,68 @@ public class WarManager {
     }
 
     public @NotNull Set<War> getPlayerWars(UUID uuid) {
-        return wars.stream()
+        return getWars().stream()
             .filter(war -> war.isPlayerInWar(uuid))
             .collect(Collectors.toSet());
     }
 
     public boolean isTownInAnyWars(Town town) {
-        for (@NotNull War war : wars) {
-            if (war.isTownInWar(town)) return true;
-        }
-        return false;
+        return getWars().stream()
+            .anyMatch(war -> war.isTownInWar(town));
+    }
+
+    public boolean isTownInAnySieges(Town town) {
+        return getWars().stream()
+            .anyMatch(war -> war.isTownInWar(town) && war.isTownUnderSiege(town));
+    }
+
+    public boolean isTownInAnyRaids(Town town) {
+        return getWars().stream()
+            .anyMatch(war -> war.isTownInWar(town) && war.isTownUnderRaid(town));
+    }
+
+    public boolean isNationInAnySieges(Nation nation) {
+        return nation.getTowns().stream()
+            .anyMatch(this::isTownInAnySieges);
+    }
+
+    public boolean isNationInAnyRaids(Nation nation) {
+        return nation.getTowns().stream()
+            .anyMatch(this::isTownInAnyRaids);
+    }
+
+    public @NotNull Set<Siege> getTownSieges(Town town) {
+        return getSieges().stream()
+            .filter(siege -> siege.getAttackerSide().isTownOnSide(town) || siege.getDefenderSide().isTownOnSide(town))
+            .collect(Collectors.toSet());
+    }
+
+    public @NotNull Set<Raid> getTownRaids(Town town) {
+        return getRaids().stream()
+            .filter(raid -> raid.getAttackerSide().isTownOnSide(town) || raid.getDefenderSide().isTownOnSide(town))
+            .collect(Collectors.toSet());
     }
 
     public @NotNull Set<War> getTownWars(Town town) {
-        return wars.stream()
+        return getWars().stream()
             .filter(war -> war.isTownInWar(town))
             .collect(Collectors.toSet());
     }
 
     public boolean isNationInAnyWars(Nation nation) {
-        for (@NotNull War war : wars) {
-            if (war.isNationInWar(nation)) return true;
-        }
-        return false;
+        return getWars().stream()
+            .anyMatch(war -> war.isNationInWar(nation));
     }
 
     public @NotNull Set<War> getNationWars(Nation nation) {
-        return wars.stream()
+        return getWars().stream()
             .filter(war -> war.isNationInWar(nation))
             .collect(Collectors.toSet());
     }
 
     @NotNull
     public List<String> getWarNames() {
-        return wars.stream()
+        return getWars().stream()
             .map(War::getName)
             .sorted(String::compareToIgnoreCase)
             .collect(Collectors.toList());
@@ -141,7 +167,7 @@ public class WarManager {
 
     @NotNull
     public List<String> getWarLabels() {
-        return wars.stream()
+        return getWars().stream()
             .map(War::getLabel)
             .sorted(String::compareToIgnoreCase)
             .collect(Collectors.toList());
@@ -168,11 +194,8 @@ public class WarManager {
     }
 
     public boolean isPlayerInAnySiege(UUID uuid) {
-        for (@NotNull Siege siege : getSieges()) {
-            if (siege.isPlayerInSiege(uuid)) return true;
-        }
-
-        return false;
+        return getSieges().stream()
+            .anyMatch(siege -> siege.isPlayerInSiege(uuid));
     }
 
     public @NotNull Set<Siege> getPlayerSieges(@NotNull Player p) {
