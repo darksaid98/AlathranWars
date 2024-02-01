@@ -18,19 +18,19 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Singleton
-public class WarManager {
-    private static WarManager instance;
+public class WarController {
+    private static WarController instance;
     private @NotNull Set<War> wars = new HashSet<>();
 
-    private WarManager() {
+    private WarController() {
         if (instance != null)
             Bukkit.getServer().getLogger().warning("Tried to re-initialize singleton");
     }
 
     @NotNull
-    public static WarManager getInstance() {
+    public static WarController getInstance() {
         if (instance == null)
-            instance = new WarManager();
+            instance = new WarController();
 
         return instance;
     }

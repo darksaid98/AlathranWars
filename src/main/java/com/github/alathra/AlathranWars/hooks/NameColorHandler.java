@@ -1,7 +1,7 @@
 package com.github.alathra.AlathranWars.hooks;
 
 import com.github.alathra.AlathranWars.conflict.War;
-import com.github.alathra.AlathranWars.conflict.WarManager;
+import com.github.alathra.AlathranWars.conflict.WarController;
 import com.github.alathra.AlathranWars.utility.Logger;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -28,14 +28,14 @@ public class NameColorHandler {
     }
 
     public void calculatePlayerColors(Player p) {
-        if (!WarManager.getInstance().isPlayerInAnyWars(p)) {
+        if (!WarController.getInstance().isPlayerInAnyWars(p)) {
             playerHasChanges.remove(p);
             playerColor.remove(p);
             playerInitial.remove(p);
             return;
         }
 
-        Optional<War> war = WarManager.getInstance().getPlayerWars(p).stream().findFirst();
+        Optional<War> war = WarController.getInstance().getPlayerWars(p).stream().findFirst();
 
         if (war.isEmpty())
             return;

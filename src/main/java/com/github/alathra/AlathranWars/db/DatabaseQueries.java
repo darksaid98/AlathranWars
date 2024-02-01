@@ -79,7 +79,7 @@ public abstract class DatabaseQueries {
         ) {
             DSLContext context = DB.getContext(con);
 
-            for (War war : WarManager.getInstance().getWars()) {
+            for (War war : WarController.getInstance().getWars()) {
                 context
 //                    .insertInto(LIST)
 //                    .set(LIST.UUID, DatabaseQueries.convertUUIDToBytes(war.getUUID()))

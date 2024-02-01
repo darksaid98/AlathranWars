@@ -3,7 +3,7 @@ package com.github.alathra.AlathranWars.commands;
 import com.github.alathra.AlathranWars.AlathranWars;
 import com.github.alathra.AlathranWars.conflict.Side;
 import com.github.alathra.AlathranWars.conflict.War;
-import com.github.alathra.AlathranWars.conflict.WarManager;
+import com.github.alathra.AlathranWars.conflict.WarController;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.enums.battle.BattleVictoryReason;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
@@ -211,7 +211,7 @@ public class SiegeCommands {
     }
 
     private static void siegeList(@NotNull Player sender, CommandArguments args) throws WrapperCommandSyntaxException {
-        Set<Siege> sieges = WarManager.getInstance().getSieges();
+        Set<Siege> sieges = WarController.getInstance().getSieges();
 
         if (sieges.isEmpty()) {
             sender.sendMessage(ColorParser.of("<red>There are no sieges at the moment.").build());

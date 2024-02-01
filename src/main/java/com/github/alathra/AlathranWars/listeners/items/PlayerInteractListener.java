@@ -1,7 +1,7 @@
 package com.github.alathra.AlathranWars.listeners.items;
 
 import com.github.alathra.AlathranWars.AlathranWars;
-import com.github.alathra.AlathranWars.conflict.WarManager;
+import com.github.alathra.AlathranWars.conflict.WarController;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.items.WarItemRegistry;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
@@ -71,7 +71,7 @@ public class PlayerInteractListener implements Listener {
                     if (item.equals(WarItemRegistry.getInstance().getOrNull("ram"))) {
                         boolean inSiegeOrRaid = false;
                         //siege check
-                        for (@NotNull Siege s : WarManager.getInstance().getSieges()) {
+                        for (@NotNull Siege s : WarController.getInstance().getSieges()) {
                             for (@NotNull TownBlock townBlock : s.getTown().getTownBlocks()) {
                                 if (WorldCoord.parseWorldCoord(clicked).equals(townBlock.getWorldCoord())) {
                                     // if we find one, just end no need to continue

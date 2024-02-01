@@ -1,6 +1,6 @@
 package com.github.alathra.AlathranWars.utility;
 
-import com.github.alathra.AlathranWars.conflict.WarManager;
+import com.github.alathra.AlathranWars.conflict.WarController;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 import org.bukkit.Location;
@@ -199,8 +199,8 @@ public abstract class Utils {
     // TODO Implement usage in siege commands to make siege optional argument
     public static @Nullable Siege getClosestSiege(Player p, boolean checkIfInSiege) {
         Set<Siege> sieges = checkIfInSiege
-            ? WarManager.getInstance().getSieges().stream().filter(siege -> siege.isPlayerInSiege(p)).collect(Collectors.toSet())
-            : WarManager.getInstance().getSieges();
+            ? WarController.getInstance().getSieges().stream().filter(siege -> siege.isPlayerInSiege(p)).collect(Collectors.toSet())
+            : WarController.getInstance().getSieges();
 
         @Nullable Siege siegeResult = null;
         final Location playerLoc = p.getLocation();

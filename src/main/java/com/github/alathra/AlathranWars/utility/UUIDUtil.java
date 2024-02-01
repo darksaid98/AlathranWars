@@ -1,6 +1,6 @@
 package com.github.alathra.AlathranWars.utility;
 
-import com.github.alathra.AlathranWars.conflict.WarManager;
+import com.github.alathra.AlathranWars.conflict.WarController;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,7 +13,7 @@ public abstract class UUIDUtil {
     public static @NotNull UUID generateWarUUID() {
         @NotNull UUID uuid = UUID.randomUUID();
 
-        while (WarManager.getInstance().getWar(uuid) != null) {
+        while (WarController.getInstance().getWar(uuid) != null) {
             uuid = UUID.randomUUID();
         }
 
@@ -23,7 +23,7 @@ public abstract class UUIDUtil {
     public static @NotNull UUID generateSideUUID(@Nullable UUID previousSideUUID) {
         @NotNull UUID uuid = UUID.randomUUID();
 
-        while (WarManager.getInstance().getSide(uuid) != null || uuid == previousSideUUID) {
+        while (WarController.getInstance().getSide(uuid) != null || uuid == previousSideUUID) {
             uuid = UUID.randomUUID();
         }
 
@@ -33,7 +33,7 @@ public abstract class UUIDUtil {
     public static @NotNull UUID generateSiegeUUID() {
         @NotNull UUID uuid = UUID.randomUUID();
 
-        while (WarManager.getInstance().getSiege(uuid) != null) {
+        while (WarController.getInstance().getSiege(uuid) != null) {
             uuid = UUID.randomUUID();
         }
 

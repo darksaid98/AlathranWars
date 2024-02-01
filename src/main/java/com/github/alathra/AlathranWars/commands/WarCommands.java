@@ -449,7 +449,7 @@ public class WarCommands {
     }
 
     private static void warList(@NotNull Player p, CommandArguments args) throws WrapperCommandSyntaxException {
-        Set<War> wars = WarManager.getInstance().getWars();
+        Set<War> wars = WarController.getInstance().getWars();
 
         if (wars.isEmpty()) {
             p.sendMessage(ColorParser.of("<red>There are no wars at the moment, the world is at peace.").build());

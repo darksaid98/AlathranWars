@@ -3,7 +3,7 @@ package com.github.alathra.AlathranWars.commands;
 import com.github.alathra.AlathranWars.AlathranWars;
 import com.github.alathra.AlathranWars.conflict.Side;
 import com.github.alathra.AlathranWars.conflict.War;
-import com.github.alathra.AlathranWars.conflict.WarManager;
+import com.github.alathra.AlathranWars.conflict.WarController;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.enums.CommandArgsSiege;
 import com.github.alathra.AlathranWars.enums.CommandArgsWar;
@@ -302,7 +302,7 @@ public class CommandUtil {
                 throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The town is not in that war!").parseLegacy().build());
 
             if (checkIfSieged) {
-                for (@NotNull Siege siege : WarManager.getInstance().getSieges()) {
+                for (@NotNull Siege siege : WarController.getInstance().getSieges()) {
                     if (siege.getTown().getUUID() == town.getUUID())
                         throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The town is already under siege!").parseLegacy().build());
                 }
@@ -342,13 +342,13 @@ public class CommandUtil {
             final String argSiegeName = info.input();
 
             @Nullable UUID siegeUUID = null;
-            for (Siege siege : WarManager.getInstance().getSieges()) {
+            for (Siege siege : WarController.getInstance().getSieges()) {
                 if (siege.getName().equals(argSiegeName)) {
                     siegeUUID = siege.getUUID();
                 }
             }
 
-            final @Nullable Siege siege = WarManager.getInstance().getSiege(siegeUUID);
+            final @Nullable Siege siege = WarController.getInstance().getSiege(siegeUUID);
             if (siege == null)
                 throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The siege <siege> does not exist!").parseMinimessagePlaceholder("siege", argSiegeName).build());
 
@@ -394,7 +394,7 @@ public class CommandUtil {
     }
 
     private static List<String> siegeAll(SuggestionInfo<CommandSender> info, final boolean isAdmin) {
-        return WarManager.getInstance().getSieges().stream().map(Siege::getName).toList();
+        return WarController.getInstance().getSieges().stream().map(Siege::getName).toList();
     }
 
     private static List<String> siegeOutside(SuggestionInfo<CommandSender> info, final boolean isAdmin, final String playerNodeName) {
@@ -402,11 +402,11 @@ public class CommandUtil {
 
         if (isAdmin) {
             if (info.previousArgs().get(playerNodeName) instanceof Player player) {
-                siegeNames = WarManager.getInstance().getSieges().stream().filter(siege -> !siege.isPlayerInSiege(player)).map(Siege::getName).toList();
+                siegeNames = WarController.getInstance().getSieges().stream().filter(siege -> !siege.isPlayerInSiege(player)).map(Siege::getName).toList();
             }
         } else {
             if (info.sender() instanceof Player player) {
-                siegeNames = WarManager.getInstance().getSieges().stream().filter(siege -> !siege.isPlayerInSiege(player)).map(Siege::getName).toList();
+                siegeNames = WarController.getInstance().getSieges().stream().filter(siege -> !siege.isPlayerInSiege(player)).map(Siege::getName).toList();
             }
         }
 
@@ -418,11 +418,11 @@ public class CommandUtil {
 
         if (isAdmin) {
             if (info.previousArgs().get(playerNodeName) instanceof Player player) {
-                siegeNames = WarManager.getInstance().getSieges().stream().filter(siege -> siege.isPlayerInSiege(player)).map(Siege::getName).toList();
+                siegeNames = WarController.getInstance().getSieges().stream().filter(siege -> siege.isPlayerInSiege(player)).map(Siege::getName).toList();
             }
         } else {
             if (info.sender() instanceof Player player) {
-                siegeNames = WarManager.getInstance().getSieges().stream().filter(siege -> siege.isPlayerInSiege(player)).map(Siege::getName).toList();
+                siegeNames = WarController.getInstance().getSieges().stream().filter(siege -> siege.isPlayerInSiege(player)).map(Siege::getName).toList();
             }
         }
 
@@ -433,7 +433,7 @@ public class CommandUtil {
         return new CustomArgument<>(new StringArgument(nodeName), info -> {
             final String argWarName = info.input();
 
-            final @Nullable War war = WarManager.getInstance().getWar(argWarName);
+            final @Nullable War war = WarController.getInstance().getWar(argWarName);
             if (war == null)
                 throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The war <war> does not exist!").parseMinimessagePlaceholder("war", argWarName).build());
 
@@ -479,7 +479,7 @@ public class CommandUtil {
     }
 
     private static List<String> warsAll(SuggestionInfo<CommandSender> info, final boolean isAdmin) {
-        return WarManager.getInstance().getWarNames();
+        return WarController.getInstance().getWarNames();
     }
 
     private static List<String> warsOutside(SuggestionInfo<CommandSender> info, final boolean isAdmin, final String playerNodeName) {
@@ -487,11 +487,11 @@ public class CommandUtil {
 
         if (isAdmin) {
             if (info.previousArgs().get(playerNodeName) instanceof Player player) {
-                warNames = WarManager.getInstance().getWars().stream().filter(war -> !war.isPlayerInWar(player)).map(War::getName).toList();
+                warNames = WarController.getInstance().getWars().stream().filter(war -> !war.isPlayerInWar(player)).map(War::getName).toList();
             }
         } else {
             if (info.sender() instanceof Player player) {
-                warNames = WarManager.getInstance().getWars().stream().filter(war -> !war.isPlayerInWar(player)).map(War::getName).toList();
+                warNames = WarController.getInstance().getWars().stream().filter(war -> !war.isPlayerInWar(player)).map(War::getName).toList();
             }
         }
 
@@ -503,11 +503,11 @@ public class CommandUtil {
 
         if (isAdmin) {
             if (info.previousArgs().get(playerNodeName) instanceof Player player) {
-                warNames = WarManager.getInstance().getWars().stream().filter(war -> war.isPlayerInWar(player)).map(War::getName).toList();
+                warNames = WarController.getInstance().getWars().stream().filter(war -> war.isPlayerInWar(player)).map(War::getName).toList();
             }
         } else {
             if (info.sender() instanceof Player player) {
-                warNames = WarManager.getInstance().getWars().stream().filter(war -> war.isPlayerInWar(player)).map(War::getName).toList();
+                warNames = WarController.getInstance().getWars().stream().filter(war -> war.isPlayerInWar(player)).map(War::getName).toList();
             }
         }
 

@@ -118,7 +118,7 @@ public class War extends Conflict {
         this.label = label;
 
         this.name = "%s.vs.%s".formatted(aggressor.getName(), victim.getName());
-        if (WarManager.getInstance().getWar(this.name) != null)
+        if (WarController.getInstance().getWar(this.name) != null)
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>A war already exists with that name!").build());
 
         this.side1 = new SideBuilder()
@@ -144,7 +144,7 @@ public class War extends Conflict {
             return;
 
         // TODO All logic below this point should be separated out
-        WarManager.getInstance().addWar(this);
+        WarController.getInstance().addWar(this);
 
         start();
 
@@ -804,7 +804,7 @@ public class War extends Conflict {
         getAllTowns().forEach(Occupation::removeOccupied);
 
         DatabaseQueries.deleteWar(this);
-        WarManager.getInstance().removeWar(this);
+        WarController.getInstance().removeWar(this);
 
         // Run check after war is removed to cleanup player tags
         getPlayers().forEach(p -> NameColorHandler.getInstance().calculatePlayerColors(p));

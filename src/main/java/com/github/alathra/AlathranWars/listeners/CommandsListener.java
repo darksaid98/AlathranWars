@@ -1,6 +1,6 @@
 package com.github.alathra.AlathranWars.listeners;
 
-import com.github.alathra.AlathranWars.conflict.WarManager;
+import com.github.alathra.AlathranWars.conflict.WarController;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.utility.Utils;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
@@ -148,7 +148,7 @@ public class CommandsListener implements Listener {
         Prevent players from teleporting during a siege
          */
 
-        for (Siege siege : WarManager.getInstance().getPlayerSieges(p)) {
+        for (Siege siege : WarController.getInstance().getPlayerSieges(p)) {
             //payment check
             if (args.length >= 2) {
                 //parse what we have, remove the starting sslash

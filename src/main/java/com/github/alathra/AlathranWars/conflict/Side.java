@@ -517,7 +517,7 @@ public class Side {
 
     @Nullable
     public War getWar() {
-        return WarManager.getInstance().getWar(warUUID); // The war must exist, or this object wouldn't
+        return WarController.getInstance().getWar(warUUID); // The war must exist, or this object wouldn't
     }
 
     public void processSurrenders() {

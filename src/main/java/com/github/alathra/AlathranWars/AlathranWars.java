@@ -2,7 +2,7 @@ package com.github.alathra.AlathranWars;
 
 import com.github.alathra.AlathranWars.commands.CommandManager;
 import com.github.alathra.AlathranWars.config.ConfigHandler;
-import com.github.alathra.AlathranWars.conflict.WarManager;
+import com.github.alathra.AlathranWars.conflict.WarController;
 import com.github.alathra.AlathranWars.db.DatabaseHandler;
 import com.github.alathra.AlathranWars.db.DatabaseQueries;
 import com.github.alathra.AlathranWars.hooks.HookManager;
@@ -44,7 +44,7 @@ public class AlathranWars extends JavaPlugin {
     public void onLoad() {
         instance = this;
         paperLib = new MorePaperLib(instance);
-        WarManager.getInstance();
+        WarController.getInstance();
         configHandler = new ConfigHandler(instance);
         databaseHandler = new DatabaseHandler(instance);
         commandManager = new CommandManager(instance);
@@ -68,7 +68,7 @@ public class AlathranWars extends JavaPlugin {
         commandManager.onEnable();
         listenerHandler.onEnable();
         hookManager.onEnable();
-        WarManager.getInstance().loadAll();
+        WarController.getInstance().loadAll();
     }
 
     public void onDisable() {
