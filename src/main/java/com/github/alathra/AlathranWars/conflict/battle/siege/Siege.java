@@ -131,7 +131,7 @@ public class Siege implements Battle {
         siegeRunnable = new SiegeRunnable(this);
         stopped = false;
 
-        if (!war.isEvent())
+        if (!war.isEventWar())
             AlathranWars.econ.withdrawPlayer(siegeLeader, SIEGE_VICTORY_MONEY);
 
         new BattleStartEvent(war, this).callEvent();
@@ -169,7 +169,7 @@ public class Siege implements Battle {
     public void attackersWin(BattleVictoryReason reason) {
         if (!new PreBattleResultEvent(war, this, BattleType.SIEGE, BattleVictor.ATTACKER, reason).callEvent()) return;
 
-        if (!war.isEvent()) {
+        if (!war.isEventWar()) {
             AlathranWars.econ.depositPlayer(siegeLeader, SIEGE_VICTORY_MONEY);
             double amt;
 
@@ -196,7 +196,7 @@ public class Siege implements Battle {
     public void defendersWin(BattleVictoryReason reason) {
         if (!new PreBattleResultEvent(war, this, BattleType.SIEGE, BattleVictor.DEFENDER, reason).callEvent()) return;
 
-        if (!war.isEvent())
+        if (!war.isEventWar())
             town.getAccount().deposit(SIEGE_VICTORY_MONEY, "Siege Victory");
 
         new BattleResultEvent(war, this, BattleVictor.DEFENDER, reason).callEvent();

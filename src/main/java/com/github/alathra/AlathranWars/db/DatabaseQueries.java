@@ -23,14 +23,12 @@ import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Savepoint;
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static com.github.alathra.AlathranWars.db.schema.Tables.*;
 
@@ -89,7 +87,7 @@ public abstract class DatabaseQueries {
 //                    .set(LIST.LABEL, war.getLabel())
 //                    .set(LIST.SIDE1, DatabaseQueries.convertUUIDToBytes(war.getSide1().getUUID()))
 //                    .set(LIST.SIDE2, DatabaseQueries.convertUUIDToBytes(war.getSide2().getUUID()))
-//                    .set(LIST.EVENT, war.isEvent() ? (byte) 1 : (byte) 0)
+//                    .set(LIST.EVENT, war.isEventWar() ? (byte) 1 : (byte) 0)
                     .insertInto(LIST, LIST.UUID, LIST.NAME, LIST.LABEL, LIST.SIDE1, LIST.SIDE2, LIST.EVENT)
                     .values(
                         DatabaseQueries.convertUUIDToBytes(war.getUUID()),
@@ -97,7 +95,7 @@ public abstract class DatabaseQueries {
                         war.getLabel(),
                         DatabaseQueries.convertUUIDToBytes(war.getSide1().getUUID()),
                         DatabaseQueries.convertUUIDToBytes(war.getSide2().getUUID()),
-                        war.isEvent() ? (byte) 1 : (byte) 0
+                        war.isEventWar() ? (byte) 1 : (byte) 0
                     )
                     .onDuplicateKeyUpdate()
                     .set(LIST.NAME, war.getName())

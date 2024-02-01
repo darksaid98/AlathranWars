@@ -104,7 +104,7 @@ public class Raid implements Battle {
      */
     public void start() {
         raidRunnable = new RaidRunnable(this);
-        if (!war.isEvent())
+        if (!war.isEventWar())
             AlathranWars.econ.withdrawPlayer(raidLeader, SIEGE_VICTORY_MONEY);
 
         final Title.Times times = Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(3500), Duration.ofMillis(500));
@@ -164,7 +164,7 @@ public class Raid implements Battle {
     public void attackersWin(BattleVictoryReason reason) {
         if (!new PreBattleResultEvent(war, this, BattleType.SIEGE, BattleVictor.ATTACKER, reason).callEvent()) return;
 
-        if (!war.isEvent()) {
+        if (!war.isEventWar()) {
             AlathranWars.econ.depositPlayer(raidLeader, SIEGE_VICTORY_MONEY);
             double amt;
 
@@ -191,7 +191,7 @@ public class Raid implements Battle {
 
         stop();
 
-        if (!war.isEvent()) {
+        if (!war.isEventWar()) {
             Side townSide = getWar().getTownSide(town);
             Side attackerSide = getAttackerSide();
 
@@ -208,7 +208,7 @@ public class Raid implements Battle {
     public void defendersWin(BattleVictoryReason reason) {
         if (!new PreBattleResultEvent(war, this, BattleType.SIEGE, BattleVictor.DEFENDER, reason).callEvent()) return;
 
-        if (!war.isEvent())
+        if (!war.isEventWar())
             town.getAccount().deposit(SIEGE_VICTORY_MONEY, "Raid Victory");
 
         if (side1AreAttackers) {

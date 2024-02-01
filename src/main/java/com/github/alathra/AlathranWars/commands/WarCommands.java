@@ -242,7 +242,7 @@ public class WarCommands {
         final boolean canKingJoin = (res.hasNation() && res.getNationOrNull().equals(nation) && res.isKing() && nation.isKing(res));
         final boolean canMayorJoin = (res.hasTown() && res.getTownOrNull().equals(town) && res.isMayor() && town.isMayor(res));
 
-        if (!war.isEvent()) {
+        if (!war.isEventWar()) {
             // Join nation into war
             if (isArgNation && nation != null && !war.isNationInWar(nation) && (asAdmin || canKingJoin)) {
                 side.addNation(nation);

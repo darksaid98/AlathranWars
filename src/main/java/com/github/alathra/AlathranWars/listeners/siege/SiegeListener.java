@@ -210,7 +210,7 @@ public class SiegeListener implements Listener {
             case ATTACKER -> {
                 War war = e.getWar();
 
-                if (war.isEvent()) return;
+                if (war.isEventWar()) return;
 
                 Town town = siege.getTown();
                 Side townSide = war.getTownSide(town);
