@@ -21,9 +21,7 @@ public class CommandsListener implements Listener {
     final static String[] BLACKLISTED_X_LONG = new String[]{
         "n set spawn", "nat set spawn", "nation set spawn",
         "t set spawn", "town set spawn",
-        "t set homeblock", "town set homeblock",
-        "t set name", "town set name",
-        "n set name", "nat set name", "nation set name"
+        "t set homeblock", "town set homeblock"
     };
     final static String[] BLACKLISTED_LONG = new String[]{
         "n spawn", "nat spawn", "nation spawn",
