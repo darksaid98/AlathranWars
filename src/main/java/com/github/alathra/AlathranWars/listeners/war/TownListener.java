@@ -3,6 +3,7 @@ package com.github.alathra.AlathranWars.listeners.war;
 import com.github.alathra.AlathranWars.conflict.Side;
 import com.github.alathra.AlathranWars.conflict.War;
 import com.github.alathra.AlathranWars.conflict.WarManager;
+import com.github.alathra.AlathranWars.hooks.NameColorHandler;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.event.TownAddResidentEvent;
 import com.palmergames.bukkit.towny.event.TownPreRenameEvent;
@@ -58,7 +59,7 @@ public class TownListener implements Listener {
             p.playSound(warSound);
         }
 
-        PlayerJoinListener.checkPlayer(p);
+        NameColorHandler.getInstance().calculatePlayerColors(p);
     }
 
     @EventHandler
@@ -73,7 +74,7 @@ public class TownListener implements Listener {
             side.removePlayer(p);
         }
 
-        PlayerJoinListener.checkPlayer(p);
+        NameColorHandler.getInstance().calculatePlayerColors(p);
     }
 
     @EventHandler
@@ -88,7 +89,7 @@ public class TownListener implements Listener {
             side.removePlayer(p);
         }
 
-        PlayerJoinListener.checkPlayer(p);
+        NameColorHandler.getInstance().calculatePlayerColors(p);
     }
 
     /*@EventHandler

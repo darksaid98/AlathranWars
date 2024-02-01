@@ -3,6 +3,7 @@ package com.github.alathra.AlathranWars.listeners.war;
 import com.github.alathra.AlathranWars.conflict.Side;
 import com.github.alathra.AlathranWars.conflict.War;
 import com.github.alathra.AlathranWars.conflict.WarManager;
+import com.github.alathra.AlathranWars.hooks.NameColorHandler;
 import com.palmergames.bukkit.towny.event.NationAddTownEvent;
 import com.palmergames.bukkit.towny.event.NationPreRenameEvent;
 import com.palmergames.bukkit.towny.event.nation.NationPreMergeEvent;
@@ -53,7 +54,7 @@ public class NationListener implements Listener {
             Side side = war.getNationSide(nation);
             if (side == null) continue;
 
-            side.getPlayers().forEach(PlayerJoinListener::checkPlayer);
+            side.getPlayers().forEach(p -> NameColorHandler.getInstance().calculatePlayerColors(p));
         }
     }
 

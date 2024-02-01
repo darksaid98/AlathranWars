@@ -1,21 +1,20 @@
 package com.github.alathra.AlathranWars.hooks;
 
-public class HookManager {
-    public HookManager() {
+import com.github.alathra.AlathranWars.Reloadable;
 
-    }
+public class HookManager implements Reloadable {
+    private final PAPIHook papi = new PAPIHook();
 
     public void onLoad() {
-
-
+        papi.onLoad();
     }
 
     public void onEnable() {
-        TABHook.init();
         TownyHook.init();
+        papi.onEnable();
     }
 
     public void onDisable() {
-
+        papi.onDisable();
     }
 }

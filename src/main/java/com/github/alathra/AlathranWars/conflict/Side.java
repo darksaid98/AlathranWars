@@ -3,7 +3,7 @@ package com.github.alathra.AlathranWars.conflict;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.enums.battle.BattleSide;
 import com.github.alathra.AlathranWars.enums.battle.BattleTeam;
-import com.github.alathra.AlathranWars.listeners.war.PlayerJoinListener;
+import com.github.alathra.AlathranWars.hooks.NameColorHandler;
 import com.palmergames.bukkit.towny.object.Government;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;
@@ -17,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -438,12 +437,12 @@ public class Side {
     }
 
     public void applyNameTags() {
-        players.forEach(PlayerJoinListener::checkPlayer);
+        players.forEach(p -> NameColorHandler.getInstance().getPlayerNameColor(p));
         surrenderedPlayersIncludingOffline.stream()
             .filter((UUID uuid) -> Bukkit.getPlayer(uuid) != null)
             .map(Bukkit::getPlayer)
             .toList()
-            .forEach(PlayerJoinListener::checkPlayer);
+            .forEach(p -> NameColorHandler.getInstance().calculatePlayerColors(p));
     }
 
     // Graces

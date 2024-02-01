@@ -12,7 +12,7 @@ import com.github.alathra.AlathranWars.events.PreWarCreateEvent;
 import com.github.alathra.AlathranWars.events.PreWarDeleteEvent;
 import com.github.alathra.AlathranWars.events.WarCreateEvent;
 import com.github.alathra.AlathranWars.events.WarDeleteEvent;
-import com.github.alathra.AlathranWars.listeners.war.PlayerJoinListener;
+import com.github.alathra.AlathranWars.hooks.NameColorHandler;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.object.Government;
@@ -786,7 +786,7 @@ public class War extends Conflict {
         WarManager.getInstance().removeWar(this);
 
         // Run check after war is removed to cleanup player tags
-        getPlayers().forEach(PlayerJoinListener::checkPlayer);
+        getPlayers().forEach(p -> NameColorHandler.getInstance().calculatePlayerColors(p));
 
         new WarDeleteEvent(this, reason).callEvent();
     }

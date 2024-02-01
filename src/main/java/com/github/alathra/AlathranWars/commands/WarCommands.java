@@ -1,7 +1,7 @@
 package com.github.alathra.AlathranWars.commands;
 
 import com.github.alathra.AlathranWars.conflict.*;
-import com.github.alathra.AlathranWars.listeners.war.PlayerJoinListener;
+import com.github.alathra.AlathranWars.hooks.NameColorHandler;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.TownyAPI;
@@ -246,7 +246,7 @@ public class WarCommands {
             // Join nation into war
             if (isArgNation && nation != null && !war.isNationInWar(nation) && (asAdmin || canKingJoin)) {
                 side.addNation(nation);
-                nation.getResidents().stream().filter(Resident::isOnline).map(Resident::getPlayer).toList().forEach(PlayerJoinListener::checkPlayer);
+                nation.getResidents().stream().filter(Resident::isOnline).map(Resident::getPlayer).toList().forEach(player -> NameColorHandler.getInstance().calculatePlayerColors(player));
                 Bukkit.broadcast(
                     ColorParser.of(
                             "<prefix>The nation of <nation> joined the war of <war> on the side of <side>."
@@ -279,7 +279,7 @@ public class WarCommands {
             // Join town into war
             if (isArgTown && town != null && !war.isTownInWar(town) && (asAdmin || canMayorJoin)) {
                 side.addTown(town);
-                town.getResidents().stream().filter(Resident::isOnline).map(Resident::getPlayer).toList().forEach(PlayerJoinListener::checkPlayer);
+                town.getResidents().stream().filter(Resident::isOnline).map(Resident::getPlayer).toList().forEach(player -> NameColorHandler.getInstance().getPlayerNameColor(player));
                 Bukkit.broadcast(
                     ColorParser.of(
                             "<prefix>The town of <town> joined the war of <war> on the side of <side>."
@@ -314,7 +314,7 @@ public class WarCommands {
         if (isArgPlayer && targetPlayer != null && !war.isPlayerInWar(targetPlayer) && asAdmin) {
             targetPlayer.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "You have joined the war.").build());
             side.addPlayer(targetPlayer);
-            PlayerJoinListener.checkPlayer(targetPlayer);
+            NameColorHandler.getInstance().calculatePlayerColors(targetPlayer);
             final Title warTitle = Title.title(
                 ColorParser.of("<gradient:#D72A09:#B01F03><u><b>War")
                     .build(),
@@ -366,7 +366,7 @@ public class WarCommands {
 
             targetPlayer.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "You have joined the war.").build());
             side.addPlayer(targetPlayer);
-            PlayerJoinListener.checkPlayer(targetPlayer);
+            NameColorHandler.getInstance().calculatePlayerColors(targetPlayer);
             final Title warTitle = Title.title(
                 ColorParser.of("<gradient:#D72A09:#B01F03><u><b>War")
                     .build(),
@@ -445,7 +445,7 @@ public class WarCommands {
         p.sendMessage(ColorParser.of("Target yeeted.").build());
         side.removePlayer(argPlayer);
 
-        PlayerJoinListener.checkPlayer(argPlayer);
+        NameColorHandler.getInstance().calculatePlayerColors(argPlayer);
     }
 
     private static void warList(@NotNull Player p, CommandArguments args) throws WrapperCommandSyntaxException {
