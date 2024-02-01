@@ -599,28 +599,45 @@ public class Siege implements Battle {
         defenders.clear();
         defenders.addAll(defendersOnBattlefield);
 
-        // Emit events for players leaving & entering the battlefield
-        for (Player p : previousAttackersOnBattlefield) {
-            if (p.isConnected() && !attackers.contains(p)) {
+        // TODO Emit events for players leaving & entering the battlefield
+
+        // Leaving attackers
+        previousAttackersOnBattlefield.stream()
+            .filter(p -> p.isConnected() && !attackers.contains(p))
+            .collect(Collectors.toSet())
+            .forEach(p -> {
                 // TODO Player left battlefield
+
             }
-        }
-        for (Player p : attackers) {
-            if (p.isConnected() && !previousAttackersOnBattlefield.contains(p)) {
+        );
+
+        // Entering attackers
+        attackers.stream()
+            .filter(p -> p.isConnected() && !previousAttackersOnBattlefield.contains(p))
+            .collect(Collectors.toSet())
+            .forEach(p -> {
+                // TODO Player entered battlefield
+
+            }
+        );
+
+        // Leaving defenders
+        previousDefendersOnBattlefield.stream()
+            .filter(p -> p.isConnected() && !defenders.contains(p))
+            .collect(Collectors.toSet())
+            .forEach(p -> {
+                // TODO Player left battlefield
+
+            }
+        );
+
+        // Entering defenders
+        defenders.stream()
+            .filter(p -> p.isConnected() && !previousDefendersOnBattlefield.contains(p))
+            .collect(Collectors.toSet())
+            .forEach(p -> {
                 // TODO Player entered battlefield
             }
-        }
-
-        for (Player p : previousDefendersOnBattlefield) {
-            if (p.isConnected() && !defenders.contains(p)) {
-                // TODO Player left battlefield
-            }
-        }
-
-        for (Player p : defenders) {
-            if (p.isConnected() && !previousDefendersOnBattlefield.contains(p)) {
-                // TODO Player entered battlefield
-            }
-        }
+        );
     }
 }
