@@ -51,7 +51,9 @@ public class BlockBreakPlaceListener implements Listener {
         Material.HEAVY_WEIGHTED_PRESSURE_PLATE,
         Material.TORCH,
         Material.STONE_BUTTON,
-        Material.BLACK_WOOL
+        Material.BLACK_WOOL,
+        // Siege engines
+        Material.CARVED_PUMPKIN
     );
 
     private final static Set<Material> PLACE_OWNED = Set.of(
@@ -71,9 +73,7 @@ public class BlockBreakPlaceListener implements Listener {
         Material.ORANGE_BED,
         Material.PINK_BED,
         Material.PURPLE_BED,
-        Material.RED_BED,
-        // Siege engines
-        Material.CARVED_PUMPKIN
+        Material.RED_BED
     );
 
     private final static Set<Material> PLACE_GLOBAL = Set.of(
