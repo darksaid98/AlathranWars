@@ -148,7 +148,7 @@ tasks {
 
     runServer {
         // Configure the Minecraft version for our task.
-        minecraftVersion("1.20.2")
+        minecraftVersion("1.20.4")
 
         // IntelliJ IDEA debugger setup: https://docs.papermc.io/paper/dev/debugging#using-a-remote-debugger
         jvmArgs("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005", "-DPaper.IgnoreJavaVersion=true", "-Dcom.mojang.eula.agree=true", "-DIReallyKnowWhatIAmDoingISwear")
@@ -161,6 +161,7 @@ tasks {
             github("MilkBowl", "Vault", "1.7.3", "Vault.jar")
             url("https://download.luckperms.net/1521/bukkit/loader/LuckPerms-Bukkit-5.4.108.jar")
             modrinth("tab-was-taken", "4.1.2")
+            github("PlaceholderAPI", "PlaceholderAPI", "2.11.4", "PlaceholderAPI-2.11.4.jar")
 //            url("https://www.spigotmc.org/resources/skulls-the-ultimate-head-database.90098/download?version=520217/Skulls.jar")
         }
     }
@@ -182,7 +183,7 @@ bukkit { // Options: https://github.com/Minecrell/plugin-yml#bukkit
     // Misc properties
     load = net.minecrell.pluginyml.bukkit.BukkitPluginDescription.PluginLoadOrder.POSTWORLD // STARTUP or POSTWORLD
     depend = listOf("Vault", "Towny")
-    softDepend = listOf("TAB", "Skulls", "HeadsPlus")
+    softDepend = listOf("PlaceholderAPI", "TAB", "Skulls", "HeadsPlus")
 }
 
 flyway {
