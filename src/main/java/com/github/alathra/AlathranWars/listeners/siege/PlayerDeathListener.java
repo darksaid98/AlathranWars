@@ -15,6 +15,8 @@ public class PlayerDeathListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerPaysDeathPrice(PlayerPaysDeathPriceEvent e) {
         Player p = e.getDeadResident().getPlayer();
+        if (p == null) return;
+
         Siege siege = Utils.getClosestSiege(p, true);
         if (siege == null) return;
 
@@ -26,6 +28,8 @@ public class PlayerDeathListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerPaysDeathPrice(TownPaysDeathPriceEvent e) {
         Player p = e.getDeadResident().getPlayer();
+        if (p == null) return;
+
         Siege siege = Utils.getClosestSiege(p, true);
         if (siege == null) return;
 
@@ -37,6 +41,8 @@ public class PlayerDeathListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerPaysDeathPrice(NationPaysDeathPriceEvent e) {
         Player p = e.getDeadResident().getPlayer();
+        if (p == null) return;
+
         Siege siege = Utils.getClosestSiege(p, true);
         if (siege == null) return;
 
