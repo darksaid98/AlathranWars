@@ -1,6 +1,7 @@
 package com.github.alathra.AlathranWars.conflict.war;
 
-import com.github.alathra.AlathranWars.conflict.*;
+import com.github.alathra.AlathranWars.conflict.Conflict;
+import com.github.alathra.AlathranWars.conflict.Occupation;
 import com.github.alathra.AlathranWars.conflict.battle.raid.Raid;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.conflict.war.side.Side;

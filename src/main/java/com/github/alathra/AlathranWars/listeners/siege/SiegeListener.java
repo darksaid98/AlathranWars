@@ -1,8 +1,8 @@
 package com.github.alathra.AlathranWars.listeners.siege;
 
-import com.github.alathra.AlathranWars.conflict.war.side.Side;
-import com.github.alathra.AlathranWars.conflict.war.War;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
+import com.github.alathra.AlathranWars.conflict.war.War;
+import com.github.alathra.AlathranWars.conflict.war.side.Side;
 import com.github.alathra.AlathranWars.enums.battle.BattleType;
 import com.github.alathra.AlathranWars.enums.battle.BattleVictoryReason;
 import com.github.alathra.AlathranWars.events.battle.BattleResultEvent;

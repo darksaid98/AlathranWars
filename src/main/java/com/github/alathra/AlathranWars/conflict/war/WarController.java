@@ -1,8 +1,8 @@
 package com.github.alathra.AlathranWars.conflict.war;
 
-import com.github.alathra.AlathranWars.conflict.war.side.Side;
 import com.github.alathra.AlathranWars.conflict.battle.raid.Raid;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
+import com.github.alathra.AlathranWars.conflict.war.side.Side;
 import com.github.alathra.AlathranWars.db.DatabaseQueries;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;

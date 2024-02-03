@@ -1,10 +1,10 @@
 package com.github.alathra.AlathranWars.commands;
 
 import com.github.alathra.AlathranWars.AlathranWars;
-import com.github.alathra.AlathranWars.conflict.war.side.Side;
+import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.conflict.war.War;
 import com.github.alathra.AlathranWars.conflict.war.WarController;
-import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
+import com.github.alathra.AlathranWars.conflict.war.side.Side;
 import com.github.alathra.AlathranWars.enums.battle.BattleVictoryReason;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;

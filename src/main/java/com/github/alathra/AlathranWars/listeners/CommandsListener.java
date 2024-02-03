@@ -1,7 +1,7 @@
 package com.github.alathra.AlathranWars.listeners;
 
-import com.github.alathra.AlathranWars.conflict.war.WarController;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
+import com.github.alathra.AlathranWars.conflict.war.WarController;
 import com.github.alathra.AlathranWars.utility.Utils;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;

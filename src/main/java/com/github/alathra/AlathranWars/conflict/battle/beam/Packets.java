@@ -161,7 +161,7 @@ class Packets {
                 ColorParser.of("Laser reflection failed to initialize. The utility is disabled. Please ensure your version (<version>) is supported.")
                     .parseMinimessagePlaceholder("version", Bukkit.getServer().getClass().getPackage().getName())
                     .build()
-            , e);
+                , e);
         }
     }
 

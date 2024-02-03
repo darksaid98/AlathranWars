@@ -34,7 +34,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import space.arim.morepaperlib.scheduling.ScheduledTask;
 
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -164,7 +167,7 @@ public abstract class Laser {
     /**
      * Gets laser status.
      *
-     * @return    <code>true</code> if the laser is currently running
+     * @return <code>true</code> if the laser is currently running
      * (i.e. {@link #start} has been called and the duration is not over)
      */
     public boolean isStarted() {

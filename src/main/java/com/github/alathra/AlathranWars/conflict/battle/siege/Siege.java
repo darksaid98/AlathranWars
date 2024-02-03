@@ -1,9 +1,9 @@
 package com.github.alathra.AlathranWars.conflict.battle.siege;
 
 import com.github.alathra.AlathranWars.AlathranWars;
-import com.github.alathra.AlathranWars.conflict.war.side.Side;
-import com.github.alathra.AlathranWars.conflict.war.War;
 import com.github.alathra.AlathranWars.conflict.battle.Battle;
+import com.github.alathra.AlathranWars.conflict.war.War;
+import com.github.alathra.AlathranWars.conflict.war.side.Side;
 import com.github.alathra.AlathranWars.db.DatabaseQueries;
 import com.github.alathra.AlathranWars.enums.CaptureProgressDirection;
 import com.github.alathra.AlathranWars.enums.battle.*;
@@ -25,7 +25,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -164,6 +166,7 @@ public class Siege implements Battle {
 
     /**
      * Stop a battle in favor of the attackers
+     *
      * @param reason what triggered the end
      */
     public void attackersWin(BattleVictoryReason reason) {
@@ -191,6 +194,7 @@ public class Siege implements Battle {
 
     /**
      * Stop a battle in favor of the defenders
+     *
      * @param reason what triggered the end
      */
     public void defendersWin(BattleVictoryReason reason) {
@@ -206,6 +210,7 @@ public class Siege implements Battle {
 
     /**
      * End a battle in favor of no one
+     *
      * @param reason what triggered the end
      */
     public void equalWin(BattleVictoryReason reason) {
@@ -606,38 +611,38 @@ public class Siege implements Battle {
             .filter(p -> p.isConnected() && !attackers.contains(p))
             .collect(Collectors.toSet())
             .forEach(p -> {
-                // TODO Player left battlefield
+                    // TODO Player left battlefield
 
-            }
-        );
+                }
+            );
 
         // Entering attackers
         attackers.stream()
             .filter(p -> p.isConnected() && !previousAttackersOnBattlefield.contains(p))
             .collect(Collectors.toSet())
             .forEach(p -> {
-                // TODO Player entered battlefield
+                    // TODO Player entered battlefield
 
-            }
-        );
+                }
+            );
 
         // Leaving defenders
         previousDefendersOnBattlefield.stream()
             .filter(p -> p.isConnected() && !defenders.contains(p))
             .collect(Collectors.toSet())
             .forEach(p -> {
-                // TODO Player left battlefield
+                    // TODO Player left battlefield
 
-            }
-        );
+                }
+            );
 
         // Entering defenders
         defenders.stream()
             .filter(p -> p.isConnected() && !previousDefendersOnBattlefield.contains(p))
             .collect(Collectors.toSet())
             .forEach(p -> {
-                // TODO Player entered battlefield
-            }
-        );
+                    // TODO Player entered battlefield
+                }
+            );
     }
 }

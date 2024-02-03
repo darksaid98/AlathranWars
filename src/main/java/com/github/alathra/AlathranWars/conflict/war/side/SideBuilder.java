@@ -28,7 +28,8 @@ public class SideBuilder {
     private Instant siegeGrace;
     private Instant raidGrace;
 
-    public SideBuilder() {}
+    public SideBuilder() {
+    }
 
     public Side rebuild() throws SideCreationException {
 //        if (warUUID == null || uuid == null || town == null || side == null || team == null || name == null ||
@@ -45,8 +46,8 @@ public class SideBuilder {
         if (side == null
         ) throw new IllegalStateException("Missing state to create Side 1.1");
 
-        if ( team == null || name == null ||
-        towns == null || nations == null
+        if (team == null || name == null ||
+            towns == null || nations == null
         ) throw new IllegalStateException("Missing state to create Side 1");
 
         if (playersIncludingOffline == null ||

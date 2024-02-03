@@ -1,10 +1,10 @@
 package com.github.alathra.AlathranWars.commands;
 
 import com.github.alathra.AlathranWars.AlathranWars;
-import com.github.alathra.AlathranWars.conflict.war.side.Side;
+import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
 import com.github.alathra.AlathranWars.conflict.war.War;
 import com.github.alathra.AlathranWars.conflict.war.WarController;
-import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
+import com.github.alathra.AlathranWars.conflict.war.side.Side;
 import com.github.alathra.AlathranWars.enums.CommandArgsSiege;
 import com.github.alathra.AlathranWars.enums.CommandArgsWar;
 import com.github.alathra.AlathranWars.hooks.TownyHook;
@@ -648,7 +648,8 @@ public class CommandUtil {
             }
             if (AlathranWars.getInstance().getConfig().getInt("minimumPlayTime") > 0) {
                 //check playtime, if its less than min its true
-                if (playTicks < (AlathranWars.getInstance().getConfig().getInt("minimumPlayTime") * (60 * 60 * 20))) out = 2;
+                if (playTicks < (AlathranWars.getInstance().getConfig().getInt("minimumPlayTime") * (60 * 60 * 20)))
+                    out = 2;
             }
 
             return out;

@@ -1,9 +1,9 @@
 package com.github.alathra.AlathranWars.conflict.war;
 
-import com.github.alathra.AlathranWars.conflict.war.side.Side;
-import com.github.alathra.AlathranWars.conflict.war.side.SideCreationException;
 import com.github.alathra.AlathranWars.conflict.battle.raid.Raid;
 import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
+import com.github.alathra.AlathranWars.conflict.war.side.Side;
+import com.github.alathra.AlathranWars.conflict.war.side.SideCreationException;
 import com.github.alathra.AlathranWars.enums.ConflictType;
 import com.palmergames.bukkit.towny.object.Government;
 import com.palmergames.bukkit.towny.object.Nation;
@@ -28,17 +28,18 @@ public class WarBuilder {
     private Government aggressor;
     private Government victim;
 
-    public WarBuilder() {}
+    public WarBuilder() {
+    }
 
     public War resume() {
         if (
             uuid == null ||
-            name == null ||
-            label == null ||
-            side1 == null ||
-            side2 == null ||
-            sieges == null ||
-            raids == null
+                name == null ||
+                label == null ||
+                side1 == null ||
+                side2 == null ||
+                sieges == null ||
+                raids == null
         ) {
             throw new IllegalStateException();
         }

@@ -1,7 +1,7 @@
 package com.github.alathra.AlathranWars.events.battle;
 
-import com.github.alathra.AlathranWars.conflict.war.War;
 import com.github.alathra.AlathranWars.conflict.battle.Battle;
+import com.github.alathra.AlathranWars.conflict.war.War;
 import com.github.alathra.AlathranWars.enums.battle.BattleType;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;

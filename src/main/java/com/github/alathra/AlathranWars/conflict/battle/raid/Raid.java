@@ -1,9 +1,9 @@
 package com.github.alathra.AlathranWars.conflict.battle.raid;
 
 import com.github.alathra.AlathranWars.AlathranWars;
-import com.github.alathra.AlathranWars.conflict.war.side.Side;
-import com.github.alathra.AlathranWars.conflict.war.War;
 import com.github.alathra.AlathranWars.conflict.battle.Battle;
+import com.github.alathra.AlathranWars.conflict.war.War;
+import com.github.alathra.AlathranWars.conflict.war.side.Side;
 import com.github.alathra.AlathranWars.enums.CaptureProgressDirection;
 import com.github.alathra.AlathranWars.enums.battle.*;
 import com.github.alathra.AlathranWars.events.battle.BattleResultEvent;
