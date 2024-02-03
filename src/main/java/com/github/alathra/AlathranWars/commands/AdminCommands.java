@@ -1,6 +1,7 @@
 package com.github.alathra.AlathranWars.commands;
 
 import com.github.alathra.AlathranWars.AlathranWars;
+import com.github.alathra.AlathranWars.hooks.NameColorHandler;
 import com.github.alathra.AlathranWars.items.WarItemRegistry;
 import com.github.alathra.AlathranWars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
@@ -12,6 +13,7 @@ import dev.jorel.commandapi.arguments.PlayerArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.executors.CommandArguments;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -24,7 +26,8 @@ public class AdminCommands {
             .withSubcommands(
                 commandItem(),
                 commandWar(),
-                commandSiege()
+                commandSiege(),
+                commandNames()
             )
             .executes((sender, args) -> {
                 if (args.count() == 0)
@@ -113,5 +116,12 @@ public class AdminCommands {
                 SiegeCommands.commandSurrender(true),
                 SiegeCommands.commandList()
             );
+    }
+
+    private CommandAPICommand commandNames() {
+        return new CommandAPICommand("updatenames")
+            .executesPlayer((player, commandArguments) -> {
+                Bukkit.getOnlinePlayers().forEach(p -> NameColorHandler.getInstance().calculatePlayerColors(p));
+            });
     }
 }

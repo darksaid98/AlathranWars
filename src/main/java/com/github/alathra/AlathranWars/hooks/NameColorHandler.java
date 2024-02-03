@@ -10,7 +10,6 @@ import java.util.*;
 
 public class NameColorHandler {
     private static NameColorHandler instance;
-    private Set<Player> playerHasChanges = new HashSet<>(); // A list containing all players with active changes due to war
     private Map<Player, String> playerColor = new HashMap<>();
     private Map<Player, String> playerInitial = new HashMap<>();
 
@@ -29,7 +28,6 @@ public class NameColorHandler {
 
     public void calculatePlayerColors(Player p) {
         if (!WarController.getInstance().isPlayerInAnyWars(p)) {
-            playerHasChanges.remove(p);
             playerColor.remove(p);
             playerInitial.remove(p);
             return;
@@ -40,19 +38,24 @@ public class NameColorHandler {
         if (war.isEmpty())
             return;
 
-        final boolean isSide1 = war.get().getPlayerSide(p).equals(war.get().getSide1());
+        final boolean isPlayerSurrendered = war.get().getSide1().isPlayerSurrendered(p) || war.get().getSide2().isPlayerSurrendered(p);
 
-        if (isSide1) {
+        if (isPlayerSurrendered)
+            return;
+
+        final boolean isSideOne = war.get().getSide1().isPlayerOnSide(p);
+
+        if (isSideOne) {
             playerColor.put(p, "<red>");
         } else {
             playerColor.put(p, "<blue>");
         }
         playerInitial.put(p, war.get().getPlayerSide(p).getName().substring(0, 1).toUpperCase());
-        playerHasChanges.add(p);
     }
 
     public boolean isPlayerUsingModifiedName(Player p) {
-        return playerHasChanges.contains(p);
+        calculatePlayerColors(p);
+        return WarController.getInstance().isPlayerInAnyWars(p);
     }
 
     public String getPlayerTabNameColor(Player p) {
