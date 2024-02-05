@@ -242,12 +242,15 @@ public class SiegeRunnable implements Runnable {
             return;
 
         try {
-            @Nullable Location loc1 = siege.getTownSpawn();
-            @NotNull Location loc2 = new Location(loc1.getWorld(), loc1.getX(), loc1.getY() + 350D, loc1.getZ());
+            try {
+                @Nullable Location loc1 = siege.getTownSpawn();
+                @NotNull Location loc2 = new Location(loc1.getWorld(), loc1.getX(), loc1.getY() + 350D, loc1.getZ());
 
-            beam = new CrystalLaser(loc1, loc2, -1, 300);
-            beam.start(AlathranWars.getInstance());
-        } catch (ReflectiveOperationException ignored) {
+                beam = new CrystalLaser(loc1, loc2, -1, 300);
+                beam.start(AlathranWars.getInstance());
+            } catch (ReflectiveOperationException ignored) {
+            }
+        } catch (NoClassDefFoundError ignored1) {
         }
     }
 
