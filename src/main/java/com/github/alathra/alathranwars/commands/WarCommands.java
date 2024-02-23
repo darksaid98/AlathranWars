@@ -87,6 +87,7 @@ public class WarCommands {
 
     public static CommandAPICommand commandJoin(boolean asAdmin) {
         return new CommandAPICommand("join")
+            .withPermission("AlathranWars.war.join")
             .withArguments(
                 CommandUtil.warWarArgument("war", asAdmin, asAdmin ? ALL_WARS : OUT_WAR, ""),
                 CommandUtil.warSideCreateArgument("side", "war", asAdmin, !asAdmin, ""),
