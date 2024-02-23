@@ -36,27 +36,27 @@ public class Occupation {
         if (isOccupied(town)) return;
 
         // Remove from current nation
-        final boolean hasPreviousNation = town.hasNation();
-        final boolean hasNewNation = occupier != null;
-        final Nation previousNation = town.getNationOrNull();
-        if (hasPreviousNation && hasNewNation && previousNation != occupier)
-            town.removeNation();
+//        final boolean hasPreviousNation = town.hasNation();
+//        final boolean hasNewNation = occupier != null;
+//        final Nation previousNation = town.getNationOrNull();
+//        if (hasPreviousNation && hasNewNation && previousNation != occupier)
+//            town.removeNation();
 
-        // Put town into occupiers nation
-        try {
-            if (hasNewNation)
-                town.setNation(occupier);
-        } catch (AlreadyRegisteredException e) {
-            e.printStackTrace();
-            return;
-        }
+//        // Put town into occupiers nation
+//        try {
+//            if (hasNewNation)
+//                town.setNation(occupier);
+//        } catch (AlreadyRegisteredException e) {
+//            e.printStackTrace();
+//            return;
+//        }
         town.setConquered(true);
 
         town.save();
-        if (hasNewNation)
-            occupier.save();
-
-        if (hasPreviousNation && previousNation != occupier)
-            previousNation.save();
+//        if (hasNewNation)
+//            occupier.save();
+//
+//        if (hasPreviousNation && previousNation != occupier)
+//            previousNation.save();
     }
 }
