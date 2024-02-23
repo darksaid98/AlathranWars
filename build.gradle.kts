@@ -22,7 +22,7 @@ val mainPackage = "${project.group}.${rootProject.name.lowercase()}"
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17)) // Configure the java toolchain. This allows gradle to auto-provision JDK 17 on systems that only have JDK 8 installed for example.
-    withJavadocJar() // Enable Javadoc generation
+//    withJavadocJar() // Enable Javadoc generation
 }
 
 repositories {
