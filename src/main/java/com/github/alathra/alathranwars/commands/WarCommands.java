@@ -25,6 +25,7 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -231,8 +232,8 @@ public class WarCommands {
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>Resident invalid.").build());
 
         // Get nations and towns
-        @Nullable Nation nation = res.hasNation() ? res.getNationOrNull() : TownyAPI.getInstance().getNation(targetString);
-        @Nullable Town town = res.hasTown() ? res.getTownOrNull() : TownyAPI.getInstance().getTown(targetString);
+        @Nullable Nation nation = asAdmin ? TownyAPI.getInstance().getNation(targetString) : res.hasNation() ? res.getNationOrNull() : TownyAPI.getInstance().getNation(targetString);
+        @Nullable Town town = asAdmin ? TownyAPI.getInstance().getTown(targetString) : res.hasTown() ? res.getTownOrNull() : TownyAPI.getInstance().getTown(targetString);
 
         final boolean isArgNation = nation != null;
         final boolean isArgTown = town != null;
