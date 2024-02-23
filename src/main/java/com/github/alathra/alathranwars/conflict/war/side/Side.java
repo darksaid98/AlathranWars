@@ -251,6 +251,20 @@ public class Side {
         nation.getTowns().forEach(this::unsurrenderTown);
     }
 
+    public void kickTown(Town town) {
+        towns.remove(town);
+        surrenderedTowns.remove(town);
+
+        town.getResidents().forEach(resident -> kickPlayer(resident.getUUID()));
+    }
+
+    public void kickNation(Nation nation) {
+        nations.remove(nation);
+        surrenderedNations.remove(nation);
+
+        nation.getTowns().forEach(this::kickTown);
+    }
+
     public boolean isPlayerOnSide(Player p) {
         return isPlayerOnSide(p.getUniqueId());
     }
@@ -327,6 +341,11 @@ public class Side {
             final @Nullable Player p = Bukkit.getPlayer(uuid);
             removeOnlinePlayer(p);
         }
+    }
+
+    public void kickPlayer(UUID uuid) {
+        removePlayer(uuid);
+        surrenderedPlayersIncludingOffline.remove(uuid);
     }
 
     public void removeOnlinePlayer(Player p) {

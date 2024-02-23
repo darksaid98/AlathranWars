@@ -22,12 +22,15 @@ import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.CustomArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Statistic;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -225,7 +228,6 @@ public class CommandUtil {
         }));
     }
 
-
     /**
      * Accepts all towns and nations as argument. Returns a string.
      *
@@ -285,6 +287,64 @@ public class CommandUtil {
             nationNames.removeAll(removeNames);
 
             return nationNames;
+        }));
+    }
+
+    static public Argument<UUID> playerOrTownOrNationInWar(String nodeName, String warNodeName) {
+        return new CustomArgument<>(new StringArgument(nodeName), info -> {
+            final String argPlayerOrTownOrNationName = info.input();
+
+            if (!(info.previousArgs().get(warNodeName) instanceof War war)) {
+                throw CustomArgument.CustomArgumentException.fromAdventureComponent(
+                    ColorParser.of(UtilsChat.getPrefix() + "<red>The war does not exist!")
+                        .build()
+                );
+            }
+
+            final List<String> townNames = war.getTowns().stream().map(Town::getName).sorted().toList();
+            final List<String> nationNames = war.getNations().stream().map(Nation::getName).sorted().toList();
+            final List<String> playerNames = war.getPlayersIncludingOffline().stream()
+                .filter(offlinePlayer -> Instant.ofEpochMilli(offlinePlayer.getLastSeen()).isAfter(Instant.now().minus(Duration.ofDays(60)))) // Remove players that haven't been on in 60 days
+                .filter(p -> p.getName() != null)
+                .map(OfflinePlayer::getName)
+                .sorted()
+                .toList();
+
+
+            if (townNames.contains(argPlayerOrTownOrNationName) && TownyAPI.getInstance().getTown(argPlayerOrTownOrNationName) != null)
+                return TownyAPI.getInstance().getTown(argPlayerOrTownOrNationName).getUUID();
+
+            if (nationNames.contains(argPlayerOrTownOrNationName) && TownyAPI.getInstance().getNation(argPlayerOrTownOrNationName) != null)
+                return TownyAPI.getInstance().getNation(argPlayerOrTownOrNationName).getUUID();
+
+            if (playerNames.contains(argPlayerOrTownOrNationName))
+                return Bukkit.getOfflinePlayer(argPlayerOrTownOrNationName).getUniqueId();
+
+            throw CustomArgument.CustomArgumentException.fromAdventureComponent(
+                ColorParser.of(UtilsChat.getPrefix() + "<red>The player, town or nation <name> is not in the war!")
+                    .parseMinimessagePlaceholder("name", argPlayerOrTownOrNationName)
+                    .build()
+            );
+        }).replaceSuggestions(ArgumentSuggestions.stringCollection(info -> {
+            if (!(info.previousArgs().get(warNodeName) instanceof War war)) {
+                return Collections.emptyList();
+            }
+
+            final List<String> nationNames = war.getNations().stream().map(Nation::getName).sorted().toList();
+            final List<String> townNames = war.getTowns().stream().map(Town::getName).sorted().toList();
+            final List<String> playerNames = war.getPlayersIncludingOffline().stream()
+                .filter(offlinePlayer -> Instant.ofEpochMilli(offlinePlayer.getLastSeen()).isAfter(Instant.now().minus(Duration.ofDays(60)))) // Remove players that haven't been on in 60 days
+                .filter(p -> p.getName() != null)
+                .map(OfflinePlayer::getName)
+                .sorted()
+                .toList();
+
+            final List<String> recommendations = new ArrayList<>();
+            recommendations.addAll(nationNames);
+            recommendations.addAll(townNames);
+            recommendations.addAll(playerNames);
+
+            return recommendations;
         }));
     }
 
