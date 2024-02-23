@@ -1,4 +1,4 @@
-package com.github.alathra.AlathranWars;
+package com.github.alathra.alathranwars;
 
 /**
  * Implemented in classes that should support being reloaded IE executing the methods during runtime after startup.

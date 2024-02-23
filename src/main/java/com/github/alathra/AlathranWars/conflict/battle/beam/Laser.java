@@ -22,10 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-package com.github.alathra.AlathranWars.conflict.battle.beam;
+package com.github.alathra.alathranwars.conflict.battle.beam;
 
-import com.github.alathra.AlathranWars.AlathranWars;
-import com.github.alathra.AlathranWars.utility.Logger;
+import com.github.alathra.alathranwars.AlathranWars;
+import com.github.alathra.alathranwars.utility.Logger;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

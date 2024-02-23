@@ -1,6 +1,6 @@
-package com.github.alathra.AlathranWars.commands;
+package com.github.alathra.alathranwars.commands;
 
-import com.github.alathra.AlathranWars.AlathranWars;
+import com.github.alathra.alathranwars.AlathranWars;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
 

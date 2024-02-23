@@ -1,7 +1,7 @@
-package com.github.alathra.AlathranWars.utility;
+package com.github.alathra.alathranwars.utility;
 
-import com.github.alathra.AlathranWars.AlathranWars;
-import com.github.alathra.AlathranWars.config.ConfigHandler;
+import com.github.alathra.alathranwars.AlathranWars;
+import com.github.alathra.alathranwars.config.ConfigHandler;
 import com.github.milkdrinkers.Crate.Config;
 import org.jetbrains.annotations.NotNull;
 

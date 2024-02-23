@@ -1,4 +1,4 @@
-package com.github.alathra.AlathranWars.enums.battle;
+package com.github.alathra.alathranwars.enums.battle;
 
 public enum BattleVictor {
     ATTACKER,

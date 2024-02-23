@@ -1,4 +1,4 @@
-package com.github.alathra.AlathranWars.utility;
+package com.github.alathra.alathranwars.utility;
 
 import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;

@@ -1,13 +1,13 @@
-package com.github.alathra.AlathranWars.listeners.siege;
+package com.github.alathra.alathranwars.listeners.siege;
 
-import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
-import com.github.alathra.AlathranWars.conflict.war.War;
-import com.github.alathra.AlathranWars.conflict.war.side.Side;
-import com.github.alathra.AlathranWars.enums.battle.BattleType;
-import com.github.alathra.AlathranWars.enums.battle.BattleVictoryReason;
-import com.github.alathra.AlathranWars.events.battle.BattleResultEvent;
-import com.github.alathra.AlathranWars.events.battle.BattleStartEvent;
-import com.github.alathra.AlathranWars.utility.UtilsChat;
+import com.github.alathra.alathranwars.conflict.battle.siege.Siege;
+import com.github.alathra.alathranwars.conflict.war.War;
+import com.github.alathra.alathranwars.conflict.war.side.Side;
+import com.github.alathra.alathranwars.enums.battle.BattleType;
+import com.github.alathra.alathranwars.enums.battle.BattleVictoryReason;
+import com.github.alathra.alathranwars.events.battle.BattleResultEvent;
+import com.github.alathra.alathranwars.events.battle.BattleStartEvent;
+import com.github.alathra.alathranwars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.object.Town;
 import net.kyori.adventure.key.Key;

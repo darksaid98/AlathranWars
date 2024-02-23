@@ -1,8 +1,8 @@
-package com.github.alathra.AlathranWars.hooks;
+package com.github.alathra.alathranwars.hooks;
 
-import com.github.alathra.AlathranWars.conflict.war.War;
-import com.github.alathra.AlathranWars.conflict.war.WarController;
-import com.github.alathra.AlathranWars.utility.Logger;
+import com.github.alathra.alathranwars.conflict.war.War;
+import com.github.alathra.alathranwars.conflict.war.WarController;
+import com.github.alathra.alathranwars.utility.Logger;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 

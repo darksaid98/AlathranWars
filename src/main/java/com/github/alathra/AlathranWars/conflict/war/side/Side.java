@@ -1,11 +1,11 @@
-package com.github.alathra.AlathranWars.conflict.war.side;
+package com.github.alathra.alathranwars.conflict.war.side;
 
-import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
-import com.github.alathra.AlathranWars.conflict.war.War;
-import com.github.alathra.AlathranWars.conflict.war.WarController;
-import com.github.alathra.AlathranWars.enums.battle.BattleSide;
-import com.github.alathra.AlathranWars.enums.battle.BattleTeam;
-import com.github.alathra.AlathranWars.hooks.NameColorHandler;
+import com.github.alathra.alathranwars.conflict.battle.siege.Siege;
+import com.github.alathra.alathranwars.conflict.war.War;
+import com.github.alathra.alathranwars.conflict.war.WarController;
+import com.github.alathra.alathranwars.enums.battle.BattleSide;
+import com.github.alathra.alathranwars.enums.battle.BattleTeam;
+import com.github.alathra.alathranwars.hooks.NameColorHandler;
 import com.palmergames.bukkit.towny.object.Government;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Resident;

@@ -1,7 +1,7 @@
-package com.github.alathra.AlathranWars.events;
+package com.github.alathra.alathranwars.events;
 
-import com.github.alathra.AlathranWars.conflict.war.War;
-import com.github.alathra.AlathranWars.enums.WarDeleteReason;
+import com.github.alathra.alathranwars.conflict.war.War;
+import com.github.alathra.alathranwars.enums.WarDeleteReason;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;

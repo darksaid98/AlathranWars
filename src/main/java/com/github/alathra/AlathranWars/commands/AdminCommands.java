@@ -1,9 +1,9 @@
-package com.github.alathra.AlathranWars.commands;
+package com.github.alathra.alathranwars.commands;
 
-import com.github.alathra.AlathranWars.AlathranWars;
-import com.github.alathra.AlathranWars.hooks.NameColorHandler;
-import com.github.alathra.AlathranWars.items.WarItemRegistry;
-import com.github.alathra.AlathranWars.utility.UtilsChat;
+import com.github.alathra.alathranwars.AlathranWars;
+import com.github.alathra.alathranwars.hooks.NameColorHandler;
+import com.github.alathra.alathranwars.items.WarItemRegistry;
+import com.github.alathra.alathranwars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import dev.jorel.commandapi.CommandAPIBukkit;
 import dev.jorel.commandapi.CommandAPICommand;

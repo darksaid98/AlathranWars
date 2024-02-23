@@ -1,4 +1,4 @@
-package com.github.alathra.AlathranWars.conflict;
+package com.github.alathra.alathranwars.conflict;
 
 import com.palmergames.bukkit.towny.exceptions.AlreadyRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;

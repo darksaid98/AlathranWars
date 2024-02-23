@@ -1,10 +1,10 @@
-package com.github.alathra.AlathranWars.conflict.war;
+package com.github.alathra.alathranwars.conflict.war;
 
-import com.github.alathra.AlathranWars.conflict.battle.raid.Raid;
-import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
-import com.github.alathra.AlathranWars.conflict.war.side.Side;
-import com.github.alathra.AlathranWars.conflict.war.side.SideCreationException;
-import com.github.alathra.AlathranWars.enums.ConflictType;
+import com.github.alathra.alathranwars.conflict.battle.raid.Raid;
+import com.github.alathra.alathranwars.conflict.battle.siege.Siege;
+import com.github.alathra.alathranwars.conflict.war.side.Side;
+import com.github.alathra.alathranwars.conflict.war.side.SideCreationException;
+import com.github.alathra.alathranwars.enums.ConflictType;
 import com.palmergames.bukkit.towny.object.Government;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;

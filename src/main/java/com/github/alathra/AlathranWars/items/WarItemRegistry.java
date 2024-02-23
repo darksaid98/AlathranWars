@@ -1,7 +1,7 @@
-package com.github.alathra.AlathranWars.items;
+package com.github.alathra.alathranwars.items;
 
-import com.github.alathra.AlathranWars.AlathranWars;
-import com.github.alathra.AlathranWars.items.item.RamItem;
+import com.github.alathra.alathranwars.AlathranWars;
+import com.github.alathra.alathranwars.items.item.RamItem;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

@@ -1,4 +1,4 @@
-package com.github.alathra.AlathranWars.data;
+package com.github.alathra.alathranwars.data;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

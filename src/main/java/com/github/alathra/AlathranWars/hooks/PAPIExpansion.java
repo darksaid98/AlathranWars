@@ -1,6 +1,6 @@
-package com.github.alathra.AlathranWars.hooks;
+package com.github.alathra.alathranwars.hooks;
 
-import com.github.alathra.AlathranWars.AlathranWars;
+import com.github.alathra.alathranwars.AlathranWars;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;

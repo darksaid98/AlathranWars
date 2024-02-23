@@ -1,7 +1,7 @@
-package com.github.alathra.AlathranWars.conflict.war.side;
+package com.github.alathra.alathranwars.conflict.war.side;
 
-import com.github.alathra.AlathranWars.enums.battle.BattleSide;
-import com.github.alathra.AlathranWars.enums.battle.BattleTeam;
+import com.github.alathra.alathranwars.enums.battle.BattleSide;
+import com.github.alathra.alathranwars.enums.battle.BattleTeam;
 import com.palmergames.bukkit.towny.object.Government;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;

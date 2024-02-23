@@ -1,15 +1,15 @@
-package com.github.alathra.AlathranWars.commands;
+package com.github.alathra.alathranwars.commands;
 
-import com.github.alathra.AlathranWars.AlathranWars;
-import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
-import com.github.alathra.AlathranWars.conflict.war.War;
-import com.github.alathra.AlathranWars.conflict.war.WarController;
-import com.github.alathra.AlathranWars.conflict.war.side.Side;
-import com.github.alathra.AlathranWars.enums.CommandArgsSiege;
-import com.github.alathra.AlathranWars.enums.CommandArgsWar;
-import com.github.alathra.AlathranWars.hooks.TownyHook;
-import com.github.alathra.AlathranWars.items.WarItemRegistry;
-import com.github.alathra.AlathranWars.utility.UtilsChat;
+import com.github.alathra.alathranwars.AlathranWars;
+import com.github.alathra.alathranwars.conflict.battle.siege.Siege;
+import com.github.alathra.alathranwars.conflict.war.War;
+import com.github.alathra.alathranwars.conflict.war.WarController;
+import com.github.alathra.alathranwars.conflict.war.side.Side;
+import com.github.alathra.alathranwars.enums.CommandArgsSiege;
+import com.github.alathra.alathranwars.enums.CommandArgsWar;
+import com.github.alathra.alathranwars.hooks.TownyHook;
+import com.github.alathra.alathranwars.items.WarItemRegistry;
+import com.github.alathra.alathranwars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Nation;

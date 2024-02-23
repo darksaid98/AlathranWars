@@ -1,12 +1,12 @@
-package com.github.alathra.AlathranWars.commands;
+package com.github.alathra.alathranwars.commands;
 
-import com.github.alathra.AlathranWars.AlathranWars;
-import com.github.alathra.AlathranWars.conflict.battle.siege.Siege;
-import com.github.alathra.AlathranWars.conflict.war.War;
-import com.github.alathra.AlathranWars.conflict.war.WarController;
-import com.github.alathra.AlathranWars.conflict.war.side.Side;
-import com.github.alathra.AlathranWars.enums.battle.BattleVictoryReason;
-import com.github.alathra.AlathranWars.utility.UtilsChat;
+import com.github.alathra.alathranwars.AlathranWars;
+import com.github.alathra.alathranwars.conflict.battle.siege.Siege;
+import com.github.alathra.alathranwars.conflict.war.War;
+import com.github.alathra.alathranwars.conflict.war.WarController;
+import com.github.alathra.alathranwars.conflict.war.side.Side;
+import com.github.alathra.alathranwars.enums.battle.BattleVictoryReason;
+import com.github.alathra.alathranwars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Resident;
@@ -27,10 +27,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Set;
 
-import static com.github.alathra.AlathranWars.enums.CommandArgsSiege.ALL_SIEGES;
-import static com.github.alathra.AlathranWars.enums.CommandArgsSiege.IN_SIEGE;
-import static com.github.alathra.AlathranWars.enums.CommandArgsWar.ALL_WARS;
-import static com.github.alathra.AlathranWars.enums.CommandArgsWar.IN_WAR;
+import static com.github.alathra.alathranwars.enums.CommandArgsSiege.ALL_SIEGES;
+import static com.github.alathra.alathranwars.enums.CommandArgsSiege.IN_SIEGE;
+import static com.github.alathra.alathranwars.enums.CommandArgsWar.ALL_WARS;
+import static com.github.alathra.alathranwars.enums.CommandArgsWar.IN_WAR;
 
 public class SiegeCommands {
     public SiegeCommands() {

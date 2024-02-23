@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-package com.github.alathra.AlathranWars.conflict.battle.beam;
+package com.github.alathra.alathranwars.conflict.battle.beam;
 
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;

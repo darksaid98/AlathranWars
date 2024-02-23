@@ -1,6 +1,6 @@
-package com.github.alathra.AlathranWars.utility;
+package com.github.alathra.alathranwars.utility;
 
-import com.github.alathra.AlathranWars.conflict.war.WarController;
+import com.github.alathra.alathranwars.conflict.war.WarController;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

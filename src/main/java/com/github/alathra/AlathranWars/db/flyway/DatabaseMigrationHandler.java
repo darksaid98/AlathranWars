@@ -1,6 +1,6 @@
-package com.github.alathra.AlathranWars.db.flyway;
+package com.github.alathra.alathranwars.db.flyway;
 
-import com.github.alathra.AlathranWars.db.DatabaseType;
+import com.github.alathra.alathranwars.db.DatabaseType;
 import com.github.milkdrinkers.Crate.Config;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.ClassProvider;

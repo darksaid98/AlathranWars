@@ -1,6 +1,6 @@
-package com.github.alathra.AlathranWars.db.jooq;
+package com.github.alathra.alathranwars.db.jooq;
 
-import com.github.alathra.AlathranWars.utility.Cfg;
+import com.github.alathra.alathranwars.utility.Cfg;
 import org.jooq.*;
 import org.jooq.conf.*;
 import org.jooq.exception.DataAccessException;

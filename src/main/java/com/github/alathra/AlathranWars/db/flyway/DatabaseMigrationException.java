@@ -1,4 +1,4 @@
-package com.github.alathra.AlathranWars.db.flyway;
+package com.github.alathra.alathranwars.db.flyway;
 
 public class DatabaseMigrationException extends Exception {
     public DatabaseMigrationException(Throwable t) {

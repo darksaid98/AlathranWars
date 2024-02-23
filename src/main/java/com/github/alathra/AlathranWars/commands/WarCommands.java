@@ -1,12 +1,12 @@
-package com.github.alathra.AlathranWars.commands;
+package com.github.alathra.alathranwars.commands;
 
-import com.github.alathra.AlathranWars.conflict.war.War;
-import com.github.alathra.AlathranWars.conflict.war.WarBuilder;
-import com.github.alathra.AlathranWars.conflict.war.WarController;
-import com.github.alathra.AlathranWars.conflict.war.side.Side;
-import com.github.alathra.AlathranWars.conflict.war.side.SideCreationException;
-import com.github.alathra.AlathranWars.hooks.NameColorHandler;
-import com.github.alathra.AlathranWars.utility.UtilsChat;
+import com.github.alathra.alathranwars.conflict.war.War;
+import com.github.alathra.alathranwars.conflict.war.WarBuilder;
+import com.github.alathra.alathranwars.conflict.war.WarController;
+import com.github.alathra.alathranwars.conflict.war.side.Side;
+import com.github.alathra.alathranwars.conflict.war.side.SideCreationException;
+import com.github.alathra.alathranwars.hooks.NameColorHandler;
+import com.github.alathra.alathranwars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Nation;
@@ -36,7 +36,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-import static com.github.alathra.AlathranWars.enums.CommandArgsWar.*;
+import static com.github.alathra.alathranwars.enums.CommandArgsWar.*;
 
 public class WarCommands {
     public WarCommands() {

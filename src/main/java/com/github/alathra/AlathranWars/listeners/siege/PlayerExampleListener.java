@@ -1,4 +1,4 @@
-package com.github.alathra.AlathranWars.listeners.siege;
+package com.github.alathra.alathranwars.listeners.siege;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

@@ -1,5 +1,3 @@
-import org.flywaydb.gradle.task.FlywayMigrateTask
-import org.jooq.codegen.gradle.CodegenTask
 import org.jooq.meta.jaxb.Logging
 import java.time.Instant
 
@@ -10,8 +8,8 @@ plugins {
     id("xyz.jpenilla.run-paper") version "2.2.2" // Adds runServer and runMojangMappedServer tasks for testing
     id("net.minecrell.plugin-yml.bukkit") version "0.6.0" // Automatic plugin.yml generation
     id("io.papermc.paperweight.userdev") version "1.5.9" // Used to develop internal plugins using Mojang mappings, See https://github.com/PaperMC/paperweight
-    id("org.flywaydb.flyway") version "10.6.0" // Database migrations
-    id("org.jooq.jooq-codegen-gradle") version "3.19.1"
+    id("org.flywaydb.flyway") version "10.8.1" // Database migrations
+    id("org.jooq.jooq-codegen-gradle") version "3.19.3"
 
     eclipse
     idea
@@ -20,10 +18,11 @@ plugins {
 group = "com.github.alathra"
 version = "3.0.0"
 description = ""
-val mainPackage = "${project.group}.${rootProject.name}"
+val mainPackage = "${project.group}.${rootProject.name.lowercase()}"
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(JavaVersion.VERSION_17.majorVersion)) // Configure the java toolchain. This allows gradle to auto-provision JDK 17 on systems that only have JDK 8 installed for example.
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17)) // Configure the java toolchain. This allows gradle to auto-provision JDK 17 on systems that only have JDK 8 installed for example.
+    withJavadocJar() // Enable Javadoc generation
 }
 
 repositories {
@@ -87,10 +86,10 @@ dependencies {
 
     // Database Dependencies
     implementation("com.zaxxer:HikariCP:5.1.0")
-    library("org.flywaydb:flyway-core:10.6.0")
-    library("org.flywaydb:flyway-mysql:10.6.0")
-    library("org.flywaydb:flyway-database-hsqldb:10.6.0")
-    library("org.jooq:jooq:3.19.1")
+    library("org.flywaydb:flyway-core:10.8.1")
+    library("org.flywaydb:flyway-mysql:10.8.1")
+    library("org.flywaydb:flyway-database-hsqldb:10.8.1")
+    library("org.jooq:jooq:3.19.3")
     jooqCodegen("com.h2database:h2:2.2.224")
 
     // JDBC Drivers
@@ -109,6 +108,10 @@ tasks {
         dependsOn(shadowJar)
     }
 
+    jooqCodegen {
+        dependsOn(flywayMigrate)
+    }
+
     compileJava {
         options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
 
@@ -116,10 +119,18 @@ tasks {
         // See https://openjdk.java.net/jeps/247 for more information.
         options.release.set(17)
         options.compilerArgs.addAll(arrayListOf("-Xlint:all", "-Xlint:-processing", "-Xdiags:verbose"))
+
+        dependsOn(jooqCodegen) // Generate jOOQ sources before compilation
     }
 
     javadoc {
+        isFailOnError = false
+        exclude("${mainPackage.replace(".", "/")}/db/schema/**") // Exclude generated jOOQ sources from javadocs
+        val options = options as StandardJavadocDocletOptions
         options.encoding = Charsets.UTF_8.name() // We want UTF-8 for everything
+        options.overview = "src/main/javadoc/overview.html"
+        options.tags("apiNote:a:API Note:", "implNote:a:Implementation Note:", "implSpec:a:Implementation Requirements:")
+        options.use()
     }
 
     processResources {
@@ -190,6 +201,7 @@ flyway {
     url = "jdbc:h2:${project.layout.buildDirectory.get()}/generated/flyway/db;AUTO_SERVER=TRUE;MODE=MySQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;IGNORECASE=TRUE"
     user = "sa"
     password = ""
+    schemas = listOf("PUBLIC").toTypedArray()
     placeholders = mapOf( // Substitute placeholders for flyway
         "tablePrefix" to "",
         "columnSuffix" to " VIRTUAL",
@@ -232,37 +244,6 @@ jooq {
             }
         }
     }
-}
-
-tasks.withType<FlywayMigrateTask>().configureEach { // Declare Flyway migration scripts as inputs
-    inputs.files(
-        fileTree("src/main/resources/db/migration"),
-        fileTree("src/main/java/${mainPackage}/db/flyway/migration")
-    ).withPropertyName("flyway-migration-files").withPathSensitivity(PathSensitivity.RELATIVE)
-
-    outputs.files(
-        fileTree("${project.layout.buildDirectory.get()}/generated/flyway"),
-    ).withPropertyName("flyway-files")
-}
-
-tasks.withType<CodegenTask>().configureEach {
-    dependsOn.add(tasks.flywayMigrate) // Ensure database schema has been prepared by Flyway before generating the jOOQ sources
-
-    // Declare Flyway migration scripts as inputs on the jOOQ task
-    inputs.files(
-        fileTree("src/main/resources/db/migration"),
-        fileTree("src/main/java/${mainPackage}/db/flyway/migration")
-    ).withPropertyName("flyway-migration-files").withPathSensitivity(PathSensitivity.RELATIVE)
-
-    // Declare outputs
-    val dir = layout.buildDirectory.dir("generated-src/jooq").get()
-    outputs.dir(dir).withPropertyName("jooq-generated-sources")
-    sourceSets {
-        get("main").java.srcDir(dir)
-    }
-
-    // Enable build caching
-    outputs.cacheIf { true }
 }
 
 // Apply custom version arg

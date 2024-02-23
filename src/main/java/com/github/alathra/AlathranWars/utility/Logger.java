@@ -1,7 +1,7 @@
-package com.github.alathra.AlathranWars.utility;
+package com.github.alathra.alathranwars.utility;
 
 
-import com.github.alathra.AlathranWars.AlathranWars;
+import com.github.alathra.alathranwars.AlathranWars;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.jetbrains.annotations.NotNull;
 

@@ -1,8 +1,8 @@
-package com.github.alathra.AlathranWars.items.item;
+package com.github.alathra.alathranwars.items.item;
 
-import com.github.alathra.AlathranWars.AlathranWars;
-import com.github.alathra.AlathranWars.items.IWarItem;
-import com.github.alathra.AlathranWars.items.WarItemRegistry;
+import com.github.alathra.alathranwars.AlathranWars;
+import com.github.alathra.alathranwars.items.IWarItem;
+import com.github.alathra.alathranwars.items.WarItemRegistry;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;

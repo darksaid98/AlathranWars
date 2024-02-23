@@ -1,7 +1,7 @@
-package com.github.alathra.AlathranWars.hooks;
+package com.github.alathra.alathranwars.hooks;
 
-import com.github.alathra.AlathranWars.AlathranWars;
-import com.github.alathra.AlathranWars.Reloadable;
+import com.github.alathra.alathranwars.AlathranWars;
+import com.github.alathra.alathranwars.Reloadable;
 import org.bukkit.Bukkit;
 
 public class PAPIHook implements Reloadable {

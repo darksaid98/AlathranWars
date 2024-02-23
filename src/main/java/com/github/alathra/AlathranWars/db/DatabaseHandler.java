@@ -1,12 +1,12 @@
-package com.github.alathra.AlathranWars.db;
+package com.github.alathra.alathranwars.db;
 
-import com.github.alathra.AlathranWars.AlathranWars;
-import com.github.alathra.AlathranWars.Reloadable;
-import com.github.alathra.AlathranWars.db.flyway.DatabaseMigrationException;
-import com.github.alathra.AlathranWars.db.flyway.DatabaseMigrationHandler;
-import com.github.alathra.AlathranWars.db.jooq.JooqContext;
-import com.github.alathra.AlathranWars.utility.Cfg;
-import com.github.alathra.AlathranWars.utility.Logger;
+import com.github.alathra.alathranwars.AlathranWars;
+import com.github.alathra.alathranwars.Reloadable;
+import com.github.alathra.alathranwars.db.flyway.DatabaseMigrationException;
+import com.github.alathra.alathranwars.db.flyway.DatabaseMigrationHandler;
+import com.github.alathra.alathranwars.db.jooq.JooqContext;
+import com.github.alathra.alathranwars.utility.Cfg;
+import com.github.alathra.alathranwars.utility.Logger;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.jetbrains.annotations.NotNull;

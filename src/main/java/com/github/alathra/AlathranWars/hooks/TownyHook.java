@@ -1,4 +1,4 @@
-package com.github.alathra.AlathranWars.hooks;
+package com.github.alathra.alathranwars.hooks;
 
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Nation;

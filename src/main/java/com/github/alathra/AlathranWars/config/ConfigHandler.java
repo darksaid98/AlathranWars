@@ -1,7 +1,7 @@
-package com.github.alathra.AlathranWars.config;
+package com.github.alathra.alathranwars.config;
 
-import com.github.alathra.AlathranWars.AlathranWars;
-import com.github.alathra.AlathranWars.Reloadable;
+import com.github.alathra.alathranwars.AlathranWars;
+import com.github.alathra.alathranwars.Reloadable;
 import com.github.milkdrinkers.Crate.Config;
 
 import javax.inject.Singleton;

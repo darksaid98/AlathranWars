@@ -22,9 +22,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-package com.github.alathra.AlathranWars.conflict.battle.beam;
+package com.github.alathra.alathranwars.conflict.battle.beam;
 
-import com.github.alathra.AlathranWars.utility.Logger;
+import com.github.alathra.alathranwars.utility.Logger;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.Squid;

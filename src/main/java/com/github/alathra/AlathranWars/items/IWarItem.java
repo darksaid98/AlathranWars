@@ -1,4 +1,4 @@
-package com.github.alathra.AlathranWars.items;
+package com.github.alathra.alathranwars.items;
 
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;

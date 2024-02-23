@@ -1,6 +1,6 @@
-package com.github.alathra.AlathranWars.data;
+package com.github.alathra.alathranwars.data;
 
-import com.github.alathra.AlathranWars.AlathranWars;
+import com.github.alathra.alathranwars.AlathranWars;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.metadata.LocationDataField;
 import com.palmergames.bukkit.towny.utils.MetaDataUtil;

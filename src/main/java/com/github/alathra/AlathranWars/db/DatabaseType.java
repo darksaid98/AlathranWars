@@ -1,4 +1,4 @@
-package com.github.alathra.AlathranWars.db;
+package com.github.alathra.alathranwars.db;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
 import org.h2.jdbcx.JdbcDataSource;

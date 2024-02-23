@@ -1,13 +1,13 @@
-package com.github.alathra.AlathranWars;
+package com.github.alathra.alathranwars;
 
-import com.github.alathra.AlathranWars.commands.CommandManager;
-import com.github.alathra.AlathranWars.config.ConfigHandler;
-import com.github.alathra.AlathranWars.conflict.war.WarController;
-import com.github.alathra.AlathranWars.db.DatabaseHandler;
-import com.github.alathra.AlathranWars.db.DatabaseQueries;
-import com.github.alathra.AlathranWars.hooks.HookManager;
-import com.github.alathra.AlathranWars.items.WarItemRegistry;
-import com.github.alathra.AlathranWars.listeners.ListenerHandler;
+import com.github.alathra.alathranwars.commands.CommandManager;
+import com.github.alathra.alathranwars.config.ConfigHandler;
+import com.github.alathra.alathranwars.conflict.war.WarController;
+import com.github.alathra.alathranwars.db.DatabaseHandler;
+import com.github.alathra.alathranwars.db.DatabaseQueries;
+import com.github.alathra.alathranwars.hooks.HookManager;
+import com.github.alathra.alathranwars.items.WarItemRegistry;
+import com.github.alathra.alathranwars.listeners.ListenerHandler;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;

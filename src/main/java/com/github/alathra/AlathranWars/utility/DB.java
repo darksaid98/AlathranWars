@@ -1,9 +1,9 @@
-package com.github.alathra.AlathranWars.utility;
+package com.github.alathra.alathranwars.utility;
 
-import com.github.alathra.AlathranWars.AlathranWars;
-import com.github.alathra.AlathranWars.db.DatabaseHandler;
-import com.github.alathra.AlathranWars.db.DatabaseType;
-import com.github.alathra.AlathranWars.db.jooq.JooqContext;
+import com.github.alathra.alathranwars.AlathranWars;
+import com.github.alathra.alathranwars.db.DatabaseHandler;
+import com.github.alathra.alathranwars.db.DatabaseType;
+import com.github.alathra.alathranwars.db.jooq.JooqContext;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 

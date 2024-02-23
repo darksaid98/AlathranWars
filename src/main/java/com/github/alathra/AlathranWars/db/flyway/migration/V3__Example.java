@@ -1,4 +1,4 @@
-package com.github.alathra.AlathranWars.db.flyway.migration;
+package com.github.alathra.alathranwars.db.flyway.migration;
 
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;

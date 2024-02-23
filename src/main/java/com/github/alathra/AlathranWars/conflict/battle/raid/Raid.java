@@ -1,13 +1,13 @@
-package com.github.alathra.AlathranWars.conflict.battle.raid;
+package com.github.alathra.alathranwars.conflict.battle.raid;
 
-import com.github.alathra.AlathranWars.AlathranWars;
-import com.github.alathra.AlathranWars.conflict.battle.Battle;
-import com.github.alathra.AlathranWars.conflict.war.War;
-import com.github.alathra.AlathranWars.conflict.war.side.Side;
-import com.github.alathra.AlathranWars.enums.CaptureProgressDirection;
-import com.github.alathra.AlathranWars.enums.battle.*;
-import com.github.alathra.AlathranWars.events.battle.BattleResultEvent;
-import com.github.alathra.AlathranWars.events.battle.PreBattleResultEvent;
+import com.github.alathra.alathranwars.AlathranWars;
+import com.github.alathra.alathranwars.conflict.battle.Battle;
+import com.github.alathra.alathranwars.conflict.war.War;
+import com.github.alathra.alathranwars.conflict.war.side.Side;
+import com.github.alathra.alathranwars.enums.CaptureProgressDirection;
+import com.github.alathra.alathranwars.enums.battle.*;
+import com.github.alathra.alathranwars.events.battle.BattleResultEvent;
+import com.github.alathra.alathranwars.events.battle.PreBattleResultEvent;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;

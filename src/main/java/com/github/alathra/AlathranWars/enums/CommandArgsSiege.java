@@ -1,4 +1,4 @@
-package com.github.alathra.AlathranWars.enums;
+package com.github.alathra.alathranwars.enums;
 
 public enum CommandArgsSiege {
     IN_SIEGE,

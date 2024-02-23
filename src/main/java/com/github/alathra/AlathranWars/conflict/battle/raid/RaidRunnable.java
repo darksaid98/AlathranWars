@@ -1,12 +1,12 @@
-package com.github.alathra.AlathranWars.conflict.battle.raid;
+package com.github.alathra.alathranwars.conflict.battle.raid;
 
-import com.github.alathra.AlathranWars.AlathranWars;
-import com.github.alathra.AlathranWars.conflict.battle.beam.CrystalLaser;
-import com.github.alathra.AlathranWars.conflict.battle.beam.Laser;
-import com.github.alathra.AlathranWars.enums.CaptureProgressDirection;
-import com.github.alathra.AlathranWars.enums.battle.BattleSide;
-import com.github.alathra.AlathranWars.enums.battle.BattleVictoryReason;
-import com.github.alathra.AlathranWars.utility.UtilsChat;
+import com.github.alathra.alathranwars.AlathranWars;
+import com.github.alathra.alathranwars.conflict.battle.beam.CrystalLaser;
+import com.github.alathra.alathranwars.conflict.battle.beam.Laser;
+import com.github.alathra.alathranwars.enums.CaptureProgressDirection;
+import com.github.alathra.alathranwars.enums.battle.BattleSide;
+import com.github.alathra.alathranwars.enums.battle.BattleVictoryReason;
+import com.github.alathra.alathranwars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
@@ -19,8 +19,8 @@ import space.arim.morepaperlib.scheduling.ScheduledTask;
 import java.time.Duration;
 import java.time.Instant;
 
-import static com.github.alathra.AlathranWars.conflict.battle.raid.Raid.*;
-import static com.github.alathra.AlathranWars.enums.CaptureProgressDirection.*;
+import static com.github.alathra.alathranwars.conflict.battle.raid.Raid.*;
+import static com.github.alathra.alathranwars.enums.CaptureProgressDirection.*;
 
 public class RaidRunnable implements Runnable {
     // Settings

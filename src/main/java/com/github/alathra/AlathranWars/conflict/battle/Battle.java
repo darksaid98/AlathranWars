@@ -1,7 +1,7 @@
-package com.github.alathra.AlathranWars.conflict.battle;
+package com.github.alathra.alathranwars.conflict.battle;
 
-import com.github.alathra.AlathranWars.enums.battle.BattleType;
-import com.github.alathra.AlathranWars.enums.battle.BattleVictoryReason;
+import com.github.alathra.alathranwars.enums.battle.BattleType;
+import com.github.alathra.alathranwars.enums.battle.BattleVictoryReason;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
