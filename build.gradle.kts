@@ -74,7 +74,7 @@ dependencies {
     compileOnly("me.clip:placeholderapi:2.11.5") {
         exclude("me.clip.placeholderapi.libs", "kyori")
     }
-    compileOnly("com.github.MilkBowl:VaultAPI:1.7")
+    compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
     compileOnly("com.palmergames.bukkit.towny:towny:0.100.0.8") {
         exclude("com.palmergames.adventure")
     }
