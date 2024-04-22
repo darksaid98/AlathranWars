@@ -75,7 +75,7 @@ dependencies {
         exclude("me.clip.placeholderapi.libs", "kyori")
     }
     compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
-    compileOnly("com.palmergames.bukkit.towny:towny:0.100.2.2") {
+    compileOnly("com.palmergames.bukkit.towny:towny:0.100.2.4") {
         exclude("com.palmergames.adventure")
     }
     compileOnly("me.neznamy:tab-api:4.0.2")
