@@ -69,7 +69,7 @@ dependencies {
         exclude("net.kyori")
     }
 
-    implementation("dev.jorel:commandapi-bukkit-shade:9.3.0")
+    implementation("dev.jorel:commandapi-bukkit-shade:9.5.0")
 
     compileOnly("me.clip:placeholderapi:2.11.5") {
         exclude("me.clip.placeholderapi.libs", "kyori")
