@@ -7,10 +7,7 @@ import com.github.alathra.alathranwars.hooks.NameColorHandler;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.event.TownAddResidentEvent;
 import com.palmergames.bukkit.towny.event.TownPreRenameEvent;
-import com.palmergames.bukkit.towny.event.town.TownKickEvent;
-import com.palmergames.bukkit.towny.event.town.TownLeaveEvent;
-import com.palmergames.bukkit.towny.event.town.TownPreMergeEvent;
-import com.palmergames.bukkit.towny.event.town.TownRuinedEvent;
+import com.palmergames.bukkit.towny.event.town.*;
 import com.palmergames.bukkit.towny.object.Town;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
@@ -32,6 +29,16 @@ public class TownListener implements Listener {
         }
 
         // TODO Allow renaming in war, update some vars pretty much
+    }
+
+    @EventHandler
+    private void onSpawnMove(TownSetSpawnEvent e) {
+        Town town = e.getTown();
+
+        if (WarController.getInstance().isTownInAnyWars(town)) {
+            e.setCancelMessage("You can't move your town spawn while the town is in a war.");
+            e.setCancelled(true);
+        }
     }
 
     @EventHandler
