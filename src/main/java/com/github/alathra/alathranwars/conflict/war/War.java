@@ -7,7 +7,7 @@ import com.github.alathra.alathranwars.conflict.battle.siege.Siege;
 import com.github.alathra.alathranwars.conflict.war.side.Side;
 import com.github.alathra.alathranwars.conflict.war.side.SideBuilder;
 import com.github.alathra.alathranwars.conflict.war.side.SideCreationException;
-import com.github.alathra.alathranwars.db.DatabaseQueries;
+import com.github.alathra.alathranwars.database.DatabaseQueries;
 import com.github.alathra.alathranwars.enums.ConflictType;
 import com.github.alathra.alathranwars.enums.WarDeleteReason;
 import com.github.alathra.alathranwars.enums.battle.BattleSide;
@@ -17,7 +17,7 @@ import com.github.alathra.alathranwars.events.PreWarCreateEvent;
 import com.github.alathra.alathranwars.events.PreWarDeleteEvent;
 import com.github.alathra.alathranwars.events.WarCreateEvent;
 import com.github.alathra.alathranwars.events.WarDeleteEvent;
-import com.github.alathra.alathranwars.hooks.NameColorHandler;
+import com.github.alathra.alathranwars.hook.NameColorHandler;
 import com.github.alathra.alathranwars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.object.Government;
@@ -37,6 +37,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -46,7 +47,6 @@ import java.util.stream.Stream;
  * The type New war.
  */
 public class War extends Conflict {
-    private final UUID uuid;
     private final String name; // Used in commands and such, like "TidalHaven.vs.Meme"
     private final String label;
     private final ConflictType conflictType = ConflictType.WAR;
@@ -73,7 +73,7 @@ public class War extends Conflict {
      * @param event  the event
      */
     @ApiStatus.Internal
-    public War(
+    War(
         UUID uuid,
         String name,
         String label,
@@ -83,7 +83,7 @@ public class War extends Conflict {
         Set<Raid> raids,
         boolean event
     ) {
-        this.uuid = uuid;
+        super(uuid);
         this.name = name;
         this.label = label;
 
@@ -112,14 +112,14 @@ public class War extends Conflict {
      * @throws WrapperCommandSyntaxException the wrapper command syntax exception
      */
     @ApiStatus.Internal
-    public War(
+    War(
         UUID uuid,
         String label,
         Government aggressor,
         Government victim,
         boolean event
     ) throws SideCreationException, WrapperCommandSyntaxException {
-        this.uuid = uuid;
+        super(uuid);
         this.label = label;
 
         this.name = "%s.vs.%s".formatted(aggressor.getName(), victim.getName());
@@ -127,14 +127,14 @@ public class War extends Conflict {
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>A war already exists with that name!").build());
 
         this.side1 = new SideBuilder()
-            .setWarUUID(this.uuid)
+            .setWarUUID(getUUID())
             .setUuid(UUID.randomUUID())
             .setLeader(aggressor)
             .setSide(BattleSide.ATTACKER)
             .setTeam(BattleTeam.SIDE_1)
             .build();
         this.side2 = new SideBuilder()
-            .setWarUUID(this.uuid)
+            .setWarUUID(getUUID())
             .setUuid(UUID.randomUUID())
             .setLeader(victim)
             .setSide(BattleSide.DEFENDER)
@@ -157,15 +157,6 @@ public class War extends Conflict {
     }
 
     /**
-     * Gets uuid of the war.
-     *
-     * @return the uuid
-     */
-    public UUID getUUID() {
-        return this.uuid;
-    }
-
-    /**
      * Gets name of the war.
      *
      * @return the name
@@ -183,26 +174,6 @@ public class War extends Conflict {
     @NotNull
     public String getLabel() {
         return label;
-    }
-
-    /**
-     * Compare war UUID's.
-     *
-     * @param uuid the uuid
-     * @return the boolean
-     */
-    public boolean equals(UUID uuid) {
-        return this.uuid.equals(uuid);
-    }
-
-    /**
-     * Compare war by UUID's.
-     *
-     * @param war the war
-     * @return the boolean
-     */
-    public boolean equals(War war) {
-        return this.uuid.equals(war.getUUID());
     }
 
     /**
@@ -302,6 +273,8 @@ public class War extends Conflict {
         return null;
     }
 
+    // SECTION Battles
+
     /**
      * Gets sieges in a list.
      *
@@ -368,6 +341,32 @@ public class War extends Conflict {
     }
 
     /**
+     * Sets raids for the war.
+     *
+     * @param raids the raids
+     */
+    @ApiStatus.Internal
+    public void setRaids(Set<Raid> raids) {
+        this.raids = raids;
+        // TODO Raids
+//        this.raids.forEach(Raid::resume);
+    }
+
+    /**
+     * Gets raid by the raid UUID.
+     *
+     * @param uuid the uuid
+     * @return the raid
+     */
+    @Nullable
+    public Raid getRaid(UUID uuid) {
+        return raids.stream()
+            .filter(s -> s.equals(uuid))
+            .findAny()
+            .orElse(null);
+    }
+
+    /**
      * Add raid to war.
      *
      * @param raid the raid
@@ -404,50 +403,163 @@ public class War extends Conflict {
      * @return the boolean
      */
     public boolean isTownUnderRaid(Town town) {
-        return raids.stream().anyMatch(raid -> raid.getTown().equals(town));
+        // TODO Raids
+        return false;
+//        return raids.stream().anyMatch(raid -> raid.getTown().equals(town));
     }
 
+    // SECITON Nation & Town Getters
+
     /**
-     * Gets all online players in the war.
+     * Gets nations in the war excluding surrendered ones.
      *
-     * @return the players
+     * @return the nations
      */
-    @NotNull
-    public Set<Player> getPlayers() {
+    public Set<Nation> getNations() {
         return Stream.concat(
-                getSide1().getPlayers().stream(),
-                getSide2().getPlayers().stream()
+                getSide1().getNations().stream(),
+                getSide2().getNations().stream()
             )
             .collect(Collectors.toSet());
     }
 
     /**
-     * Gets all players, including offline ones in the war.
+     * Gets all surrendered nations in the war.
      *
-     * @return the players including offline
+     * @return the surrendered nations
      */
-    @NotNull
-    public Set<OfflinePlayer> getPlayersIncludingOffline() {
+    public Set<Nation> getNationsSurrendered() {
         return Stream.concat(
-                getSide1().getPlayersIncludingOffline().stream().map(Bukkit::getOfflinePlayer),
-                getSide2().getPlayersIncludingOffline().stream().map(Bukkit::getOfflinePlayer)
+                getSide1().getNationsSurrendered().stream(),
+                getSide2().getNationsSurrendered().stream()
             )
             .collect(Collectors.toSet());
     }
 
     /**
-     * Gets all surrendered players in the war.
+     * Gets all nations in the war including surrendered.
      *
-     * @return the surrendered players
+     * @return the all nations
      */
-    @NotNull
-    public Set<OfflinePlayer> getSurrenderedPlayers() {
+    public Set<Nation> getNationsAll() {
         return Stream.concat(
-                getSide1().getSurrenderedPlayersIncludingOffline().stream().map(Bukkit::getOfflinePlayer),
-                getSide2().getSurrenderedPlayersIncludingOffline().stream().map(Bukkit::getOfflinePlayer)
+                getSide1().getNations().stream(),
+                Stream.concat(
+                    getSide2().getNations().stream(),
+                    getNationsSurrendered().stream()
+                )
             )
             .collect(Collectors.toSet());
     }
+
+    /**
+     * Gets towns in the war excluding surrendered ones.
+     *
+     * @return the towns
+     */
+    public Set<Town> getTowns() {
+        return Stream.concat(
+                getSide1().getTowns().stream(),
+                getSide2().getTowns().stream()
+            )
+            .collect(Collectors.toSet());
+    }
+
+    /**
+     * Gets all surrendered towns in the war.
+     *
+     * @return the surrendered towns
+     */
+    public Set<Town> getTownsSurrendered() {
+        return Stream.concat(
+                getSide1().getTownsSurrendered().stream(),
+                getSide2().getTownsSurrendered().stream()
+            )
+            .collect(Collectors.toSet());
+    }
+
+    /**
+     * Gets all towns in the war including surrendered towns.
+     *
+     * @return the all towns
+     */
+    public Set<Town> getTownsAll() {
+        return Stream.concat(
+                getSide1().getTowns().stream(),
+                Stream.concat(
+                    getSide2().getTowns().stream(),
+                    getTownsSurrendered().stream()
+                )
+            )
+            .collect(Collectors.toSet());
+    }
+
+    // SECTION Players Getters
+
+    /**
+     * Get all players in the war (excluding surrendered)
+     * @return player list
+     */
+    public List<OfflinePlayer> getPlayers() {
+        return Stream.concat(
+            getSide1().getPlayers().stream(),
+            getSide2().getPlayers().stream()
+        ).toList();
+    }
+
+    /**
+     * Get all players in the war (excludes non-surrendered players)
+     * @return player list
+     */
+    public List<OfflinePlayer> getPlayersSurrendered() {
+        return Stream.concat(
+            getSide1().getPlayersSurrendered().stream(),
+            getSide2().getPlayersSurrendered().stream()
+        ).toList();
+    }
+
+    /**
+     * Get all players in the war (includes surrendered players)
+     * @return player list
+     */
+    public List<OfflinePlayer> getPlayersAll() {
+        return Stream.concat(getSide1().getPlayersAll().stream(), getSide2().getPlayersAll().stream()).toList();
+    }
+
+    /**
+     * Get all online players in the war (excluding surrendered)
+     * @return player list
+     */
+    public List<Player> getPlayersOnline() {
+        return Stream.concat(
+            getSide1().getPlayersOnline().stream(),
+            getSide2().getPlayersOnline().stream()
+        ).toList();
+    }
+
+    /**
+     * Get all online players in the war (excludes non-surrendered players)
+     * @return player list
+     */
+    public List<Player> getPlayersSurrenderedOnline() {
+        return Stream.concat(
+            getSide1().getPlayersSurrenderedOnline().stream(),
+            getSide2().getPlayersSurrenderedOnline().stream()
+        ).toList();
+    }
+
+    /**
+     * Get all online players in the war (includes surrendered players)
+     * @return player list
+     */
+    public List<Player> getPlayersOnlineAll() {
+        return Stream.concat(
+            getSide1().getPlayersOnlineAll().stream(),
+            getSide2().getPlayersOnlineAll().stream()
+        ).toList();
+    }
+
+    // SECTION Misc
 
     /**
      * Check if player is in war.
@@ -455,8 +567,8 @@ public class War extends Conflict {
      * @param p the p
      * @return the boolean
      */
-    public boolean isPlayerInWar(Player p) {
-        return side1.isPlayerOnSide(p) || side2.isPlayerOnSide(p);
+    public boolean isInWar(Player p) {
+        return side1.isOnSide(p) || side2.isOnSide(p);
     }
 
     /**
@@ -465,8 +577,8 @@ public class War extends Conflict {
      * @param uuid the uuid
      * @return the boolean
      */
-    public boolean isPlayerInWar(UUID uuid) {
-        return side1.isPlayerOnSide(uuid) || side2.isPlayerOnSide(uuid);
+    public boolean isInWar(UUID uuid) {
+        return side1.isOnSide(uuid) || side2.isOnSide(uuid);
     }
 
     /**
@@ -488,64 +600,37 @@ public class War extends Conflict {
      */
     @Nullable
     public Side getPlayerSide(UUID uuid) {
-        if (side1.isPlayerOnSide(uuid))
+        if (side1.isOnSide(uuid))
             return getSide1();
 
-        if (side2.isPlayerOnSide(uuid))
+        if (side2.isOnSide(uuid))
             return getSide2();
 
         return null;
     }
 
     /**
-     * Is town in war.
+     * Is nation or town in war.
      *
-     * @param town the town
+     * @param government the nation or town
      * @return the boolean
      */
-    public boolean isTownInWar(Town town) {
-        return side1.isTownOnSide(town) || side2.isTownOnSide(town);
+    public boolean isInWar(Government government) {
+        return side1.isOnSide(government) || side2.isOnSide(government);
     }
 
     /**
-     * Gets town side or null if not in war.
+     * Gets nation or town side, or null if not in war.
      *
-     * @param town the town
+     * @param government the nation or town
      * @return the town side
      */
     @Nullable
-    public Side getTownSide(Town town) {
-        if (side1.isTownOnSide(town))
+    public Side getSide(Government government) {
+        if (side1.isOnSide(government))
             return getSide1();
 
-        if (side2.isTownOnSide(town))
-            return getSide2();
-
-        return null;
-    }
-
-    /**
-     * Is nation in war boolean.
-     *
-     * @param nation the nation
-     * @return the boolean
-     */
-    public boolean isNationInWar(Nation nation) {
-        return side1.isNationOnSide(nation) || side2.isNationOnSide(nation);
-    }
-
-    /**
-     * Gets nation side or null if not in war.
-     *
-     * @param nation the nation
-     * @return the nation side
-     */
-    @Nullable
-    public Side getNationSide(Nation nation) {
-        if (side1.isNationOnSide(nation))
-            return getSide1();
-
-        if (side2.isNationOnSide(nation))
+        if (side2.isOnSide(government))
             return getSide2();
 
         return null;
@@ -577,7 +662,7 @@ public class War extends Conflict {
     @ApiStatus.Internal
     public void cancelSieges(Town town) {
         if (this != null) {
-            Side townSide = getTownSide(town);
+            Side townSide = getSide(town);
 
             if (townSide == null) return;
 
@@ -594,161 +679,61 @@ public class War extends Conflict {
     }
 
     /**
-     * Surrender a nation and all its towns out of the war.
+     * Makes a government surrender (Recursively surrenders subjects AKA nations, towns, players)
      *
-     * @param nation the nation
+     * @param government the government
      */
-    public void surrenderNation(Nation nation) {
-        Side nationSide = getNationSide(nation);
-        if (nationSide == null) return;
+    public void surrender(Government government) {
+        if (government instanceof Nation nation) {
+            Side nationSide = getSide(nation);
+            if (nationSide == null) return;
 
-        final @Nullable Nation occupier = nationSide.equals(getSide1()) ? getSide2().getTown().getNationOrNull() : getSide1().getTown().getNationOrNull();
-        Occupation.setOccupied(nation, occupier);
+            final @Nullable Nation occupier = nationSide.equals(getSide1()) ? getSide2().getTown().getNationOrNull() : getSide1().getTown().getNationOrNull();
+            Occupation.setOccupied(nation, occupier);
 
-        nationSide.surrenderNation(nation);
-        // TODO Cancel in progress sieges for towns?
-        nationSide.processSurrenders();
-    }
+            nationSide.surrender(nation);
+            // TODO Cancel in progress sieges for towns?
+            nationSide.processSurrenders();
+        } else if (government instanceof Town town) {
+            Side townSide = getSide(town);
+            if (townSide == null) return;
 
-    /**
-     * Surrender town and all its players out of a war.
-     *
-     * @param town the town
-     */
-    public void surrenderTown(Town town) {
-        Side townSide = getTownSide(town);
-        if (townSide == null) return;
+            final @Nullable Nation townNation = town.getNationOrNull();
+            final @Nullable Nation occupier = townSide.equals(getSide1()) ? getSide2().getTown().getNationOrNull() : getSide1().getTown().getNationOrNull();
+            Occupation.setOccupied(town, occupier);
+            townSide.surrender(town);
 
-        final @Nullable Nation townNation = town.getNationOrNull();
-        final @Nullable Nation occupier = townSide.equals(getSide1()) ? getSide2().getTown().getNationOrNull() : getSide1().getTown().getNationOrNull();
-        Occupation.setOccupied(town, occupier);
-        townSide.surrenderTown(town);
-
-        if (townNation != null) {
-            if (townSide.shouldNationSurrender(townNation)) {
-                surrenderNation(townNation);
+            if (townNation != null) {
+                if (townSide.shouldSurrender(townNation)) {
+                    surrender(townNation);
+                }
             }
+
+            // TODO Cancel in progress sieges for towns?
+            townSide.processSurrenders();
         }
-
-        // TODO Cancel in progress sieges for towns?
-        townSide.processSurrenders();
     }
 
     /**
-     * Unsurrender a nation and all its towns and players.
+     * Makes a government un-surrender (Recursively un-surrenders subjects AKA nations, towns, players)
      *
-     * @param nation the nation
+     * @param government the government
      */
-    public void unsurrenderNation(Nation nation) {
-        Side nationSide = getNationSide(nation);
-        if (nationSide == null) return;
+    public void unsurrender(Government government) {
+        if (government instanceof Nation nation) {
+            Side nationSide = getSide(nation);
+            if (nationSide == null) return;
 
-        nationSide.unsurrenderNation(nation);
-        nation.getTowns().forEach(this::unsurrenderTown);
-    }
+            nationSide.unsurrender(nation);
+            nation.getTowns().forEach(this::unsurrender);
+        } else if (government instanceof Town town) {
+            Side townSide = getSide(town);
+            if (townSide == null) return;
 
-    /**
-     * Unsurrender town and all its players.
-     *
-     * @param town the town
-     */
-    public void unsurrenderTown(Town town) {
-        Side townSide = getTownSide(town);
-        if (townSide == null) return;
+            Occupation.removeOccupied(town);
 
-        Occupation.removeOccupied(town);
-
-        townSide.unsurrenderTown(town);
-    }
-
-    /**
-     * Gets towns in the war excluding surrendered ones.
-     *
-     * @return the towns
-     */
-    @NotNull
-    public Set<Town> getTowns() {
-        return Stream.concat(
-                getSide1().getTowns().stream(),
-                getSide2().getTowns().stream()
-            )
-            .collect(Collectors.toSet());
-    }
-
-    /**
-     * Gets all towns in the war including surrendered towns.
-     *
-     * @return the all towns
-     */
-    @NotNull
-    public Set<Town> getAllTowns() {
-        return Stream.concat(
-                getSide1().getTowns().stream(),
-                Stream.concat(
-                    getSide2().getTowns().stream(),
-                    getSurrenderedTowns().stream()
-                )
-            )
-            .collect(Collectors.toSet());
-    }
-
-    /**
-     * Gets nations in the war excluding surrendered ones.
-     *
-     * @return the nations
-     */
-    @NotNull
-    public Set<Nation> getNations() {
-        return Stream.concat(
-                getSide1().getNations().stream(),
-                getSide2().getNations().stream()
-            )
-            .collect(Collectors.toSet());
-    }
-
-    /**
-     * Gets all nations in the war including surrendered.
-     *
-     * @return the all nations
-     */
-    @NotNull
-    public Set<Nation> getAllNations() {
-        return Stream.concat(
-                getSide1().getNations().stream(),
-                Stream.concat(
-                    getSide2().getNations().stream(),
-                    getSurrenderedNations().stream()
-                )
-            )
-            .collect(Collectors.toSet());
-    }
-
-    /**
-     * Gets all surrendered towns in the war.
-     *
-     * @return the surrendered towns
-     */
-    @NotNull
-    public Set<Town> getSurrenderedTowns() {
-        return Stream.concat(
-                getSide1().getSurrenderedTowns().stream(),
-                getSide2().getSurrenderedTowns().stream()
-            )
-            .collect(Collectors.toSet());
-    }
-
-    /**
-     * Gets all surrendered nations in the war.
-     *
-     * @return the surrendered nations
-     */
-    @NotNull
-    public Set<Nation> getSurrenderedNations() {
-        return Stream.concat(
-                getSide1().getSurrenderedNations().stream(),
-                getSide2().getSurrenderedNations().stream()
-            )
-            .collect(Collectors.toSet());
+            townSide.unsurrender(town);
+        }
     }
 
     /**
@@ -773,11 +758,11 @@ public class War extends Conflict {
         );
         final Sound warSound = Sound.sound(Key.key("entity.wither.spawn"), Sound.Source.VOICE, 0.5f, 1.0F);
 
-        side1.getPlayers().forEach(player -> {
+        side1.getPlayersOnline().forEach(player -> {
             player.showTitle(warTitle);
             player.playSound(warSound);
         });
-        side2.getPlayers().forEach(player -> {
+        side2.getPlayersOnline().forEach(player -> {
             player.showTitle(warTitle);
             player.playSound(warSound);
         });
@@ -806,13 +791,13 @@ public class War extends Conflict {
             return;
 
         getSieges().forEach(Siege::stop);
-        getAllTowns().forEach(Occupation::removeOccupied);
+        getTownsAll().forEach(Occupation::removeOccupied);
 
         DatabaseQueries.deleteWar(this);
         WarController.getInstance().removeWar(this);
 
         // Run check after war is removed to cleanup player tags
-        getPlayers().forEach(p -> NameColorHandler.getInstance().calculatePlayerColors(p));
+        getPlayersOnline().forEach(p -> NameColorHandler.getInstance().calculatePlayerColors(p));
 
         new WarDeleteEvent(this, reason).callEvent();
     }

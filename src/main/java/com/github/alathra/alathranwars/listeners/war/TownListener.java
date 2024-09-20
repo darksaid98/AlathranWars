@@ -3,7 +3,7 @@ package com.github.alathra.alathranwars.listeners.war;
 import com.github.alathra.alathranwars.conflict.war.War;
 import com.github.alathra.alathranwars.conflict.war.WarController;
 import com.github.alathra.alathranwars.conflict.war.side.Side;
-import com.github.alathra.alathranwars.hooks.NameColorHandler;
+import com.github.alathra.alathranwars.hook.NameColorHandler;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.event.TownAddResidentEvent;
 import com.palmergames.bukkit.towny.event.TownPreRenameEvent;
@@ -23,7 +23,7 @@ public class TownListener implements Listener {
     private void onRename(TownPreRenameEvent e) {
         Town town = e.getTown();
 
-        if (WarController.getInstance().isTownInAnyWars(town)) {
+        if (WarController.getInstance().isInAnyWars(town)) {
             e.setCancelMessage("You can't rename a town while it's in a war.");
             e.setCancelled(true);
         }
@@ -35,7 +35,7 @@ public class TownListener implements Listener {
     private void onSpawnMove(TownSetSpawnEvent e) {
         Town town = e.getTown();
 
-        if (WarController.getInstance().isTownInAnyWars(town)) {
+        if (WarController.getInstance().isInAnyWars(town)) {
             e.setCancelMessage("You can't move your town spawn while the town is in a war.");
             e.setCancelled(true);
         }
@@ -47,10 +47,10 @@ public class TownListener implements Listener {
         Player p = e.getResident().getPlayer();
         if (p == null) return;
 
-        for (War war : WarController.getInstance().getTownWars(town)) {
-            Side side = war.getTownSide(town);
+        for (War war : WarController.getInstance().getWars(town)) {
+            Side side = war.getSide(town);
             if (side == null) continue;
-            side.addPlayer(p);
+            side.add(p);
 
             final Title warTitle = Title.title(
                 ColorParser.of("<gradient:#D72A09:#B01F03><u><b>War")
@@ -75,10 +75,10 @@ public class TownListener implements Listener {
         Player p = e.getResident().getPlayer();
         if (p == null) return;
 
-        for (War war : WarController.getInstance().getTownWars(town)) {
-            Side side = war.getTownSide(town);
+        for (War war : WarController.getInstance().getWars(town)) {
+            Side side = war.getSide(town);
             if (side == null) continue;
-            side.removePlayer(p);
+            side.remove(p);
         }
 
         NameColorHandler.getInstance().calculatePlayerColors(p);
@@ -90,10 +90,10 @@ public class TownListener implements Listener {
         Player p = e.getKickedResident().getPlayer();
         if (p == null) return;
 
-        for (War war : WarController.getInstance().getTownWars(town)) {
-            Side side = war.getTownSide(town);
+        for (War war : WarController.getInstance().getWars(town)) {
+            Side side = war.getSide(town);
             if (side == null) continue;
-            side.removePlayer(p);
+            side.remove(p);
         }
 
         NameColorHandler.getInstance().calculatePlayerColors(p);
@@ -125,7 +125,7 @@ public class TownListener implements Listener {
         Town town = e.getRemainingTown();
         Town town2 = e.getSuccumbingTown();
 
-        if (WarController.getInstance().isTownInAnyWars(town) || WarController.getInstance().isTownInAnyWars(town2)) {
+        if (WarController.getInstance().isInAnyWars(town) || WarController.getInstance().isInAnyWars(town2)) {
             e.setCancelMessage("You can't merge towns while they are in a war.");
             e.setCancelled(true);
         }
@@ -140,11 +140,11 @@ public class TownListener implements Listener {
     private void onRuin(TownRuinedEvent e) {
         Town town = e.getTown();
 
-        for (War war : WarController.getInstance().getTownWars(town)) {
-            Side side = war.getTownSide(town);
+        for (War war : WarController.getInstance().getWars(town)) {
+            Side side = war.getSide(town);
             if (side == null) continue;
-            war.unsurrenderTown(town);
-            side.removeTown(town);
+            war.unsurrender(town);
+            side.remove(town);
             side.processSurrenders();
         }
     }

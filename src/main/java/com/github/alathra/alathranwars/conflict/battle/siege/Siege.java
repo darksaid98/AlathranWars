@@ -1,10 +1,13 @@
 package com.github.alathra.alathranwars.conflict.battle.siege;
 
 import com.github.alathra.alathranwars.AlathranWars;
+import com.github.alathra.alathranwars.conflict.battle.AbstractBattleTeamManagement;
 import com.github.alathra.alathranwars.conflict.battle.Battle;
+import com.github.alathra.alathranwars.conflict.battle.phase.BattlePhaseManager;
+import com.github.alathra.alathranwars.conflict.battle.progress.BattleProgressManager;
 import com.github.alathra.alathranwars.conflict.war.War;
 import com.github.alathra.alathranwars.conflict.war.side.Side;
-import com.github.alathra.alathranwars.db.DatabaseQueries;
+import com.github.alathra.alathranwars.database.DatabaseQueries;
 import com.github.alathra.alathranwars.enums.CaptureProgressDirection;
 import com.github.alathra.alathranwars.enums.battle.*;
 import com.github.alathra.alathranwars.events.battle.BattleResultEvent;
@@ -20,21 +23,21 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * The type Siege.
+ * @author darksaid98
  */
-public class Siege implements Battle {
+public class Siege extends AbstractBattleTeamManagement implements Battle {
     public static final Duration SIEGE_DURATION = Duration.ofMinutes(60);
     public static final int MAX_SIEGE_PROGRESS_MINUTES = 8; // How many minutes attackers will need to be on point uncontested for to reach 100%
     public static final int MAX_SIEGE_PROGRESS = 60 * 10 * MAX_SIEGE_PROGRESS_MINUTES; // On reaching this, the attackers win. 10 points is added per second
@@ -45,19 +48,15 @@ public class Siege implements Battle {
     public static final int BATTLEFIELD_START_MIN_RANGE = 75;
     public static final double SIEGE_VICTORY_MONEY = 2500.0;
 
-    private final @NotNull UUID uuid;
+    // Battle fields
+    private final UUID uuid;
     private final static BattleType battleType = BattleType.SIEGE;
-    private final Set<Player> attackers = new HashSet<>(); // Players inside battlefield
-    private final Set<Player> defenders = new HashSet<>(); // Players inside battlefield
-    private final Set<Player> attackerPlayers = new HashSet<>();
-    private final Set<Player> defenderPlayers = new HashSet<>();
-    private final Set<UUID> attackerPlayersIncludingOffline = new HashSet<>();
-    private final Set<UUID> defenderPlayersIncludingOffline = new HashSet<>();
-    private @NotNull War war; // War which siege belongs to
+    private final War war; // War which siege belongs to
+
+    // Misc fields
     private Instant endTime;
-    private int siegeProgress = 0;
     private Instant lastTouched;
-    private SiegeRunnable siegeRunnable;
+    private SiegeRunnable battleRunnable;
     private Town town; // Town of the siege
     private boolean side1AreAttackers; // bool of if side1 being attacker
     private OfflinePlayer siegeLeader;
@@ -66,6 +65,10 @@ public class Siege implements Battle {
     private @Nullable BossBar activeBossBar = null;
     private boolean stopped = false; // Used to track if the siege has been already deleted
 
+    // Progress / Phases
+    private final BattleProgressManager progressManager; // Represents the capture progress of the capture point in this case
+    private final BattlePhaseManager<SiegePhase> phaseManager; // Controls the current stage of the siege
+
     /**
      * Instantiates a new Siege. Used when creating a new siege.
      *
@@ -73,7 +76,12 @@ public class Siege implements Battle {
      * @param town        the town
      * @param siegeLeader the siege leader
      */
-    public Siege(final @NotNull War war, final Town town, Player siegeLeader) {
+    public Siege(
+        War war,
+        Town town,
+        Player siegeLeader
+    ) {
+        super();
         uuid = UUID.randomUUID();
 
         endTime = Instant.now().plus(SIEGE_DURATION);
@@ -82,17 +90,18 @@ public class Siege implements Battle {
         this.war = war;
         this.town = town;
         this.siegeLeader = siegeLeader;
+        this.progressManager = new BattleProgressManager(0, MAX_SIEGE_PROGRESS);
+        this.phaseManager = new BattlePhaseManager<>(SiegePhase.SIEGE, 0, Instant.now());
 
-        side1AreAttackers = war.getTownSide(town).getTeam().equals(BattleTeam.SIDE_2);
+        side1AreAttackers = war.getSide(town).getTeam().equals(BattleTeam.SIDE_2);
 
         if (getSide1AreAttackers()) {
-            attackerPlayersIncludingOffline.addAll(getWar().getSide1().getPlayersIncludingOffline());
-            defenderPlayersIncludingOffline.addAll(getWar().getSide2().getPlayersIncludingOffline());
+            getWar().getSide1().getPlayers().forEach(p -> addPlayer(p, BattleSide.ATTACKER));
+            getWar().getSide2().getPlayers().forEach(p -> addPlayer(p, BattleSide.DEFENDER));
         } else {
-            attackerPlayersIncludingOffline.addAll(getWar().getSide2().getPlayersIncludingOffline());
-            defenderPlayersIncludingOffline.addAll(getWar().getSide1().getPlayersIncludingOffline());
+            getWar().getSide2().getPlayers().forEach(p -> addPlayer(p, BattleSide.ATTACKER));
+            getWar().getSide1().getPlayers().forEach(p -> addPlayer(p, BattleSide.DEFENDER));
         }
-        calculateOnlinePlayers();
     }
 
     /**
@@ -105,36 +114,55 @@ public class Siege implements Battle {
      * @param endTime                         the end time
      * @param lastTouched                     the last touched
      * @param siegeProgress                   the siege progress
-     * @param attackerPlayersIncludingOffline the attacker players including offline
-     * @param defenderPlayersIncludingOffline the defender players including offline
+     * @param attackers the attacker players including offline
+     * @param defenders the defender players including offline
      */
-    public Siege(War war, @NotNull UUID uuid, Town town, OfflinePlayer siegeLeader, Instant endTime, Instant lastTouched, int siegeProgress, Set<UUID> attackerPlayersIncludingOffline, Set<UUID> defenderPlayersIncludingOffline) {
+    public Siege(
+        War war,
+        UUID uuid,
+        Town town,
+        OfflinePlayer siegeLeader,
+        Instant endTime,
+        Instant lastTouched,
+        int siegeProgress,
+        Set<UUID> attackers,
+        Set<UUID> defenders,
+        SiegePhase phase,
+        int phaseProgress,
+        Instant phaseStartTime
+    ) {
+        super();
         this.war = war;
         this.uuid = uuid;
         this.town = town;
         this.siegeLeader = siegeLeader;
         this.endTime = endTime;
         this.lastTouched = lastTouched;
-        this.siegeProgress = siegeProgress;
-        this.attackerPlayersIncludingOffline.addAll(attackerPlayersIncludingOffline);
-        this.defenderPlayersIncludingOffline.addAll(defenderPlayersIncludingOffline);
+        this.progressManager = new BattleProgressManager(siegeProgress, MAX_SIEGE_PROGRESS);
+        this.phaseManager = new BattlePhaseManager<>(phase, phaseProgress, phaseStartTime);
+        attackers.stream()
+            .map(Bukkit::getOfflinePlayer)
+            .forEach(p -> addPlayer(p, BattleSide.ATTACKER));
+        defenders.stream()
+            .map(Bukkit::getOfflinePlayer)
+            .forEach(p -> addPlayer(p, BattleSide.DEFENDER));
 
-        side1AreAttackers = war.getTownSide(town).getTeam().equals(BattleTeam.SIDE_2);
-
-        calculateOnlinePlayers();
+        side1AreAttackers = war.getSide(town).getTeam().equals(BattleTeam.SIDE_2);
     }
 
     /**
      * Starts the battle
      */
+    @ApiStatus.Internal
     public void start() {
         if (!new PreBattleStartEvent(war, this, BattleType.SIEGE).callEvent()) return;
 
-        siegeRunnable = new SiegeRunnable(this);
+        battleRunnable = new SiegeRunnable(this);
         stopped = false;
 
         if (!war.isEventWar())
-            AlathranWars.econ.withdrawPlayer(siegeLeader, SIEGE_VICTORY_MONEY);
+            if (AlathranWars.getVaultHook().isEconomyLoaded())
+                AlathranWars.getVaultHook().getEconomy().withdrawPlayer(siegeLeader, SIEGE_VICTORY_MONEY);
 
         new BattleStartEvent(war, this).callEvent();
     }
@@ -142,10 +170,11 @@ public class Siege implements Battle {
     /**
      * Resumes the battle (after a server restart e.t.c.)
      */
+    @ApiStatus.Internal
     public void resume() {
         if (!new PreBattleStartEvent(war, this, BattleType.SIEGE).callEvent()) return;
 
-        siegeRunnable = new SiegeRunnable(this, getSiegeProgress());
+        battleRunnable = new SiegeRunnable(this, getProgressManager().get());
         stopped = false;
 
         new BattleStartEvent(war, this).callEvent();
@@ -156,10 +185,11 @@ public class Siege implements Battle {
      * </p>
      * Internal stop method for battles which triggers cleanup methods
      */
+    @ApiStatus.Internal
     public void stop() {
         if (stopped) return;
         stopped = true;
-        siegeRunnable.cancel();
+        battleRunnable.cancel();
         DatabaseQueries.deleteSiege(this); // TODO Run as latent event?
         war.removeSiege(this); // TODO Run as latent event?
     }
@@ -173,7 +203,8 @@ public class Siege implements Battle {
         if (!new PreBattleResultEvent(war, this, BattleType.SIEGE, BattleVictor.ATTACKER, reason).callEvent()) return;
 
         if (!war.isEventWar()) {
-            AlathranWars.econ.depositPlayer(siegeLeader, SIEGE_VICTORY_MONEY);
+            if (AlathranWars.getVaultHook().isEconomyLoaded())
+                AlathranWars.getVaultHook().getEconomy().depositPlayer(siegeLeader, SIEGE_VICTORY_MONEY);
             double amt;
 
             if (town.getAccount().getHoldingBalance() > 10000.0) {
@@ -184,7 +215,8 @@ public class Siege implements Battle {
                 amt = SIEGE_VICTORY_MONEY;
             }
 
-            AlathranWars.econ.depositPlayer(siegeLeader, amt);
+            if (AlathranWars.getVaultHook().isEconomyLoaded())
+                AlathranWars.getVaultHook().getEconomy().depositPlayer(siegeLeader, amt);
         }
 
         new BattleResultEvent(war, this, BattleVictor.ATTACKER, reason).callEvent();
@@ -230,30 +262,12 @@ public class Siege implements Battle {
         this.lastTouched = lastTouched;
     }
 
-    public int getSiegeProgress() {
-        return siegeProgress;
-    }
-
-    public void setSiegeProgress(int siegeProgress) {
-        if (siegeProgress < 0) {
-            siegeProgress = 0;
-        } else if (siegeProgress > MAX_SIEGE_PROGRESS) {
-            siegeProgress = MAX_SIEGE_PROGRESS;
-        }
-        this.siegeProgress = siegeProgress;
+    public BattleProgressManager getProgressManager() {
+        return progressManager;
     }
 
     public float getSiegeProgressPercentage() {
-        return (getSiegeProgress() * 1.0f) / MAX_SIEGE_PROGRESS;
-    }
-
-    @NotNull
-    public War getWar() {
-        return war;
-    }
-
-    public void setWar(final War war) {
-        this.war = war;
+        return (getProgressManager().get() * 1.0f) / MAX_SIEGE_PROGRESS;
     }
 
     @NotNull
@@ -268,7 +282,6 @@ public class Siege implements Battle {
     /**
      * Gets attacker name string
      */
-    @NotNull
     public Side getAttackerSide() {
         return getSide1AreAttackers() ? war.getSide1() : war.getSide2();
     }
@@ -276,7 +289,6 @@ public class Siege implements Battle {
     /**
      * Gets defender name string
      */
-    @NotNull
     public Side getDefenderSide() {
         return getSide1AreAttackers() ? war.getSide2() : war.getSide1();
     }
@@ -287,11 +299,11 @@ public class Siege implements Battle {
         if (activeBossBar == null)
             createNewDisplayBar();
 
-        for (@NotNull Player p : Bukkit.getOnlinePlayers()) {
+        for (Player p : Bukkit.getOnlinePlayers()) {
             p.hideBossBar(activeBossBar);
         }
 
-        for (@Nullable Player p : this.getPlayersOnBattlefield()) {
+        for (Player p : this.getPlayersOnBattlefield()) {
             if (p != null)
                 p.showBossBar(activeBossBar);
         }
@@ -341,7 +353,7 @@ public class Siege implements Battle {
     }
 
     public void createNewDisplayBar() {
-        final @NotNull Component text = ColorParser.of("<gray>Capture Progress: <yellow><progress> <gray>Time: <yellow><time>min")
+        final Component text = ColorParser.of("<gray>Capture Progress: <yellow><progress> <gray>Time: <yellow><time>min")
             .parseMinimessagePlaceholder("progress", "%.0f%%".formatted(getSiegeProgressPercentage() * 100))
             .parseMinimessagePlaceholder("time", String.valueOf(Duration.between(Instant.now(), getEndTime()).toMinutesPart()))
             .build();
@@ -361,7 +373,8 @@ public class Siege implements Battle {
 
     // SECTION UUID
 
-    public @NotNull UUID getUUID() {
+    @Override
+    public UUID getUUID() {
         return uuid;
     }
 
@@ -378,11 +391,12 @@ public class Siege implements Battle {
     /**
      * Equals boolean.
      *
-     * @param siege the siege
+     * @param battle the battle
      * @return the boolean
      */
-    public boolean equals(@NotNull Siege siege) {
-        return getUUID().equals(siege.getUUID());
+    @Override
+    public boolean equals(Battle battle) {
+        return getUUID().equals(battle.getUUID());
     }
 
     // SECTION BattleType
@@ -399,7 +413,7 @@ public class Siege implements Battle {
         return homeBlock;
     }
 
-    public void setHomeBlock(TownBlock homeBlock) {
+    public void setHomeBlock(@Nullable TownBlock homeBlock) {
         this.homeBlock = homeBlock;
     }
 
@@ -408,7 +422,7 @@ public class Siege implements Battle {
         return townSpawn;
     }
 
-    public void setTownSpawn(Location townSpawn) {
+    public void setTownSpawn(@Nullable Location townSpawn) {
         this.townSpawn = townSpawn;
     }
 
@@ -420,29 +434,8 @@ public class Siege implements Battle {
         this.side1AreAttackers = side1AreAttackers;
     }
 
-    @NotNull
-    public Set<Player> getPlayersOnBattlefield() {
-        return Stream.concat(attackers.stream(), defenders.stream()).collect(Collectors.toSet());
-    }
-
-    @NotNull
-    public Set<Player> getAttackers() {
-        return attackers;
-    }
-
-    @NotNull
-    public Set<Player> getDefenders() {
-        return defenders;
-    }
-
-    @NotNull
-    public Set<Player> getAttackerPlayers() {
-        return attackerPlayers;
-    }
-
-    @NotNull
-    public Set<Player> getDefenderPlayers() {
-        return defenderPlayers;
+    public List<Player> getPlayersOnBattlefield() {
+        return Stream.concat(getActivePlayers(BattleSide.ATTACKER).stream(), getActivePlayers(BattleSide.DEFENDER).stream()).toList();
     }
 
     @NotNull
@@ -470,179 +463,9 @@ public class Siege implements Battle {
         endTime = time;
     }
 
-    // SECTION Player management
+    // SECTION Phase Management
 
-    public boolean isPlayerInSiege(UUID uuid) {
-        return attackerPlayersIncludingOffline.contains(uuid) || defenderPlayersIncludingOffline.contains(uuid);
-    }
-
-    public boolean isPlayerInSiege(@NotNull Player p) {
-        return isPlayerInSiege(p.getUniqueId());
-    }
-
-    public @NotNull BattleSide getPlayerSideInSiege(UUID uuid) {
-        if (attackerPlayersIncludingOffline.contains(uuid))
-            return BattleSide.ATTACKER;
-
-        if (defenderPlayersIncludingOffline.contains(uuid))
-            return BattleSide.DEFENDER;
-
-        return BattleSide.SPECTATOR;
-    }
-
-    public @NotNull BattleSide getPlayerSideInSiege(@NotNull Player p) {
-        return getPlayerSideInSiege(p.getUniqueId());
-    }
-
-    public void addPlayer(@NotNull Player p, @NotNull BattleSide side) {
-        addPlayer(p.getUniqueId(), side);
-    }
-
-    public void addPlayer(@NotNull OfflinePlayer offlinePlayer, @NotNull BattleSide side) {
-        if (offlinePlayer.hasPlayedBefore())
-            addPlayer(offlinePlayer.getUniqueId(), side);
-    }
-
-    public void addPlayer(@NotNull UUID uuid, @NotNull BattleSide side) {
-        if (isPlayerInSiege(uuid)) return;
-
-        switch (side) {
-            case ATTACKER -> attackerPlayersIncludingOffline.add(uuid);
-            case DEFENDER -> defenderPlayersIncludingOffline.add(uuid);
-        }
-
-        if (Bukkit.getOfflinePlayer(uuid).isOnline()) {
-            final @Nullable Player p = Bukkit.getPlayer(uuid);
-            addOnlinePlayer(p, side);
-        }
-    }
-
-    public void addOnlinePlayer(Player p, @NotNull BattleSide side) {
-        switch (side) {
-            case ATTACKER -> attackerPlayers.add(p);
-            case DEFENDER -> defenderPlayers.add(p);
-        }
-    }
-
-    public void removePlayer(@NotNull Player p) {
-        removePlayer(p.getUniqueId());
-    }
-
-    public void removePlayer(@NotNull OfflinePlayer offlinePlayer) {
-        if (offlinePlayer.hasPlayedBefore())
-            removePlayer(offlinePlayer.getUniqueId());
-    }
-
-    public void removePlayer(@NotNull UUID uuid) {
-        if (!isPlayerInSiege(uuid)) return;
-
-        final @NotNull BattleSide side = getPlayerSideInSiege(uuid);
-
-        switch (side) {
-            case ATTACKER -> attackerPlayersIncludingOffline.remove(uuid);
-            case DEFENDER -> defenderPlayersIncludingOffline.remove(uuid);
-        }
-
-        if (Bukkit.getOfflinePlayer(uuid).isOnline()) {
-            final @Nullable Player p = Bukkit.getPlayer(uuid);
-            removeOnlinePlayer(p, side);
-        }
-    }
-
-    public void removeOnlinePlayer(Player p, @NotNull BattleSide side) {
-        switch (side) {
-            case ATTACKER -> attackerPlayers.remove(p);
-            case DEFENDER -> defenderPlayers.remove(p);
-        }
-    }
-
-    public Set<UUID> getAttackerPlayersIncludingOffline() {
-        return attackerPlayersIncludingOffline;
-    }
-
-    public Set<UUID> getDefenderPlayersIncludingOffline() {
-        return defenderPlayersIncludingOffline;
-    }
-
-    public void calculateOnlinePlayers() {
-        final @NotNull Set<Player> onlineAttackers = attackerPlayersIncludingOffline.stream()
-            .filter(uuid1 -> Bukkit.getOfflinePlayer(uuid1).isOnline())
-            .map(Bukkit::getPlayer)
-            .collect(Collectors.toSet());
-
-        attackerPlayers.clear();
-        attackerPlayers.addAll(onlineAttackers);
-
-        final @NotNull Set<Player> onlineDefenders = defenderPlayersIncludingOffline.stream()
-            .filter(uuid1 -> Bukkit.getOfflinePlayer(uuid1).isOnline())
-            .map(Bukkit::getPlayer)
-            .collect(Collectors.toSet());
-
-        defenderPlayers.clear();
-        defenderPlayers.addAll(onlineDefenders);
-    }
-
-    public void calculateBattlefieldPlayers(@NotNull Location location) {
-        final Set<Player> previousAttackersOnBattlefield = new HashSet<>(attackers);
-        final Set<Player> previousDefendersOnBattlefield = new HashSet<>(defenders);
-
-        final @NotNull Set<Player> attackersOnBattlefield = attackerPlayers.stream()
-            .filter(OfflinePlayer::isOnline)
-            .filter(p -> location.getWorld().equals(p.getLocation().getWorld()))
-            .filter(p -> location.distance(p.getLocation()) < BATTLEFIELD_RANGE)
-            .collect(Collectors.toSet());
-
-        attackers.clear();
-        attackers.addAll(attackersOnBattlefield);
-
-        final @NotNull Set<Player> defendersOnBattlefield = defenderPlayers.stream()
-            .filter(OfflinePlayer::isOnline)
-            .filter(p -> location.getWorld().equals(p.getLocation().getWorld()))
-            .filter(p -> location.distance(p.getLocation()) < BATTLEFIELD_RANGE)
-            .collect(Collectors.toSet());
-
-        defenders.clear();
-        defenders.addAll(defendersOnBattlefield);
-
-        // TODO Emit events for players leaving & entering the battlefield
-
-        // Leaving attackers
-        previousAttackersOnBattlefield.stream()
-            .filter(p -> p.isConnected() && !attackers.contains(p))
-            .collect(Collectors.toSet())
-            .forEach(p -> {
-                    // TODO Player left battlefield
-
-                }
-            );
-
-        // Entering attackers
-        attackers.stream()
-            .filter(p -> p.isConnected() && !previousAttackersOnBattlefield.contains(p))
-            .collect(Collectors.toSet())
-            .forEach(p -> {
-                    // TODO Player entered battlefield
-
-                }
-            );
-
-        // Leaving defenders
-        previousDefendersOnBattlefield.stream()
-            .filter(p -> p.isConnected() && !defenders.contains(p))
-            .collect(Collectors.toSet())
-            .forEach(p -> {
-                    // TODO Player left battlefield
-
-                }
-            );
-
-        // Entering defenders
-        defenders.stream()
-            .filter(p -> p.isConnected() && !previousDefendersOnBattlefield.contains(p))
-            .collect(Collectors.toSet())
-            .forEach(p -> {
-                    // TODO Player entered battlefield
-                }
-            );
+    public BattlePhaseManager<SiegePhase> getPhaseManager() {
+        return phaseManager;
     }
 }

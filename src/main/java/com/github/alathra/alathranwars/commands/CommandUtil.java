@@ -7,7 +7,6 @@ import com.github.alathra.alathranwars.conflict.war.WarController;
 import com.github.alathra.alathranwars.conflict.war.side.Side;
 import com.github.alathra.alathranwars.enums.CommandArgsSiege;
 import com.github.alathra.alathranwars.enums.CommandArgsWar;
-import com.github.alathra.alathranwars.hooks.TownyHook;
 import com.github.alathra.alathranwars.items.WarItemRegistry;
 import com.github.alathra.alathranwars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
@@ -31,10 +30,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -66,7 +62,7 @@ public class CommandUtil {
 
             return TownyAPI.getInstance().getNation(argNationName);
         }).replaceSuggestions(ArgumentSuggestions.stringCollection(info -> {
-            final @NotNull List<String> nationNames = TownyHook.getNations()
+            final @NotNull List<String> nationNames = TownyAPI.getInstance().getNations()
                 .stream()
                 .map(Nation::getName)
                 .sorted()
@@ -85,7 +81,7 @@ public class CommandUtil {
 
             return TownyAPI.getInstance().getTown(argTownName);
         }).replaceSuggestions(ArgumentSuggestions.stringCollection(info -> {
-            final @NotNull List<String> townNames = TownyHook.getTowns()
+            final @NotNull List<String> townNames = TownyAPI.getInstance().getTowns()
                 .stream()
                 .map(Town::getName)
                 .sorted()
@@ -107,17 +103,17 @@ public class CommandUtil {
 
             @Nullable Nation nation = TownyAPI.getInstance().getNation(argNationName);
 
-            if (war.getNations().contains(nation) || war.getSurrenderedNations().contains(nation))
+            if (war.getNations().contains(nation) || war.getNationsSurrendered().contains(nation))
                 return nation;
 
             throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The nation is already at war!").parseLegacy().build());
         }).replaceSuggestions(ArgumentSuggestions.stringCollection(info -> {
-            final @NotNull List<String> nationNames = TownyHook.getNations()
+            final @NotNull List<String> nationNames = TownyAPI.getInstance().getNations()
                 .stream()
                 .map(Nation::getName)
                 .sorted()
                 .collect(Collectors.toList());
-            final @NotNull List<String> townNames = TownyHook.getTowns()
+            final @NotNull List<String> townNames = TownyAPI.getInstance().getTowns()
                 .stream()
                 .map(Town::getName)
                 .sorted()
@@ -131,7 +127,7 @@ public class CommandUtil {
 
             final @NotNull List<String> removeNames = Stream.concat( // Create a list of all nations in war
                 war.getNations().stream().map(Nation::getName),
-                war.getSurrenderedNations().stream().map(Nation::getName)
+                war.getNationsSurrendered().stream().map(Nation::getName)
             ).toList();
 
             nationNames.removeAll(removeNames);
@@ -152,12 +148,12 @@ public class CommandUtil {
 
             @Nullable Town town = TownyAPI.getInstance().getTown(argTownName);
 
-            if (war.getTowns().contains(town) || war.getSurrenderedTowns().contains(town))
+            if (war.getTowns().contains(town) || war.getTownsSurrendered().contains(town))
                 return town;
 
             throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The town is already at war!").parseLegacy().build());
         }).replaceSuggestions(ArgumentSuggestions.stringCollection(info -> {
-            final @NotNull List<String> townNames = TownyHook.getTowns()
+            final @NotNull List<String> townNames = TownyAPI.getInstance().getTowns()
                 .stream()
                 .map(Town::getName)
                 .sorted()
@@ -169,7 +165,7 @@ public class CommandUtil {
 
             final @NotNull List<String> removeNames = Stream.concat( // Create a list of all nations & towns in war
                 war.getTowns().stream().map(Town::getName),
-                war.getSurrenderedTowns().stream().map(Town::getName)
+                war.getTownsSurrendered().stream().map(Town::getName)
             ).toList();
 
             townNames.removeAll(removeNames);
@@ -188,7 +184,7 @@ public class CommandUtil {
             if (nation == null)
                 throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The nation does not exist!").parseLegacy().build());
 
-            if (!war.isNationInWar(nation))
+            if (!war.isInWar(nation))
                 throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The nation is not in that war!").parseLegacy().build());
 
             return nation;
@@ -198,7 +194,7 @@ public class CommandUtil {
 
             return Stream.concat( // Create a list of all nations & towns in war
                 war.getNations().stream().map(Nation::getName),
-                war.getSurrenderedNations().stream().map(Nation::getName)
+                war.getNationsSurrendered().stream().map(Nation::getName)
             ).sorted().toList();
         }));
     }
@@ -213,7 +209,7 @@ public class CommandUtil {
             if (town == null)
                 throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The town does not exist!").parseLegacy().build());
 
-            if (!war.isTownInWar(town))
+            if (!war.isInWar(town))
                 throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The town is not in that war!").parseLegacy().build());
 
             return town;
@@ -223,7 +219,7 @@ public class CommandUtil {
 
             return Stream.concat( // Create a list of all nations & towns in war
                 war.getTowns().stream().map(Town::getName),
-                war.getSurrenderedTowns().stream().map(Town::getName)
+                war.getTownsSurrendered().stream().map(Town::getName)
             ).sorted().toList();
         }));
     }
@@ -256,12 +252,12 @@ public class CommandUtil {
                     .build()
             );
         }).replaceSuggestions(ArgumentSuggestions.stringCollection(info -> {
-            final @NotNull List<String> nationNames = TownyHook.getNations()
+            final @NotNull List<String> nationNames = TownyAPI.getInstance().getNations()
                 .stream()
                 .map(Nation::getName)
                 .sorted()
                 .collect(Collectors.toList());
-            final @NotNull List<String> townNames = TownyHook.getTowns()
+            final @NotNull List<String> townNames = TownyAPI.getInstance().getTowns()
                 .stream()
                 .map(Town::getName)
                 .sorted()
@@ -276,10 +272,10 @@ public class CommandUtil {
             final @NotNull List<String> removeNames = Stream.concat( // Create a list of all nations & towns in war
                 war.getNations().stream().map(Nation::getName),
                 Stream.concat(
-                    war.getSurrenderedNations().stream().map(Nation::getName),
+                    war.getNationsSurrendered().stream().map(Nation::getName),
                     Stream.concat(
                         war.getTowns().stream().map(Town::getName),
-                        war.getSurrenderedTowns().stream().map(Town::getName)
+                        war.getTownsSurrendered().stream().map(Town::getName)
                     )
                 )
             ).toList();
@@ -301,9 +297,9 @@ public class CommandUtil {
                 );
             }
 
-            final List<String> townNames = war.getTowns().stream().map(Town::getName).sorted().toList();
-            final List<String> nationNames = war.getNations().stream().map(Nation::getName).sorted().toList();
-            final List<String> playerNames = war.getPlayersIncludingOffline().stream()
+            final List<String> townNames = war.getTownsAll().stream().map(Town::getName).sorted().toList();
+            final List<String> nationNames = war.getNationsAll().stream().map(Nation::getName).sorted().toList();
+            final List<String> playerNames = war.getPlayersAll().stream()
                 .filter(offlinePlayer -> Instant.ofEpochMilli(offlinePlayer.getLastSeen()).isAfter(Instant.now().minus(Duration.ofDays(60)))) // Remove players that haven't been on in 60 days
                 .filter(p -> p.getName() != null)
                 .map(OfflinePlayer::getName)
@@ -330,12 +326,12 @@ public class CommandUtil {
                 return Collections.emptyList();
             }
 
-            final List<String> nationNames = war.getNations().stream().map(Nation::getName).sorted().toList();
-            final List<String> townNames = war.getTowns().stream().map(Town::getName).sorted().toList();
-            final List<String> playerNames = war.getPlayersIncludingOffline().stream()
+            final List<String> nationNames = war.getNationsAll().stream().map(Nation::getName).sorted().toList();
+            final List<String> townNames = war.getTownsAll().stream().map(Town::getName).sorted().toList();
+            final List<String> playerNames = war.getPlayersAll().stream()
                 .filter(offlinePlayer -> Instant.ofEpochMilli(offlinePlayer.getLastSeen()).isAfter(Instant.now().minus(Duration.ofDays(60)))) // Remove players that haven't been on in 60 days
-                .filter(p -> p.getName() != null)
                 .map(OfflinePlayer::getName)
+                .filter(Objects::nonNull)
                 .sorted()
                 .toList();
 
@@ -358,7 +354,7 @@ public class CommandUtil {
             if (town == null)
                 throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The town does not exist!").parseLegacy().build());
 
-            if (!war.isTownInWar(town))
+            if (!war.isInWar(town))
                 throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The town is not in that war!").parseLegacy().build());
 
             if (checkIfSieged) {
@@ -376,14 +372,14 @@ public class CommandUtil {
             final @NotNull List<String> townNames = new ArrayList<>();
 
             if (info.sender() instanceof Player p) {
-                if (war.getSide1().isPlayerOnSide(p)) {
+                if (war.getSide1().isOnSide(p)) {
                     townNames.addAll(war.getSide2().getTowns()
                         .stream()
                         .map(TownyObject::getName)
                         .sorted()
                         .toList()
                     );
-                } else if (war.getSide2().isPlayerOnSide(p)) {
+                } else if (war.getSide2().isOnSide(p)) {
                     townNames.addAll(war.getSide1().getTowns()
                         .stream()
                         .map(TownyObject::getName)
@@ -418,13 +414,13 @@ public class CommandUtil {
                         if (!(info.previousArgs().get(playerNodeName) instanceof Player player))
                             throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The player does not exist!").build());
 
-                        if (!siege.isPlayerInSiege(player))
+                        if (!siege.isPlayerParticipating(player))
                             throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The player is already in that war.").build());
                     } else {
                         if (!(info.sender() instanceof Player player))
                             throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>Only players can execute this command!").build());
 
-                        if (!siege.isPlayerInSiege(player))
+                        if (!siege.isPlayerParticipating(player))
                             throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You are already in this war.").build());
                     }
                 }
@@ -433,13 +429,13 @@ public class CommandUtil {
                         if (!(info.previousArgs().get(playerNodeName) instanceof Player player))
                             throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The player does not exist!").build());
 
-                        if (siege.isPlayerInSiege(player))
+                        if (siege.isPlayerParticipating(player))
                             throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The player is not in that war.").build());
                     } else {
                         if (!(info.sender() instanceof Player player))
                             throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>Only players can execute this command!").build());
 
-                        if (siege.isPlayerInSiege(player))
+                        if (siege.isPlayerParticipating(player))
                             throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You are not in that war.").build());
                     }
                 }
@@ -462,11 +458,11 @@ public class CommandUtil {
 
         if (isAdmin) {
             if (info.previousArgs().get(playerNodeName) instanceof Player player) {
-                siegeNames = WarController.getInstance().getSieges().stream().filter(siege -> !siege.isPlayerInSiege(player)).map(Siege::getName).toList();
+                siegeNames = WarController.getInstance().getSieges().stream().filter(siege -> !siege.isPlayerParticipating(player)).map(Siege::getName).toList();
             }
         } else {
             if (info.sender() instanceof Player player) {
-                siegeNames = WarController.getInstance().getSieges().stream().filter(siege -> !siege.isPlayerInSiege(player)).map(Siege::getName).toList();
+                siegeNames = WarController.getInstance().getSieges().stream().filter(siege -> !siege.isPlayerParticipating(player)).map(Siege::getName).toList();
             }
         }
 
@@ -478,11 +474,11 @@ public class CommandUtil {
 
         if (isAdmin) {
             if (info.previousArgs().get(playerNodeName) instanceof Player player) {
-                siegeNames = WarController.getInstance().getSieges().stream().filter(siege -> siege.isPlayerInSiege(player)).map(Siege::getName).toList();
+                siegeNames = WarController.getInstance().getSieges().stream().filter(siege -> siege.isPlayerParticipating(player)).map(Siege::getName).toList();
             }
         } else {
             if (info.sender() instanceof Player player) {
-                siegeNames = WarController.getInstance().getSieges().stream().filter(siege -> siege.isPlayerInSiege(player)).map(Siege::getName).toList();
+                siegeNames = WarController.getInstance().getSieges().stream().filter(siege -> siege.isPlayerParticipating(player)).map(Siege::getName).toList();
             }
         }
 
@@ -503,13 +499,13 @@ public class CommandUtil {
                         if (!(info.previousArgs().get(playerNodeName) instanceof Player player))
                             throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The player does not exist!").parseLegacy().build());
 
-                        if (!war.isPlayerInWar(player))
+                        if (!war.isInWar(player))
                             throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The player is already in that war.").parseLegacy().build());
                     } else {
                         if (!(info.sender() instanceof Player player))
                             throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>Only players can execute this command!").parseLegacy().build());
 
-                        if (!war.isPlayerInWar(player))
+                        if (!war.isInWar(player))
                             throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You are already in this war.").parseLegacy().build());
                     }
                 }
@@ -518,13 +514,13 @@ public class CommandUtil {
                         if (!(info.previousArgs().get(playerNodeName) instanceof Player player))
                             throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The player does not exist!").parseLegacy().build());
 
-                        if (war.isPlayerInWar(player))
+                        if (war.isInWar(player))
                             throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The player is not in that war.").parseLegacy().build());
                     } else {
                         if (!(info.sender() instanceof Player player))
                             throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>Only players can execute this command!").parseLegacy().build());
 
-                        if (war.isPlayerInWar(player))
+                        if (war.isInWar(player))
                             throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You are not in that war.").parseLegacy().build());
                     }
                 }
@@ -547,11 +543,11 @@ public class CommandUtil {
 
         if (isAdmin) {
             if (info.previousArgs().get(playerNodeName) instanceof Player player) {
-                warNames = WarController.getInstance().getWars().stream().filter(war -> !war.isPlayerInWar(player)).map(War::getName).toList();
+                warNames = WarController.getInstance().getWars().stream().filter(war -> !war.isInWar(player)).map(War::getName).toList();
             }
         } else {
             if (info.sender() instanceof Player player) {
-                warNames = WarController.getInstance().getWars().stream().filter(war -> !war.isPlayerInWar(player)).map(War::getName).toList();
+                warNames = WarController.getInstance().getWars().stream().filter(war -> !war.isInWar(player)).map(War::getName).toList();
             }
         }
 
@@ -563,11 +559,11 @@ public class CommandUtil {
 
         if (isAdmin) {
             if (info.previousArgs().get(playerNodeName) instanceof Player player) {
-                warNames = WarController.getInstance().getWars().stream().filter(war -> war.isPlayerInWar(player)).map(War::getName).toList();
+                warNames = WarController.getInstance().getWars().stream().filter(war -> war.isInWar(player)).map(War::getName).toList();
             }
         } else {
             if (info.sender() instanceof Player player) {
-                warNames = WarController.getInstance().getWars().stream().filter(war -> war.isPlayerInWar(player)).map(War::getName).toList();
+                warNames = WarController.getInstance().getWars().stream().filter(war -> war.isInWar(player)).map(War::getName).toList();
             }
         }
 
@@ -594,13 +590,13 @@ public class CommandUtil {
                     if (!(info.previousArgs().get(playerNodeName) instanceof Player player))
                         throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The player does not exist!").parseLegacy().build());
 
-                    if (side.getPlayers().contains(player))
+                    if (side.getPlayersOnline().contains(player))
                         throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>The player is already on that side.").parseLegacy().build());
                 } else {
                     if (!(info.sender() instanceof Player player))
                         throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>Only players can execute this command!").parseLegacy().build());
 
-                    if (side.getPlayers().contains(player))
+                    if (side.getPlayersOnline().contains(player))
                         throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>You are already on that side.").parseLegacy().build());
                 }
             }
@@ -616,14 +612,14 @@ public class CommandUtil {
                     if (isAdmin) {
                         if (info.previousArgs().get(playerNodeName) instanceof Player player) {
                             for (@NotNull Side side : war.getSides()) {
-                                if (!side.getPlayers().contains(player))
+                                if (!side.getPlayersOnline().contains(player))
                                     sideNames.add(side.getName());
                             }
                         }
                     } else {
                         if (info.sender() instanceof Player player) {
                             for (@NotNull Side side : war.getSides()) {
-                                if (!side.getPlayers().contains(player))
+                                if (!side.getPlayersOnline().contains(player))
                                     sideNames.add(side.getName());
                             }
                         }
@@ -655,7 +651,7 @@ public class CommandUtil {
             if (isTown && !war.getTowns().stream().map(Town::getName).toList().contains(argTargetName))
                 return argTargetName;
 
-            if (isPlayer && !war.getPlayers().stream().map(Player::getName).toList().contains(argTargetName))
+            if (isPlayer && !war.getPlayersOnline().stream().map(Player::getName).toList().contains(argTargetName))
                 return argTargetName;
 
             throw CustomArgument.CustomArgumentException.fromAdventureComponent(ColorParser.of(UtilsChat.getPrefix() + "<red>Invalid target.").build());
@@ -665,7 +661,7 @@ public class CommandUtil {
 
                 // Get all participants in war into list
                 final List<String> inWar = Stream.concat(
-                    war.getPlayers().stream().map(Player::getName),
+                    war.getPlayersOnline().stream().map(Player::getName),
                     Stream.concat(
                         war.getNations().stream().map(Nation::getName),
                         war.getTowns().stream().map(Town::getName)

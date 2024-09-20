@@ -5,7 +5,7 @@ import com.github.alathra.alathranwars.conflict.war.WarBuilder;
 import com.github.alathra.alathranwars.conflict.war.WarController;
 import com.github.alathra.alathranwars.conflict.war.side.Side;
 import com.github.alathra.alathranwars.conflict.war.side.SideCreationException;
-import com.github.alathra.alathranwars.hooks.NameColorHandler;
+import com.github.alathra.alathranwars.hook.NameColorHandler;
 import com.github.alathra.alathranwars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import com.palmergames.bukkit.towny.TownyAPI;
@@ -249,8 +249,8 @@ public class WarCommands {
 
         if (!war.isEventWar()) {
             // Join nation into war
-            if (isArgNation && nation != null && !war.isNationInWar(nation) && (asAdmin || canKingJoin)) {
-                side.addNation(nation);
+            if (isArgNation && nation != null && !war.isInWar(nation) && (asAdmin || canKingJoin)) {
+                side.add(nation);
                 nation.getResidents().stream().filter(Resident::isOnline).map(Resident::getPlayer).toList().forEach(player -> NameColorHandler.getInstance().calculatePlayerColors(player));
                 Bukkit.broadcast(
                     ColorParser.of(
@@ -282,8 +282,8 @@ public class WarCommands {
             }
 
             // Join town into war
-            if (isArgTown && town != null && !war.isTownInWar(town) && (asAdmin || canMayorJoin)) {
-                side.addTown(town);
+            if (isArgTown && town != null && !war.isInWar(town) && (asAdmin || canMayorJoin)) {
+                side.add(town);
                 town.getResidents().stream().filter(Resident::isOnline).map(Resident::getPlayer).toList().forEach(player -> NameColorHandler.getInstance().getPlayerNameColor(player));
                 Bukkit.broadcast(
                     ColorParser.of(
@@ -316,9 +316,9 @@ public class WarCommands {
         }
 
         // Join player into war
-        if (isArgPlayer && targetPlayer != null && !war.isPlayerInWar(targetPlayer) && asAdmin) {
+        if (isArgPlayer && targetPlayer != null && !war.isInWar(targetPlayer) && asAdmin) {
             targetPlayer.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "You have joined the war.").build());
-            side.addPlayer(targetPlayer);
+            side.add(targetPlayer);
             NameColorHandler.getInstance().calculatePlayerColors(targetPlayer);
             final Title warTitle = Title.title(
                 ColorParser.of("<gradient:#D72A09:#B01F03><u><b>War")
@@ -367,10 +367,10 @@ public class WarCommands {
             final Location targetLocation = targetPlayer.getLocation();
             if (!location.getWorld().equals(targetLocation.getWorld())) continue;
             if (location.distance(targetLocation) > 25D) continue;
-            if (war.isPlayerInWar(targetPlayer)) continue;
+            if (war.isInWar(targetPlayer)) continue;
 
             targetPlayer.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "You have joined the war.").build());
-            side.addPlayer(targetPlayer);
+            side.add(targetPlayer);
             NameColorHandler.getInstance().calculatePlayerColors(targetPlayer);
             final Title warTitle = Title.title(
                 ColorParser.of("<gradient:#D72A09:#B01F03><u><b>War")
@@ -404,7 +404,7 @@ public class WarCommands {
         if (town == null)
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You are not in a town.").build());
 
-        @Nullable Side side = war.getTownSide(town);
+        @Nullable Side side = war.getSide(town);
         if (side == null)
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You are not in that war.").build());
 
@@ -415,7 +415,7 @@ public class WarCommands {
             // Has nation surrender permission
             argPlayer.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "You have surrendered the war for " + resNation.getName() + ".").build());
             Bukkit.broadcast(ColorParser.of(UtilsChat.getPrefix() + "The nation of " + resNation.getName() + " has surrendered!").build());
-            war.surrenderNation(resNation);
+            war.surrender(resNation);
         } else if (resTown == null) {
             // Cannot surrender nation involvement
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You cannot surrender for your nation.").build());
@@ -426,7 +426,7 @@ public class WarCommands {
             argPlayer.sendMessage(ColorParser.of(UtilsChat.getPrefix() + "You have surrendered the war for " + resTown.getName() + ".").build());
             Bukkit.broadcast(ColorParser.of(UtilsChat.getPrefix() + "The town of " + resTown.getName() + " has surrendered!").build());
             war.cancelSieges(resTown);
-            war.surrenderTown(resTown);
+            war.surrender(resTown);
         } else {
             // No perms
             throw CommandAPIBukkit.failWithAdventureComponent(ColorParser.of("<red>You cannot surrender war for your town.").build());
@@ -447,26 +447,26 @@ public class WarCommands {
         Town town = TownyAPI.getInstance().getTown(uuid);
         OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
 
-        Side sideNation = war.getNationSide(nation);
-        Side sideTown = war.getTownSide(town);
+        Side sideNation = war.getSide(nation);
+        Side sideTown = war.getSide(town);
         Side sidePlayer = war.getPlayerSide(uuid);
 
         if (isNation && sideNation != null) {
-            sideNation.kickNation(nation);
+            sideNation.kick(nation);
             p.sendMessage(ColorParser.of("Target yeeted.").build());
             nation.getResidents().stream().filter(Resident::isOnline).map(Resident::getPlayer).forEach(player1 -> NameColorHandler.getInstance().calculatePlayerColors(player1));
             return;
         }
 
         if (isTown && sideTown != null) {
-            sideTown.kickTown(town);
+            sideTown.kick(town);
             p.sendMessage(ColorParser.of("Target yeeted.").build());
             town.getResidents().stream().filter(Resident::isOnline).map(Resident::getPlayer).forEach(player1 -> NameColorHandler.getInstance().calculatePlayerColors(player1));
             return;
         }
 
         if (isPlayer && sidePlayer != null) {
-            sidePlayer.kickPlayer(player.getUniqueId());
+            sidePlayer.kick(player.getUniqueId());
             p.sendMessage(ColorParser.of("Target yeeted.").build());
             if (player.getPlayer() != null)
                 NameColorHandler.getInstance().calculatePlayerColors(player.getPlayer());
@@ -509,9 +509,9 @@ public class WarCommands {
         for (Side side : war.getSides()) {
             msg.append("\n<white><bold>%s<reset>".formatted(side.getName()));
             msg.append("\n <grey>Score: <green>%s".formatted(side.getScore()));
-            msg.append("\n <grey>Nations: <green>%s<grey>/<red>%s".formatted(side.getNations().size(), side.getNations().size() + side.getSurrenderedNations().size()));
-            msg.append("\n <grey>Towns: <green>%s<grey>/<red>%s".formatted(side.getTowns().size(), side.getTowns().size() + side.getSurrenderedTowns().size()));
-            msg.append("\n <grey>Players: <green>%s<grey>/<red>%s".formatted(side.getPlayersIncludingOffline().size(), side.getPlayersIncludingOffline().size() + side.getSurrenderedPlayersIncludingOffline().size()));
+            msg.append("\n <grey>Nations: <green>%s<grey>/<red>%s".formatted(side.getNations().size(), side.getNations().size() + side.getNationsSurrendered().size()));
+            msg.append("\n <grey>Towns: <green>%s<grey>/<red>%s".formatted(side.getTowns().size(), side.getTowns().size() + side.getTownsSurrendered().size()));
+            msg.append("\n <grey>Players: <green>%s<grey>/<red>%s".formatted(side.getPlayersAll().size(), side.getPlayersAll().size() + side.getPlayersSurrendered().size()));
             msg.append("\n");
         }
 

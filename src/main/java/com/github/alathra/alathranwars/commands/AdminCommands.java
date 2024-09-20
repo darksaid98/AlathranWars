@@ -1,7 +1,7 @@
 package com.github.alathra.alathranwars.commands;
 
 import com.github.alathra.alathranwars.AlathranWars;
-import com.github.alathra.alathranwars.hooks.NameColorHandler;
+import com.github.alathra.alathranwars.hook.NameColorHandler;
 import com.github.alathra.alathranwars.items.WarItemRegistry;
 import com.github.alathra.alathranwars.utility.UtilsChat;
 import com.github.milkdrinkers.colorparser.ColorParser;
