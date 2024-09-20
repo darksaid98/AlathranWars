@@ -88,7 +88,7 @@ public class BlockBreakPlaceListener implements Listener {
         if (!Utils.isOnSiegeBattlefield(e.getPlayer(), siege)) return;
 
         final boolean isInsideTownClaims = e.hasTownBlock();
-        final boolean isDefender = siege.getPlayerSideInSiege(e.getPlayer()).equals(BattleSide.DEFENDER);
+        final boolean isDefender = siege.getPlayerBattleSide(e.getPlayer()).equals(BattleSide.DEFENDER);
 
         // Allow destroying beds anywhere
         if (DESTROY_GLOBAL.contains(e.getMaterial())) {
@@ -122,7 +122,7 @@ public class BlockBreakPlaceListener implements Listener {
         if (!Utils.isOnSiegeBattlefield(e.getPlayer(), siege)) return;
 
         final boolean isInsideClaims = e.hasTownBlock();
-        final boolean isDefender = siege.getPlayerSideInSiege(e.getPlayer()).equals(BattleSide.DEFENDER);
+        final boolean isDefender = siege.getPlayerBattleSide(e.getPlayer()).equals(BattleSide.DEFENDER);
 
         final boolean isDefenderAllowed = (!isInsideClaims || !e.getTownBlock().isOutpost()) && isDefender; // Defenders can build on the battlefield and in towns
         final boolean isAttackerAllowed = (!isInsideClaims || e.getTownBlock().isOutpost()) && !isDefender; // Attackers can build on the battlefield and in outposts

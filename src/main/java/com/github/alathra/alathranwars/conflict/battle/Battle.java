@@ -1,40 +1,58 @@
 package com.github.alathra.alathranwars.conflict.battle;
 
+import com.github.alathra.alathranwars.conflict.IUnique;
+import com.github.alathra.alathranwars.conflict.war.War;
 import com.github.alathra.alathranwars.enums.battle.BattleType;
 import com.github.alathra.alathranwars.enums.battle.BattleVictoryReason;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.ApiStatus;
 
-import java.util.UUID;
+public interface Battle extends IUnique<Battle> {
+    War war = null;
 
-public interface Battle {
-    void start(); // Initiates battle
-
-    void stop(); // Ends battle
-
-    void resume(); // Resume battle after server restart or plugin reload
-
-    void attackersWin(BattleVictoryReason reason); // A Attacker victory
-
-    void defendersWin(BattleVictoryReason reason); // A Defender victory
-
-    void equalWin(BattleVictoryReason reason); // A Draw
-
-
-    UUID uuid = null; // Battle UUID
-
-    default @NotNull UUID getUUID() {
-        return uuid;
+    default War getWar() {
+        return war;
     }
 
     /**
-     * Equals boolean.
-     *
-     * @param uuid the uuid
-     * @return the boolean
+     * Starts the battle
      */
-    default boolean equals(UUID uuid) {
-        return getUUID().equals(uuid);
-    }
+    @ApiStatus.Internal
+    void start();
+
+    /**
+     * Resumes the battle (after a server restart e.t.c.)
+     */
+    @ApiStatus.Internal
+    void resume();
+
+    /**
+     * Stops the battle
+     * </p>
+     * Internal stop method for battles which triggers cleanup methods
+     */
+    @ApiStatus.Internal
+    void stop(); // Ends battle
+
+    /**
+     * Stop a battle in favor of the attackers
+     *
+     * @param reason what triggered the end
+     */
+    void attackersWin(BattleVictoryReason reason); // A Attacker victory
+
+    /**
+     * Stop a battle in favor of the defenders
+     *
+     * @param reason what triggered the end
+     */
+    void defendersWin(BattleVictoryReason reason); // A Defender victory
+
+    /**
+     * End a battle in favor of no one
+     *
+     * @param reason what triggered the end
+     */
+    void equalWin(BattleVictoryReason reason); // A Draw
 
     /**
      * Equals boolean.
@@ -42,7 +60,7 @@ public interface Battle {
      * @param battle the battle
      * @return the boolean
      */
-    default boolean equals(@NotNull Battle battle) {
+    default boolean equals(Battle battle) {
         return getUUID().equals(battle.getUUID());
     }
 

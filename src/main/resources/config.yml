@@ -1,19 +1,8 @@
-#Minimum time in days a player must have joined ago to join any war or event.
-#Set to 0 to disable check
-minimumPlayerAge: 4
-#Minimum playtime in hours a player must have in hours to join a war/siege/raid
-#Set to 0 to disable check
-minimumPlayTime: 12
-#How long should a bettering ram open a door (in seconds)
-batteringRamEffectiveness: 10
+# Update Checker Settings
+update-checker:
+  enable: true
+  console: true # Post message to console
+  op: true # Send update notification to opped players on join
 
-# Database Settings
-db:
-  type: "h2" # Available types: "hsqldb", "h2", "mysql", "mariadb"
-  prefix: "wars_" # The table prefix
-  host: "127.0.0.1"
-  port: 3306
-  database: "database_name"
-  user: "name"
-  pass: "123"
-  repair: false
+# Translation, specify the language file to use, for example `en-US` which will load `/translations/en-US.yml`
+translation: "en-US"

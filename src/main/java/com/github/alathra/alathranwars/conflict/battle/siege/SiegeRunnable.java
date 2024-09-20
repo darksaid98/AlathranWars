@@ -42,7 +42,7 @@ public class SiegeRunnable implements Runnable {
     public SiegeRunnable(@NotNull Siege siege) {
         this.siege = siege;
 
-        siege.setSiegeProgress(0);
+        siege.getProgressManager().set(0);
 
         siege.setHomeBlock(siege.getTown().getHomeBlockOrNull());
         siege.setTownSpawn(siege.getTown().getSpawnOrNull());
@@ -63,7 +63,7 @@ public class SiegeRunnable implements Runnable {
     public SiegeRunnable(@NotNull Siege siege, int siegeProgress) {
         this.siege = siege;
 
-        siege.setSiegeProgress(siegeProgress);
+        siege.getProgressManager().set(siegeProgress);
 
         siege.setHomeBlock(siege.getTown().getHomeBlockOrNull());
         siege.setTownSpawn(siege.getTown().getSpawnOrNull());
@@ -94,11 +94,14 @@ public class SiegeRunnable implements Runnable {
             town.setSpawn(townSpawn);
         }
 
+        if (townSpawn == null)
+            return;
+
         // Render beam
         startBeam();
 
         // Calculate battlefield players
-        siege.calculateBattlefieldPlayers(townSpawn.toCenterLocation());
+        siege.calculateBattlefieldPlayers(townSpawn.toCenterLocation(), BATTLEFIELD_RANGE, this.siege.getWar(), siege);
 
         // Progress the siege
         final int attackersOnPoint = getPeopleOnPoint(townSpawn, BattleSide.ATTACKER);
@@ -117,7 +120,7 @@ public class SiegeRunnable implements Runnable {
         }
 
         // Attackers captured the town
-        if (siege.getSiegeProgress() >= MAX_SIEGE_PROGRESS) {
+        if (siege.getProgressManager().get() >= MAX_SIEGE_PROGRESS) {
             cancel();
             siege.attackersWin(BattleVictoryReason.OPPONENT_LOST);
             return;
@@ -129,12 +132,12 @@ public class SiegeRunnable implements Runnable {
 
                 // If you have less than 5 people contesting you get (4 + excessPlayers) points per second
                 if (playerOnPointDiff < 5) {
-                    siege.setSiegeProgress(siege.getSiegeProgress() + (4 + playerOnPointDiff));
+                    siege.getProgressManager().set(siege.getProgressManager().get() + (4 + playerOnPointDiff));
                 } else {
-                    siege.setSiegeProgress(siege.getSiegeProgress() + 10);
+                    siege.getProgressManager().set(siege.getProgressManager().get() + 10);
                 }
             }
-            case DOWN -> siege.setSiegeProgress(siege.getSiegeProgress() - 10);
+            case DOWN -> siege.getProgressManager().set(siege.getProgressManager().get() - 10);
         }
 
         if (oldProgressDirection != progressDirection) {
@@ -188,10 +191,10 @@ public class SiegeRunnable implements Runnable {
         oldProgressDirection = progressDirection;
     }
 
-    public int getPeopleOnPoint(@NotNull Location townSpawn, @NotNull BattleSide battleSide) {
+    private int getPeopleOnPoint(Location townSpawn, BattleSide battleSide) {
         int onPoint = 0;
 
-        for (final @NotNull Player p : (battleSide.equals(BattleSide.ATTACKER) ? siege.getAttackers() : siege.getDefenders())) {
+        for (final Player p : (battleSide.equals(BattleSide.ATTACKER) ? siege.getActivePlayers(BattleSide.ATTACKER) : siege.getActivePlayers(BattleSide.DEFENDER))) {
             if (p.isDead())
                 continue;
 
@@ -206,7 +209,7 @@ public class SiegeRunnable implements Runnable {
         return onPoint;
     }
 
-    public @NotNull CaptureProgressDirection getSiegeProgressDirection(int attackersOnPoint, int defendersOnPoint) {
+    private CaptureProgressDirection getSiegeProgressDirection(int attackersOnPoint, int defendersOnPoint) {
         final boolean attackersAreOnPoint = attackersOnPoint > 0;
         final boolean defendersAreOnPoint = defendersOnPoint > 0;
 
@@ -220,12 +223,12 @@ public class SiegeRunnable implements Runnable {
 
             return CONTESTED;
         } else if (attackersAreOnPoint && !defendersAreOnPoint) {
-            if (siege.getSiegeProgress() == MAX_SIEGE_PROGRESS)
+            if (siege.getProgressManager().get() == MAX_SIEGE_PROGRESS)
                 return CONTESTED;
 
             return UP;
         } else {
-            if (siege.getSiegeProgress() == 0)
+            if (siege.getProgressManager().get() == 0)
                 return UNCONTESTED;
 
             // If the attackers haven't touched in a while, begin reverting progress

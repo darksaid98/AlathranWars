@@ -3,6 +3,7 @@ package com.github.alathra.alathranwars.listeners.siege;
 import com.github.alathra.alathranwars.conflict.battle.siege.Siege;
 import com.github.alathra.alathranwars.conflict.war.War;
 import com.github.alathra.alathranwars.conflict.war.side.Side;
+import com.github.alathra.alathranwars.enums.battle.BattleSide;
 import com.github.alathra.alathranwars.enums.battle.BattleType;
 import com.github.alathra.alathranwars.enums.battle.BattleVictoryReason;
 import com.github.alathra.alathranwars.events.battle.BattleResultEvent;
@@ -61,12 +62,13 @@ public class SiegeListener implements Listener {
             TITLE_TIMES
         );
 
-        siege.getDefenderPlayers().forEach(player -> {
+        
+        siege.getActivePlayers(BattleSide.DEFENDER).forEach(player -> {
             player.showTitle(defTitle);
             player.playSound(SOUND_GOATHORNS.get(new Random().nextInt(1, SOUND_GOATHORNS.size())));
         });
 
-        siege.getAttackerPlayers().forEach(player -> {
+        siege.getActivePlayers(BattleSide.ATTACKER).forEach(player -> {
             player.showTitle(attTitle);
             player.playSound(SOUND_GOATHORNS.get(new Random().nextInt(1, SOUND_GOATHORNS.size())));
         });
@@ -116,11 +118,11 @@ public class SiegeListener implements Listener {
                         .build(),
                     TITLE_TIMES
                 );
-                siege.getAttackers().forEach(player -> {
+                siege.getActivePlayers(BattleSide.ATTACKER).forEach(player -> {
                     player.showTitle(vicAttackTitle);
                     player.playSound(SOUND_VICTORY);
                 });
-                siege.getDefenders().forEach(player -> {
+                siege.getActivePlayers(BattleSide.DEFENDER).forEach(player -> {
                     player.showTitle(losAttackTitle);
                     player.playSound(SOUND_DEFEAT);
                 });
@@ -158,11 +160,11 @@ public class SiegeListener implements Listener {
                         .build(),
                     TITLE_TIMES
                 );
-                siege.getAttackers().forEach(player -> {
+                siege.getActivePlayers(BattleSide.ATTACKER).forEach(player -> {
                     player.showTitle(vicDefendTitle);
                     player.playSound(SOUND_DEFEAT);
                 });
-                siege.getDefenders().forEach(player -> {
+                siege.getActivePlayers(BattleSide.DEFENDER).forEach(player -> {
                     player.showTitle(losDefendTitle);
                     player.playSound(SOUND_VICTORY);
                 });
@@ -183,11 +185,11 @@ public class SiegeListener implements Listener {
                         .build(),
                     TITLE_TIMES
                 );
-                siege.getAttackers().forEach(player -> {
+                siege.getActivePlayers(BattleSide.ATTACKER).forEach(player -> {
                     player.showTitle(drawTitle);
                     player.playSound(SOUND_DEFEAT);
                 });
-                siege.getDefenders().forEach(player -> {
+                siege.getActivePlayers(BattleSide.DEFENDER).forEach(player -> {
                     player.showTitle(drawTitle);
                     player.playSound(SOUND_DEFEAT);
                 });
@@ -213,19 +215,19 @@ public class SiegeListener implements Listener {
                 if (war.isEventWar()) return;
 
                 Town town = siege.getTown();
-                Side townSide = war.getTownSide(town);
+                Side townSide = war.getSide(town);
 
                 if (townSide == null) return;
 
                 final boolean isLiberation = siege.getAttackerSide().equals(townSide); // Is the town being liberated or occupied
 
                 if (isLiberation) { // Liberation siege
-                    if (townSide.isTownSurrendered(town)) {
-                        war.unsurrenderTown(town);
+                    if (townSide.isSurrendered(town)) {
+                        war.unsurrender(town);
                     }
                 } else { // Occupation siege
-                    if (!townSide.isTownSurrendered(town)) {
-                        war.surrenderTown(town);
+                    if (!townSide.isSurrendered(town)) {
+                        war.surrender(town);
                     }
                 }
             }

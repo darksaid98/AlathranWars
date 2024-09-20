@@ -199,7 +199,7 @@ public abstract class Utils {
     // TODO Implement usage in siege commands to make siege optional argument
     public static @Nullable Siege getClosestSiege(Player p, boolean checkIfInSiege) {
         Set<Siege> sieges = checkIfInSiege
-            ? WarController.getInstance().getSieges().stream().filter(siege -> siege.isPlayerInSiege(p)).collect(Collectors.toSet())
+            ? WarController.getInstance().getSieges().stream().filter(siege -> siege.isPlayerParticipating(p)).collect(Collectors.toSet())
             : WarController.getInstance().getSieges();
 
         @Nullable Siege siegeResult = null;

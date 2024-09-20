@@ -148,7 +148,7 @@ public class CommandsListener implements Listener {
         Prevent players from teleporting during a siege
          */
 
-        for (Siege siege : WarController.getInstance().getPlayerSieges(p)) {
+        for (Siege siege : WarController.getInstance().getSieges(p)) {
             //payment check
             if (args.length >= 2) {
                 //parse what we have, remove the starting sslash

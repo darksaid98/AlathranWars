@@ -5,55 +5,86 @@ import com.github.alathra.alathranwars.enums.battle.BattleTeam;
 import com.palmergames.bukkit.towny.object.Government;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class SideBuilder {
-    private UUID warUUID;
-    private UUID uuid;
-    private BattleSide side;
-    private BattleTeam team;
-    private String name;
+    private @Nullable UUID warUUID;
+    private @Nullable UUID uuid;
+    private @Nullable BattleSide side;
+    private @Nullable BattleTeam team;
+    private @Nullable String name;
 
-    private Government government;
+    private @Nullable Government government;
 
-    private Set<Town> towns;
-    private Set<Nation> nations;
-    private Set<UUID> playersIncludingOffline;
-    private Set<Town> surrenderedTowns;
-    private Set<Nation> surrenderedNations;
-    private Set<UUID> surrenderedPlayersIncludingOffline;
-    private Instant siegeGrace;
-    private Instant raidGrace;
+    private @Nullable Set<Nation> nations;
+    private @Nullable Set<Town> towns;
+    private @Nullable Set<OfflinePlayer> players;
+
+    private @Nullable Set<Nation> nationsSurrendered;
+    private @Nullable Set<Town> townsSurrendered;
+    private @Nullable Set<OfflinePlayer> playersSurrendered;
+
+    private @Nullable Instant siegeGrace;
+    private @Nullable Instant raidGrace;
 
     public SideBuilder() {
     }
 
+    /**
+     * Build a new side from save data
+     * @return a new side
+     * @throws SideCreationException exception
+     */
     public Side rebuild() throws SideCreationException {
-//        if (warUUID == null || uuid == null || town == null || side == null || team == null || name == null ||
-//            towns == null || nations == null || playersIncludingOffline == null ||
-//            surrenderedTowns == null || surrenderedNations == null || surrenderedPlayersIncludingOffline == null ||
-//            siegeGrace == null || raidGrace == null
-//        ) throw new IllegalStateException("Missing state to create Side 1");
-        // TODO Cleanup this shit
-        if (warUUID == null || uuid == null
-        ) throw new IllegalStateException("Missing state to create Side 1.2");
+        if (warUUID == null)
+            throw new SideCreationException("Missing state warUUID required to create Side!");
 
-        if (government == null
-        ) throw new IllegalStateException("Missing state to create Side 1.3");
-        if (side == null
-        ) throw new IllegalStateException("Missing state to create Side 1.1");
+        if (uuid == null)
+            throw new SideCreationException("Missing state uuid required to create Side!");
 
-        if (team == null || name == null ||
-            towns == null || nations == null
-        ) throw new IllegalStateException("Missing state to create Side 1");
+        if (government == null)
+            throw new SideCreationException("Missing state government required to create Side!");
 
-        if (playersIncludingOffline == null ||
-            surrenderedTowns == null || surrenderedNations == null || surrenderedPlayersIncludingOffline == null ||
-            siegeGrace == null || raidGrace == null
-        ) throw new IllegalStateException("Missing state to create Side 2");
+        if (side == null)
+            throw new SideCreationException("Missing state side required to create Side!");
+
+        if (team == null)
+            throw new SideCreationException("Missing state team required to create Side!");
+
+        if (name == null)
+            throw new SideCreationException("Missing state name required to create Side!");
+
+        if (towns == null)
+            throw new SideCreationException("Missing state towns required to create Side!");
+
+        if (nations == null)
+            throw new SideCreationException("Missing state nations required to create Side!");
+
+        if (players == null)
+            throw new SideCreationException("Missing state players required to create Side!");
+
+        if (townsSurrendered == null)
+            throw new SideCreationException("Missing state townsSurrendered required to create Side!");
+
+        if (nationsSurrendered == null)
+            throw new SideCreationException("Missing state nationsSurrendered required to create Side!");
+
+        if (playersSurrendered == null)
+            throw new SideCreationException("Missing state playersSurrendered required to create Side!");
+
+        if (siegeGrace == null)
+            throw new SideCreationException("Missing state siegeGrace required to create Side!");
+
+        if (raidGrace == null)
+            throw new SideCreationException("Missing state raidGrace required to create Side!");
 
         return new Side(
             warUUID,
@@ -62,20 +93,37 @@ public class SideBuilder {
             side,
             team,
             name,
-            towns,
             nations,
-            playersIncludingOffline,
-            surrenderedTowns,
-            surrenderedNations,
-            surrenderedPlayersIncludingOffline,
+            towns,
+            players,
+            nationsSurrendered,
+            townsSurrendered,
+            playersSurrendered,
             siegeGrace,
             raidGrace
         );
     }
 
+    /**
+     * Build a new Side
+     * @return a new side
+     * @throws SideCreationException exception
+     */
     public Side build() throws SideCreationException {
-        if (warUUID == null || uuid == null || government == null || side == null || team == null)
-            throw new IllegalStateException("Missing state to create new Side");
+        if (warUUID == null)
+            throw new SideCreationException("Missing state warUUID required to create Side!");
+
+        if (uuid == null)
+            throw new SideCreationException("Missing state uuid required to create Side!");
+
+        if (government == null)
+            throw new SideCreationException("Missing state government required to create Side!");
+
+        if (side == null)
+            throw new SideCreationException("Missing state side required to create Side!");
+
+        if (team == null)
+            throw new SideCreationException("Missing state team required to create Side!");
 
         return new Side(
             warUUID,
@@ -116,33 +164,33 @@ public class SideBuilder {
         return this;
     }
 
-    public SideBuilder setTowns(Set<Town> towns) {
-        this.towns = towns;
-        return this;
-    }
-
     public SideBuilder setNations(Set<Nation> nations) {
         this.nations = nations;
         return this;
     }
 
-    public SideBuilder setPlayersIncludingOffline(Set<UUID> playersIncludingOffline) {
-        this.playersIncludingOffline = playersIncludingOffline;
+    public SideBuilder setTowns(Set<Town> towns) {
+        this.towns = towns;
         return this;
     }
 
-    public SideBuilder setSurrenderedTowns(Set<Town> surrenderedTowns) {
-        this.surrenderedTowns = surrenderedTowns;
+    public SideBuilder setPlayers(@NotNull Set<UUID> players) {
+        this.players = players.stream().map(Bukkit::getOfflinePlayer).collect(Collectors.toSet());
         return this;
     }
 
-    public SideBuilder setSurrenderedNations(Set<Nation> surrenderedNations) {
-        this.surrenderedNations = surrenderedNations;
+    public SideBuilder setNationsSurrendered(Set<Nation> nationsSurrendered) {
+        this.nationsSurrendered = nationsSurrendered;
         return this;
     }
 
-    public SideBuilder setSurrenderedPlayersIncludingOffline(Set<UUID> surrenderedPlayersIncludingOffline) {
-        this.surrenderedPlayersIncludingOffline = surrenderedPlayersIncludingOffline;
+    public SideBuilder setTownsSurrendered(Set<Town> townsSurrendered) {
+        this.townsSurrendered = townsSurrendered;
+        return this;
+    }
+
+    public SideBuilder setPlayersSurrendered(@NotNull Set<UUID> playersSurrendered) {
+        this.playersSurrendered = playersSurrendered.stream().map(Bukkit::getOfflinePlayer).collect(Collectors.toSet());
         return this;
     }
 

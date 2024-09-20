@@ -19,10 +19,9 @@ import space.arim.morepaperlib.scheduling.ScheduledTask;
 import java.time.Duration;
 import java.time.Instant;
 
-import static com.github.alathra.alathranwars.conflict.battle.raid.Raid.*;
 import static com.github.alathra.alathranwars.enums.CaptureProgressDirection.*;
 
-public class RaidRunnable implements Runnable {
+/*public class RaidRunnable implements Runnable {
     // Settings
     private static final Duration ANNOUNCEMENT_COOLDOWN = Duration.ofMinutes(5);
     private final static int CAPTURE_RANGE = 10;
@@ -34,11 +33,11 @@ public class RaidRunnable implements Runnable {
     private final ScheduledTask task;
     private @Nullable Laser beam;
 
-    /**
+    *//**
      * Start a raid
      *
      * @param raid the raid
-     */
+     *//*
     public RaidRunnable(@NotNull Raid raid) {
         this.raid = raid;
 
@@ -54,12 +53,12 @@ public class RaidRunnable implements Runnable {
         raid.updateDisplayBar(CONTESTED);
     }
 
-    /**
+    *//**
      * Resume a raid at tick
      *
      * @param raid         the raid
      * @param raidProgress the raid ticks
-     */
+     *//*
     public RaidRunnable(@NotNull Raid raid, int raidProgress) {
         this.raid = raid;
 
@@ -257,4 +256,4 @@ public class RaidRunnable implements Runnable {
             beam = null;
         }
     }
-}
+}*/

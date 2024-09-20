@@ -6,43 +6,56 @@ import com.github.alathra.alathranwars.conflict.war.side.Side;
 import com.github.alathra.alathranwars.conflict.war.side.SideCreationException;
 import com.github.alathra.alathranwars.enums.ConflictType;
 import com.palmergames.bukkit.towny.object.Government;
-import com.palmergames.bukkit.towny.object.Nation;
-import com.palmergames.bukkit.towny.object.Town;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 public class WarBuilder {
-    private UUID uuid;
-    private String name;
-    private String label;
+    private @Nullable UUID uuid;
+    private @Nullable String name;
+    private @Nullable String label;
     private ConflictType conflictType = ConflictType.WAR;
     private boolean event = false;
-    private Side side1;
-    private Side side2;
-    private Set<Siege> sieges = new HashSet<>();
-    private Set<Raid> raids = new HashSet<>();
+    private @Nullable Side side1;
+    private @Nullable Side side2;
+    private @Nullable Set<Siege> sieges = new HashSet<>();
+    private @Nullable Set<Raid> raids = new HashSet<>();
 
-    private Government aggressor;
-    private Government victim;
+    private @Nullable Government aggressor;
+    private @Nullable Government victim;
 
     public WarBuilder() {
     }
 
-    public War resume() {
-        if (
-            uuid == null ||
-                name == null ||
-                label == null ||
-                side1 == null ||
-                side2 == null ||
-                sieges == null ||
-                raids == null
-        ) {
-            throw new IllegalStateException();
-        }
+    /**
+     * Build a new war from save data
+     * @return a new war
+     * @throws WarCreationException exception
+     */
+    public War resume() throws WarCreationException {
+        if (uuid == null)
+            throw new WarCreationException("Missing state uuid required to create War!");
+
+        if (name == null)
+            throw new WarCreationException("Missing state name required to create War!");
+
+        if (label == null)
+            throw new WarCreationException("Missing state label required to create War!");
+
+        if (side1 == null)
+            throw new WarCreationException("Missing state side1 required to create War!");
+
+        if (side2 == null)
+            throw new WarCreationException("Missing state side2 required to create War!");
+
+        if (sieges == null)
+            throw new WarCreationException("Missing state sieges required to create War!");
+
+        if (raids == null)
+            throw new WarCreationException("Missing state raids required to create War!");
 
         return new War(
             uuid,
@@ -56,8 +69,26 @@ public class WarBuilder {
         );
     }
 
+    /**
+     * Build a new War
+     * @return a new war
+     * @throws WrapperCommandSyntaxException exception
+     * @throws SideCreationException exception
+     */
     public War create() throws WrapperCommandSyntaxException, SideCreationException {
         this.setUuid(UUID.randomUUID());
+
+        if (uuid == null)
+            throw new WarCreationException("Missing state uuid required to create War!");
+
+        if (label == null)
+            throw new WarCreationException("Missing state label required to create War!");
+
+        if (aggressor == null)
+            throw new WarCreationException("Missing state aggressor required to create War!");
+
+        if (victim == null)
+            throw new WarCreationException("Missing state victim required to create War!");
 
         return new War(
             uuid,
@@ -110,22 +141,6 @@ public class WarBuilder {
 
     public WarBuilder setRaids(Set<Raid> raids) {
         this.raids = raids;
-        return this;
-    }
-
-    public WarBuilder setAggressorTown(Town target) {
-        return this;
-    }
-
-    public WarBuilder setAggressorNation(Nation target) {
-        return this;
-    }
-
-    public WarBuilder setVictimTown(Town target) {
-        return this;
-    }
-
-    public WarBuilder setVictimNation(Nation target) {
         return this;
     }
 
