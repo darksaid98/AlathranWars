@@ -69,7 +69,7 @@ dependencies {
     // API
     implementation("com.github.milkdrinkers:crate-api:2.0.0")
     implementation("com.github.milkdrinkers:crate-yaml:2.0.0")
-    implementation("com.github.milkdrinkers:colorparser:2.0.3") {
+    implementation("com.github.milkdrinkers:colorparser:4.1.0") {
         exclude("net.kyori")
     }
     implementation("dev.jorel:commandapi-bukkit-shade:9.3.0")
