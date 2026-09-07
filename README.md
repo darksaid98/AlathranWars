@@ -1,4 +1,12 @@
-# AlathranWars Version: 1.3.1
+# NOTICE
+> [!IMPORTANT]
+> With the shutdown of the Alathra Minecraft server, active development on this plugin (*And others in the Alathra GitHub organization*) has ceased. Further development can be found in the new repository at: [https://github.com/milkdrinkers/AlathranWars](https://github.com/milkdrinkers/AlathranWars) 
+> 
+> Continued development for Alathra-related projects is happening in the [Milkdrinkers organisation](https://github.com/milkdrinkers/) (*Created and maintained by a former lead developer of Alathra, darksaid98*).
+
+# ~~AlathranWars Version: 1.3.1~~
+
+## A unique Towny War system for the AlathraMC server
 
 ## A unique Towny oldWar system for the AlathraMC server
 
